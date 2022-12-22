@@ -10,28 +10,14 @@
         <v-card elevation="5">
             <v-form>
                 <v-container>
+                    <div class="chip-in-row">
+                        <v-chip-group>
+                            <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
+                                v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
+                        </v-chip-group>
+                    </div>
                     <v-text-field label="Κωδικός Εργαστηρίου" required></v-text-field>
                     <v-text-field label="Τίτλος Εργαστηρίου" required></v-text-field>
-                    <v-select  :items="displayedSemester" 
-                    label="Εξάμηνο" 
-                    chips 
-                    hide-selected
-                    density="comfortable"
-                    validate-on="blur" 
-                    clearable 
-                    bg-color="#f3f3f3" 
-                    full-width
-                    open-on-clear>
-                    </v-select>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
                     <v-text-field label="E-mail" required></v-text-field>
                 </v-container>
             </v-form>
@@ -41,12 +27,28 @@
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
 import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
+import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
+import { Ref, ref } from 'vue';
+import { DisplayedSemster } from '@/types/displayedsemester.type';
 
 export default defineComponent({
     setup() {
-        const displayedSemester = displayedLabs();
+        const displayedSemester: Ref<Array<DisplayedSemster>> = ref(displayedLabs());
 
-        return { displayedSemester };
+        const clickOnChip = (sth: LabSemesterEnum) => {
+            const lab = displayedSemester.value.find(lab => lab.value == sth);
+            if (lab) {
+                lab.isActive = !lab.isActive
+                const allRestLabs = displayedSemester.value.filter(restLab => restLab.value != lab.value);
+                if (allRestLabs && allRestLabs != null && allRestLabs != undefined && allRestLabs.length > 1) {
+                    allRestLabs.forEach((lab) => {
+                        if (lab.isActive)
+                            lab.isActive = false;
+                    });
+                }
+            }
+        }
+        return { displayedSemester, clickOnChip };
     }
 })
 </script>
@@ -78,6 +80,42 @@ export default defineComponent({
     margin-left: 1rem;
     margin-right: 1rem;
     height: 66vh;
+}
+
+.chip-in-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.6rem;
+    margin: 1rem 0;
+}
+
+:deep(.v-chip.v-chip--density-default) {
+    height: 2.5rem;
+    font-size: 0.9rem;
+    width: fit-content;
+}
+
+
+:deep(.v-chip.v-chip--density-default:hover) {
+    color: #156ed3;
+    cursor: pointer;
+}
+
+:deep(.v-chip-group) {
+    display: flex;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    padding: 4px 0;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.active-chip {
+    border: 1px solid #156ed3;
+    color: #156ed3;
 }
 
 @media (min-width: 769px) {
