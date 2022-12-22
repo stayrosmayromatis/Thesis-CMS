@@ -1,17 +1,15 @@
 <template>
-  <base-dialog
-    v-if="isError"
-    :innerDescription="'There has been an error'"
-    :innerTitle="'HttpError'"
-  ></base-dialog>
+  <base-dialog v-if="isError">
+    <template #title >
+      <h1>Http Error</h1>
+    </template>
+    <template #description>
+      <p>An error over the api has occured.Please try later</p>
+    </template>
+  </base-dialog>
   <div class="parent-card">
     <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
-    <submited-lab
-      v-for="sLab in sLabs"
-      :key="sLab.labId"
-      :title="sLab.title"
-      :description="sLab.description"
-    >
+    <submited-lab v-for="sLab in sLabs" :key="sLab.labId" :title="sLab.title" :description="sLab.description">
     </submited-lab>
   </div>
 </template>
@@ -59,6 +57,7 @@ export default defineComponent({
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
 .parent-label {
   display: flex;
   flex-direction: row;
@@ -73,6 +72,16 @@ export default defineComponent({
   background-color: #aacaf3;
   padding: 1.2rem;
 }
+
+.dialog-header{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem auto;
+  background-color:#aacaf3;
+}
+
 @media (min-width: 769px) {
   .parent-card {
     margin-top: 2rem;
@@ -80,6 +89,7 @@ export default defineComponent({
     margin-left: 1rem;
     margin-right: 1rem;
   }
+
   .parent-label {
     display: flex;
     flex-direction: row;
@@ -94,6 +104,7 @@ export default defineComponent({
     min-width: 769px;
   }
 }
+
 @media (min-width: 1025px) {
   .parent-card {
     margin-top: 2rem;
@@ -101,6 +112,7 @@ export default defineComponent({
     margin-left: 1rem;
     margin-right: 1rem;
   }
+
   .parent-label {
     display: flex;
     flex-direction: row;
