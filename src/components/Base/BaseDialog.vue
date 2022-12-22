@@ -70,7 +70,7 @@ export default defineComponent({
 }
 
 :deep(.v-card.v-theme--light.v-card--density-default.v-card--variant-elevated) {
-  border-radius: 35px;
+  border-radius: 20px;
   margin: 0 1rem;
 }
 
@@ -83,7 +83,7 @@ export default defineComponent({
 }
 
 :deep(.v-card-actions .v-btn) {
-  width: 25%;
+  width: 7rem;
 }
 
 :deep(.v-overlay__content) {
@@ -95,6 +95,7 @@ export default defineComponent({
     margin-right: 1rem;
     display: flex;
     flex-direction: row;
+    margin-bottom: 0.5rem;
   }
 
   :deep(.v-card-actions .v-btn) {
@@ -102,7 +103,7 @@ export default defineComponent({
   }
 
   :deep(.v-card.v-theme--light.v-card--density-default.v-card--variant-elevated) {
-    border-radius: 35px;
+    border-radius: 20px;
     margin: 0 1rem;
   }
 }

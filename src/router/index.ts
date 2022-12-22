@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 const LabAccordion= () => import('@/components/UI/LabAccordion.vue');
 const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
+const AddLab = () => import('@/components/UI/AddLab.vue');
 const routes: Array<RouteRecordRaw> = [
   {
     path : "/lab-list",
@@ -13,7 +14,13 @@ const routes: Array<RouteRecordRaw> = [
     name : 'submittedLabs',
     component : SubmittedLabList,
     props : true
-  }
+  },
+  {
+    path : "/add-lab",
+    name : 'addlab',
+    component : AddLab,
+    props : true
+  },
 ];
 
 const router = createRouter({

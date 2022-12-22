@@ -71,7 +71,7 @@
             <router-link :to="{ name: 'labList' }">All Labs</router-link>
           </li>
           <li class="nav__item"><router-link :to="{ name: 'submittedLabs' }">Submitted Labs</router-link></li>
-          <li class="nav__item"><router-link to="/">Portfolio</router-link></li>
+          <li class="nav__item"><router-link :to="{ name: 'addlab' }">Add a Lab</router-link></li>
           <li class="nav__item"><router-link to="/">Contact</router-link></li>
         </ul>
         <div class="nav__item--cta" v-if="!isLoggedInCmptd">

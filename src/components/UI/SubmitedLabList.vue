@@ -27,7 +27,7 @@ export default defineComponent({
     BaseDialog,
   },
   setup() {
-    const isError = true;
+    const isError = false;
     const sLabs: Ref<Array<Lab>> = ref([
       {
         labId: 1601,
