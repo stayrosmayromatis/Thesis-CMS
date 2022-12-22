@@ -12,8 +12,16 @@
                 <v-container>
                     <v-text-field label="Κωδικός Εργαστηρίου" required></v-text-field>
                     <v-text-field label="Τίτλος Εργαστηρίου" required></v-text-field>
-                    <v-select label="Εξάμηνο" chips persistent-hint density="comfortable" validate-on="blur"
-                        bg-color="#f3f3f3" closable-chips open-on-clear clearable>
+                    <v-select  :items="displayedSemester" 
+                    label="Εξάμηνο" 
+                    chips 
+                    hide-selected
+                    density="comfortable"
+                    validate-on="blur" 
+                    clearable 
+                    bg-color="#f3f3f3" 
+                    full-width
+                    open-on-clear>
                     </v-select>
                     <v-text-field label="E-mail" required></v-text-field>
                     <v-text-field label="E-mail" required></v-text-field>
@@ -32,9 +40,13 @@
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
+import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
+
 export default defineComponent({
     setup() {
-        return {};
+        const displayedSemester = displayedLabs();
+
+        return { displayedSemester };
     }
 })
 </script>

@@ -15,7 +15,8 @@
     "lib": ["esnext", "dom"],
     "types": ["vuetify"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@":["src/*"]
     },
   },
   "include": [

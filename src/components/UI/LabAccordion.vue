@@ -1,6 +1,7 @@
 <template>
   <v-select :items="availableSemesters" 
   label="Επιλέξτε ενα ή παραπάνω εξάμηνo" 
+  hide-selected
   chips 
   persistent-hint 
   density="comfortable"
@@ -37,25 +38,10 @@ import { defineComponent, ref, Ref } from "vue";
 import {LabSemesterEnum} from '@/enums/LabSemesterEnum';
 import {Lab} from '@/types/lab.type';
 import { DisplayedSemster } from "@/types/displayedsemester.type";
-
+import {displayedLabs} from '@/composables/displayedSemesterArray.composable';
 export default defineComponent({
   setup() {
-    const displayLabs:Array<DisplayedSemster>=[
-    {
-      title: "A XΕΙΜΕΡΙΝΟ",
-      value:LabSemesterEnum.A_XEIM,
-    },
-    {
-      title: "Β ΕΑΡΙΝΟ",
-      value:LabSemesterEnum.B_EAR,
-    },
-    {
-      title: "Γ ΕΑΡΙΝΟ",
-      value:LabSemesterEnum.C_XEIM,
-    },
-
-  ]
-
+    const displayLabs:Array<DisplayedSemster> = displayedLabs();
     const selectedLabs: Ref<Array<LabSemesterEnum>> = ref(Array<LabSemesterEnum>());
 
     const logSelectedLabs = (displayedLabs:Array<LabSemesterEnum>) => {
