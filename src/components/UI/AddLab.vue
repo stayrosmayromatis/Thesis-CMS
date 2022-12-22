@@ -35,8 +35,8 @@ export default defineComponent({
     setup() {
         const displayedSemester: Ref<Array<DisplayedSemster>> = ref(displayedLabs());
 
-        const clickOnChip = (sth: LabSemesterEnum) => {
-            const lab = displayedSemester.value.find(lab => lab.value == sth);
+        const clickOnChip = (value: LabSemesterEnum) => {
+            const lab = displayedSemester.value.find(lab => lab.value == value);
             if (lab) {
                 lab.isActive = !lab.isActive
                 const allRestLabs = displayedSemester.value.filter(restLab => restLab.value != lab.value);
