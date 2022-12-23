@@ -40,11 +40,19 @@
                             </v-btn>
                         </div>
                         <div class="form-control-add-field">
-                            <v-text-field label="(Τ)" single-line required></v-text-field>
-                            <!-- <v-text-field label="Απο (24hour)" single-line type="number"></v-text-field> -->
-                            <v-slider label="Ώρα" step="1" min="9" max="20" thumb-label="always" show-ticks></v-slider>
+                            <div class=" ">
+                                <label for="lab_dept_id">Κωδικός Τμήματος:</label>
+                            </div>
+                            <div class=" ">
+                                <input type="text" name="lab_dept_id">
+                            </div>
+                            <date-picker v-model="timeFrom" time-picker disable-time-range-validation placeholder="Απο">
+                            </date-picker>
+                            <date-picker v-model="timeTo" time-picker disable-time-range-validation placeholder="Εως">
+                            </date-picker>
                         </div>
                     </div>
+
                 </v-container>
             </v-form>
         </v-card>
@@ -60,6 +68,8 @@ import { DisplayedSemster } from '@/types/displayedsemester.type';
 export default defineComponent({
     setup() {
         const displayedSemester: Ref<Array<DisplayedSemster>> = ref(displayedLabs());
+        const timeFrom = ref("");
+        const timeTo = ref("");
 
         const clickOnChip = (value: LabSemesterEnum) => {
             const lab = displayedSemester.value.find(lab => lab.value == value);
@@ -74,7 +84,7 @@ export default defineComponent({
                 }
             }
         }
-        return { displayedSemester, clickOnChip };
+        return { displayedSemester, clickOnChip, timeFrom, timeTo };
     }
 })
 </script>
@@ -131,8 +141,15 @@ export default defineComponent({
 
 .form-control-add-field {
     display: flex;
+    justify-content: center;
+    margin: 1rem 1rem;
+    align-items: center;
     gap: 0.5rem;
     width: 100%;
+}
+
+.label-for-lab-id {
+    margin: 0;
 }
 
 /* .chip-in-row {
