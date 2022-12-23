@@ -28,22 +28,21 @@
                     <div class="label-centerer">
                         <label for="year">Ώρες Διαθεσιμόςτητας</label>
                     </div>
-                    <div class="form-control">
-                        <div class="form-control-add-btn">
-                            <v-btn @click="addFormGroup" width="14rem" elevation="4" color="green"><svg width="30"
-                                    height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
-                                    stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                                        fill-rule="nonzero" />
-                                </svg>
-                                ΠΡΟΣΘΗΚΗ
-                            </v-btn>
-                        </div>
-                        <div class="form-control-group">
-                            <lab-form v-for="formLab in formLabs" :key="formLab.labCode"></lab-form>
-                        </div>
+                    <div class="form-control-add-btn">
+                        <v-btn @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
+                                clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+                                    fill-rule="nonzero" />
+                            </svg>
+                            ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
+                        </v-btn>
                     </div>
+                    <!-- <div class="form-control"> -->
+                    <!-- class="form-control-group" -->
+                    <lab-form v-for="formLab in formLabs" :key="formLab.labCode"></lab-form>
+                    <!-- </div> -->
 
                 </v-container>
             </v-form>
@@ -134,27 +133,28 @@ export default defineComponent({
 
 .form-control {
     display: flex;
+    flex-direction: row;
     width: 100%;
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     margin: 1rem 0;
     gap: 1rem;
 }
 
 .form-control-add-btn {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 8rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
-
+/* 
 .form-control-group {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
+} */
 
 
 :deep(.v-chip.v-chip--density-default) {

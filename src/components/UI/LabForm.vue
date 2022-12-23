@@ -1,7 +1,7 @@
 <template>
     <div class="form-control-add-field">
-        <v-label text="Τμήμα:"></v-label>
-        <input style="text-align: center;" type="text" placeholder="Πχ.Τ1" v-model="inputString">
+        <!-- <v-label text="Τμήμα:"></v-label> -->
+        <input style="text-align: center;" type="text" placeholder="Τμήμα (π.χ. Τ1)" v-model="inputString">
         <date-picker v-model="timeFrom" time-picker disable-time-range-validation placeholder="Απο">
         </date-picker>
         <date-picker v-model="timeTo" time-picker disable-time-range-validation placeholder="Εως">
@@ -14,7 +14,6 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-
 export default defineComponent({
     props: {
         labCodeIndex: {
@@ -39,13 +38,13 @@ export default defineComponent({
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 3rem;
-    margin-bottom: 1rem;
+    margin: 1rem auto;
 }
 
-:deep(.v-btn.v-btn--density-default){
+:deep(.v-btn.v-btn--density-default) {
     background-color: #e99aa7;
     color: #e6415d;
 }
