@@ -6,6 +6,15 @@
         </date-picker>
         <date-picker v-model="timeTo" time-picker disable-time-range-validation placeholder="Εως">
         </date-picker>
+        <v-select
+    variant="outlined"
+    item-title="state"
+    item-value="abbr"
+    label="Select"
+    persistent-hint
+    return-object
+    single-line
+  ></v-select>
         <v-btn color="error" variant="outlined">
             Καταργηση
         </v-btn>
