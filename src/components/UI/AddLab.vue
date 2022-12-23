@@ -10,15 +10,41 @@
         <v-card elevation="5">
             <v-form>
                 <v-container>
-                    <div class="chip-in-row">
-                        <v-chip-group>
-                            <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
-                                v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
-                        </v-chip-group>
+                    <!-- <div class="chip-in-row"> -->
+                    <v-chip-group>
+                        <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
+                            v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
+                    </v-chip-group>
+                    <v-divider inset></v-divider>
+                    <!-- </div> -->
+                    <div class="label-centerer">
+                        <label for="year">Βασικά Στοιχεία</label>
                     </div>
-                    <v-text-field label="Κωδικός Εργαστηρίου" required></v-text-field>
-                    <v-text-field label="Τίτλος Εργαστηρίου" required></v-text-field>
-                    <v-text-field label="E-mail" required></v-text-field>
+                    <div class="form-first">
+                        <v-text-field label="Κωδικός Εργαστηρίου" required></v-text-field>
+                        <v-text-field label="Τίτλος Εργαστηρίου" required></v-text-field>
+                    </div>
+                    <v-divider inset></v-divider>
+                    <div class="label-centerer">
+                        <label for="year">Ώρες Διαθεσιμόςτητας</label>
+                    </div>
+                    <div class="form-control">
+                        <div class="form-control-add-btn">
+                            <v-btn width="14rem" elevation="4" color="green"><svg width="30" height="30"
+                                    clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
+                                    stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+                                        fill-rule="nonzero" />
+                                </svg>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
+                            </v-btn>
+                        </div>
+                        <div class="form-control-add-field">
+                            <v-text-field label="(Τ)" single-line required></v-text-field>
+                            <!-- <v-text-field label="Απο (24hour)" single-line type="number"></v-text-field> -->
+                            <v-slider label="Ώρα" step="1" min="9" max="20" thumb-label="always" show-ticks></v-slider>
+                        </div>
+                    </div>
                 </v-container>
             </v-form>
         </v-card>
@@ -55,8 +81,8 @@ export default defineComponent({
 
 <style scoped>
 .parent-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .parent-label {
@@ -75,21 +101,46 @@ export default defineComponent({
 }
 
 .parent-card-form {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
     height: 66vh;
+    min-width: 320px;
+    max-width: 100%;
 }
 
-.chip-in-row {
+.form-first {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 1rem 0;
+    gap: 0.5rem;
+    height: 5rem;
+}
+
+.form-control-add-btn {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 14rem;
+}
+
+.form-control-add-field {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+/* .chip-in-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 1.6rem;
-    margin: 1rem 0;
-}
+} */
 
 :deep(.v-chip.v-chip--density-default) {
     height: 2.5rem;
@@ -105,23 +156,51 @@ export default defineComponent({
 
 :deep(.v-chip-group) {
     display: flex;
-    max-width: 100%;
-    min-width: 0;
-    overflow-x: auto;
-    padding: 4px 0;
     flex-direction: row;
-    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    max-width: 768px;
+    min-width: 320px;
+    margin-bottom: 1rem;
 }
+
+:deep(.v-container) {
+    padding: 0;
+    overflow: hidden;
+}
+
 
 .active-chip {
     border: 1px solid #156ed3;
     color: #156ed3;
 }
 
+:deep(.v-divider) {
+    width: 100%;
+    display: flex;
+    margin: 0.5rem auto;
+    border-color: #f3f3f3;
+}
+
+:deep(.v-divider--inset:not(.v-divider--vertical)) {
+    max-width: 100%;
+    margin-inline-start: 0px;
+}
+
+:deep(.v-btn__content) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    gap: 0.2rem;
+}
+
 @media (min-width: 769px) {
     .parent-card {
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
         margin-left: 1rem;
         margin-right: 1rem;
     }
@@ -138,6 +217,49 @@ export default defineComponent({
         font-weight: 500;
         background-color: #aacaf3;
         min-width: 769px;
+    }
+
+    :deep(.v-chip-group) {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        max-width: 1024px;
+        min-width: 769px;
+        overflow-x: auto;
+    }
+
+    .parent-card-form {
+        margin-left: 1rem;
+        margin-right: 1rem;
+        height: 66vh;
+        min-width: 320px;
+        max-width: 100%;
+    }
+
+    .parent-card {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-first {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+
+    .label-centerer {
+        background-color: #f3f3f3;
+        margin: 0.5rem auto;
+        text-align: center;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
     }
 }
 
@@ -161,6 +283,19 @@ export default defineComponent({
         font-weight: 500;
         background-color: #aacaf3;
         min-width: 769px;
+    }
+
+    :deep(.v-chip-group) {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 1rem;
+        column-gap: 1rem;
+        margin-top: 1rem;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        max-width: 100%;
     }
 }
 </style>
