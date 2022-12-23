@@ -30,26 +30,18 @@
                     </div>
                     <div class="form-control">
                         <div class="form-control-add-btn">
-                            <v-btn width="14rem" elevation="4" color="green"><svg width="30" height="30"
-                                    clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
+                            <v-btn @click="addFormGroup" width="14rem" elevation="4" color="green"><svg width="30"
+                                    height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
                                     stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
                                         fill-rule="nonzero" />
-                                </svg>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
+                                </svg>
+                                ΠΡΟΣΘΗΚΗ
                             </v-btn>
                         </div>
-                        <div class="form-control-add-field">
-                            <div class=" ">
-                                <label for="lab_dept_id">Κωδικός Τμήματος:</label>
-                            </div>
-                            <div class=" ">
-                                <input type="text" name="lab_dept_id">
-                            </div>
-                            <date-picker v-model="timeFrom" time-picker disable-time-range-validation placeholder="Απο">
-                            </date-picker>
-                            <date-picker v-model="timeTo" time-picker disable-time-range-validation placeholder="Εως">
-                            </date-picker>
+                        <div class="form-control-group">
+                            <lab-form v-for="formLab in formLabs" :key="formLab.labCode"></lab-form>
                         </div>
                     </div>
 
@@ -64,13 +56,22 @@ import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
 import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
 import { Ref, ref } from 'vue';
 import { DisplayedSemster } from '@/types/displayedsemester.type';
-
+import LabForm from './LabForm.vue';
 export default defineComponent({
+    components: {
+        LabForm
+    },
     setup() {
+        const formLabs = ref([
+            {
+                labCode: "",
+                labTitle: "",
+                labDept: "",
+                fromTime: "",
+                toTime: ""
+            },
+        ])
         const displayedSemester: Ref<Array<DisplayedSemster>> = ref(displayedLabs());
-        const timeFrom = ref("");
-        const timeTo = ref("");
-
         const clickOnChip = (value: LabSemesterEnum) => {
             const lab = displayedSemester.value.find(lab => lab.value == value);
             if (lab) {
@@ -84,7 +85,16 @@ export default defineComponent({
                 }
             }
         }
-        return { displayedSemester, clickOnChip, timeFrom, timeTo };
+        const addFormGroup = () => {
+            formLabs.value.push({
+                labCode: "",
+                labTitle: "",
+                labDept: "",
+                fromTime: "",
+                toTime: ""
+            });
+        }
+        return { displayedSemester, clickOnChip, formLabs, addFormGroup };
     }
 })
 </script>
@@ -111,7 +121,7 @@ export default defineComponent({
 }
 
 .parent-card-form {
-    height: 66vh;
+    /* height: 66vh; */
     min-width: 320px;
     max-width: 100%;
 }
@@ -126,38 +136,26 @@ export default defineComponent({
     display: flex;
     width: 100%;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
     margin: 1rem 0;
-    gap: 0.5rem;
-    height: 5rem;
+    gap: 1rem;
 }
 
 .form-control-add-btn {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    width: 14rem;
+    width: 8rem;
 }
 
-.form-control-add-field {
+
+.form-control-group {
     display: flex;
-    justify-content: center;
-    margin: 1rem 1rem;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-}
-
-.label-for-lab-id {
-    margin: 0;
-}
-
-/* .chip-in-row {
-    display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-} */
+}
+
 
 :deep(.v-chip.v-chip--density-default) {
     height: 2.5rem;
