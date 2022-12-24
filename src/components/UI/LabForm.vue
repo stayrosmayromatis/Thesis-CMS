@@ -44,26 +44,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref ,PropType } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { DaysOfWeek } from "@/types/daysOfWeek.type";
 import {Department} from '@/types/department.type'
 export default defineComponent({
   props: {
-    labCodeIndex: {
-      required: false,
-      type: Number,
-      default: 1,
-    },
     department:{
-      type: Object as Department,
+      type: Object as PropType<Department>,
       required : true,
     }
   },
   emits:['deleteByDeptId'],
   setup(props,context) {
     const days: Array<DaysOfWeek> = daysOfWeek;
-    const deleteByDeptId = (deptId:string)=>{
+    const deleteByDeptId = ()=>{
       context.emit('deleteByDeptId',props.department.deptId);
     }
     return { daysOfWeek,deleteByDeptId };

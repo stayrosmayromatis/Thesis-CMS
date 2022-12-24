@@ -6,7 +6,7 @@
   </div>
   <div class="parent-card-form">
     <v-card elevation="5">
-      <v-form @submit.prevent="">
+      <v-form @submit.prevent="submitForm">
         <v-container>
           <v-chip-group>
             <v-chip
@@ -22,8 +22,8 @@
             <label for="year">Βασικά Στοιχεία</label>
           </div>
           <div class="form-first">
-            <v-text-field label="Κωδικός Εργαστηρίου" required></v-text-field>
-            <v-text-field label="Τίτλος Εργαστηρίου" required></v-text-field>
+            <v-text-field label="Κωδικός Εργαστηρίου" required v-model.number="lab.labId"></v-text-field>
+            <v-text-field label="Τίτλος Εργαστηρίου" required  v-model.trim="lab.title"></v-text-field>
           </div>
           <v-divider inset></v-divider>
           <div class="label-centerer">
@@ -56,11 +56,11 @@
           <lab-form
             v-for="(department, index) in departments"
             :key="index"
-            :row-index="index"
             :department="department"
             @deleteByDeptId="removeFormGroup"
           ></lab-form>
         </v-container>
+        <v-btn type="submit">Submit</v-btn>
       </v-form>
     </v-card>
   </div>
@@ -69,7 +69,7 @@
 import { defineComponent } from "@vue/runtime-core";
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { Ref, ref } from "vue";
+import { reactive, Ref, ref } from "vue";
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
@@ -82,22 +82,23 @@ export default defineComponent({
   setup() {
     let deptIncremental = 1;
     const departments = ref(Array<Department>());
-    const lab: Lab = {
+    const lab = reactive<Lab>({
       labId: 0,
       title: "",
       semester: LabSemesterEnum.A_XEIM,
       description: "",
       departments: departments,
-    };
+    });
     const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
       displayedLabs()
     );
     const clickOnChip = (value: LabSemesterEnum) => {
-      const lab = displayedSemester.value.find((lab) => lab.value == value);
-      if (lab) {
-        lab.isActive = !lab.isActive;
+      const selectedLab = displayedSemester.value.find((lab) => lab.value == value);
+      if (selectedLab) {
+        selectedLab.isActive = !selectedLab.isActive;
+        lab.semester = selectedLab.value;
         const allRestLabs = displayedSemester.value.filter(
-          (restLab) => restLab.value != lab.value
+          (restLab) => restLab.value != selectedLab.value
         );
         if (
           allRestLabs &&
@@ -121,18 +122,23 @@ export default defineComponent({
     };
     const removeFormGroup = (deptId: string) => {
       if (deptId === null || deptId === undefined) return;
-      console.log(deptId);
-
-      departments.value = departments.value.filter((val) => {
-        return val.deptId !== deptId;
-      });
+      departments.value = departments.value.filter(
+        (val) => val.deptId !== deptId
+      );
     };
+
+    const submitForm =()=>{
+      lab.departments = departments.value;
+      console.log(lab);
+    }
     return {
+      lab,
       displayedSemester,
       clickOnChip,
       departments,
       addFormGroup,
       removeFormGroup,
+      submitForm
     };
   },
 });
