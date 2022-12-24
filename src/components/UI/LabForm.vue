@@ -5,19 +5,19 @@
         style="text-align: center"
         type="text"
         placeholder="Τμήμα (π.χ. Τ1)"
-        v-model="inputString"
+        v-model="department.deptId"
       />
     </div>
     <div class="mobile-date-picker">
       <date-picker
-        v-model="timeFrom"
+        v-model="department.fromTime"
         time-picker
         disable-time-range-validation
         placeholder="Απο"
       >
       </date-picker>
       <date-picker
-        v-model="timeTo"
+        v-model="department.toTime"
         time-picker
         disable-time-range-validation
         placeholder="Εως"
@@ -34,10 +34,11 @@
         persistent-hint
         direction="horizontal"
         single-line
+        v-model="department.day"
       ></v-select>
     </div>
     <div class="mobile-actions">
-      <v-btn color="error" variant="outlined"> Καταργηση </v-btn>
+      <v-btn color="error" variant="outlined" @click="deleteByDeptId()"> Καταργηση </v-btn>
     </div>
   </div>
 </template>
@@ -46,6 +47,7 @@
 import { defineComponent, ref } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { DaysOfWeek } from "@/types/daysOfWeek.type";
+import {Department} from '@/types/department.type'
 export default defineComponent({
   props: {
     labCodeIndex: {
@@ -53,13 +55,18 @@ export default defineComponent({
       type: Number,
       default: 1,
     },
+    department:{
+      type: Object as Department,
+      required : true,
+    }
   },
-  setup() {
-    const timeFrom = ref("");
-    const timeTo = ref("");
-    const inputString = "";
+  emits:['deleteByDeptId'],
+  setup(props,context) {
     const days: Array<DaysOfWeek> = daysOfWeek;
-    return { timeFrom, timeTo, inputString, daysOfWeek };
+    const deleteByDeptId = (deptId:string)=>{
+      context.emit('deleteByDeptId',props.department.deptId);
+    }
+    return { daysOfWeek,deleteByDeptId };
   },
 });
 </script>

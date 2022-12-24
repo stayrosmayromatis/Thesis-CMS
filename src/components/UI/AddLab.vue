@@ -6,7 +6,7 @@
   </div>
   <div class="parent-card-form">
     <v-card elevation="5">
-      <v-form>
+      <v-form @submit.prevent="">
         <v-container>
           <v-chip-group>
             <v-chip
@@ -30,7 +30,11 @@
             <label for="year">Ώρες Διαθεσιμόςτητας</label>
           </div>
           <div class="form-control-add-btn">
-            <v-btn @click="addFormGroup" elevation="4" color="green"
+            <v-btn
+              type="button"
+              @click="addFormGroup"
+              elevation="4"
+              color="green"
               ><svg
                 width="30"
                 height="30"
@@ -50,8 +54,11 @@
             </v-btn>
           </div>
           <lab-form
-            v-for="formLab in formLabs"
-            :key="formLab.labCode"
+            v-for="(department, index) in departments"
+            :key="index"
+            :row-index="index"
+            :department="department"
+            @deleteByDeptId="removeFormGroup"
           ></lab-form>
         </v-container>
       </v-form>
@@ -65,20 +72,23 @@ import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Ref, ref } from "vue";
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
+import { Department } from "@/types/department.type";
+import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
+import { Lab } from "@/types/lab.type";
 export default defineComponent({
   components: {
     LabForm,
   },
   setup() {
-    const formLabs = ref([
-      {
-        labCode: "",
-        labTitle: "",
-        labDept: "",
-        fromTime: "",
-        toTime: "",
-      },
-    ]);
+    let deptIncremental = 1;
+    const departments = ref(Array<Department>());
+    const lab: Lab = {
+      labId: 0,
+      title: "",
+      semester: LabSemesterEnum.A_XEIM,
+      description: "",
+      departments: departments,
+    };
     const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
       displayedLabs()
     );
@@ -102,15 +112,28 @@ export default defineComponent({
       }
     };
     const addFormGroup = () => {
-      formLabs.value.push({
-        labCode: "",
-        labTitle: "",
-        labDept: "",
+      departments.value.push({
+        deptId: `T${deptIncremental++}`,
         fromTime: "",
         toTime: "",
+        day: DaysOfWeekEnum.Δευτέρα,
       });
     };
-    return { displayedSemester, clickOnChip, formLabs, addFormGroup };
+    const removeFormGroup = (deptId: string) => {
+      if (deptId === null || deptId === undefined) return;
+      console.log(deptId);
+
+      departments.value = departments.value.filter((val) => {
+        return val.deptId !== deptId;
+      });
+    };
+    return {
+      displayedSemester,
+      clickOnChip,
+      departments,
+      addFormGroup,
+      removeFormGroup,
+    };
   },
 });
 </script>
