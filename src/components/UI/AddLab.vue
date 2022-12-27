@@ -8,59 +8,43 @@
     <v-card elevation="5">
       <v-form @submit.prevent="submitForm">
         <v-container>
-          <v-chip-group>
-            <v-chip
-              :class="{ 'active-chip': lab.isActive }"
-              @click="clickOnChip(lab.value)"
-              v-for="lab in displayedSemester"
-              :key="lab.title"
-              >{{ lab.title }}</v-chip
-            >
-          </v-chip-group>
+          <div :class="{ 'error-color': formErrors.semester.hasError }">
+            <v-chip-group>
+              <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
+                v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
+            </v-chip-group>
+          </div>
           <v-divider inset></v-divider>
           <div class="label-centerer">
             <label for="year">Βασικά Στοιχεία</label>
           </div>
           <div class="form-first">
-            <v-text-field label="Κωδικός Εργαστηρίου" required v-model.number="lab.labId"></v-text-field>
-            <v-text-field label="Τίτλος Εργαστηρίου" required  v-model.trim="lab.title"></v-text-field>
+            <v-text-field :class="{ 'error-color': formErrors.labId.hasError }"
+              :error-messages="formErrors.labId.reason" label="Κωδικός Εργαστηρίου" v-model.trim="lab.labId"
+              @blur="validate('labId')" @click="resetError('labId')"></v-text-field>
+            <v-text-field :class="{ 'error-color': formErrors.title.hasError }"
+              :error-messages="formErrors.title.reason" label="Τίτλος Εργαστηρίου" v-model.trim="lab.title"
+              @blur="validate('title')" @click="resetError('title')"></v-text-field>
           </div>
           <v-divider inset></v-divider>
           <div class="label-centerer">
             <label for="year">Ώρες Διαθεσιμόςτητας</label>
           </div>
           <div class="form-control-add-btn">
-            <v-btn
-              type="button"
-              @click="addFormGroup"
-              elevation="4"
-              color="green"
-              ><svg
-                width="30"
-                height="30"
-                clip-rule="evenodd"
-                fill-rule="evenodd"
-                stroke-linejoin="round"
-                stroke-miterlimit="2"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+            <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
+                clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                  fill-rule="nonzero"
-                />
+                  fill-rule="nonzero" />
               </svg>
               ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
             </v-btn>
           </div>
-          <lab-form
-            v-for="(department, index) in departments"
-            :key="index"
-            :department="department"
-            @deleteByDeptId="removeFormGroup"
-          ></lab-form>
+          <lab-form v-for="(department, index) in departments" :key="index" :department="department"
+            @deleteByDeptId="removeFormGroup"></lab-form>
         </v-container>
-        <v-btn type="submit">Submit</v-btn>
+        <v-btn :disabled="submitDisabled" type="submit">Submit</v-btn>
       </v-form>
     </v-card>
   </div>
@@ -75,28 +59,53 @@ import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
 import { Lab } from "@/types/lab.type";
+interface ErrorInterface {
+  [x: string]: {
+    hasError: boolean,
+    reason: string
+  }
+}
 export default defineComponent({
   components: {
     LabForm,
   },
   setup() {
     let deptIncremental = 1;
+    const submitDisabled = ref(false);
+    const formErrors = reactive<ErrorInterface>({
+      labId: {
+        hasError: false,
+        reason: ''
+      },
+      title: {
+        hasError: false,
+        reason: ''
+      },
+      semester: {
+        hasError: false,
+        reason: ''
+      }
+    })
     const departments = ref(Array<Department>());
-    const lab = reactive<Lab>({
-      labId: 0,
+    const lab = reactive<Partial<Lab>>({
+      labId: "",
       title: "",
-      semester: LabSemesterEnum.A_XEIM,
+      // semester: null,
       description: "",
-      departments: departments,
+      departments: departments.value,
     });
     const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
       displayedLabs()
     );
     const clickOnChip = (value: LabSemesterEnum) => {
+      formErrors['semester'].hasError = false;
+      formErrors['semester'].reason = '';
       const selectedLab = displayedSemester.value.find((lab) => lab.value == value);
       if (selectedLab) {
         selectedLab.isActive = !selectedLab.isActive;
         lab.semester = selectedLab.value;
+        if (submitDisabled.value)
+          submitDisabled.value = false;
         const allRestLabs = displayedSemester.value.filter(
           (restLab) => restLab.value != selectedLab.value
         );
@@ -127,10 +136,58 @@ export default defineComponent({
       );
     };
 
-    const submitForm =()=>{
-      lab.departments = departments.value;
-      console.log(lab);
+    // -------FORM VALIDATION-------
+
+    const validate = (objKey: string): void => {
+      formErrors[objKey].hasError = false;
+      formErrors[objKey].reason = "";
+
+      if (objKey === 'labId') {
+        if (!lab.labId || lab.labId === null || lab.labId === undefined || lab.labId === "") {
+          formErrors[objKey].hasError = true;
+          formErrors[objKey].reason = "Ο κωδικός είναι προαπαιτούμενος";
+        }
+        if (lab.labId && lab.labId !== undefined && lab.labId.length < 8) {
+          formErrors[objKey].hasError = true;
+          formErrors[objKey].reason = "Ελάχιστο μήκος 8 χαρακτήρες";
+        }
+      }
+      if (objKey === 'title') {
+        if (!lab.title || lab.title === null || lab.title === undefined || lab.title === "") {
+          formErrors[objKey].hasError = true;
+          formErrors[objKey].reason = "Ο τίτλος είναι προαπαιτούμενος";
+        }
+        if (lab.title && lab.title !== undefined && lab.title.length < 8) {
+          formErrors[objKey].hasError = true;
+          formErrors[objKey].reason = "Ελάχιστο μήκος τίτλου 8 χαρακτήρες";
+        }
+      }
+      if (objKey === 'semester') {
+        const selectedLab = displayedSemester.value.find((selected) => {
+          return selected.isActive == true;
+        });
+        if (!selectedLab?.value || selectedLab?.value === null || selectedLab?.value === undefined) {
+          formErrors[objKey].hasError = true;
+          formErrors[objKey].reason = "Τουλάχιστον ενα εξάμηνο πρέπει να επιλεχθεί";
+        }
+      }
+      if (submitDisabled.value === true) {
+        submitDisabled.value = false;
+      }
     }
+
+    const resetError = (objKey: string): void => {
+      formErrors[objKey].hasError = false;
+      formErrors[objKey].reason = '';
+    }
+    const submitForm = () => {
+      validate('semester');
+      validate('labId');
+      validate('title');
+      if (formErrors['semester'].hasError || formErrors['labId'].hasError || formErrors['title'].hasError) {
+        submitDisabled.value = true;
+      }
+    };
     return {
       lab,
       displayedSemester,
@@ -138,13 +195,21 @@ export default defineComponent({
       departments,
       addFormGroup,
       removeFormGroup,
-      submitForm
+      submitForm,
+      validate,
+      formErrors,
+      resetError,
+      submitDisabled
     };
   },
 });
 </script>
 
 <style scoped>
+.error-color {
+  color: #B00020;
+}
+
 .parent-card {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -186,6 +251,7 @@ export default defineComponent({
   margin: 1rem 0;
   gap: 1rem;
 }
+
 .label-centerer {
   background-color: #f3f3f3;
   margin: 0.5rem auto;
@@ -195,6 +261,7 @@ export default defineComponent({
   flex-direction: row;
   justify-content: center;
 }
+
 .form-control-add-btn {
   display: flex;
   justify-content: center;
@@ -344,6 +411,7 @@ export default defineComponent({
     background-color: #aacaf3;
     min-width: 769px;
   }
+
   .label-centerer {
     background-color: #f3f3f3;
     margin: 0.5rem auto;

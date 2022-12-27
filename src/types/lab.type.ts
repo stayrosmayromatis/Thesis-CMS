@@ -3,9 +3,10 @@ import { Ref } from "vue";
 import { Department } from './department.type';
 
 export interface Lab{
-    labId:number
+    labId:string,
     title:string,
-    semester : LabSemesterEnum,
-    description:string
-    departments : Ref<Array<Department>>
+    semester:LabSemesterEnum,
+    description:string,
+    // departments : Ref<Array<Department>>
+    departments : Array<Department>
   }

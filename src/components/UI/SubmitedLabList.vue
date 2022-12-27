@@ -21,6 +21,7 @@ import BaseDialog from "@/components/Base/BaseDialog.vue";
 
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Lab } from "@/types/lab.type";
+import { Department } from "@/types/department.type";
 export default defineComponent({
   components: {
     SubmitedLab,
@@ -30,22 +31,25 @@ export default defineComponent({
     const isError = false;
     const sLabs: Ref<Array<Lab>> = ref([
       {
-        labId: 1601,
+        labId: "1601",
         title: "Οργάνωση και αρχιτεκτονική",
         semester: LabSemesterEnum.A_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
+        departments : Array<Department>()
       },
       {
-        labId: 1602,
+        labId: "1602",
         title: "Δικτυα και αρχιτεκτονική",
         semester: LabSemesterEnum.B_EAR,
         description: "Πληροφορίες Εργαστηρίου",
+        departments : Array<Department>()
       },
       {
-        labId: 1603,
+        labId: "1603",
         title: "Δομημένος Προγραμματισμός",
         semester: LabSemesterEnum.C_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
+        departments : Array<Department>()
       },
     ]);
     return { sLabs, isError };
