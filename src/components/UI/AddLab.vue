@@ -8,7 +8,7 @@
     <v-card elevation="5">
       <v-form @submit.prevent="submitForm">
         <v-container>
-          <div :class="{ 'error-color': formErrors.semester.hasError }">
+          <div :class="{ 'error-color': v$.semester.$error }">
             <v-chip-group>
               <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
                 v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
@@ -19,12 +19,10 @@
             <label for="year">Βασικά Στοιχεία</label>
           </div>
           <div class="form-first">
-            <v-text-field :class="{ 'error-color': formErrors.labId.hasError }"
-              :error-messages="formErrors.labId.reason" label="Κωδικός Εργαστηρίου" v-model.trim="lab.labId"
-              @blur="validate('labId')" @click="resetError('labId')"></v-text-field>
-            <v-text-field :class="{ 'error-color': formErrors.title.hasError }"
-              :error-messages="formErrors.title.reason" label="Τίτλος Εργαστηρίου" v-model.trim="lab.title"
-              @blur="validate('title')" @click="resetError('title')"></v-text-field>
+            <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
+              label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
+            <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
+              label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
           </div>
           <v-divider inset></v-divider>
           <div class="label-centerer">
@@ -44,13 +42,16 @@
           <lab-form v-for="(department, index) in departments" :key="index" :department="department"
             @deleteByDeptId="removeFormGroup"></lab-form>
         </v-container>
-        <v-btn :disabled="submitDisabled" type="submit">Submit</v-btn>
+        <v-btn :disabled="buttonDisablity" type="submit">Submit</v-btn>
       </v-form>
     </v-card>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
+import { computed, defineComponent } from "@vue/runtime-core";
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, alphaNum, maxLength, helpers } from '@vuelidate/validators'
+
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { reactive, Ref, ref } from "vue";
@@ -58,54 +59,31 @@ import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
-import { Lab } from "@/types/lab.type";
-interface ErrorInterface {
-  [x: string]: {
-    hasError: boolean,
-    reason: string
-  }
+import { log } from "console";
+
+interface FormStateInterface {
+  labTitle: string,
+  labId: string,
+  semester: LabSemesterEnum | null,
+  departments: Array<Department>
 }
+
 export default defineComponent({
   components: {
     LabForm,
   },
   setup() {
     let deptIncremental = 1;
-    const submitDisabled = ref(false);
-    const formErrors = reactive<ErrorInterface>({
-      labId: {
-        hasError: false,
-        reason: ''
-      },
-      title: {
-        hasError: false,
-        reason: ''
-      },
-      semester: {
-        hasError: false,
-        reason: ''
-      }
-    })
     const departments = ref(Array<Department>());
-    const lab = reactive<Partial<Lab>>({
-      labId: "",
-      title: "",
-      // semester: null,
-      description: "",
-      departments: departments.value,
-    });
     const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
       displayedLabs()
     );
     const clickOnChip = (value: LabSemesterEnum) => {
-      formErrors['semester'].hasError = false;
-      formErrors['semester'].reason = '';
       const selectedLab = displayedSemester.value.find((lab) => lab.value == value);
       if (selectedLab) {
         selectedLab.isActive = !selectedLab.isActive;
-        lab.semester = selectedLab.value;
-        if (submitDisabled.value)
-          submitDisabled.value = false;
+        formState.semester = selectedLab.isActive ? selectedLab.value : null;
+        // lab.semester = selectedLab.value;
         const allRestLabs = displayedSemester.value.filter(
           (restLab) => restLab.value != selectedLab.value
         );
@@ -137,69 +115,70 @@ export default defineComponent({
     };
 
     // -------FORM VALIDATION-------
-
-    const validate = (objKey: string): void => {
-      formErrors[objKey].hasError = false;
-      formErrors[objKey].reason = "";
-
-      if (objKey === 'labId') {
-        if (!lab.labId || lab.labId === null || lab.labId === undefined || lab.labId === "") {
-          formErrors[objKey].hasError = true;
-          formErrors[objKey].reason = "Ο κωδικός είναι προαπαιτούμενος";
-        }
-        if (lab.labId && lab.labId !== undefined && lab.labId.length < 8) {
-          formErrors[objKey].hasError = true;
-          formErrors[objKey].reason = "Ελάχιστο μήκος 8 χαρακτήρες";
-        }
-      }
-      if (objKey === 'title') {
-        if (!lab.title || lab.title === null || lab.title === undefined || lab.title === "") {
-          formErrors[objKey].hasError = true;
-          formErrors[objKey].reason = "Ο τίτλος είναι προαπαιτούμενος";
-        }
-        if (lab.title && lab.title !== undefined && lab.title.length < 8) {
-          formErrors[objKey].hasError = true;
-          formErrors[objKey].reason = "Ελάχιστο μήκος τίτλου 8 χαρακτήρες";
-        }
-      }
-      if (objKey === 'semester') {
-        const selectedLab = displayedSemester.value.find((selected) => {
-          return selected.isActive == true;
-        });
-        if (!selectedLab?.value || selectedLab?.value === null || selectedLab?.value === undefined) {
-          formErrors[objKey].hasError = true;
-          formErrors[objKey].reason = "Τουλάχιστον ενα εξάμηνο πρέπει να επιλεχθεί";
-        }
-      }
-      if (submitDisabled.value === true) {
-        submitDisabled.value = false;
-      }
+    const formState = reactive<FormStateInterface>({
+      labId: '',
+      labTitle: '',
+      semester: null,
+      departments: Array<Department>()
+    });
+    const mustContainDash = (value: string) => {
+      return value.includes('-') ? true : false;
     }
+    const rules = computed(() => {
+      return {
+        labId: { Required: helpers.withMessage('Ο κωδικός είναι υποχρεωτικός', required), MaxLength: helpers.withMessage('Μέγιστο όριο 9 χαρακτήρες', maxLength(9)), MinLength: helpers.withMessage('Ελάχιστο όριο 9 χαρακτήρες', minLength(9)), MustContainDash: helpers.withMessage('Ο κωδικός πρέπει να περιέχει παύλα', mustContainDash) },
+        labTitle: { Required: helpers.withMessage('Ο τίτλος είναι υποχρεωτικός', required), MaxLength: helpers.withMessage('Μέγιστο όριο 50 χαρακτήρες', maxLength(50)), MinLength: helpers.withMessage('Ελάχιστο όριο 10 χαρακτήρες', minLength(10)) },
+        semester: { required },
+        departments: { required, minLength: minLength(1) }
+      }
 
-    const resetError = (objKey: string): void => {
-      formErrors[objKey].hasError = false;
-      formErrors[objKey].reason = '';
-    }
+    })
+    const v$ = useVuelidate(rules, formState);
+
+    const errorOfLabId = computed(() => {
+      if (v$.value.labId.$error) {
+        return v$.value.labId.$errors[0].$message.toString();
+      }
+      return '';
+    });
+    const errorOfLabTitle = computed(() => {
+      if (v$.value.labTitle.$error) {
+        return v$.value.labTitle.$errors[0].$message.toString();
+      }
+      return '';
+    });
+    const buttonDisablity = computed(() => {
+      if (!formState.labId)
+        return true;
+      if (!formState.labTitle)
+        return true;
+      if (!formState.semester)
+        return true;
+      return false;
+    })
     const submitForm = () => {
-      validate('semester');
-      validate('labId');
-      validate('title');
-      if (formErrors['semester'].hasError || formErrors['labId'].hasError || formErrors['title'].hasError) {
-        submitDisabled.value = true;
+      v$.value.$validate();
+      if(v$.value.$error){
+        console.log(v$.value.$errors);
+        
       }
+      console.log(formState);
+      
     };
+
+
     return {
-      lab,
+      buttonDisablity,
       displayedSemester,
       clickOnChip,
       departments,
       addFormGroup,
       removeFormGroup,
+      formState,
+      v$,
       submitForm,
-      validate,
-      formErrors,
-      resetError,
-      submitDisabled
+      errorOfLabId,
+      errorOfLabTitle
     };
   },
 });

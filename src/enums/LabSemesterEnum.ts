@@ -5,5 +5,5 @@ export enum LabSemesterEnum{
     D_EAR=3,
     E_XEIM=4,
     ST_EAR=5,
-    Z_XEIM=6,
+    Z_XEIM=6
   }
