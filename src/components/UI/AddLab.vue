@@ -41,8 +41,10 @@
           </div>
           <lab-form v-for="(department, index) in departments" :key="index" :department="department"
             @deleteByDeptId="removeFormGroup" @global-error="dateNotEmpty"></lab-form>
+          <div class="submit-button">
+            <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ<v-tooltip text="ΕΕ ΨΙΛΕΕ" location="top"></v-tooltip></v-btn>
+          </div>
         </v-container>
-        <v-btn :disabled="buttonDisablity" type="submit">Submit</v-btn>
       </v-form>
     </v-card>
   </div>
@@ -73,6 +75,7 @@ export default defineComponent({
   },
   setup() {
     let deptIncremental = 1;
+    const show = true;
     const departments = ref(Array<Department>());
     const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
       displayedLabs()
@@ -205,13 +208,39 @@ export default defineComponent({
       submitForm,
       errorOfLabId,
       errorOfLabTitle,
-      dateNotEmpty
+      dateNotEmpty,
+      show
     };
   },
 });
 </script>
 
 <style scoped>
+#submit-btn:disabled {
+  width: 100%;
+  min-width: 320px;
+  max-width: 10rem;
+
+}
+
+#submit-btn {
+  width: 100%;
+  color: white;
+  min-width: 320px;
+  max-width: 10rem;
+  background-color: #156ed3;
+}
+
+.submit-button {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin: 1rem 0rem;
+}
+
 .error-color {
   color: #B00020;
 }
@@ -260,7 +289,7 @@ export default defineComponent({
 
 .label-centerer {
   background-color: #f3f3f3;
-  margin: 0.5rem auto;
+  margin: 1rem auto;
   text-align: center;
   padding: 0.5rem;
   display: flex;
@@ -332,6 +361,22 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
+  #submit-btn:disabled {
+    color: #f3f3f3;
+    min-width: 5rem;
+    max-width: 10rem;
+    width: 100%;
+
+  }
+
+  #submit-btn {
+    color: white;
+    min-width: 5rem;
+    max-width: 10rem;
+    background-color: #156ed3;
+    width: 100%;
+  }
+
   .parent-card {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -387,7 +432,7 @@ export default defineComponent({
 
   .label-centerer {
     background-color: #f3f3f3;
-    margin: 0.5rem auto;
+    margin: 1rem auto;
     text-align: center;
     padding: 0.5rem;
     display: flex;
@@ -397,6 +442,22 @@ export default defineComponent({
 }
 
 @media (min-width: 1025px) {
+  #submit-btn:disabled {
+    color: #f3f3f3;
+    min-width: 5rem;
+    max-width: 10rem;
+    width: 100%;
+
+  }
+
+  #submit-btn {
+    color: white;
+    min-width: 5rem;
+    max-width: 10rem;
+    background-color: #156ed3;
+    width: 100%;
+  }
+
   .parent-card {
     margin-top: 2rem;
     margin-bottom: 2rem;
@@ -420,7 +481,7 @@ export default defineComponent({
 
   .label-centerer {
     background-color: #f3f3f3;
-    margin: 0.5rem auto;
+    margin: 1rem auto;
     text-align: center;
     padding: 0.5rem;
     display: flex;
