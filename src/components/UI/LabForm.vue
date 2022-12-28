@@ -1,41 +1,19 @@
 <template>
   <div class="form-control-add-field">
     <div class="mobile-form-control">
-      <input
-        style="text-align: center"
-        type="text"
-        placeholder="Τμήμα (π.χ. Τ1)"
-        v-model="department.deptId"
-      />
+      <input :class="{ 'error-border': department.errorOnDeptId }" @input="isInputEmpty" style="text-align: center"
+        type="text" placeholder="Τμήμα (π.χ. Τ1)"  v-model="department.deptId" />
     </div>
     <div class="mobile-date-picker">
-      <date-picker
-        v-model="department.fromTime"
-        time-picker
-        disable-time-range-validation
-        placeholder="Απο"
-      >
+      <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
+        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty">
       </date-picker>
-      <date-picker
-        v-model="department.toTime"
-        time-picker
-        disable-time-range-validation
-        placeholder="Εως"
-      >
+      <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
+        disable-time-range-validation placeholder="Εως" @update:model-value="isToTimeEmpty">
       </date-picker>
 
-      <v-select
-        class="v-input_max-width"
-        :items="daysOfWeek"
-        variant="solo"
-        label="Ημέρα"
-        hide-details
-        density="comfortable"
-        persistent-hint
-        direction="horizontal"
-        single-line
-        v-model="department.day"
-      ></v-select>
+      <v-select class="v-input_max-width" :items="days" variant="solo" label="Ημέρα" hide-details density="comfortable"
+        persistent-hint direction="horizontal" single-line v-model="department.day"></v-select>
     </div>
     <div class="mobile-actions">
       <v-btn color="error" variant="outlined" @click="deleteByDeptId()"> Καταργηση </v-btn>
@@ -44,29 +22,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref ,PropType } from "vue";
+import { defineComponent, PropType, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
-import { DaysOfWeek } from "@/types/daysOfWeek.type";
-import {Department} from '@/types/department.type'
+import { Department } from '@/types/department.type'
 export default defineComponent({
   props: {
-    department:{
+    department: {
       type: Object as PropType<Department>,
-      required : true,
+      required: true,
     }
   },
-  emits:['deleteByDeptId'],
-  setup(props,context) {
-    const days: Array<DaysOfWeek> = daysOfWeek;
-    const deleteByDeptId = ()=>{
-      context.emit('deleteByDeptId',props.department.deptId);
+  emits: ['deleteByDeptId'],
+  setup(props, context) {
+    const days = daysOfWeek;
+    const { department } = toRefs(props);
+    const deleteByDeptId = () => {
+      context.emit('deleteByDeptId', department.value.deptId);
     }
-    return { daysOfWeek,deleteByDeptId };
+    const isInputEmpty = () => {
+      department.value.deptId === "" || department.value.deptId === " " || department.value.deptId === null ? department.value.errorOnDeptId = true : department.value.errorOnDeptId = false;
+    }
+    const isFromTimeEmpty = () => {
+      department.value.fromTime === "" || department.value.fromTime === " " || department.value.fromTime === null ? department.value.errorOnFromTime = true : department.value.errorOnFromTime = false;
+    }
+    const isToTimeEmpty = () => {
+      department.value.toTime === "" || department.value.toTime === " " || department.value.toTime === null ? department.value.errorOnToTime = true : department.value.errorOnToTime = false;
+    }
+
+    return { days, deleteByDeptId, isInputEmpty, isFromTimeEmpty, isToTimeEmpty };
   },
 });
 </script>
 
 <style scoped>
+.error-border {
+  border: 0.1px solid #e6415d;
+  border-radius: 5px;
+}
+
 .form-control-add-field {
   width: 100%;
   display: flex;
@@ -76,10 +69,12 @@ export default defineComponent({
   margin: 0.5rem 0rem;
   min-width: 320px;
 }
+
 .form-control-add-field input {
   width: 100%;
   font-size: 1.1rem;
 }
+
 .mobile-form-control {
   display: flex;
   justify-content: center;
@@ -87,6 +82,7 @@ export default defineComponent({
   margin: 0.5rem 0;
   width: 100%;
 }
+
 .mobile-date-picker {
   width: 100%;
   display: flex;
@@ -97,23 +93,24 @@ export default defineComponent({
   align-items: center;
   min-width: 320px;
 }
-.mobile-date-picker > * {
+
+.mobile-date-picker>* {
   width: 100%;
 }
 
-:deep(
-    .dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg
-  ) {
+:deep(.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg) {
   height: 3rem;
 }
 
 .v-input_max-width {
   max-width: 804px;
 }
+
 :deep(.v-btn.v-btn--density-default) {
   background-color: #e99aa7;
   color: #e6415d;
 }
+
 /* if min-width >= 804px and min-width < 1280px */
 @media (min-width: 804px) {
   .form-control-add-field {
@@ -124,6 +121,7 @@ export default defineComponent({
     align-items: center;
     margin: 0.5rem 0;
   }
+
   .mobile-form-control {
     display: flex;
     justify-content: center;
@@ -131,6 +129,7 @@ export default defineComponent({
     margin: 0.5rem 0;
     width: 33%;
   }
+
   .mobile-date-picker {
     width: 100%;
     display: flex;
@@ -152,6 +151,7 @@ export default defineComponent({
     height: 3rem;
   }
 }
+
 /* if min-width >= 1280px and min-width < 1920px */
 @media (min-width: 1280px) {
   .form-control-add-field {
@@ -164,6 +164,7 @@ export default defineComponent({
     margin: 1rem auto;
   }
 }
+
 /* if min-width > =1920px */
 @media (min-width: 1920px) {
   .form-control-add-field {

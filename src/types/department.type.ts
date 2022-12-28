@@ -4,4 +4,7 @@ export interface Department {
   fromTime:string,
   toTime:string,
   day:DaysOfWeekEnum
+  errorOnDeptId?:boolean,
+  errorOnFromTime?:boolean,
+  errorOnToTime?:boolean
 }

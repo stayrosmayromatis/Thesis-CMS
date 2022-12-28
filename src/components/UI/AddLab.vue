@@ -40,7 +40,7 @@
             </v-btn>
           </div>
           <lab-form v-for="(department, index) in departments" :key="index" :department="department"
-            @deleteByDeptId="removeFormGroup"></lab-form>
+            @deleteByDeptId="removeFormGroup" @global-error="dateNotEmpty"></lab-form>
         </v-container>
         <v-btn :disabled="buttonDisablity" type="submit">Submit</v-btn>
       </v-form>
@@ -50,7 +50,7 @@
 <script lang="ts">
 import { computed, defineComponent } from "@vue/runtime-core";
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, alphaNum, maxLength, helpers } from '@vuelidate/validators'
+import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
 
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
@@ -59,13 +59,12 @@ import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
-import { log } from "console";
 
 interface FormStateInterface {
   labTitle: string,
   labId: string,
   semester: LabSemesterEnum | null,
-  departments: Array<Department>
+  departments: Ref<Array<Department>>
 }
 
 export default defineComponent({
@@ -100,6 +99,9 @@ export default defineComponent({
       }
     };
     const addFormGroup = () => {
+      if (departments.value.length === 0) {
+        deptIncremental = 1;
+      }
       departments.value.push({
         deptId: `T${deptIncremental++}`,
         fromTime: "",
@@ -119,20 +121,24 @@ export default defineComponent({
       labId: '',
       labTitle: '',
       semester: null,
-      departments: Array<Department>()
+      departments
     });
     const mustContainDash = (value: string) => {
       return value.includes('-') ? true : false;
     }
+    const atLeaseOneDepartment = () => {
+      return departments.value.length >= 1 ? true : false;
+    }
+
     const rules = computed(() => {
       return {
         labId: { Required: helpers.withMessage('Ο κωδικός είναι υποχρεωτικός', required), MaxLength: helpers.withMessage('Μέγιστο όριο 9 χαρακτήρες', maxLength(9)), MinLength: helpers.withMessage('Ελάχιστο όριο 9 χαρακτήρες', minLength(9)), MustContainDash: helpers.withMessage('Ο κωδικός πρέπει να περιέχει παύλα', mustContainDash) },
         labTitle: { Required: helpers.withMessage('Ο τίτλος είναι υποχρεωτικός', required), MaxLength: helpers.withMessage('Μέγιστο όριο 50 χαρακτήρες', maxLength(50)), MinLength: helpers.withMessage('Ελάχιστο όριο 10 χαρακτήρες', minLength(10)) },
         semester: { required },
-        departments: { required, minLength: minLength(1) }
+        departments: { Required: helpers.withMessage('Τα τμήματα είναι υποχρεωτικά', required), AtLeaseOneCount: helpers.withMessage('Απαιτείται τουλάχιστον 1 τμήμα', atLeaseOneDepartment) }
       }
 
-    })
+    });
     const v$ = useVuelidate(rules, formState);
 
     const errorOfLabId = computed(() => {
@@ -148,25 +154,45 @@ export default defineComponent({
       return '';
     });
     const buttonDisablity = computed(() => {
-      if (!formState.labId)
+      if (!formState.labId || !formState.labTitle || !formState.semester || departments.value.length <= 0
+      ) {
         return true;
-      if (!formState.labTitle)
-        return true;
-      if (!formState.semester)
-        return true;
+      }
       return false;
-    })
+    });
+    const dateNotEmpty = (dept: Department) => {
+      if (dept.deptId === "" || dept.deptId === " " || dept.deptId === null) {
+        dept.errorOnDeptId = true;
+      }
+
+      if (dept.fromTime === "" || dept.fromTime === " " || dept.fromTime === null) {
+        dept.errorOnFromTime = true;
+      }
+
+      if (dept.toTime === "" || dept.toTime === " " || dept.toTime === null) {
+        dept.errorOnToTime = true;
+      }
+
+      if (dept.errorOnDeptId === true
+        || dept.errorOnFromTime === true
+        || dept.errorOnToTime === true) {
+        console.log('There are errors');
+        return false;
+      }
+      return true;
+    }
     const submitForm = () => {
       v$.value.$validate();
-      if(v$.value.$error){
+      if (v$.value.$error) {
         console.log(v$.value.$errors);
-        
+        return;
       }
+      formState.departments.forEach((dept) => {
+        if (dateNotEmpty(dept) === false)
+          return;
+      })
       console.log(formState);
-      
-    };
-
-
+    }
     return {
       buttonDisablity,
       displayedSemester,
@@ -178,7 +204,8 @@ export default defineComponent({
       v$,
       submitForm,
       errorOfLabId,
-      errorOfLabTitle
+      errorOfLabTitle,
+      dateNotEmpty
     };
   },
 });
