@@ -222,17 +222,13 @@ export default defineComponent({
 
 <style scoped>
 #submit-btn:disabled {
-  width: 100%;
-  min-width: 320px;
-  max-width: 10rem;
+  width: 15rem;
 
 }
 
 #submit-btn {
-  width: 100%;
   color: white;
-  min-width: 320px;
-  max-width: 10rem;
+  width: 15rem;
   background-color: #156ed3;
 }
 
@@ -369,18 +365,13 @@ export default defineComponent({
 @media (min-width: 769px) {
   #submit-btn:disabled {
     color: #f3f3f3;
-    min-width: 5rem;
-    max-width: 10rem;
-    width: 100%;
-
+    width: 15rem;
   }
 
   #submit-btn {
     color: white;
-    min-width: 5rem;
-    max-width: 10rem;
+    width: 15rem;
     background-color: #156ed3;
-    width: 100%;
   }
 
   .parent-card {
