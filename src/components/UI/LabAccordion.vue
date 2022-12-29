@@ -27,10 +27,8 @@
 <script lang="ts">
 import { defineComponent, ref, Ref } from "vue";
 import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
-import { Lab } from '@/types/lab.type';
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
-import { Department } from "@/types/department.type";
 export default defineComponent({
   setup() {
     const displayLabs: Array<DisplayedSemster> = displayedLabs();
@@ -46,6 +44,27 @@ export default defineComponent({
       console.log(selectedLabs.value);
     }
     const labs = ref([
+      {
+        labId: "1601",
+        labTitle: "Οργάνωση και αρχιτεκτονική",
+        semester: LabSemesterEnum.A_XEIM,
+        description: "Πληροφορίες Εργαστηρίου",
+        departments: undefined
+      },
+      {
+        labId: "1602",
+        labTitle: "Δικτυα και αρχιτεκτονική",
+        semester: LabSemesterEnum.B_EAR,
+        description: "Πληροφορίες Εργαστηρίου",
+        departments: undefined
+      },
+      {
+        labId: "1603",
+        labTitle: "Δομημένος Προγραμματισμός",
+        semester: LabSemesterEnum.C_XEIM,
+        description: "Πληροφορίες Εργαστηρίου",
+        departments: undefined
+      },
       {
         labId: "1601",
         labTitle: "Οργάνωση και αρχιτεκτονική",

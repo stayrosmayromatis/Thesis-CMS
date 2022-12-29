@@ -15,12 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref } from "vue";
+import { defineComponent, ref } from "vue";
 import SubmitedLab from "@/components/UI/SubmitedLab.vue";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { Lab } from "@/types/lab.type";
 import { Department } from "@/types/department.type";
 export default defineComponent({
   components: {
@@ -30,6 +29,27 @@ export default defineComponent({
   setup() {
     const isError = false;
     const sLabs= ref([
+      {
+        labId: "1601",
+        title: "Οργάνωση και αρχιτεκτονική",
+        semester: LabSemesterEnum.A_XEIM,
+        description: "Πληροφορίες Εργαστηρίου",
+        departments : Array<Department>()
+      },
+      {
+        labId: "1602",
+        title: "Δικτυα και αρχιτεκτονική",
+        semester: LabSemesterEnum.B_EAR,
+        description: "Πληροφορίες Εργαστηρίου",
+        departments : Array<Department>()
+      },
+      {
+        labId: "1603",
+        title: "Δομημένος Προγραμματισμός",
+        semester: LabSemesterEnum.C_XEIM,
+        description: "Πληροφορίες Εργαστηρίου",
+        departments : Array<Department>()
+      },
       {
         labId: "1601",
         title: "Οργάνωση και αρχιτεκτονική",
