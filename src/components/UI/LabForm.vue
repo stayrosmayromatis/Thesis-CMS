@@ -68,6 +68,7 @@ export default defineComponent({
   align-items: center;
   margin: 0.5rem 0rem;
   min-width: 320px;
+  gap: 0.5rem;
 }
 
 .form-control-add-field input {
