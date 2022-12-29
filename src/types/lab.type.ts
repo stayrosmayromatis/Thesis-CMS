@@ -4,9 +4,9 @@ import { Department } from './department.type';
 
 export interface Lab{
     labId:string,
-    title:string,
-    semester:LabSemesterEnum,
-    description:string,
-    // departments : Ref<Array<Department>>
-    departments : Array<Department>
+    labTitle:string,
+    semester:LabSemesterEnum | null,
+    description?:string,
+    departments : Ref<Array<Department>> | undefined
+    //departments : Array<Department>
   }

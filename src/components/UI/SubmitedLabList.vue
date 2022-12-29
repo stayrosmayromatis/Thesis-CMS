@@ -29,7 +29,7 @@ export default defineComponent({
   },
   setup() {
     const isError = false;
-    const sLabs: Ref<Array<Lab>> = ref([
+    const sLabs= ref([
       {
         labId: "1601",
         title: "Οργάνωση και αρχιτεκτονική",
@@ -88,8 +88,8 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .parent-card {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     margin-left: 1rem;
     margin-right: 1rem;
   }

@@ -6,7 +6,7 @@
     </div>
     <div class="mobile-date-picker">
       <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
-        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty">
+        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" required >
       </date-picker>
       <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
         disable-time-range-validation placeholder="Εως" @update:model-value="isToTimeEmpty">
@@ -91,6 +91,7 @@ export default defineComponent({
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   align-items: center;
+  gap: 0.3rem;
   min-width: 320px;
 }
 

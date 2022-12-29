@@ -42,7 +42,8 @@
           <lab-form v-for="(department, index) in departments" :key="index" :department="department"
             @deleteByDeptId="removeFormGroup" @global-error="dateNotEmpty"></lab-form>
           <div class="submit-button">
-            <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ<v-tooltip text="ΕΕ ΨΙΛΕΕ" location="top"></v-tooltip></v-btn>
+            <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ<v-tooltip text="ΕΕ ΨΙΛΕΕ"
+                location="top"></v-tooltip></v-btn>
           </div>
         </v-container>
       </v-form>
@@ -61,7 +62,7 @@ import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
-
+import { Lab } from "@/types/lab.type";
 interface FormStateInterface {
   labTitle: string,
   labId: string,
@@ -120,7 +121,7 @@ export default defineComponent({
     };
 
     // -------FORM VALIDATION-------
-    const formState = reactive<FormStateInterface>({
+    const formState = reactive<Lab>({
       labId: '',
       labTitle: '',
       semester: null,
@@ -157,10 +158,8 @@ export default defineComponent({
       return '';
     });
     const buttonDisablity = computed(() => {
-      if (!formState.labId || !formState.labTitle || !formState.semester || departments.value.length <= 0
-      ) {
+      if (!formState.labId || !formState.labTitle || !formState.semester || departments.value.length <= 0) 
         return true;
-      }
       return false;
     });
     const dateNotEmpty = (dept: Department) => {
@@ -176,9 +175,7 @@ export default defineComponent({
         dept.errorOnToTime = true;
       }
 
-      if (dept.errorOnDeptId === true
-        || dept.errorOnFromTime === true
-        || dept.errorOnToTime === true) {
+      if (dept.errorOnDeptId === true || dept.errorOnFromTime === true || dept.errorOnToTime === true) {
         console.log('There are errors');
         return false;
       }
@@ -190,10 +187,18 @@ export default defineComponent({
         console.log(v$.value.$errors);
         return;
       }
-      formState.departments.forEach((dept) => {
-        if (dateNotEmpty(dept) === false)
-          return;
-      })
+      let allDeptsAreCorrect = true;
+      if(formState.departments){
+        for (let dept of formState.departments) {
+          if (dateNotEmpty(dept) === false) {
+            allDeptsAreCorrect = false;
+            break;
+          }
+          continue;
+        }
+      }
+      if (!allDeptsAreCorrect)
+        return;
       console.log(formState);
     }
     return {
@@ -275,6 +280,7 @@ export default defineComponent({
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.3rem;
 }
 
 .form-control {
@@ -330,7 +336,7 @@ export default defineComponent({
 :deep(.v-container) {
   padding: 0;
   overflow: hidden;
-  margin: 0 1rem;
+  margin: 1rem 1rem;
   max-width: 4000px;
   width: inherit;
 }
