@@ -63,6 +63,7 @@ import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
 import { Lab } from "@/types/lab.type";
+import { isNumber } from "@vueuse/shared";
 interface FormStateInterface {
   labTitle: string,
   labId: string,
@@ -111,6 +112,7 @@ export default defineComponent({
         fromTime: "",
         toTime: "",
         day: DaysOfWeekEnum.Δευτέρα,
+        numberOfStudents: 30
       });
     };
     const removeFormGroup = (deptId: string) => {
@@ -121,6 +123,7 @@ export default defineComponent({
     };
 
     // -------FORM VALIDATION-------
+    
     const formState = reactive<Lab>({
       labId: '',
       labTitle: '',
@@ -158,7 +161,7 @@ export default defineComponent({
       return '';
     });
     const buttonDisablity = computed(() => {
-      if (!formState.labId || !formState.labTitle || !formState.semester || departments.value.length <= 0) 
+      if (!formState.labId || !formState.labTitle || !formState.semester || departments.value.length <= 0)
         return true;
       return false;
     });
@@ -188,15 +191,20 @@ export default defineComponent({
         return;
       }
       let allDeptsAreCorrect = true;
-      if(formState.departments){
-        for (let dept of formState.departments) {
-          if (dateNotEmpty(dept) === false) {
-            allDeptsAreCorrect = false;
-            break;
-          }
-          continue;
-        }
+      if (!formState.departments || formState.departments.length == 0) {
+        console.log('There are errors');
+        return;
       }
+      for (let dept of formState.departments) {
+        if (dateNotEmpty(dept) === false) {
+          allDeptsAreCorrect = false;
+        }
+        if (!isNumber(dept.numberOfStudents)) {
+          dept.numberOfStudents = <number>dept.numberOfStudents;
+        }
+        continue;
+      }
+
       if (!allDeptsAreCorrect)
         return;
       console.log(formState);

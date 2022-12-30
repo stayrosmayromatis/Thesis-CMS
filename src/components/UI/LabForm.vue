@@ -1,12 +1,18 @@
 <template>
   <div class="form-control-add-field">
     <div class="mobile-form-control">
-      <input :class="{ 'error-border': department.errorOnDeptId }" @input="isInputEmpty" style="text-align: center"
-        type="text" placeholder="Τμήμα (π.χ. Τ1)"  v-model="department.deptId" />
+      <div class="div-input-placeholder">
+        <input :class="{ 'error-border': department.errorOnDeptId }" @input="isInputEmpty" class="input-placeholder"
+          type="text" placeholder="(π.χ. Τ1)" v-model="department.deptId" />
+      </div>
+      <div class="slider-grow">
+        <base-slider @update:model-value="changeNumberOfStudents" :min-value="10" :max-value="50" :starting-value="department.numberOfStudents"></base-slider>
+      </div>
     </div>
+
     <div class="mobile-date-picker">
       <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
-        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" required >
+        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" required>
       </date-picker>
       <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
         disable-time-range-validation placeholder="Εως" @update:model-value="isToTimeEmpty">
@@ -18,6 +24,7 @@
     <div class="mobile-actions">
       <v-btn color="error" variant="outlined" @click="deleteByDeptId()"> Καταργηση </v-btn>
     </div>
+
   </div>
 </template>
 
@@ -48,13 +55,31 @@ export default defineComponent({
     const isToTimeEmpty = () => {
       department.value.toTime === "" || department.value.toTime === " " || department.value.toTime === null ? department.value.errorOnToTime = true : department.value.errorOnToTime = false;
     }
-
-    return { days, deleteByDeptId, isInputEmpty, isFromTimeEmpty, isToTimeEmpty };
+    const changeNumberOfStudents = (value:number) => {
+      if(value && value >0)
+      department.value.numberOfStudents=value;
+    }
+    return { days, deleteByDeptId, isInputEmpty, isFromTimeEmpty, isToTimeEmpty,changeNumberOfStudents };
   },
 });
 </script>
 
 <style scoped>
+.slider-grow {
+  margin: 0 1rem;
+  padding: 0 1.6rem;
+  width: 100%;
+}
+
+.div-input-placeholder {
+  width: 100%;
+}
+
+.input-placeholder {
+  text-align: center;
+  width: 100%;
+}
+
 .error-border {
   border: 0.1px solid #e6415d;
   border-radius: 5px;
@@ -78,9 +103,11 @@ export default defineComponent({
 
 .mobile-form-control {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 0.5rem 0;
+  gap: 2.1rem;
   width: 100%;
 }
 
@@ -113,8 +140,27 @@ export default defineComponent({
   color: #e6415d;
 }
 
+:deep(.v-application__wrap) {
+  backface-visibility: hidden;
+  max-width: none;
+  width: 10rem;
+  min-height: 1rem;
+  position: relative;
+}
+
 /* if min-width >= 804px and min-width < 1280px */
 @media (min-width: 804px) {
+  .div-input-placeholder {
+    min-width: none;
+    width: 20rem;
+    max-width: none;
+  }
+
+  .input-placeholder {
+    text-align: center;
+    width: 7rem;
+  }
+
   .form-control-add-field {
     width: 100%;
     display: flex;
@@ -126,10 +172,13 @@ export default defineComponent({
 
   .mobile-form-control {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
+    flex-direction: row;
     align-items: center;
-    margin: 0.5rem 0;
-    width: 33%;
+    margin: 0.5rem 1rem;
+    width: 100%;
+    margin-top: 2rem;
+    gap: 0;
   }
 
   .mobile-date-picker {
@@ -152,10 +201,28 @@ export default defineComponent({
     align-items: center;
     height: 3rem;
   }
+
+  .slider-grow {
+    margin: 0;
+  }
 }
 
 /* if min-width >= 1280px and min-width < 1920px */
 @media (min-width: 1280px) {
+  .input-placeholder {
+    text-align: center;
+    width: 7rem;
+  }
+
+  .mobile-form-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
+    width: 33%;
+    gap: 0.2rem
+  }
+
   .form-control-add-field {
     width: 100%;
     display: flex;
