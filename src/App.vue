@@ -14,3 +14,10 @@ components: {
 });
 </script>
 
+<style>
+body{
+  box-sizing: border-box;
+  background-color: #f4f4ff;
+}
+</style>
+

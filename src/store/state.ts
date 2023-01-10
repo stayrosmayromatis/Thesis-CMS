@@ -2,7 +2,7 @@ import { State } from "@/types/stateInterface.type";
 
 export const state =():State=>{
     const stateObj : State = {
-        isAuth:true,
+        isAuth:false,
         isStudent:false,
         isTeacher:false
     };

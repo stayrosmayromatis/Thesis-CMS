@@ -3,7 +3,14 @@ const LabAccordion= () => import('@/components/UI/LabAccordion.vue');
 const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
 const AddLab = () => import('@/components/UI/AddLab.vue');
 const BaseSlider = () => import('@/components/Base/BaseSlider.vue');
+const WelcomePage =() => import('@/components/UI/WelcomePage.vue');
 const routes: Array<RouteRecordRaw> = [
+  {
+    path : "/",
+    name : 'welcome',
+    component : WelcomePage,
+    props : false
+  },
   {
     path : "/lab-list",
     name : 'labList',
