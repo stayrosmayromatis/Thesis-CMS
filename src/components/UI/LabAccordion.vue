@@ -4,23 +4,23 @@
       density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips open-on-clear clearable multiple
       @update:model-value="logSelectedLabs">
     </v-select>
-    <v-app>
-      <v-expansion-panels v-if="labs">
-        <v-expansion-panel v-for="lab in labs" :key="lab.labId">
-          <v-expansion-panel-title>
-            <v-chip class="chip-bg" size="large">
-              <div class="large-font">{{ lab.labId }} - {{ lab.labTitle }}</div>
-            </v-chip>
-          </v-expansion-panel-title>
-          <v-expansion-panel-text>
-            <div class="classOne">
-              <p>{{ lab.description }}</p>
-              <v-btn color="#a3cef1" elevation="4">Πανε στην δηλωση</v-btn>
-            </div>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-app>
+    <!-- <v-app> -->
+    <v-expansion-panels v-if="labs">
+      <v-expansion-panel v-for="lab in labs" :key="lab.labId">
+        <v-expansion-panel-title>
+          <v-chip class="chip-bg" size="large">
+            <div class="large-font">{{ lab.labId }} - {{ lab.labTitle }}</div>
+          </v-chip>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <div class="classOne">
+            <p>{{ lab.description }}</p>
+            <v-btn color="#a3cef1" elevation="4">Πανε στην δηλωση</v-btn>
+          </div>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+    <!-- </v-app> -->
   </v-container>
 </template>
 
