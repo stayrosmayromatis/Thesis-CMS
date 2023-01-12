@@ -102,9 +102,11 @@ export default defineComponent({
     let hamburgerClose = ref(false);
     const { width } = useWindowSize();
     //let title = process.env.VUE_APP_TITLE;
-    let title = import.meta.env.VITE_APP_TITLE;
+    // let title = import.meta.env.VITE_APP_TITLE;
+    let title = "IHU SUBMISSIONS";
     //let userName = process.env.VUE_APP_USERNAME;
-    let userName = import.meta.env.VITE_APP_USERNAME;
+    // let userName = import.meta.env.VITE_APP_USERNAME;
+    let userName = "Stavros Mavromatis";
     const router = useRouter();
 
     const isLoggedIn = computed(
