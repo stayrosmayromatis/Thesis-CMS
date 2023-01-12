@@ -1,16 +1,18 @@
 <template>
-  <base-dialog v-if="isError">
-    <template #title >
-      <h1>Http Error</h1>
-    </template>
-    <template #description>
-      <p>An error over the api has occured.Please try later</p>
-    </template>
-  </base-dialog>
-  <div class="parent-card"  @click="emitMobileViewClose">
-    <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
-    <submited-lab v-for="sLab in sLabs" :key="sLab.labId" :title="sLab.title" :description="sLab.description">
-    </submited-lab>
+  <div @click="emitMobileViewClose">
+    <base-dialog v-if="isError">
+      <template #title>
+        <h1>Http Error</h1>
+      </template>
+      <template #description>
+        <p>An error over the api has occured.Please try later</p>
+      </template>
+    </base-dialog>
+    <div class="parent-card">
+      <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
+      <submited-lab v-for="sLab in sLabs" :key="sLab.labId" :title="sLab.title" :description="sLab.description">
+      </submited-lab>
+    </div>
   </div>
 </template>
 
@@ -26,58 +28,58 @@ export default defineComponent({
     SubmitedLab,
     BaseDialog,
   },
-  emits:['closeMobileView'],
-  setup(props,context) {
+  emits: ['closeMobileView'],
+  setup(props, context) {
     const isError = false;
-    const sLabs= ref([
+    const sLabs = ref([
       {
         labId: "1601",
         title: "Οργάνωση και αρχιτεκτονική",
         semester: LabSemesterEnum.A_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments : Array<Department>()
+        departments: Array<Department>()
       },
       {
         labId: "1602",
         title: "Δικτυα και αρχιτεκτονική",
         semester: LabSemesterEnum.B_EAR,
         description: "Πληροφορίες Εργαστηρίου",
-        departments : Array<Department>()
+        departments: Array<Department>()
       },
       {
         labId: "1603",
         title: "Δομημένος Προγραμματισμός",
         semester: LabSemesterEnum.C_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments : Array<Department>()
+        departments: Array<Department>()
       },
       {
         labId: "1601",
         title: "Οργάνωση και αρχιτεκτονική",
         semester: LabSemesterEnum.A_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments : Array<Department>()
+        departments: Array<Department>()
       },
       {
         labId: "1602",
         title: "Δικτυα και αρχιτεκτονική",
         semester: LabSemesterEnum.B_EAR,
         description: "Πληροφορίες Εργαστηρίου",
-        departments : Array<Department>()
+        departments: Array<Department>()
       },
       {
         labId: "1603",
         title: "Δομημένος Προγραμματισμός",
         semester: LabSemesterEnum.C_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments : Array<Department>()
+        departments: Array<Department>()
       },
     ]);
-    const emitMobileViewClose = ():void=> {
-      context.emit('closeMobileView',true);
+    const emitMobileViewClose = (): void => {
+      context.emit('closeMobileView', true);
       return;
     }
-    return { sLabs, isError ,emitMobileViewClose};
+    return { sLabs, isError, emitMobileViewClose };
   },
 });
 </script>
@@ -102,13 +104,13 @@ export default defineComponent({
   padding: 1.2rem;
 }
 
-.dialog-header{
+.dialog-header {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   margin: 0.5rem auto;
-  background-color:#aacaf3;
+  background-color: #aacaf3;
 }
 
 @media (min-width: 769px) {
