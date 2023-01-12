@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref,onMounted } from "vue";
 import SubmitedLab from "@/components/UI/SubmitedLab.vue";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 
@@ -79,6 +79,10 @@ export default defineComponent({
       context.emit('closeMobileView', true);
       return;
     }
+    onMounted(() => {
+      context.emit('closeMobileView', true);
+      return;
+    });
     return { sLabs, isError, emitMobileViewClose };
   },
 });

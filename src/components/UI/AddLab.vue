@@ -59,7 +59,7 @@ import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
 
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { reactive, Ref, ref } from "vue";
+import { reactive, Ref, ref,onMounted } from "vue";
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
@@ -79,6 +79,10 @@ export default defineComponent({
   },
   emits:['closeMobileView'],
   setup(props,context) {
+    onMounted(() => {
+      context.emit('closeMobileView',true);
+      return;
+    });
     const emitMobileViewClose = ():void=> {
       context.emit('closeMobileView',true);
       return;

@@ -12,28 +12,28 @@
 import { defineComponent, ref } from "vue";
 import TheHeader from "@/components/UI/TheHeader.vue";
 export default defineComponent({
-name: "App",
-components: {
-  TheHeader,
-},
-setup(){
-  const closeInstantly = ref(false);
+  name: "App",
+  components: {
+    TheHeader,
+  },
+  setup() {
+    const closeInstantly = ref(false);
 
-  const closeMobileViewInstantly = async () => {
-    closeInstantly.value = true;
-    await delay(0.1);
-    closeInstantly.value = false;
-  }
-  const delay = async (time:number) => {
+    const closeMobileViewInstantly = async () => {
+      closeInstantly.value = true;
+      await delay(1);
+      closeInstantly.value = false;
+    }
+    const delay = async (time: number) => {
       return new Promise(resolve => setTimeout(resolve, time));
     }
-  return{closeInstantly,closeMobileViewInstantly}
-}
+    return { closeInstantly, closeMobileViewInstantly }
+  }
 });
 </script>
 
 <style>
-body{
+body {
   box-sizing: border-box;
   background-color: #f4f4ff;
 }

@@ -30,7 +30,7 @@
       <router-link to="/">{{ title }}</router-link>
     </div>
     <div class="mobile-logo">
-      <svg @click="closeHamburgerFn(true)" width="50" height="50" clip-rule="evenodd" fill-rule="evenodd"
+      <svg @click="closeHamburgerFn()" width="50" height="50" clip-rule="evenodd" fill-rule="evenodd"
         stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path
           d="m22 16.75c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75z"
@@ -148,16 +148,18 @@ export default defineComponent({
 
     watch(closeInstantlyDirective, async () => {
       if (width.value < 769 && closeInstantlyDirective.value && hamburgerClose.value) {
-        await closeHamburgerFn(true);
+        closeHamburgerFn();
       }
     })
 
-    const closeHamburgerFn = async (closeInstantly: boolean = false) => {
-      if (!closeInstantly) {
-        await delay(100);
-      }
+    const closeHamburgerFn = async () => {
       if (window.innerWidth < 769) {
-        hamburgerClose.value = !hamburgerClose.value;
+        if(closeInstantlyDirective.value){
+          hamburgerClose.value = false;
+        }
+        else{
+          hamburgerClose.value = !hamburgerClose.value;
+        }
         return;
       }
       hamburgerClose.value = true;

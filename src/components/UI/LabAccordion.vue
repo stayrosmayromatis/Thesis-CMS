@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref } from "vue";
+import { defineComponent, ref, Ref,onMounted } from "vue";
 import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
@@ -93,6 +93,10 @@ export default defineComponent({
       context.emit('closeMobileView',true);
       return;
     }
+    onMounted(() => {
+      context.emit('closeMobileView',true);
+      return;
+    });
     return { labs, availableSemesters: displayLabs, selectedLabs, logSelectedLabs,emitMobileViewClose };
   },
 });

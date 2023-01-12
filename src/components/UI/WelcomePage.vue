@@ -26,11 +26,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent,onMounted } from 'vue'
 
 export default defineComponent({
     emits:['closeMobileView'],
     setup(props,context) {
+        onMounted(() => {
+            context.emit('closeMobileView', true);
+            return;
+        });
         const emitMobileViewClose = (): void => {
             context.emit('closeMobileView', true);
             return;
