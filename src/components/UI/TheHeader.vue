@@ -30,12 +30,20 @@
       <router-link to="/">{{ title }}</router-link>
     </div>
     <div class="mobile-logo">
-      <svg @click="closeHamburgerFn()" width="50" height="50" clip-rule="evenodd" fill-rule="evenodd"
-        stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="m22 16.75c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75z"
-          fill-rule="nonzero" />
-      </svg>
+      <div class="burger-button" @click="closeHamburgerFn()">
+        <svg v-if="!hamburgerClose" width="50" height="50" clip-rule="evenodd" fill-rule="evenodd"
+          stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="m22 16.75c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75z"
+            fill-rule="nonzero" />
+        </svg>
+
+        <!-- X-MARKS-THE-SPOT-CLOSE-MENU -->
+        <svg v-if="hamburgerClose" width="50" height="50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+          <path class="fill-xmark"
+            d="M312.1 375c9.369 9.369 9.369 24.57 0 33.94s-24.57 9.369-33.94 0L160 289.9l-119 119c-9.369 9.369-24.57 9.369-33.94 0s-9.369-24.57 0-33.94L126.1 256L7.027 136.1c-9.369-9.369-9.369-24.57 0-33.94s24.57-9.369 33.94 0L160 222.1l119-119c9.369-9.369 24.57-9.369 33.94 0s9.369 24.57 0 33.94L193.9 256L312.1 375z" />
+        </svg>
+      </div>
       <router-link to="/">{{ title }}</router-link>
       <!-- <svg width="50" height="50" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -154,10 +162,10 @@ export default defineComponent({
 
     const closeHamburgerFn = async () => {
       if (window.innerWidth < 769) {
-        if(closeInstantlyDirective.value){
+        if (closeInstantlyDirective.value) {
           hamburgerClose.value = false;
         }
-        else{
+        else {
           hamburgerClose.value = !hamburgerClose.value;
         }
         return;
@@ -189,6 +197,14 @@ export default defineComponent({
 .fil2 {
   fill: #FEFEFE;
   fill-rule: nonzero
+}
+.fill-xmark{
+  fill: #585858
+}
+.burger-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header {
