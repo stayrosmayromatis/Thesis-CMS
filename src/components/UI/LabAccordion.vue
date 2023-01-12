@@ -31,7 +31,7 @@ import { DisplayedSemster } from "@/types/displayedsemester.type";
 import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
 export default defineComponent({
   emits:['closeMobileView'],
-  setup(props,context) {
+  setup(_,context) {
     const displayLabs: Array<DisplayedSemster> = displayedLabs();
     const selectedLabs: Ref<Array<LabSemesterEnum>> = ref(Array<LabSemesterEnum>());
 

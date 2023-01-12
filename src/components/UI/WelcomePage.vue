@@ -30,7 +30,7 @@ import { defineComponent,onMounted } from 'vue'
 
 export default defineComponent({
     emits:['closeMobileView'],
-    setup(props,context) {
+    setup(_,context) {
         onMounted(() => {
             context.emit('closeMobileView', true);
             return;

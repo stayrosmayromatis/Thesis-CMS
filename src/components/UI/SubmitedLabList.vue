@@ -29,7 +29,7 @@ export default defineComponent({
     BaseDialog,
   },
   emits: ['closeMobileView'],
-  setup(props, context) {
+  setup(_, context) {
     const isError = false;
     const sLabs = ref([
       {

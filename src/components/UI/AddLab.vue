@@ -78,7 +78,7 @@ export default defineComponent({
     LabForm,
   },
   emits:['closeMobileView'],
-  setup(props,context) {
+  setup(_,context) {
     onMounted(() => {
       context.emit('closeMobileView',true);
       return;
