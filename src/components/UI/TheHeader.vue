@@ -164,17 +164,19 @@ export default defineComponent({
 }
 
 .header {
-  /* border: 1px solid #a2a2a2; */
-  /* border: 1px solid #a2a2a2; */
+  border: 1px solid #a2a2a2;
   background-color: #dae3f7;
-  /* background-color: #a8ceda; */
-  -webkit-box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 0px 0px 14px 0px rgb(0 0 0 / 75%);
   -moz-box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.75);
-  box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 14px 0px rgb(0 0 0 / 75%);
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
   min-width: 320px;
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
 }
 
 ul {
@@ -182,6 +184,12 @@ ul {
   padding: 0;
   list-style: none;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
 }
 
 .logo {
@@ -191,14 +199,10 @@ ul {
 .main-nav {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  /* gap: 0.4rem; */
-  margin-left: 1rem;
-  margin-right: 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  height: 9rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
 }
 
 .main-nav a {
@@ -271,10 +275,6 @@ a::after {
 }
 
 @media (min-width: 769px) {
-  .main-nav {
-    display: flex;
-  }
-
   .header {
     display: flex;
     flex-direction: column;
@@ -282,8 +282,11 @@ a::after {
     align-items: center;
     width: 100%;
     margin: 0 auto;
-    /* gap: 1rem; */
     min-width: 769px;
+    position: sticky;
+    z-index: 100;
+    top: 0px;
+    left: 0px;
   }
 
   .logo {
@@ -303,7 +306,7 @@ a::after {
     justify-content: center;
     align-items: center;
     width: 100%;
-    gap: 0.5rem;
+    gap: 0;
     height: 3.5rem;
     margin: 0;
   }
@@ -319,6 +322,7 @@ a::after {
     align-content: center;
     max-width: 1025px;
     font-weight: 600;
+    width: fit-content;
   }
 
   .nav__item {
@@ -354,7 +358,7 @@ a::after {
     height: 6rem;
     flex-direction: row;
     justify-content: space-between;
-    align-content: center;
+    align-items: center;
     min-width: 1025px;
   }
 
