@@ -7,7 +7,7 @@
       <p>An error over the api has occured.Please try later</p>
     </template>
   </base-dialog>
-  <div class="parent-card">
+  <div class="parent-card"  @click="emitMobileViewClose">
     <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
     <submited-lab v-for="sLab in sLabs" :key="sLab.labId" :title="sLab.title" :description="sLab.description">
     </submited-lab>
@@ -26,7 +26,8 @@ export default defineComponent({
     SubmitedLab,
     BaseDialog,
   },
-  setup() {
+  emits:['closeMobileView'],
+  setup(props,context) {
     const isError = false;
     const sLabs= ref([
       {
@@ -72,7 +73,11 @@ export default defineComponent({
         departments : Array<Department>()
       },
     ]);
-    return { sLabs, isError };
+    const emitMobileViewClose = ():void=> {
+      context.emit('closeMobileView',true);
+      return;
+    }
+    return { sLabs, isError ,emitMobileViewClose};
   },
 });
 </script>

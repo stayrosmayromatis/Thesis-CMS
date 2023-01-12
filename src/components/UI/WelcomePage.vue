@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" @click="emitMobileViewClose">
         <div class="logo">
             <img class="mobile-view-picture" src="@/assets/ihu_logo.png" alt="IHU-LOGO-ALT" />
         </div>
@@ -29,8 +29,13 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    setup() {
-        return {}
+    emits:['closeMobileView'],
+    setup(props,context) {
+        const emitMobileViewClose = (): void => {
+            context.emit('closeMobileView', true);
+            return;
+        }
+        return {emitMobileViewClose}
     }
 })
 </script>

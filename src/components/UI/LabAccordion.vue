@@ -1,5 +1,5 @@
 <template>
-  <v-container class="sth-container">
+  <v-container class="sth-container"  @click="emitMobileViewClose">
     <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
       density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips open-on-clear clearable multiple
       @update:model-value="logSelectedLabs">
@@ -30,7 +30,8 @@ import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import { displayedLabs } from '@/composables/displayedSemesterArray.composable';
 export default defineComponent({
-  setup() {
+  emits:['closeMobileView'],
+  setup(props,context) {
     const displayLabs: Array<DisplayedSemster> = displayedLabs();
     const selectedLabs: Ref<Array<LabSemesterEnum>> = ref(Array<LabSemesterEnum>());
 
@@ -88,7 +89,11 @@ export default defineComponent({
       }
     ]);
 
-    return { labs, availableSemesters: displayLabs, selectedLabs, logSelectedLabs };
+    const emitMobileViewClose = ():void=> {
+      context.emit('closeMobileView',true);
+      return;
+    }
+    return { labs, availableSemesters: displayLabs, selectedLabs, logSelectedLabs,emitMobileViewClose };
   },
 });
 </script>
@@ -143,7 +148,7 @@ export default defineComponent({
 .sth-container {
   width: 100%;
   padding: 0;
-  margin: 0;
+  margin-top: 1rem;
   min-width: 320px;
 }
 
@@ -153,7 +158,7 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .sth-container {
-    margin: 1rem 1rem;
+    margin: 2rem 1rem;
     width: inherit;
     max-width: 100%;
     min-width: 320px;

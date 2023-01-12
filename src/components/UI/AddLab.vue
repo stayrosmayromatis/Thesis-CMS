@@ -1,53 +1,55 @@
 <template>
-  <div class="parent-card">
-    <v-card elevation="5" class="parent-label">
-      <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
-    </v-card>
-  </div>
-  <div class="parent-card-form">
-    <v-card elevation="5">
-      <v-form @submit.prevent="submitForm">
-        <v-container>
-          <div :class="{ 'error-color': v$.semester.$error }">
-            <v-chip-group>
-              <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
-                v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
-            </v-chip-group>
-          </div>
-          <v-divider inset></v-divider>
-          <div class="label-centerer">
-            <label for="year">Βασικά Στοιχεία</label>
-          </div>
-          <div class="form-first">
-            <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
-              label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
-            <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
-              label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
-          </div>
-          <v-divider inset></v-divider>
-          <div class="label-centerer">
-            <label for="year">Ώρες Διαθεσιμόςτητας</label>
-          </div>
-          <div class="form-control-add-btn">
-            <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
-                clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                  fill-rule="nonzero" />
-              </svg>
-              ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
-            </v-btn>
-          </div>
-          <lab-form v-for="(department, index) in departments" :key="index" :department="department"
-            @deleteByDeptId="removeFormGroup" @global-error="dateNotEmpty"></lab-form>
-          <div class="submit-button">
-            <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ<v-tooltip text="ΕΕ ΨΙΛΕΕ"
-                location="top"></v-tooltip></v-btn>
-          </div>
-        </v-container>
-      </v-form>
-    </v-card>
+  <div  @click="emitMobileViewClose">
+    <div class="parent-card">
+      <v-card elevation="5" class="parent-label">
+        <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
+      </v-card>
+    </div>
+    <div class="parent-card-form">
+      <v-card elevation="5">
+        <v-form @submit.prevent="submitForm">
+          <v-container>
+            <div :class="{ 'error-color': v$.semester.$error }">
+              <v-chip-group>
+                <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
+                  v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
+              </v-chip-group>
+            </div>
+            <v-divider inset></v-divider>
+            <div class="label-centerer">
+              <label for="year">Βασικά Στοιχεία</label>
+            </div>
+            <div class="form-first">
+              <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
+                label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
+                label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
+            </div>
+            <v-divider inset></v-divider>
+            <div class="label-centerer">
+              <label for="year">Ώρες Διαθεσιμόςτητας</label>
+            </div>
+            <div class="form-control-add-btn">
+              <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
+                  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+                    fill-rule="nonzero" />
+                </svg>
+                ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
+              </v-btn>
+            </div>
+            <lab-form v-for="(department, index) in departments" :key="index" :department="department"
+              @deleteByDeptId="removeFormGroup" @global-error="dateNotEmpty"></lab-form>
+            <div class="submit-button">
+              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ<v-tooltip text="ΕΕ ΨΙΛΕΕ"
+                  location="top"></v-tooltip></v-btn>
+            </div>
+          </v-container>
+        </v-form>
+      </v-card>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -75,7 +77,13 @@ export default defineComponent({
   components: {
     LabForm,
   },
-  setup() {
+  emits:['closeMobileView'],
+  setup(props,context) {
+    const emitMobileViewClose = ():void=> {
+      context.emit('closeMobileView',true);
+      return;
+    }
+
     let deptIncremental = 1;
     const show = true;
     const departments = ref(Array<Department>());
@@ -123,7 +131,7 @@ export default defineComponent({
     };
 
     // -------FORM VALIDATION-------
-    
+
     const formState = reactive<Lab>({
       labId: '',
       labTitle: '',
@@ -210,6 +218,7 @@ export default defineComponent({
       console.log(formState);
     }
     return {
+      emitMobileViewClose,
       buttonDisablity,
       displayedSemester,
       clickOnChip,

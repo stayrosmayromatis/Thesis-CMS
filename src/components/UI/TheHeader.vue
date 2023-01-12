@@ -30,7 +30,7 @@
       <router-link to="/">{{ title }}</router-link>
     </div>
     <div class="mobile-logo">
-      <svg @click="closeHamburgerFn()" width="50" height="50" clip-rule="evenodd" fill-rule="evenodd"
+      <svg @click="closeHamburgerFn(true)" width="50" height="50" clip-rule="evenodd" fill-rule="evenodd"
         stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path
           d="m22 16.75c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75zm0-5c0-.414-.336-.75-.75-.75h-18.5c-.414 0-.75.336-.75.75s.336.75.75.75h18.5c.414 0 .75-.336.75-.75z"
@@ -67,12 +67,14 @@
     <div style="width: 100%">
       <div class="main-nav" v-if="hamburgerClose">
         <ul>
-          <li class="nav__item">
+          <li @click="closeHamburgerFn()" class="nav__item">
             <router-link :to="{ name: 'labList' }">All Labs</router-link>
           </li>
-          <li class="nav__item"><router-link :to="{ name: 'submittedLabs' }">Submitted Labs</router-link></li>
-          <li class="nav__item"><router-link :to="{ name: 'addlab' }">Add a Lab</router-link></li>
-          <li class="nav__item"><router-link to="/">Contact</router-link></li>
+          <li @click="closeHamburgerFn()" class="nav__item"><router-link :to="{ name: 'submittedLabs' }">Submitted
+              Labs</router-link></li>
+          <li @click="closeHamburgerFn()" class="nav__item"><router-link :to="{ name: 'addlab' }">Add a
+              Lab</router-link></li>
+          <li @click="closeHamburgerFn()" class="nav__item"><router-link to="/">Contact</router-link></li>
         </ul>
         <div class="nav__item--cta" v-if="!isLoggedInCmptd">
           <!-- <img src="@/assets/iconmonstr-user-20.svg" width="20" height="20" /> -->
@@ -90,17 +92,29 @@
       </div>
     </div>
   </header>
+
+  <!-- <slot name="content" @closeMobileView="closeHamburgerFn(true)">
+    <h1>you shouldn't be seeing this</h1>
+  </slot> -->
 </template>
 
 <script lang="ts">
-import { onMounted, defineComponent, ref, watch, computed } from "vue";
+import { onMounted, defineComponent, ref, watch, computed, toRefs } from "vue";
 import { useWindowSize } from '@vueuse/core';
 import { useRouter } from "vue-router";
 import { isAuthenticated } from '@/composables/isAuth.composable';
 export default defineComponent({
-  setup() {
+  props: {
+    closeInstantlyDirective: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+  setup(props) {
     let hamburgerClose = ref(false);
     const { width } = useWindowSize();
+    const { closeInstantlyDirective } = toRefs(props);
     //let title = process.env.VUE_APP_TITLE;
     // let title = import.meta.env.VITE_APP_TITLE;
     let title = "IHU SUBMISSIONS";
@@ -132,7 +146,16 @@ export default defineComponent({
       return;
     });
 
-    const closeHamburgerFn = () => {
+    watch(closeInstantlyDirective, async () => {
+      if (width.value < 769 && closeInstantlyDirective.value && hamburgerClose.value) {
+        await closeHamburgerFn(true);
+      }
+    })
+
+    const closeHamburgerFn = async (closeInstantly: boolean = false) => {
+      if (!closeInstantly) {
+        await delay(100);
+      }
       if (window.innerWidth < 769) {
         hamburgerClose.value = !hamburgerClose.value;
         return;
@@ -143,6 +166,9 @@ export default defineComponent({
       router.replace("/");
     };
 
+    const delay = async (time: number) => {
+      return new Promise(resolve => setTimeout(resolve, time));
+    }
 
     return { title, gotoHome, hamburgerClose, closeHamburgerFn, isLoggedInCmptd: isLoggedIn, userName };
   },
