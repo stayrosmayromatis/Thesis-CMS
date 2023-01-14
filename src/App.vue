@@ -20,15 +20,15 @@ export default defineComponent({
   setup() {
     const cooardinators: Array<{
       id: string;
-      displayNameEn?: string;
       displayNameEl: string;
-      isStaff: boolean;
-      affiliation: string;
-      titleEn?: string;
       titleEl: string;
+      personalEntitlementEl: string;
       personalTitle: string;
-      personalEntitlementEn? : string,
-      personalEntitlementEl :string
+      affiliation: string;
+      isStaff: boolean;
+      displayNameEn?: string;
+      titleEn?: string;
+      personalEntitlementEn?: string;
     }> = Array();
     onMounted(async () => {
       const instance = axios.create({
@@ -52,29 +52,35 @@ export default defineComponent({
         return;
       }
       for (const record of data.value) {
-        if (record.id === null
-        || record.id === undefined
-        || record.id === "" ||
-        record.id === "9123" ||
-        record.id === "5737" ||
-        record.id === "5738" ) {
+        if (
+          !record.id ||
+          record.id === null ||
+          record.id === undefined ||
+          record.id === "" ||
+          record.id === "9123" ||
+          record.id === "5737" ||
+          record.id === "5738"
+        ) {
           continue;
         }
-        if(record.title === "Dummy")
-          continue;
-        if(!record.displayName)
-          continue;
+        if (record.title === "Dummy") continue;
+        if (!record.displayName || !record["displayName;lang-el"]) continue;
         cooardinators.push({
-          id : !record.id ? "-" : record.id,
-          //displayNameEn : !record.displayName ? "-" : record.displayName,
-          affiliation : !record.eduPersonAffiliation ? '-' : record.eduPersonAffiliation,
-          personalTitle : !record.personalTitle ? "-" : record.personalTitle,
-          //titleEn : !record.title ? "-" : record.title,
+          id: !record.id ? "-" : record.id,
+          displayNameEl: !record["displayName;lang-el"]
+            ? "-"
+            : record["displayName;lang-el"],
+          titleEl: !record["title;lang-el"] ? "-" : record["title;lang-el"],
+          personalTitle: !record.personalTitle ? "-" : record.personalTitle,
+          personalEntitlementEl: !record["eduPersonEntitlement;lang-el"]
+            ? "-"
+            : record["eduPersonEntitlement;lang-el"],
           isStaff: record.eduPersonAffiliation ? true : false,
-          displayNameEl : !record["displayName;lang-el"] ? "-" : record["displayName;lang-el"],
-          titleEl : !record["title;lang-el"] ? "-" : record["title;lang-el"],
+          affiliation: !record.eduPersonAffiliation ? "-"
+            : record.eduPersonAffiliation,
+          //displayNameEn : !record.displayName ? "-" : record.displayName,
+          //titleEn : !record.title ? "-" : record.title,
           //personalEntitlementEn :!record.eduPersonEntitlement ? "-" : record.eduPersonEntitlement,
-          personalEntitlementEl : !record["eduPersonEntitlement;lang-el"] ? "-" : record["eduPersonEntitlement;lang-el"]
         });
       }
       console.dir(cooardinators);
