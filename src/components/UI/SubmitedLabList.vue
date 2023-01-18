@@ -9,26 +9,51 @@
       </template>
     </base-dialog>
     <div class="parent-card">
+      <div>
+        <button @click="generatePdf">Download as PDF</button>
+      </div>
+      <div ref="pdfContent">
+        <h1>My HTML Template</h1>
+        <table>
+          <tr>
+            <th>Key</th>
+            <th>Title</th>
+            <th>Description</th>
+          </tr>
+          <tr v-for="(sLab, index) in sLabs" :key="index">
+            <td>{{ sLab.labId }}</td>
+            <td>{{ sLab.title }}</td>
+            <td>{{ sLab.description }}</td>
+          </tr>
+        </table>
+      </div>
       <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
-      <submited-lab v-for="sLab in sLabs" :key="sLab.labId" :title="sLab.title" :description="sLab.description">
+      <submited-lab
+        v-for="sLab in sLabs"
+        :key="sLab.labId"
+        :title="sLab.title"
+        :description="sLab.description"
+      >
       </submited-lab>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref,onMounted } from "vue";
+import { defineComponent, ref, onMounted, Ref } from "vue";
 import SubmitedLab from "@/components/UI/SubmitedLab.vue";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Department } from "@/types/department.type";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 export default defineComponent({
   components: {
     SubmitedLab,
     BaseDialog,
   },
-  emits: ['closeMobileView'],
+  emits: ["closeMobileView"],
   setup(_, context) {
     const isError = false;
     const sLabs = ref([
@@ -37,53 +62,71 @@ export default defineComponent({
         title: "Οργάνωση και αρχιτεκτονική",
         semester: LabSemesterEnum.A_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>()
+        departments: Array<Department>(),
       },
       {
         labId: "1602",
         title: "Δικτυα και αρχιτεκτονική",
         semester: LabSemesterEnum.B_EAR,
         description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>()
+        departments: Array<Department>(),
       },
       {
         labId: "1603",
         title: "Δομημένος Προγραμματισμός",
         semester: LabSemesterEnum.C_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>()
+        departments: Array<Department>(),
       },
       {
         labId: "1601",
         title: "Οργάνωση και αρχιτεκτονική",
         semester: LabSemesterEnum.A_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>()
+        departments: Array<Department>(),
       },
       {
         labId: "1602",
         title: "Δικτυα και αρχιτεκτονική",
         semester: LabSemesterEnum.B_EAR,
         description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>()
+        departments: Array<Department>(),
       },
       {
         labId: "1603",
         title: "Δομημένος Προγραμματισμός",
         semester: LabSemesterEnum.C_XEIM,
         description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>()
+        departments: Array<Department>(),
       },
     ]);
     const emitMobileViewClose = (): void => {
-      context.emit('closeMobileView', true);
+      context.emit("closeMobileView", true);
       return;
-    }
+    };
     onMounted(() => {
-      context.emit('closeMobileView', true);
+      context.emit("closeMobileView", true);
       return;
     });
-    return { sLabs, isError, emitMobileViewClose };
+    const pdfContent = ref<HTMLElement>();
+    const generatePdf = async () => {
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [800, 1130],
+      });
+      if(pdfContent.value){
+        const canvas = await html2canvas(pdfContent.value, {
+          logging: true,
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+        });
+        doc.addImage(canvas.toDataURL(), "JPEG", 10, 10, 180, 160);
+        doc.save("output.pdf");
+      }
+    };
+    return { sLabs, isError, emitMobileViewClose, generatePdf,pdfContent };
   },
 });
 </script>
