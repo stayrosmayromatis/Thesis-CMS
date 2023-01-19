@@ -12,9 +12,13 @@
       <div>
         <button @click="generatePdf">Download as PDF</button>
       </div>
-      <div ref="pdfContent">
+      <div style="width: 100%;
+                      display: flex;
+                      flex-direction: column;
+                    justify-content: center;
+                  align-items: center; " ref="pdfContent">
         <h1>My HTML Template</h1>
-        <table>
+        <table style="border: 1px solid black">
           <tr>
             <th>Key</th>
             <th>Title</th>
@@ -28,12 +32,7 @@
         </table>
       </div>
       <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
-      <submited-lab
-        v-for="sLab in sLabs"
-        :key="sLab.labId"
-        :title="sLab.title"
-        :description="sLab.description"
-      >
+      <submited-lab v-for="sLab in sLabs" :key="sLab.labId" :title="sLab.title" :description="sLab.description">
       </submited-lab>
     </div>
   </div>
@@ -111,22 +110,39 @@ export default defineComponent({
     const pdfContent = ref<HTMLElement>();
     const generatePdf = async () => {
       const doc = new jsPDF({
-        orientation: "landscape",
-        unit: "px",
-        format: [800, 1130],
+        orientation: "portrait",
+        unit: "mm",
+        format: [210,297] ,//'a4'
+        precision: 2,
       });
-      if(pdfContent.value){
-        const canvas = await html2canvas(pdfContent.value, {
-          logging: true,
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-        });
-        doc.addImage(canvas.toDataURL(), "JPEG", 10, 10, 180, 160);
-        doc.save("output.pdf");
+
+      if (pdfContent.value) {
+        doc.html(pdfContent.value,
+          {
+            callback: function (doc:jsPDF) {
+              doc.save('output.pdf')
+            },
+            margin: [0, 0, 0, 0],
+            autoPaging: 'text',
+            x: 0,
+            y: 0,
+            width: 210, //target width in the PDF document
+            //windowWidth: 675 ,
+            windowWidth :window.innerWidth //window width in CSS pixels
+          });
+        // const canvas = await html2canvas(pdfContent.value, {
+        //   logging: true,
+        //   scale: 1,
+        //   width: 210,
+        //   height: 297,
+        //   useCORS: true,
+        //   allowTaint: false,
+        // });
+        //doc.addImage(canvas.toDataURL(), "JPEG", 10, 10); //
+        //doc.save("output.pdf");
       }
     };
-    return { sLabs, isError, emitMobileViewClose, generatePdf,pdfContent };
+    return { sLabs, isError, emitMobileViewClose, generatePdf, pdfContent };
   },
 });
 </script>
