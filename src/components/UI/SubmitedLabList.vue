@@ -45,7 +45,7 @@ import BaseDialog from "@/components/Base/BaseDialog.vue";
 
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Department } from "@/types/department.type";
-import jsPDF from "jspdf";
+import jsPDF, { ImageOptions } from "jspdf";
 import html2canvas from "html2canvas";
 export default defineComponent({
   components: {
@@ -112,33 +112,49 @@ export default defineComponent({
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "mm",
-        format: [210,297] ,//'a4'
+        format: 'a4', //[210, 297],
         precision: 2,
       });
 
       if (pdfContent.value) {
-        doc.html(pdfContent.value,
-          {
-            callback: function (doc:jsPDF) {
-              doc.save('output.pdf')
-            },
-            margin: [0, 0, 0, 0],
-            autoPaging: 'text',
-            x: 0,
-            y: 0,
-            width: 210, //target width in the PDF document
-            //windowWidth: 675 ,
-            windowWidth :window.innerWidth //window width in CSS pixels
+        // doc.html(pdfContent.value,
+        //   {
+        //     callback: async function (doc: jsPDF) {
+        //       //doc.save('output.pdf')
+        //     },
+        //     margin: [0, 0, 0, 0],
+        //     autoPaging: 'text',
+        //     x: 0,
+        //     y: 0,
+        //     width: 210, //target width in the PDF document
+        //     //windowWidth: 675 ,
+        //     windowWidth: window.innerWidth //window width in CSS pixels
+        //   });
+          const canvas = await html2canvas(pdfContent.value, {
+                logging: true,
+                scale: 5,
+                //  width: 200,
+                //  height: 113,
+                useCORS: true,
+                //allowTaint: false,
           });
-        // const canvas = await html2canvas(pdfContent.value, {
-        //   logging: true,
-        //   scale: 1,
-        //   width: 210,
-        //   height: 297,
-        //   useCORS: true,
-        //   allowTaint: false,
-        // });
-        //doc.addImage(canvas.toDataURL(), "JPEG", 10, 10); //
+         
+          const imgProps = doc.getImageProperties(canvas.toDataURL());
+          const pdfWidth = doc.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+           const imageOptions :ImageOptions ={
+            imageData : canvas.toDataURL(),
+            format : "PNG",
+            width : pdfWidth,
+            height:pdfHeight,
+            x:0,
+            y:0
+          }
+          doc.addImage(imageOptions as ImageOptions); //
+          window.open(URL.createObjectURL(doc.output('blob')));
+          
+      
+         
         //doc.save("output.pdf");
       }
     };
