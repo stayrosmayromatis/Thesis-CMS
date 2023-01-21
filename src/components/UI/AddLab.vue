@@ -1,5 +1,5 @@
 <template>
-  <div  @click="emitMobileViewClose">
+  <div @click="emitMobileViewClose">
     <div class="parent-card">
       <v-card elevation="5" class="parent-label">
         <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
@@ -11,8 +11,13 @@
           <v-container>
             <div :class="{ 'error-color': v$.semester.$error }">
               <v-chip-group>
-                <v-chip :class="{ 'active-chip': lab.isActive }" @click="clickOnChip(lab.value)"
-                  v-for="lab in displayedSemester" :key="lab.title">{{ lab.title }}</v-chip>
+                <v-chip
+                  :class="{ 'active-chip': lab.isActive }"
+                  @click="clickOnChip(lab.value)"
+                  v-for="lab in displayedSemester"
+                  :key="lab.title"
+                  >{{ lab.title }}</v-chip
+                >
               </v-chip-group>
             </div>
             <v-divider inset></v-divider>
@@ -20,31 +25,76 @@
               <label for="year">Βασικά Στοιχεία</label>
             </div>
             <div class="form-first">
-              <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
-                label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
-              <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
-                label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
+              <v-text-field
+                :class="{ 'error-color': v$.labId.$error }"
+                :error-messages="errorOfLabId"
+                label="Κωδικός Εργαστηρίου"
+                v-model.trim="formState.labId"
+              ></v-text-field>
+              <v-text-field
+                :class="{ 'error-color': v$.labTitle.$error }"
+                :error-messages="errorOfLabTitle"
+                label="Τίτλος Εργαστηρίου"
+                v-model.trim="formState.labTitle"
+              ></v-text-field>
+            </div>
+            <div class="form-first">
+              <v-text-field
+                :class="{ 'error-color': v$.description.$error }"
+                :error-messages="errorOfDescription"
+                label="Περιγραφή Εργαστηρίου"
+                v-model.trim="formState.description"
+              ></v-text-field>
+              <div class="percent49-5">
+                <v-select
+                  :class="{ 'error-color': v$.labTitle.$error }"
+                  :items="displayedAttendaceValues"
+                  :error-messages="errorOfAttendance"
+                  label="Παρακολούθηση"
+                  density="default"
+                  v-model="formState.attendance"
+                ></v-select>
+              </div>
             </div>
             <v-divider inset></v-divider>
             <div class="label-centerer">
               <label for="year">Ώρες Διαθεσιμόςτητας</label>
             </div>
             <div class="form-control-add-btn">
-              <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
-                  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <v-btn
+                type="button"
+                @click="addFormGroup"
+                elevation="4"
+                color="green"
+                ><svg
+                  width="30"
+                  height="30"
+                  clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  stroke-linejoin="round"
+                  stroke-miterlimit="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                    fill-rule="nonzero" />
+                    fill-rule="nonzero"
+                  />
                 </svg>
                 ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
               </v-btn>
             </div>
-            <lab-form v-for="(department, index) in departments" :key="index" :department="department"
-              @deleteByDeptId="removeFormGroup" @global-error="dateNotEmpty"></lab-form>
+            <lab-form
+              v-for="(department, index) in departments"
+              :key="index"
+              :department="department"
+              @deleteByDeptId="removeFormGroup"
+              @global-error="dateNotEmpty"
+            ></lab-form>
             <div class="submit-button">
-              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ<v-tooltip text="ΕΕ ΨΙΛΕΕ"
-                  location="top"></v-tooltip></v-btn>
+              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit"
+                >ΚΑΤΑΧΩΡΗΣΗ</v-btn
+              >
             </div>
           </v-container>
         </v-form>
@@ -54,39 +104,34 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent } from "@vue/runtime-core";
-import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
+import { useVuelidate } from "@vuelidate/core";
+import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
 
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { reactive, Ref, ref,onMounted } from "vue";
+import { reactive, Ref, ref, onMounted } from "vue";
 import { DisplayedSemster } from "@/types/displayedsemester.type";
 import LabForm from "./LabForm.vue";
 import { Department } from "@/types/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
 import { Lab } from "@/types/lab.type";
 import { isNumber } from "@vueuse/shared";
-interface FormStateInterface {
-  labTitle: string,
-  labId: string,
-  semester: LabSemesterEnum | null,
-  departments: Ref<Array<Department>>
-}
+import { AttendanceEnum } from "@/enums/AttendanceEnums";
 
 export default defineComponent({
   components: {
     LabForm,
   },
-  emits:['closeMobileView'],
-  setup(_,context) {
+  emits: ["closeMobileView"],
+  setup(_, context) {
     onMounted(() => {
-      context.emit('closeMobileView',true);
+      context.emit("closeMobileView", true);
       return;
     });
-    const emitMobileViewClose = ():void=> {
-      context.emit('closeMobileView',true);
+    const emitMobileViewClose = (): void => {
+      context.emit("closeMobileView", true);
       return;
-    }
+    };
 
     let deptIncremental = 1;
     const show = true;
@@ -95,7 +140,9 @@ export default defineComponent({
       displayedLabs()
     );
     const clickOnChip = (value: LabSemesterEnum) => {
-      const selectedLab = displayedSemester.value.find((lab) => lab.value == value);
+      const selectedLab = displayedSemester.value.find(
+        (lab) => lab.value == value
+      );
       if (selectedLab) {
         selectedLab.isActive = !selectedLab.isActive;
         formState.semester = selectedLab.isActive ? selectedLab.value : null;
@@ -124,7 +171,7 @@ export default defineComponent({
         fromTime: "",
         toTime: "",
         day: DaysOfWeekEnum.Δευτέρα,
-        numberOfStudents: 30
+        numberOfStudents: 30,
       });
     };
     const removeFormGroup = (deptId: string) => {
@@ -133,30 +180,113 @@ export default defineComponent({
         (val) => val.deptId !== deptId
       );
     };
-
+    //Just the initial values
+    const displayedAttendaceValues = Array(
+      {
+        value: AttendanceEnum.ΥΠ,
+        title: "ΥΠ",
+      },
+      {
+        value: AttendanceEnum.ΠΡ,
+        title: "ΠΡ",
+      },
+      {
+        value: AttendanceEnum.ΥΠ_ΠΡ,
+        title: "ΥΠ ΠΡ",
+      }
+    );
     // -------FORM VALIDATION-------
 
     const formState = reactive<Lab>({
-      labId: '',
-      labTitle: '',
+      labId: "",
+      labTitle: "",
+      description: "",
       semester: null,
-      departments
+      departments,
+      attendance: {
+        value: AttendanceEnum.ΥΠ,
+        title: "ΥΠ",
+      },
     });
     const mustContainDash = (value: string) => {
-      return value.includes('-') ? true : false;
-    }
+      return value.includes("-") ? true : false;
+    };
     const atLeaseOneDepartment = () => {
       return departments.value.length >= 1 ? true : false;
-    }
-
+    };
+    const atLeastOneAttendanceSelected = (value: number) => {
+      return !value ? false : true;
+    };
     const rules = computed(() => {
       return {
-        labId: { Required: helpers.withMessage('Ο κωδικός είναι υποχρεωτικός', required), MaxLength: helpers.withMessage('Μέγιστο όριο 9 χαρακτήρες', maxLength(9)), MinLength: helpers.withMessage('Ελάχιστο όριο 9 χαρακτήρες', minLength(9)), MustContainDash: helpers.withMessage('Ο κωδικός πρέπει να περιέχει παύλα', mustContainDash) },
-        labTitle: { Required: helpers.withMessage('Ο τίτλος είναι υποχρεωτικός', required), MaxLength: helpers.withMessage('Μέγιστο όριο 50 χαρακτήρες', maxLength(50)), MinLength: helpers.withMessage('Ελάχιστο όριο 10 χαρακτήρες', minLength(10)) },
+        labId: {
+          Required: helpers.withMessage(
+            "Ο κωδικός είναι υποχρεωτικός",
+            required
+          ),
+          MaxLength: helpers.withMessage(
+            "Μέγιστο όριο 9 χαρακτήρες",
+            maxLength(9)
+          ),
+          MinLength: helpers.withMessage(
+            "Ελάχιστο όριο 9 χαρακτήρες",
+            minLength(9)
+          ),
+          MustContainDash: helpers.withMessage(
+            "Ο κωδικός πρέπει να περιέχει παύλα",
+            mustContainDash
+          ),
+        },
+        labTitle: {
+          Required: helpers.withMessage(
+            "Ο τίτλος είναι υποχρεωτικός",
+            required
+          ),
+          MaxLength: helpers.withMessage(
+            "Μέγιστο όριο 50 χαρακτήρες",
+            maxLength(50)
+          ),
+          MinLength: helpers.withMessage(
+            "Ελάχιστο όριο 10 χαρακτήρες",
+            minLength(10)
+          ),
+        },
+        description: {
+          Required: helpers.withMessage(
+            "H Περιγραφή είναι υποχρεωτική",
+            required
+          ),
+          MaxLength: helpers.withMessage(
+            "Μέγιστο όριο 200 χαρακτήρες",
+            maxLength(200)
+          ),
+          MinLength: helpers.withMessage(
+            "Ελάχιστο όριο 10 χαρακτήρες",
+            minLength(10)
+          ),
+        },
         semester: { required },
-        departments: { Required: helpers.withMessage('Τα τμήματα είναι υποχρεωτικά', required), AtLeaseOneCount: helpers.withMessage('Απαιτείται τουλάχιστον 1 τμήμα', atLeaseOneDepartment) }
-      }
-
+        departments: {
+          Required: helpers.withMessage(
+            "Τα τμήματα είναι υποχρεωτικά",
+            required
+          ),
+          AtLeaseOneCount: helpers.withMessage(
+            "Απαιτείται τουλάχιστον 1 τμήμα",
+            atLeaseOneDepartment
+          ),
+        },
+        attendance: {
+          Required: helpers.withMessage(
+            "Πεδίο Παρακολούθησης Υποχρεωτικό",
+            required
+          ),
+          AtLeastOneAttendanceSelected: helpers.withMessage(
+            "Απαιτείται τουλάχιστον μία επιλεγμένη παρακολούθηση",
+            atLeastOneAttendanceSelected
+          ),
+        },
+      };
     });
     const v$ = useVuelidate(rules, formState);
 
@@ -164,16 +294,34 @@ export default defineComponent({
       if (v$.value.labId.$error) {
         return v$.value.labId.$errors[0].$message.toString();
       }
-      return '';
+      return "";
     });
     const errorOfLabTitle = computed(() => {
       if (v$.value.labTitle.$error) {
         return v$.value.labTitle.$errors[0].$message.toString();
       }
-      return '';
+      return "";
+    });
+    const errorOfDescription = computed(() => {
+      if (v$.value.description.$error) {
+        return v$.value.description.$errors[0].$message.toString();
+      }
+      return "";
+    });
+    const errorOfAttendance = computed(() => {
+      if (v$.value.attendance.$error) {
+        return v$.value.attendance.$errors[0].$message.toString();
+      }
+      return "";
     });
     const buttonDisablity = computed(() => {
-      if (!formState.labId || !formState.labTitle || !formState.semester || departments.value.length <= 0)
+      if (
+        !formState.labId ||
+        !formState.labTitle ||
+        !formState.semester ||
+        !formState.description ||
+        departments.value.length <= 0
+      )
         return true;
       return false;
     });
@@ -182,7 +330,11 @@ export default defineComponent({
         dept.errorOnDeptId = true;
       }
 
-      if (dept.fromTime === "" || dept.fromTime === " " || dept.fromTime === null) {
+      if (
+        dept.fromTime === "" ||
+        dept.fromTime === " " ||
+        dept.fromTime === null
+      ) {
         dept.errorOnFromTime = true;
       }
 
@@ -190,12 +342,16 @@ export default defineComponent({
         dept.errorOnToTime = true;
       }
 
-      if (dept.errorOnDeptId === true || dept.errorOnFromTime === true || dept.errorOnToTime === true) {
-        console.log('There are errors');
+      if (
+        dept.errorOnDeptId === true ||
+        dept.errorOnFromTime === true ||
+        dept.errorOnToTime === true
+      ) {
+        console.log("There are errors");
         return false;
       }
       return true;
-    }
+    };
     const submitForm = () => {
       v$.value.$validate();
       if (v$.value.$error) {
@@ -204,7 +360,7 @@ export default defineComponent({
       }
       let allDeptsAreCorrect = true;
       if (!formState.departments || formState.departments.length == 0) {
-        console.log('There are errors');
+        console.log("There are errors");
         return;
       }
       for (let dept of formState.departments) {
@@ -217,10 +373,9 @@ export default defineComponent({
         continue;
       }
 
-      if (!allDeptsAreCorrect)
-        return;
+      if (!allDeptsAreCorrect) return;
       console.log(formState);
-    }
+    };
     return {
       emitMobileViewClose,
       buttonDisablity,
@@ -234,8 +389,11 @@ export default defineComponent({
       submitForm,
       errorOfLabId,
       errorOfLabTitle,
+      errorOfDescription,
+      errorOfAttendance,
       dateNotEmpty,
-      show
+      show,
+      displayedAttendaceValues,
     };
   },
 });
@@ -244,7 +402,6 @@ export default defineComponent({
 <style scoped>
 #submit-btn:disabled {
   width: 15rem;
-
 }
 
 #submit-btn {
@@ -252,7 +409,9 @@ export default defineComponent({
   width: 15rem;
   background-color: #156ed3;
 }
-
+.percent49-5{
+  width: 100%;
+}
 .submit-button {
   width: 100%;
   display: flex;
@@ -264,7 +423,7 @@ export default defineComponent({
 }
 
 .error-color {
-  color: #B00020;
+  color: #b00020;
 }
 
 .parent-card {
@@ -388,7 +547,9 @@ export default defineComponent({
     color: #f3f3f3;
     width: 15rem;
   }
-
+.percent49-5{
+  width: 49.5%;
+}
   #submit-btn {
     color: white;
     width: 15rem;
@@ -465,9 +626,10 @@ export default defineComponent({
     min-width: 5rem;
     max-width: 10rem;
     width: 100%;
-
   }
-
+.percent49-5{
+  width: 49.5%;
+}
   #submit-btn {
     color: white;
     min-width: 5rem;

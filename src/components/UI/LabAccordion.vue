@@ -78,8 +78,8 @@ export default defineComponent({
         description: "Πληροφορίες Εργαστηρίου",
         departments: undefined,
         attendance: {
-          value: "ΥΠ",
-          attendaceValue: AttendanceEnum.ΥΠ,
+          title: "ΥΠ",
+          value: AttendanceEnum.ΥΠ,
         },
         // attendance : AttendanceEnum.ΥΠ
       },
@@ -90,8 +90,8 @@ export default defineComponent({
         description: "Πληροφορίες Εργαστηρίου",
         departments: undefined,
         attendance: {
-          value: "ΥΠ_ΠΡ",
-          attendaceValue: AttendanceEnum.ΥΠ_ΠΡ,
+          title: "ΥΠ_ΠΡ",
+          value: AttendanceEnum.ΥΠ_ΠΡ,
         },
       },
       {
@@ -101,8 +101,8 @@ export default defineComponent({
         description: "Πληροφορίες Εργαστηρίου",
         departments: undefined,
         attendance: {
-          value: "ΠΡ",
-          attendaceValue: AttendanceEnum.ΠΡ,
+          title: "ΠΡ",
+          value: AttendanceEnum.ΠΡ,
         },
       },
       {
@@ -112,8 +112,8 @@ export default defineComponent({
         description: "Πληροφορίες Εργαστηρίου",
         departments: undefined,
         attendance: {
-          value: "ΥΠ",
-          attendaceValue: AttendanceEnum.ΥΠ,
+          title: "ΥΠ",
+          value: AttendanceEnum.ΥΠ,
         },
       },
       {
@@ -123,8 +123,8 @@ export default defineComponent({
         description: "Πληροφορίες Εργαστηρίου",
         departments: undefined,
         attendance: {
-          value: "ΥΠ_ΠΡ",
-          attendaceValue: AttendanceEnum.ΥΠ_ΠΡ,
+          title: "ΥΠ_ΠΡ",
+          value: AttendanceEnum.ΥΠ_ΠΡ,
         },
       },
       {
@@ -134,8 +134,8 @@ export default defineComponent({
         description: "Πληροφορίες Εργαστηρίου",
         departments: undefined,
         attendance: {
-          value: "ΠΡ",
-          attendaceValue: AttendanceEnum.ΠΡ,
+          title: "ΠΡ",
+          value: AttendanceEnum.ΠΡ,
         },
       },
     ]);

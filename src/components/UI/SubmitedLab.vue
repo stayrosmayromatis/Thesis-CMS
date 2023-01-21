@@ -78,7 +78,7 @@ export default defineComponent({
   .card {
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
-    min-width: 770px;
+    /* //min-width: 770px; */
   }
   .card-item {
     display: flex;

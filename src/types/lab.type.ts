@@ -10,8 +10,8 @@ export interface Lab{
     description?:string,
     departments : Ref<Array<Department>> | undefined
     attendance? : {
-      value:string,
-      attendaceValue : AttendanceEnum
+      title:string,
+      value : AttendanceEnum | null
     }
     //departments : Array<Department>
   }

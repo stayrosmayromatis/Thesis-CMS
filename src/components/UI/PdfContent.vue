@@ -1,8 +1,6 @@
 <template>
   <div
     style="min-width: 320px"
-    data-home-page="Home.html"
-    data-home-page-title="Home"
     class="u-body u-xl-mode"
     data-lang="en"
     ref="pdfContent"
@@ -131,7 +129,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref,watch, toRefs, PropType, Ref} from "vue";
+import { defineComponent, ref,watch, toRefs, PropType} from "vue";
 import html2canvas from "html2canvas";
 import jsPDF, { ImageOptions } from "jspdf";
 export default defineComponent({
@@ -142,7 +140,7 @@ export default defineComponent({
       default: null,
     },
     callToGeneratePdf:{
-      type:Object as PropType<Ref<Boolean>>,
+      type: Object as PropType<Boolean>,
       required : true,
       default:false
     },
@@ -158,23 +156,22 @@ export default defineComponent({
         orientation: "landscape",
         unit: "mm",
         format: [400, 297], // 'a4',
-        precision: 2,
+        precision: 1,
       });
       const canvas = await html2canvas(pdfContent.value, {
         logging: true,
-        scale: 5,
-        //  width: 200,
-        //  height: 113,
+        scale: 1,
         useCORS: true,
-        //allowTaint: false,
+        removeContainer:true,
+        allowTaint: true,
       });
-      console.log(canvas.toDataURL());
-      const imgProps = doc.getImageProperties(canvas.toDataURL());
-      console.log(imgProps);
+      const canvasBase64 = canvas.toDataURL();
+      console.log(canvasBase64);
+      const imgProps = doc.getImageProperties(canvasBase64);
       const pdfWidth = doc.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       const imageOptions: ImageOptions = {
-        imageData: canvas.toDataURL(),
+        imageData: canvasBase64,
         format: "PNG",
         width: pdfWidth,
         height: pdfHeight,
@@ -183,6 +180,7 @@ export default defineComponent({
       };
       doc.addImage(imageOptions as ImageOptions);
       window.open(URL.createObjectURL(doc.output("blob")));
+      // doc.save('output.pdf');
       context.emit("pdfCreated", false);
     };
     watch(callToGeneratePdf,(val) => {

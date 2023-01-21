@@ -191,7 +191,7 @@ export default defineComponent({
     text-transform: uppercase;
     font-weight: 500;
     background-color: #aacaf3;
-    min-width: 769px;
+    /* min-width: 769px; */
   }
   .pdf-button {
     display: flex;
@@ -229,7 +229,7 @@ export default defineComponent({
     text-transform: uppercase;
     font-weight: 500;
     background-color: #aacaf3;
-    min-width: 769px;
+    /* min-width: 769px; */
   }
   .pdf-button {
     display: flex;
