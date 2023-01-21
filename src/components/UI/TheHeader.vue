@@ -86,7 +86,7 @@
         </ul>
         <div class="nav__item--cta" v-if="!isLoggedInCmptd">
           <!-- <img src="@/assets/iconmonstr-user-20.svg" width="20" height="20" /> -->
-          <v-btn @click="gotoHome" class="sign-btn" rounded="pill" variant="outlined">
+          <v-btn @click="redirectToLogin" class="sign-btn" rounded="pill" variant="outlined">
             Sign In
           </v-btn>
         </div>
@@ -172,15 +172,15 @@ export default defineComponent({
       }
       hamburgerClose.value = true;
     };
-    const gotoHome = () => {
-      router.replace("/");
+    const redirectToLogin = () => {
+      router.replace({name:'sign-in'});
     };
 
     const delay = async (time: number) => {
       return new Promise(resolve => setTimeout(resolve, time));
     }
 
-    return { title, gotoHome, hamburgerClose, closeHamburgerFn, isLoggedInCmptd: isLoggedIn, userName };
+    return { title, redirectToLogin, hamburgerClose, closeHamburgerFn, isLoggedInCmptd: isLoggedIn, userName };
   },
 });
 </script>
