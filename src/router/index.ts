@@ -4,6 +4,7 @@ const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
 const AddLab = () => import('@/components/UI/AddLab.vue');
 const BaseSlider = () => import('@/components/Base/BaseSlider.vue');
 const WelcomePage =() => import('@/components/UI/WelcomePage.vue');
+const PdfContent = () => import('@/components/UI/PdfContent.vue');
 const routes: Array<RouteRecordRaw> = [
   {
     path : "/",
@@ -32,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/poutsa",
     name : 'poutsa',
-    component : BaseSlider,
+    component : PdfContent,
     props : true
   },
 ];
