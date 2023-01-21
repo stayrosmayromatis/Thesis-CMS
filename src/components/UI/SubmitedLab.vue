@@ -53,26 +53,26 @@ export default defineComponent({
   width: 100%;
 }
 .card-chip {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0.5rem;
-    padding: 0;
-    font-weight: 500;
-    border: 1px solid #09aa09;
-    color: #09aa09;
-    background: #f3f3f3;
-    max-width: 16rem;
-  }
-  :deep(.v-card-text){
-    flex: 0 ;
-    font-size: 0.875rem;
-    font-weight: 400;
-    letter-spacing: 0.0178571429em;
-    padding: 0.5rem;
-    text-transform: none;
-  }
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem;
+  padding: 0;
+  font-weight: 500;
+  border: 1px solid #09aa09;
+  color: #09aa09;
+  background: #f3f3f3;
+  max-width: 16rem;
+}
+:deep(.v-card-text) {
+  flex: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.0178571429em;
+  padding: 0.5rem;
+  text-transform: none;
+}
 
 @media (min-width: 769px) {
   .card {
@@ -111,7 +111,7 @@ export default defineComponent({
     white-space: nowrap;
     word-break: normal;
     word-wrap: break-word;
-    width: 40%;
+    width: 45%;
   }
   :deep(.v-card-text) {
     font-size: 0.875rem;
@@ -124,7 +124,7 @@ export default defineComponent({
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    flex:1;
+    flex: 1;
   }
   .card-chip {
     width: 20%;
@@ -177,7 +177,7 @@ export default defineComponent({
     white-space: nowrap;
     word-break: normal;
     word-wrap: break-word;
-    width: 40%;
+    width: 45%;
   }
   :deep(.v-card-text) {
     font-size: 0.875rem;

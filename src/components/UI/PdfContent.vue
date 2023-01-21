@@ -83,7 +83,7 @@
             <col width="22.2%" />
           </colgroup>
           <tbody class="u-table-alt-palette-1-light-3 u-table-body">
-            <tr style="height: 93px">
+            <tr style="height: 93px; text-align:center;">
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
@@ -115,7 +115,7 @@
                 Παρακολούθηση
               </td>
             </tr>
-            <tr v-for="lab in labs" :key="lab.labId" style="height: 79px">
+            <tr v-for="lab in labs" :key="lab.labId" style="height: 79px; text-align:center;">
               <td class="u-table-cell">{{ lab.labId }}</td>
               <td class="u-table-cell">{{ lab.title }}</td>
               <td class="u-table-cell">{{ "Τμήμα" }}</td>
@@ -152,7 +152,8 @@ export default defineComponent({
     const pdfContent = ref<HTMLElement>();
     const {labs,callToGeneratePdf} = toRefs(props);
     const generatePdf = async () => {
-      if (!pdfContent.value) return;
+      if (!pdfContent.value)
+        return;
       const doc = new jsPDF({
         orientation: "landscape",
         unit: "mm",
