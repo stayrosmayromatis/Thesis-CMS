@@ -1,6 +1,6 @@
 <template>
   <div
-    style="min-width: 510px"
+    style="min-width: 320px"
     data-home-page="Home.html"
     data-home-page-title="Home"
     class="u-body u-xl-mode"
@@ -87,32 +87,32 @@
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
-                Κωδ.
+                Κωδικός
               </td>
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
-                ΄΄Όν. Εργ.
+                Όνομα Εργαστ.
               </td>
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
-                Τμ.
+                Τμήμα
               </td>
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
-                Ημ.
+                Ημέρα
               </td>
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
-                ΄Ώρα
+                Ώρα
               </td>
               <td
                 class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell"
               >
-                Παρακ.
+                Παρακολούθηση
               </td>
             </tr>
             <tr v-for="lab in labs" :key="lab.labId" style="height: 79px">
@@ -131,113 +131,65 @@
 </template>
 
 <script lang="ts">
-import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { Department } from "@/types/department.type";
-import { defineComponent, ref,onMounted } from "vue";
-import jsPDF, { ImageOptions } from "jspdf";
+import { defineComponent, ref,watch, toRefs, PropType, Ref} from "vue";
 import html2canvas from "html2canvas";
+import jsPDF, { ImageOptions } from "jspdf";
 export default defineComponent({
-  props:{
-    labs:{
-      type:Object,
-      required:false,
-      default:null
-    }
+  props: {
+    labs: {
+      type: Object,
+      required: false,
+      default: null,
+    },
+    callToGeneratePdf:{
+      type:Object as PropType<Ref<Boolean>>,
+      required : true,
+      default:false
+    },
   },
-  setup() {
+  emits: ["pdfCreated"],
+  setup(props, context) {
     const pdfContent = ref<HTMLElement>();
-    onMounted(async () => {
-       const doc = new jsPDF({
+    const {labs,callToGeneratePdf} = toRefs(props);
+    const generatePdf = async () => {
+      if (!pdfContent.value) return;
+      const doc = new jsPDF({
         orientation: "landscape",
         unit: "mm",
-        format:  [400, 297],// 'a4',
+        format: [400, 297], // 'a4',
         precision: 2,
       });
-
-      if (pdfContent.value) {
-        // doc.html(pdfContent.value,
-        //   {
-        //     callback: async function (doc: jsPDF) {
-        //       //doc.save('output.pdf')
-        //     },
-        //     margin: [0, 0, 0, 0],
-        //     autoPaging: 'text',
-        //     x: 0,
-        //     y: 0,
-        //     width: 210, //target width in the PDF document
-        //     //windowWidth: 675 ,
-        //     windowWidth: window.innerWidth //window width in CSS pixels
-        //   });
-          const canvas = await html2canvas(pdfContent.value, {
-                logging: true,
-                scale: 5,
-                //  width: 200,
-                //  height: 113,
-                useCORS: true,
-                //allowTaint: false,
-          });
-
-          const imgProps = doc.getImageProperties(canvas.toDataURL());
-          const pdfWidth = doc.internal.pageSize.getWidth();
-          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-          const imageOptions :ImageOptions ={
-            imageData : canvas.toDataURL(),
-            format : "PNG",
-            width : pdfWidth,
-            height:pdfHeight,
-            x:0,
-            y:0
-          }
-          doc.addImage(imageOptions as ImageOptions);
-          window.open(URL.createObjectURL(doc.output('blob')));
-    }});
-
-
-    const sLabs = ref([
-      {
-        labId: "1601",
-        title: "Οργάνωση και αρχιτεκτονική",
-        semester: LabSemesterEnum.A_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1602",
-        title: "Δικτυα και αρχιτεκτονική",
-        semester: LabSemesterEnum.B_EAR,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1603",
-        title: "Δομημένος Προγραμματισμός",
-        semester: LabSemesterEnum.C_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1601",
-        title: "Οργάνωση και αρχιτεκτονική",
-        semester: LabSemesterEnum.A_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1602",
-        title: "Δικτυα και αρχιτεκτονική",
-        semester: LabSemesterEnum.B_EAR,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1603",
-        title: "Δομημένος Προγραμματισμός",
-        semester: LabSemesterEnum.C_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-    ]);
-    return {labs:sLabs, pdfContent};
+      const canvas = await html2canvas(pdfContent.value, {
+        logging: true,
+        scale: 5,
+        //  width: 200,
+        //  height: 113,
+        useCORS: true,
+        //allowTaint: false,
+      });
+      console.log(canvas.toDataURL());
+      const imgProps = doc.getImageProperties(canvas.toDataURL());
+      console.log(imgProps);
+      const pdfWidth = doc.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const imageOptions: ImageOptions = {
+        imageData: canvas.toDataURL(),
+        format: "PNG",
+        width: pdfWidth,
+        height: pdfHeight,
+        x: 0,
+        y: 0,
+      };
+      doc.addImage(imageOptions as ImageOptions);
+      window.open(URL.createObjectURL(doc.output("blob")));
+      context.emit("pdfCreated", false);
+    };
+    watch(callToGeneratePdf,(val) => {
+      if(val === true){
+        generatePdf();
+      }
+    });
+    return {labs, pdfContent, generatePdf };
   },
 });
 </script>

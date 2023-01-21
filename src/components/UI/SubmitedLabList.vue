@@ -20,6 +20,13 @@
         :description="sLab.description"
       >
       </submited-lab>
+
+      <pdf-content
+        @pdfCreated="pdfCreationCompleted"
+        :callToGeneratePdf="callToGeneratePdf"
+        :labs="sLabs"
+      >
+      </pdf-content>
     </div>
   </div>
 </template>
@@ -31,7 +38,6 @@ import BaseDialog from "@/components/Base/BaseDialog.vue";
 import PdfContent from "@/components/UI/PdfContent.vue";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Department } from "@/types/department.type";
-import { useRouter } from "vue-router";
 export default defineComponent({
   components: {
     SubmitedLab,
@@ -41,7 +47,6 @@ export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {
     const isError = false;
-    const router = useRouter();
     const sLabs = ref([
       {
         labId: "1601",
@@ -94,12 +99,21 @@ export default defineComponent({
       context.emit("closeMobileView", true);
       return;
     });
-
-    const generatePdf = () => {
-      router.push({ name: "poutsa" });
+    const pdfCreationCompleted = (val: boolean) => {
+      callToGeneratePdf.value = val;
     };
-
-    return { sLabs, isError, emitMobileViewClose, pushToPdf:generatePdf };
+    const callToGeneratePdf = ref(false);
+    const invokeGeneratePdf = () => {
+      callToGeneratePdf.value = true;
+    };
+    return {
+      sLabs,
+      isError,
+      emitMobileViewClose,
+      pushToPdf: invokeGeneratePdf,
+      pdfCreationCompleted,
+      callToGeneratePdf,
+    };
   },
 });
 </script>
