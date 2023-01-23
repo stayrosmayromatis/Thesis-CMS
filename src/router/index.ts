@@ -5,7 +5,7 @@ const AddLab = () => import('@/components/UI/AddLab.vue');
 const BaseSlider = () => import('@/components/Base/BaseSlider.vue');
 const WelcomePage =() => import('@/components/UI/WelcomePage.vue');
 const PdfContent = () => import('@/components/UI/PdfContent.vue');
-const login_red_url = `https://login.it.teithe.gr/authorization/?client_id=${import.meta.env.VITE_CLIENT_ID}&response_type=code&scope=profile&redirect_uri=${import.meta.env.VITE_BASE_URI}`
+const login_red_url = `https://login.iee.ihu.gr/authorization/?client_id=${import.meta.env.VITE_CLIENT_ID}&response_type=code&scope=profile&redirect_uri=${import.meta.env.VITE_BASE_URI}`
 const routes: Array<RouteRecordRaw> = [
   {
     path : "/",
