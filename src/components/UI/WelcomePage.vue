@@ -1,5 +1,13 @@
 <template>
     <div class="container" @click="emitMobileViewClose">
+        <base-dialog v-if="error === true" @close-modal="clearError">
+            <template #title>
+                <h1>{{errorTit}}</h1>
+            </template>
+            <template #description>
+                <p>{{errorDesc}}</p>
+            </template>
+        </base-dialog>
         <div class="logo">
             <img class="mobile-view-picture" src="@/assets/ihu_logo.png" alt="IHU-LOGO-ALT" />
         </div>
@@ -26,12 +34,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,onMounted } from 'vue'
-
+import { defineComponent, onMounted, ref } from 'vue'
+import { useErrorFunctions } from '@/composables/throwError.composable';
+import BaseDialog from '../Base/BaseDialog.vue';
 export default defineComponent({
-    emits:['closeMobileView'],
-    setup(_,context) {
+    emits: ['closeMobileView'],
+    components:{
+        BaseDialog
+    },
+    setup(_, context) {
+        const error = ref(false);
+        const errorDesc = ref<string>();
+        const errorTit = ref<string>();
+
         onMounted(() => {
+            const {clearError,errorDescription,errorTitle,isError,setError,} = useErrorFunctions();
+            error.value = isError.value;
+            errorDesc.value=errorDescription.value;
+            errorTit.value= errorTitle.value;
+
             context.emit('closeMobileView', true);
             return;
         });
@@ -39,7 +60,11 @@ export default defineComponent({
             context.emit('closeMobileView', true);
             return;
         }
-        return {emitMobileViewClose}
+        const clearError = () => {
+            const {clearError} = useErrorFunctions();
+            clearError();
+        }
+        return { emitMobileViewClose,error,errorDesc, errorTit,clearError}
     }
 })
 </script>
