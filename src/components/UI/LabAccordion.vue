@@ -30,7 +30,7 @@
             </div>
             <div class="chip-separator__right-chip">
               <v-chip class="chip-attendance" size="large">
-                <div class="large-font">{{ lab.attendance.value }}</div>
+                <div class="large-font">{{ lab.attendance?.title }}</div>
               </v-chip>
             </div>
           </div>

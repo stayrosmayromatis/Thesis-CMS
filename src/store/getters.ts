@@ -9,4 +9,7 @@ const IsStudent=(state: State) => {
 const IsTeacher=(state: State) => {
         return state.isTeacher;
     }
-export default {IsAuth,IsStudent,IsTeacher};
+const getStaffType=(state:State)=>{
+    return state.isStaffType;
+}    
+export default {IsAuth,IsStudent,IsTeacher,getStaffType};

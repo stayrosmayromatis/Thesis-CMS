@@ -3,6 +3,7 @@
 interface ImportMetaEnv{
     readonly VITE_APP_TITLE:string;
     readonly VITE_BASE_URI:string;
+    readonly VITE_REDIRECT_URI:string;
     readonly NODE_ENV:string;
     readonly VITE_APP_USERNAME:string;
     readonly VITE_CLIENT_ID:string;

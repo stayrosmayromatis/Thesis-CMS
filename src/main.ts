@@ -21,7 +21,6 @@ import '@vuepic/vue-datepicker/dist/main.css'
 const app = createApp(App)
 app.component('date-picker',DatePicker);
 app.component('base-slider',BaseSlider);
-
 registerPlugins(app)
 app.use(store,key);
 app.use(router);

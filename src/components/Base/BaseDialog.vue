@@ -39,10 +39,12 @@ export default defineComponent({
       default: 'The has been an error'
     },
   },
-  setup() {
+  emits:['close-modal'],
+  setup(_,context) {
     const modal = ref(true);
     const closeModal = (): void => {
       modal.value = false;
+      context.emit('close-modal');
     };
     return { modal, closeModal };
   },
