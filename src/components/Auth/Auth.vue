@@ -9,217 +9,45 @@ import { key } from "@/store/index";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
-import axios from "axios";
-export interface BaseUser {
-  id: string;
-  displayNameEn: string;
-  displayNameEl: string;
-  eduPersonAffiliation: TypeStaff;
-  titleEn: string;
-  titleEl: string;
-}
-export interface Student extends BaseUser {
-  am: string;
-  userId: string;
-  mail?: string;
-  regsem: string;
-  regyear: string;
-  semester: string;
-}
-export interface Staff extends BaseUser {
-  personalTitle: string;
-  eduPersonalEntitlementEn: string;
-  eduPersonalEntitlementEl: string;
-}
-export interface AccessTokenObject {
-  access_token: string;
-  refresh_token: string;
-  user: string;
-}
-export interface ApiResult<T> {
-  Status: boolean;
-  Data: T;
-}
-export interface BaseUserAuthStateResponse {
-  IsAuth: boolean;
-  SessionIdentified: string;
-  UserDataDetails: UserDataDetails;
-}
-export interface UserDataDetails {
-  FourDigitId: string;
-  DisplayNameEn: string;
-  DisplayNameEl: string;
-  PersonAffiliation: string;
-  EduPersonAffiliation: TypeStaff;
-  EduPersonAffiliationString: string;
-  TitleEn: string;
-  TitleEl: string;
-  Am: string;
-  UserId: string;
-  Mail: string;
-  RegSem: string;
-  RegYear: string;
-  Semester: string;
-  PersonalTitle: string;
-  EduPersonalEntitlementEn: string;
-  EduPersonalEntitlementEl: string;
-}
+import { Student} from '@/types/student.type';
+import { Staff } from '@/types/staff.type';
+import { AccessTokenObject } from '@/types/accessTokenObject.type';
+import { ApiResult } from '@/types/apiResult.type';
+import { BaseUserAuthStateResponse } from '@/types/baseUserAuthStateResponse.type';
+import { InternalDataTransfter } from '@/types/internalDataTransfer.type';
 export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
     const store = useStore(key);
-    onMounted(async () => {
-      const hasQueryParams = Object.keys(route.query);
-      const queryParamsLength = hasQueryParams.length;
-      const {
+    const {
         setCustomInstance,
         setBackendInstanceUnAuth,
         setBackendInstanceAuth,
       } = useAxiosInstance();
+    onMounted(async () => {
+      const hasQueryParams = Object.keys(route.query);
+      const queryParamsLength = hasQueryParams.length;
+
       if (hasQueryParams) {
         if (queryParamsLength === 1) {
-          setErrorPushToHome(
-            "Σφάλμα Αυθεντικοποίησης",
-            "Η διαδίκασία δεν ολοκληρώθηκε"
-          );
+          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
           return;
         }
         if (queryParamsLength === 2) {
-          if (!route.query.code) {
-            setErrorPushToHome(
-              "Σφάλμα Αυθεντικοποίησης",
-              "Η διαδίκασία δεν ολοκληρώθηκε"
-            );
+          const makeAccessCallResponse = await makeAccessTokenCall();
+          if(makeAccessCallResponse.Status === false || makeAccessCallResponse.Error || !makeAccessCallResponse.Data )
             return;
-          }
-          const params = new URLSearchParams();
-          params.append("client_id", import.meta.env.VITE_CLIENT_ID);
-          params.append("client_secret", import.meta.env.VITE_CLIENT_SECRET);
-          params.append("grant_type", "authorization_code");
-          params.append("code", route.query.code.toString());
-          const access_token_object = await useAxios<AccessTokenObject>(
-            "/token",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                Accept: "*/*",
-              },
-              data: params,
-            },
-            setCustomInstance("https://login.iee.ihu.gr")
-          );
-          if ((access_token_object.isFinished.value &&
-              access_token_object.error.value) ||
-            !access_token_object.data.value) {
-            setErrorPushToHome(
-              "Σφάλμα Αυθεντικοποίησης",
-              "Η διαδίκασία δεν ολοκληρώθηκε"
-            );
+          const makeProfileCallResponse = await makeProfileCall(makeAccessCallResponse.Data);
+          if(makeProfileCallResponse.Status === false || makeProfileCallResponse.Error || !makeProfileCallResponse.Data )
             return;
-          }
-          const access_token = access_token_object.data.value.access_token;
-          const profileObject = await useAxios<any>(
-            "/profile",
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "Type:application/json",
-                Accept: "*/*",
-                "x-access-token": `${access_token}`,
-              },
-            },
-            setCustomInstance("https://api.iee.ihu.gr")
-          );
-          if (profileObject.isFinished.value &&
-            (profileObject.error.value || !profileObject.data.value)) {
-            setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+          const signInResponse = await makeSignInCall(makeProfileCallResponse.Data);
+          if(signInResponse.Status === false || signInResponse.Error || !signInResponse.Data )
             return;
-          }
-          let objectToPush: Staff | Student | null = null;
-          //Determine where he is staff or student
-          if (profileObject.data.value["eduPersonAffiliation"] === "staff") {
-            objectToPush = {
-              id: profileObject.data.value.id,
-              displayNameEn: profileObject.data.value.displayName,
-              displayNameEl: profileObject.data.value["displayName;lang-el"],
-              eduPersonAffiliation: TypeStaff.STAFF,
-              titleEn: profileObject.data.value.title,
-              titleEl: profileObject.data.value["title;lang-el"],
-              personalTitle: profileObject.data.value.personalTitle,
-              eduPersonalEntitlementEn:
-                profileObject.data.value.eduPersonalEntitlement,
-              eduPersonalEntitlementEl:
-                profileObject.data.value["eduPersonalEntitlement;lang-el"],
-            };
-          } else if (
-            profileObject.data.value["eduPersonAffiliation"] === "student"
-          ) {
-            objectToPush = {
-              id: profileObject.data.value.id,
-              displayNameEn: profileObject.data.value.displayName,
-              displayNameEl: profileObject.data.value["displayName;lang-el"],
-              eduPersonAffiliation: TypeStaff.STUDENT,
-              titleEn: profileObject.data.value.title,
-              titleEl: profileObject.data.value["title;lang-el"],
-              am: profileObject.data.value.am,
-              userId: profileObject.data.value.uid,
-              mail: profileObject.data.value.mail,
-              regsem: profileObject.data.value.regsem,
-              regyear: profileObject.data.value.regyear,
-              semester: profileObject.data.value.sem,
-            };
-          } else {
-            setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+          const makeInfoCallResponse = await makeInfoCall();
+           if(makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data )
             return;
-          }
-          if (!objectToPush) {
-            setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
-            return;
-          }
-          const sign_in_response = await useAxios(
-            "/authclient/sign-in",
-            {
-              method: "POST",
-              data: objectToPush,
-            },
-            setBackendInstanceUnAuth()
-          );
-          if ((sign_in_response.isFinished.value &&
-              !sign_in_response.data.value) ||
-            sign_in_response.error.value)
-          {
-            setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
-            return;
-          }
-          const sign_in_response_data: ApiResult<string> =sign_in_response.data.value;
-          if (sign_in_response_data.Status === false ||!sign_in_response_data.Status) {
-            setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
-            return;
-          }
-
-          const info_response = await useAxios(
-            "/info/infos",
-            setBackendInstanceAuth()
-          );
-          if (info_response.isFinished.value && ( !info_response.data.value || info_response.error.value) )
-          {
-             setErrorPushToHome(
-                "Σφάλμα Εξουσιοδήτησης",
-                "Η διαδίκασία δεν ολοκληρώθηκε"
-              );
-              return;
-           }
-          const info_response_data: ApiResult<BaseUserAuthStateResponse> =info_response.data.value;
-          if (!info_response_data || info_response_data.Status === false || !info_response_data.Status) {
-            setErrorPushToHome(
-              "Σφάλμα Εξουσιοδήτησης",
-              "Η διαδίκασία δεν ολοκληρώθηκε"
-            );
-            return;
-          }
-          console.log(info_response_data.Data);
+          console.log(makeInfoCallResponse.Data);
           return;
         }
       }
@@ -237,6 +65,144 @@ export default defineComponent({
       router.replace({ name: "welcome" });
       return;
     };
+    const makeAccessTokenCall =async ():Promise<InternalDataTransfter<string>> => {
+      if (!route.query.code) {
+            setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+            return {Status : false,Data:null,Error:"error"};
+          }
+      const params = new URLSearchParams();
+      params.append("client_id", import.meta.env.VITE_CLIENT_ID);
+      params.append("client_secret", import.meta.env.VITE_CLIENT_SECRET);
+      params.append("grant_type", "authorization_code");
+      params.append("code", route.query.code.toString());
+      const access_token_object = await useAxios<AccessTokenObject>(
+        "/token",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "*/*",
+          },
+          data: params,
+        },
+        setCustomInstance("https://login.iee.ihu.gr")
+      );
+      if (access_token_object.isFinished.value && (access_token_object.error.value ||!access_token_object.data.value)) {
+            setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+             return {Status : false,Data:null,Error:"error"};
+      }
+       return {Status : true,Data:access_token_object.data.value!.access_token,Error:null};
+
+    };
+    const makeProfileCall = async (accessToken:string):Promise<InternalDataTransfter<Staff|Student>> => {
+      if(!accessToken )
+           return {Status : false,Data:null,Error:"error"};
+
+      const profileObject = await useAxios<any>(
+        "/profile",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "Type:application/json",
+            Accept: "*/*",
+            "x-access-token": `${accessToken}`,
+          },
+        },
+        setCustomInstance("https://api.iee.ihu.gr")
+      );
+      if (profileObject.isFinished.value &&
+        (profileObject.error.value || !profileObject.data.value)) {
+        setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+          return {Status : false,Data:null,Error:"error"};
+      }
+
+      let objectToPush: Staff | Student | null = null;
+      //Determine where he is staff or student
+      if (profileObject.data.value["eduPersonAffiliation"] === "staff") {
+        objectToPush = {
+          id: profileObject.data.value.id,
+          displayNameEn: profileObject.data.value.displayName,
+          displayNameEl: profileObject.data.value["displayName;lang-el"],
+          eduPersonAffiliation: TypeStaff.STAFF,
+          titleEn: profileObject.data.value.title,
+          titleEl: profileObject.data.value["title;lang-el"],
+          personalTitle: profileObject.data.value.personalTitle,
+          eduPersonalEntitlementEn:
+            profileObject.data.value.eduPersonalEntitlement,
+          eduPersonalEntitlementEl:
+            profileObject.data.value["eduPersonalEntitlement;lang-el"],
+        };
+      } else if (
+        profileObject.data.value["eduPersonAffiliation"] === "student"
+      ) {
+        objectToPush = {
+          id: profileObject.data.value.id,
+          displayNameEn: profileObject.data.value.displayName,
+          displayNameEl: profileObject.data.value["displayName;lang-el"],
+          eduPersonAffiliation: TypeStaff.STUDENT,
+          titleEn: profileObject.data.value.title,
+          titleEl: profileObject.data.value["title;lang-el"],
+          am: profileObject.data.value.am,
+          userId: profileObject.data.value.uid,
+          mail: profileObject.data.value.mail,
+          regsem: profileObject.data.value.regsem,
+          regyear: profileObject.data.value.regyear,
+          semester: profileObject.data.value.sem,
+        };
+      } else {
+        setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+        return {Status : false,Data:null,Error:"error"};
+      }
+      if (!objectToPush) {
+            setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+            return {Status : false,Data:null,Error:"error"};
+      }
+      return {Status : true,Data:objectToPush,Error:null};
+    };
+    const makeSignInCall = async (object:Student | Staff):Promise<InternalDataTransfter<boolean>>=>
+    {
+      if(!object)
+        return {Status : false,Data:null,Error:"error"};
+      const sign_in_response = await useAxios(
+          "/authclient/sign-in",
+          {
+            method: "POST",
+            data: object,
+          },
+          setBackendInstanceUnAuth()
+        );
+        if (sign_in_response.isFinished.value &&(!sign_in_response.data.value ||sign_in_response.error.value))
+        {
+          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+          return {Status : false,Data:null,Error:"error"};
+        }
+        const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
+        if (sign_in_response_data.Status === false ||!sign_in_response_data.Status || !sign_in_response_data.Data) {
+          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+          return {Status : false,Data:null,Error:"error"};
+        }
+        return {Status:true,Data:true,Error:null};
+    };
+    const makeInfoCall = async ():Promise<InternalDataTransfter<BaseUserAuthStateResponse>>=>{
+        const info_response = await useAxios("/info/infos",setBackendInstanceAuth());
+        if (info_response.isFinished.value && ( !info_response.data.value || info_response.error.value) )
+        {
+            setErrorPushToHome(
+              "Σφάλμα Εξουσιοδήτησης",
+              "Η διαδίκασία δεν ολοκληρώθηκε"
+            );
+            return {Status:false,Data:null,Error:"error"};
+          }
+        const info_response_data: ApiResult<BaseUserAuthStateResponse> =info_response.data.value;
+        if (!info_response_data || info_response_data.Status === false || !info_response_data.Status || !info_response_data.Data) {
+          setErrorPushToHome(
+            "Σφάλμα Εξουσιοδήτησης",
+            "Η διαδίκασία δεν ολοκληρώθηκε"
+          );
+          return {Status:false,Data:null,Error:"error"};
+        }
+        return {Status:true,Data:info_response_data.Data,Error:null}
+    }
   },
 });
 </script>
