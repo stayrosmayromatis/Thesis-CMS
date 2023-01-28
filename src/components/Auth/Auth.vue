@@ -221,49 +221,32 @@ export default defineComponent({
                     return;
                   }
                 }
-                const info_response = await axios.get(
-                  `${import.meta.env.VITE_BACK_END_URI}/info/infos`,
-                  {
-                    method: "GET",
-                    withCredentials: true,
-                  }
+                const info_response = await useAxios(
+                  "/info/infos",
+                  setBackendInstanceAuth(),
                 );
-                console.log(info_response);
-                // const info_response = await useAxios(
-                //   "/info/infos",
-                //   {
-                //     method: "GET",
-                //     withCredentials:true
-                //   },
-                //   setBackendInstanceAuth()
-                // );
+                if(info_response.isFinished.value)
+                {
+                  const info_response_data:ApiResult<BaseUserAuthStateResponse> = info_response.data.value;
+                  if(!info_response_data || info_response_data.Status === false)
+                  {
+                            setErrorPushToHome(
+                      "Σφάλμα Εξουσιοδήτησης",
+                      "Η διαδίκασία δεν ολοκληρώθηκε"
+                    );
+                    return;
+                  }
+                  if(!info_response_data.Data || info_response_data.Data.IsAuth === false)
+                  {
+                          setErrorPushToHome(
+                      "Σφάλμα Εξουσιοδήτησης",
+                      "Η διαδίκασία δεν ολοκληρώθηκε"
+                    );
+                    return;
+                  }
+                  console.log(info_response_data.Data);
 
-                // if(info_response.isFinished.value)
-                // {
-                //   const info_response_data:ApiResult<BaseUserAuthStateResponse> = info_response.data.value;
-                //   if(!info_response_data || info_response_data.Status === false)
-                //   {
-                //       setError(
-                //       `Σφάλμα Εξουσιοδήτησης`,
-                //       `Παρακαλώ αποδεχθέιτε την εφαρμογή`
-                //     );
-                //     store.dispatch("setAuthState", false);
-                //     router.replace({ name: "welcome" });
-                //     return;
-                //   }
-                //   if(!info_response_data.Data || info_response_data.Data.IsAuth === false)
-                //   {
-                //       setError(
-                //       `Σφάλμα Εξουσιοδήτησης`,
-                //       `Παρακαλώ αποδεχθέιτε την εφαρμογή`
-                //     );
-                //     store.dispatch("setAuthState", false);
-                //     router.replace({ name: "welcome" });
-                //     return;
-                //   }
-                //   console.log(info_response_data.Data);
-
-                // }
+                }
                 return;
               }
             }
