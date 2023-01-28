@@ -8,6 +8,7 @@ interface ImportMetaEnv{
     readonly VITE_APP_USERNAME:string;
     readonly VITE_CLIENT_ID:string;
     readonly VITE_CLIENT_SECRET:string;
+    readonly VITE_BACK_END_URI:string
 }
 
 interface ImportMeta {
