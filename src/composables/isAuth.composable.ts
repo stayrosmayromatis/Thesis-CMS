@@ -1,13 +1,42 @@
-import {useStore} from "vuex";
-import {key} from "@/store/index";
+import { useStore } from "vuex";
+import { key } from "@/store/index";
+import { TypeStaff } from "@/enums/StaffTypeEnum";
+import { UserDataDetails } from "@/models/BACKEND-MODELS/UserDataDetails";
 
-export const isAuthenticated = ():boolean => {
+export function useAuth() {
+
+  const IsAuthenticated = (): boolean => {
     try {
-        const store = useStore(key);
-        return store.getters.IsAuth;
+      const store = useStore(key);
+      return store.getters.IsAuth;
     } catch (error) {
-        console.log(error);
-        return false;
+      console.log(error);
+      return false;
     }
-}
+  };
+  const SetNotAuthenticated = ():void => {
+    const store = useStore(key);
+    store.commit('setAuthState',false);
+    return;
+  }
+  const GetTypeStaff = (): TypeStaff | null => {
+    try {
+      const store = useStore(key);
+      return store.getters.getStaffType ?? null;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+  const GetUserDataDetails = (): UserDataDetails | null => {
+    try {
+      const store = useStore(key);
+      return store.getters.getUserDataDetails ?? null;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
 
+  return { IsAuthenticated, GetTypeStaff,GetUserDataDetails ,SetNotAuthenticated};
+}

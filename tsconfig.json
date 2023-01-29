@@ -20,7 +20,8 @@
       "@/enums/*":["src/enums/*"],
       "@/components/*":["src/components/*"],
       "@/composables/*":["src/composables/*"],
-      "@/types/*":["src/types/*"],
+      "@/models/*":["src/models/*"],
+      "@/store/*":["src/store/*"],
       // "@":["src/*"]
     },
   },

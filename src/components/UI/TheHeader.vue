@@ -43,13 +43,9 @@
           <path class="fill-xmark"
             d="M312.1 375c9.369 9.369 9.369 24.57 0 33.94s-24.57 9.369-33.94 0L160 289.9l-119 119c-9.369 9.369-24.57 9.369-33.94 0s-9.369-24.57 0-33.94L126.1 256L7.027 136.1c-9.369-9.369-9.369-24.57 0-33.94s24.57-9.369 33.94 0L160 222.1l119-119c9.369-9.369 24.57-9.369 33.94 0s9.369 24.57 0 33.94L193.9 256L312.1 375z" />
         </svg>
+        <!-- X-MARKS-THE-SPOT-CLOSE-MENU -->
       </div>
       <router-link to="/">{{ title }}</router-link>
-      <!-- <svg width="50" height="50" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="m21 4c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm13.5 10.75c0-.414-.336-.75-.75-.75h-4.5c-.414 0-.75.336-.75.75s.336.75.75.75h4.5c.414 0 .75-.336.75-.75zm-11.772-.537 1.25 1.114c.13.116.293.173.455.173.185 0 .37-.075.504-.222l2.116-2.313c.12-.131.179-.296.179-.459 0-.375-.303-.682-.684-.682-.185 0-.368.074-.504.221l-1.66 1.815-.746-.665c-.131-.116-.293-.173-.455-.173-.379 0-.683.307-.683.682 0 .188.077.374.228.509zm11.772-2.711c0-.414-.336-.75-.75-.75h-4.5c-.414 0-.75.336-.75.75s.336.75.75.75h4.5c.414 0 .75-.336.75-.75zm-11.772-1.613 1.25 1.114c.13.116.293.173.455.173.185 0 .37-.074.504-.221l2.116-2.313c.12-.131.179-.296.179-.46 0-.374-.303-.682-.684-.682-.185 0-.368.074-.504.221l-1.66 1.815-.746-.664c-.131-.116-.293-.173-.455-.173-.379 0-.683.306-.683.682 0 .187.077.374.228.509zm11.772-1.639c0-.414-.336-.75-.75-.75h-4.5c-.414 0-.75.336-.75.75s.336.75.75.75h4.5c.414 0 .75-.336.75-.75z" />
-      </svg> -->
       <!-- IHU LOGO SVG -->
       <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50" height="40" version="1.1"
         style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
@@ -75,17 +71,16 @@
     <div style="width: 100%">
       <div class="main-nav" v-if="hamburgerClose">
         <ul>
-          <li @click="closeHamburgerFn()" class="nav__item">
+          <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
             <router-link :to="{ name: 'labList' }">All Labs</router-link>
           </li>
-          <li @click="closeHamburgerFn()" class="nav__item"><router-link :to="{ name: 'submittedLabs' }">Submitted
+          <li  v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item"><router-link :to="{ name: 'submittedLabs' }">Submitted
               Labs</router-link></li>
-          <li @click="closeHamburgerFn()" class="nav__item"><router-link :to="{ name: 'addlab' }">Add a
+          <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item"><router-link :to="{ name: 'addlab' }">Add a
               Lab</router-link></li>
-          <li @click="closeHamburgerFn()" class="nav__item"><router-link to="/">Contact</router-link></li>
+          <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item"><router-link to="/">Contact</router-link></li>
         </ul>
-        <div class="nav__item--cta" v-if="!isLoggedInCmptd">
-          <!-- <img src="@/assets/iconmonstr-user-20.svg" width="20" height="20" /> -->
+        <div class="nav__item--cta" v-if="!isLoggedIn">
           <v-btn @click="redirectToLogin" class="sign-btn" rounded="pill" variant="outlined">
             Sign In
           </v-btn>
@@ -110,7 +105,8 @@
 import { onMounted, defineComponent, ref, watch, computed, toRefs } from "vue";
 import { useWindowSize } from '@vueuse/core';
 import { useRouter } from "vue-router";
-import { isAuthenticated } from '@/composables/isAuth.composable';
+import { useAuth } from '@/composables/isAuth.composable';
+import { TypeStaff } from "@/enums/StaffTypeEnum";
 export default defineComponent({
   props: {
     closeInstantlyDirective: {
@@ -123,19 +119,26 @@ export default defineComponent({
     let hamburgerClose = ref(false);
     const { width } = useWindowSize();
     const { closeInstantlyDirective } = toRefs(props);
-    //let title = process.env.VUE_APP_TITLE;
-    // let title = import.meta.env.VITE_APP_TITLE;
     let title = "IHU SUBMISSIONS";
-    //let userName = process.env.VUE_APP_USERNAME;
-    // let userName = import.meta.env.VITE_APP_USERNAME;
-    let userName = "Stavros Mavromatis";
     const router = useRouter();
-
-    const isLoggedIn = computed(
-      () => {
-        return isAuthenticated();
-      }
-    );
+    const {IsAuthenticated,GetUserDataDetails,SetNotAuthenticated,GetTypeStaff} = useAuth();
+    const isLoggedIn = computed(() => IsAuthenticated());
+    const userName = computed(() => {
+        if(isLoggedIn.value)
+            return GetUserDataDetails()?.DisplayNameEn ?? "User";
+        SetNotAuthenticated();
+        return "";
+    });
+    const IsStaff = computed(() => {
+       if(isLoggedIn.value)
+       {
+          const typeStaff =  GetTypeStaff();
+          if(!typeStaff)
+            return false;
+          return typeStaff === TypeStaff.STAFF
+       }
+       return false;
+    });
 
     onMounted(() => {
       if (window.innerWidth < 769) {
@@ -180,7 +183,7 @@ export default defineComponent({
       return new Promise(resolve => setTimeout(resolve, time));
     }
 
-    return { title, redirectToLogin, hamburgerClose, closeHamburgerFn, isLoggedInCmptd: isLoggedIn, userName };
+    return { title, redirectToLogin, hamburgerClose, closeHamburgerFn, isLoggedIn, userName,IsStaff };
   },
 });
 </script>

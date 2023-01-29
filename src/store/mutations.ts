@@ -1,30 +1,26 @@
-import { TypeStaff } from "@/enums/StaffTypeEnum";
-import { State } from "@/types/stateInterface.type";
 
-const setAuthState = (state:State,authState:boolean) => {
-    state.isAuth = authState;
-    state.isTeacher = state.isStudent = false;
-    state.isStaffType = undefined;
-    return;
+import { UserDataDetails } from "@/models/BACKEND-MODELS/UserDataDetails";
+import { State } from "@/models/stateInterface.type";
+import { StoreSth } from "@/store/actions";
+
+const setAuthState = (state: State, authState: boolean) => {
+  state.IsAuth = authState;
+  state.IsTeacher = state.IsStudent = false;
+  state.IsStaffType = null;
+  state.UserDataDetails = null;
+};
+const setIsTeacherState = (state: State, payload:StoreSth) => {
+  state.IsAuth = true;
+  state.IsTeacher = payload.authState;
+  state.IsStaffType = payload.eduPersonAffiliation;
+};
+const setIsStudentState = (state: State, payload:StoreSth) => {
+  state.IsAuth = true;
+  state.IsStudent = payload.authState;
+  state.IsStaffType = payload.eduPersonAffiliation;
+};
+const setUserDataDetails = (state:State,payload:UserDataDetails) =>
+{
+  state.UserDataDetails = payload;
 }
-const setIsTeacherState = (state:State, teacherState: boolean) => {
-    state.isTeacher = teacherState;
-    if(!teacherState)
-    {
-        state.isStaffType = undefined;
-        return;
-    }
-    state.isStaffType = TypeStaff.STAFF;
-    return;
-}
-const setIsStudentState = (state:State, studentState: boolean) => {
-    state.isStudent = studentState;
-    if(!studentState)
-    {
-        state.isStaffType = undefined;
-        return;
-    }
-    state.isStaffType = TypeStaff.STUDENT;
-    return;
-}
-export default {setAuthState,setIsTeacherState,setIsStudentState};
+export default { setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails };

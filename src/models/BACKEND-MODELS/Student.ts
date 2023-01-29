@@ -1,4 +1,4 @@
-import { BaseUser } from "@/types/baseUser.type";
+import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 
 export interface Student extends BaseUser {
   am: string;

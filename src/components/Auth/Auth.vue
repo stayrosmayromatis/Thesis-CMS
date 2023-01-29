@@ -9,12 +9,14 @@ import { key } from "@/store/index";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
-import { Student} from '@/types/student.type';
-import { Staff } from '@/types/staff.type';
-import { AccessTokenObject } from '@/types/accessTokenObject.type';
-import { ApiResult } from '@/types/apiResult.type';
-import { BaseUserAuthStateResponse } from '@/types/baseUserAuthStateResponse.type';
-import { InternalDataTransfter } from '@/types/internalDataTransfer.type';
+import { Student} from '@/models/BACKEND-MODELS/Student';
+import { Staff } from '@/models/BACKEND-MODELS/Staff';
+import { AccessTokenObject } from '@/models/accessTokenObject.type';
+import { ApiResult } from '@/models/DTO/ApiResult';
+import { BaseUserAuthStateResponse } from '@/models/BACKEND-MODELS/BaseUserAuthStateResponse';
+import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
+import { StoreSth } from "@/store/actions";
+
 export default defineComponent({
   setup() {
     const route = useRoute();
@@ -47,7 +49,7 @@ export default defineComponent({
           const makeInfoCallResponse = await makeInfoCall();
            if(makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data )
             return;
-          console.log(makeInfoCallResponse.Data);
+          await determineIfAuth(makeInfoCallResponse.Data);
           return;
         }
       }
@@ -202,6 +204,45 @@ export default defineComponent({
           return {Status:false,Data:null,Error:"error"};
         }
         return {Status:true,Data:info_response_data.Data,Error:null}
+    }
+    const determineIfAuth = async (response:BaseUserAuthStateResponse):Promise<void> => {
+      if(!response)
+      {
+        store.dispatch('setAuthState',false);
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+      }
+      if(response.IsAuth === false || !response.IsAuth)
+      {
+        store.dispatch('setAuthState',false);
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+      }
+      if(!response.UserDataDetails)
+      {
+        store.dispatch('setAuthState',false);
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+      }
+      const payload:StoreSth = {
+        authState:response.IsAuth,
+        eduPersonAffiliation:response.UserDataDetails.EduPersonAffiliation
+      }
+      if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STAFF)
+      {
+        store.dispatch('setIsTeacherState',payload);
+        store.dispatch('setUserDataDetails', response.UserDataDetails);
+        router.replace({name:'submittedLabs'});
+      }
+      else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
+      {
+        store.dispatch('setIsStudentState',payload);
+        store.dispatch('setUserDataDetails', response.UserDataDetails);
+        router.replace({name:'submittedLabs'});
+      }
+      else
+      {
+         store.dispatch('setAuthState',false);
+          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+      }
+      return;
     }
   },
 });
