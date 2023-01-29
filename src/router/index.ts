@@ -1,12 +1,11 @@
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { store }from '@/store/index';
+import { login_redirect_url } from '@/config';
 const LabAccordion= () => import('@/components/UI/LabAccordion.vue');
 const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
 const AddLab = () => import('@/components/UI/AddLab.vue');
 const WelcomePage = () => import('@/components/UI/WelcomePage.vue');
-const login_red_url = `https://login.iee.ihu.gr/authorization/?client_id=${import.meta.env.VITE_CLIENT_ID}&response_type=code&scope=profile&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}`
-
 const routes: Array<RouteRecordRaw> = [
   {
     path : "/",
@@ -18,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/sign-in",
     name : 'sign-in',
-    redirect: (to)=> window.location.href = login_red_url,
+    redirect: (to)=> window.location.href = login_redirect_url,
     meta : {requiresAuth :false}
   },
   {
