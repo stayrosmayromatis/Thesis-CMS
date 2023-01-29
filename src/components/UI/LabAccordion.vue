@@ -50,10 +50,10 @@
 <script lang="ts">
 import { defineComponent, ref, Ref, onMounted } from "vue";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { DisplayedSemster } from "@/types/displayedsemester.type";
+import { DisplayedSemster } from "@/models/displayedsemester.type";
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
-import { Lab } from "@/types/lab.type";
+import { Lab } from "@/models/lab.type";
 export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {

@@ -31,7 +31,7 @@
 <script lang="ts">
 import { defineComponent, PropType, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
-import { Department } from '@/types/department.type'
+import { Department } from '@/models/department.type'
 export default defineComponent({
   props: {
     department: {

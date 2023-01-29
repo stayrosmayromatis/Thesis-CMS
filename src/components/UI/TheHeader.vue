@@ -105,8 +105,7 @@
 import { onMounted, defineComponent, ref, watch, computed, toRefs } from "vue";
 import { useWindowSize } from '@vueuse/core';
 import { useRouter } from "vue-router";
-import { useAuth } from '@/composables/isAuth.composable';
-import { TypeStaff } from "@/enums/StaffTypeEnum";
+import { useAuth } from '@/composables/useAuth.composable';
 export default defineComponent({
   props: {
     closeInstantlyDirective: {
@@ -121,7 +120,7 @@ export default defineComponent({
     const { closeInstantlyDirective } = toRefs(props);
     let title = "IHU SUBMISSIONS";
     const router = useRouter();
-    const {IsAuthenticated,GetUserDataDetails,SetNotAuthenticated,GetTypeStaff} = useAuth();
+    const {IsAuthenticated,GetUserDataDetails,SetNotAuthenticated,IsTeacher} = useAuth();
     const isLoggedIn = computed(() => IsAuthenticated());
     const userName = computed(() => {
         if(isLoggedIn.value)
@@ -132,10 +131,7 @@ export default defineComponent({
     const IsStaff = computed(() => {
        if(isLoggedIn.value)
        {
-          const typeStaff =  GetTypeStaff();
-          if(!typeStaff)
-            return false;
-          return typeStaff === TypeStaff.STAFF
+          return IsTeacher();
        }
        return false;
     });

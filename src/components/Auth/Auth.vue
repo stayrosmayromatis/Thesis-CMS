@@ -57,7 +57,6 @@ export default defineComponent({
         "Σφάλμα Αυθεντικοποίησης",
         "Η διαδίκασία δεν ολοκληρώθηκε"
       );
-      return;
     });
 
     const setErrorPushToHome = (title: string, description: string): void => {

@@ -43,12 +43,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, Ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import SubmitedLab from "@/components/UI/SubmitedLab.vue";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import PdfContent from "@/components/UI/PdfContent.vue";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { Department } from "@/types/department.type";
+import { Department } from "@/models/department.type";
 export default defineComponent({
   components: {
     SubmitedLab,

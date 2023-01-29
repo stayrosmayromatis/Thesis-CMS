@@ -8,7 +8,7 @@ export function useAuth() {
   const IsAuthenticated = (): boolean => {
     try {
       const store = useStore(key);
-      return store.getters.IsAuth;
+      return store.getters.IsAuth ?? false;
     } catch (error) {
       console.log(error);
       return false;
@@ -28,6 +28,9 @@ export function useAuth() {
       return null;
     }
   };
+  const IsTeacher = ():boolean =>IsAuthenticated() === true && GetTypeStaff() === TypeStaff.STAFF;
+  const IsStudent = ():boolean => IsAuthenticated() === true &&  GetTypeStaff() === TypeStaff.STUDENT;
+
   const GetUserDataDetails = (): UserDataDetails | null => {
     try {
       const store = useStore(key);
@@ -38,5 +41,5 @@ export function useAuth() {
     }
   };
 
-  return { IsAuthenticated, GetTypeStaff,GetUserDataDetails ,SetNotAuthenticated};
+  return { IsAuthenticated, GetTypeStaff,GetUserDataDetails ,SetNotAuthenticated,IsTeacher,IsStudent};
 }
