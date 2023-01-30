@@ -1,10 +1,9 @@
 <template>
-    <div class="positioner" v-if="showAlert">
-            <v-alert 
-            :title=title
-            closable :type=alertType
-            density="compact"
-            ></v-alert>
+
+    <div class="positioner">
+        <transition name="bounce">
+            <v-alert v-if="showAlert" :title=title closable :type=alertType density="compact"></v-alert>
+        </transition>
     </div>
 </template>
 
@@ -12,27 +11,27 @@
 import { computed, defineComponent, toRefs } from 'vue'
 
 export default defineComponent({
-    props:{
-        title:{
-            type:String,
-            required : false,
-            default:"Title"
+    props: {
+        title: {
+            type: String,
+            required: false,
+            default: "Title"
         },
-        alertTypeProp:{
-            type:String,
-            required:false,
-            default:false
+        alertTypeProp: {
+            type: String,
+            required: false,
+            default: false
         },
-        show:{
-            type:Boolean,
-            required:false,
-            default:false
+        show: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
-    setup(props){
-        const {alertTypeProp,show,title} = toRefs(props);
+    setup(props) {
+        const { alertTypeProp, show, title } = toRefs(props);
         const alertType = computed(() => {
-            switch(alertTypeProp.value){
+            switch (alertTypeProp.value) {
                 case 'error':
                     return 'error';
                 case 'success':
@@ -45,56 +44,105 @@ export default defineComponent({
 
         });
         const showAlert = computed(() => {
-            if(show.value === true)
+            if (show.value === true)
                 return true;
-            if(show.value === false)
+            if (show.value === false)
                 return false;
         })
-        return{alertType,showAlert,title};
+        return { alertType, showAlert, title };
     }
 })
 </script>
 <style scoped>
-.positioner{
+.positioner {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top:0.5rem;
+    margin-top: 0.5rem;
     margin-right: 0.5rem;
 }
-:deep(.v-alert){
+
+:deep(.v-alert) {
     border-radius: 1rem;
     width: fit-content;
 }
-:deep(.v-alert__close)
-{
+
+:deep(.v-alert__close) {
     align-self: flex-start;
     margin-inline-start: 0;
 }
 
-@media (min-width: 769px) 
-{
-    .positioner{
+.bounce-enter-active {
+    animation: animate-in 1s ease-in 0s 1 normal none;
+}
+
+.bounce-leave-active {
+    animation: animate-out 1s ease-out 0s 1 normal none;
+}
+
+@keyframes animate-in {
+    0% {
+        transform: translateX(-400px);
+        opacity: 0;
+         scale: 0; 
+    }
+
+    50% {
+        transform: translateX(-200px);
+        opacity: 0.7;
+        scale: 1.1;
+    }
+
+    100% {
+        transform: translateX(0px);
+        opacity: 1;
+         scale: 1; 
+    }
+}
+
+@keyframes animate-out {
+
+    0% {
+        transform: translateX(0px);
+        opacity: 1;
+        scale: 1;
+    }
+
+    50% {
+        transform: translateX(-200px);
+        opacity: 0.7;
+        scale: 1.1;
+    }
+
+    100% {
+        transform: translateX(-400px);
+        opacity: 0;
+        scale: 0;
+    }
+}
+
+@media (min-width: 769px) {
+    .positioner {
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         justify-content: center;
-        margin-top:0.5rem;
+        margin-top: 0.5rem;
         margin-right: 0.5rem;
     }
 }
-@media (min-width: 1025px) 
-{
-    .positioner{
+
+@media (min-width: 1025px) {
+    .positioner {
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         justify-content: center;
-        margin-top:0.5rem;
+        margin-top: 0.5rem;
         margin-right: 0.5rem;
     }
 }

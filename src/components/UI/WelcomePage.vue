@@ -8,6 +8,7 @@
                 <p>{{errorDesc}}</p>
             </template>
         </base-dialog>
+        <base-alert :alert-type-prop="'success'" :show="showAlert" :title="alertTitle"></base-alert>
         <div class="logo">
             <img class="mobile-view-picture" src="@/assets/ihu_logo.png" alt="IHU-LOGO-ALT" />
         </div>
@@ -38,6 +39,7 @@ import { defineComponent, onMounted, ref } from 'vue'
 import { useErrorFunctions } from '@/composables/throwError.composable';
 import BaseDialog from '../Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
+import { useAlert } from '@/composables/showAlert.composable';
 export default defineComponent({
     emits: ['closeMobileView'],
     components:{
@@ -48,13 +50,17 @@ export default defineComponent({
         const error = ref(false);
         const errorDesc = ref<string>();
         const errorTit = ref<string>();
-
+        const {alertTitle,showAlert,openAlert} = useAlert();
         onMounted(() => {
             const {clearError,errorDescription,errorTitle,isError,setError,} = useErrorFunctions();
             error.value = isError.value;
             errorDesc.value=errorDescription.value;
             errorTit.value= errorTitle.value;
-
+            if(showAlert.value === false){
+                setTimeout(() => {
+                    openAlert('Επιτυχία')
+                },1000)
+            }
             context.emit('closeMobileView', true);
             return;
         });
@@ -66,7 +72,7 @@ export default defineComponent({
             const {clearError} = useErrorFunctions();
             clearError();
         }
-        return { emitMobileViewClose,error,errorDesc, errorTit,clearError}
+        return { emitMobileViewClose,error,errorDesc, errorTit,clearError,alertTitle,showAlert}
     }
 })
 </script>
