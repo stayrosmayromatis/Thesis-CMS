@@ -8,8 +8,6 @@
                 <p>{{errorDesc}}</p>
             </template>
         </base-dialog>
-        <base-alert :is-error="false" :show="true" :title="`Επιτυχής Σύνδεση`">
-        </base-alert>
         <div class="logo">
             <img class="mobile-view-picture" src="@/assets/ihu_logo.png" alt="IHU-LOGO-ALT" />
         </div>

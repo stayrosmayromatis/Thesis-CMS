@@ -8,6 +8,8 @@
         <p>An error over the api has occured.Please try later</p>
       </template>
     </base-dialog>
+    <base-alert :is-error="false" :show="true" :title="`Επιτυχής Σύνδεση`">
+    </base-alert>
     <div class="parent-card">
       <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
       <submited-lab
@@ -49,11 +51,13 @@ import BaseDialog from "@/components/Base/BaseDialog.vue";
 import PdfContent from "@/components/UI/PdfContent.vue";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Department } from "@/models/department.type";
+import BaseAlert from '@/components/Base/BaseAlert.vue';
 export default defineComponent({
   components: {
     SubmitedLab,
     BaseDialog,
     PdfContent,
+    BaseAlert
   },
   emits: ["closeMobileView"],
   setup(_, context) {
