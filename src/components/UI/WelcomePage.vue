@@ -50,7 +50,7 @@ export default defineComponent({
         const error = ref(false);
         const errorDesc = ref<string>();
         const errorTit = ref<string>();
-        const {alertTitle,showAlert,openAlert} = useAlert();
+        const {alertTitle,showAlert,openAlert,closeAlert} = useAlert();
         onMounted(() => {
             const {clearError,errorDescription,errorTitle,isError,setError,} = useErrorFunctions();
             error.value = isError.value;
@@ -58,8 +58,11 @@ export default defineComponent({
             errorTit.value= errorTitle.value;
             if(showAlert.value === false){
                 setTimeout(() => {
-                    openAlert('Επιτυχία')
+                    openAlert('Επιτυχής Σύνδεση');
                 },1000)
+                setTimeout(() => {
+                    closeAlert();
+                },2000)
             }
             context.emit('closeMobileView', true);
             return;

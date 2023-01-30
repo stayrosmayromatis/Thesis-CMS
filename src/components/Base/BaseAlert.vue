@@ -75,30 +75,29 @@ export default defineComponent({
 }
 
 .bounce-enter-active {
-    animation: animate-in 1s ease-in 0s 1 normal none;
+    animation: animate-in 0.3s ease-in 0s 1 normal both;
 }
 
 .bounce-leave-active {
-    animation: animate-out 1s ease-out 0s 1 normal none;
+    animation: animate-out 0.3s ease-out 0s 1 normal none;
 }
 
 @keyframes animate-in {
     0% {
-        transform: translateX(-400px);
-        opacity: 0;
-         scale: 0; 
+        transform: translateX(-50px);
+        opacity:0;
+        scale:1;
     }
 
     50% {
-        transform: translateX(-200px);
-        opacity: 0.7;
-        scale: 1.1;
+        opacity:0.7;
+        scale:1;
     }
 
     100% {
         transform: translateX(0px);
-        opacity: 1;
-         scale: 1; 
+        opacity:1;
+        scale:1;
     }
 }
 
@@ -111,15 +110,14 @@ export default defineComponent({
     }
 
     50% {
-        transform: translateX(-200px);
-        opacity: 0.7;
-        scale: 1.1;
+        opacity:0.7;
+        scale:1;
     }
 
     100% {
-        transform: translateX(-400px);
-        opacity: 0;
-        scale: 0;
+        transform: translateX(-50px);
+        opacity:0;
+        scale:1;
     }
 }
 
