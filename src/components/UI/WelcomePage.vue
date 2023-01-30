@@ -8,6 +8,8 @@
                 <p>{{errorDesc}}</p>
             </template>
         </base-dialog>
+        <base-alert :is-error="false" :show="true" :title="`Επιτυχής Σύνδεση`">
+        </base-alert>
         <div class="logo">
             <img class="mobile-view-picture" src="@/assets/ihu_logo.png" alt="IHU-LOGO-ALT" />
         </div>
@@ -37,10 +39,12 @@
 import { defineComponent, onMounted, ref } from 'vue'
 import { useErrorFunctions } from '@/composables/throwError.composable';
 import BaseDialog from '../Base/BaseDialog.vue';
+import BaseAlert from '@/components/Base/BaseAlert.vue';
 export default defineComponent({
     emits: ['closeMobileView'],
     components:{
-        BaseDialog
+        BaseDialog,
+        BaseAlert
     },
     setup(_, context) {
         const error = ref(false);
