@@ -18,8 +18,8 @@ export default defineComponent({
             required : false,
             default:"Title"
         },
-        isError:{
-            type:Boolean,
+        alertTypeProp:{
+            type:String,
             required:false,
             default:false
         },
@@ -30,12 +30,18 @@ export default defineComponent({
         }
     },
     setup(props){
-        const {isError,show,title} = toRefs(props);
+        const {alertTypeProp,show,title} = toRefs(props);
         const alertType = computed(() => {
-            if(isError.value === true)
-                return "error"
-            if(isError.value === false)
-                return "success"
+            switch(alertTypeProp.value){
+                case 'error':
+                    return 'error';
+                case 'success':
+                    return 'success';
+                case 'info':
+                    return 'info';
+                default:
+                    return 'success';
+            }
 
         });
         const showAlert = computed(() => {

@@ -16,6 +16,7 @@ import { ApiResult } from '@/models/DTO/ApiResult';
 import { BaseUserAuthStateResponse } from '@/models/BACKEND-MODELS/BaseUserAuthStateResponse';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { StoreSth } from "@/store/actions";
+import { useAlert } from "@/composables/showAlert.composable";
 
 export default defineComponent({
   setup() {
@@ -27,6 +28,7 @@ export default defineComponent({
         setBackendInstanceUnAuth,
         setBackendInstanceAuth,
       } = useAxiosInstance();
+    const {openAlert,setTitle,setTypeOfAlert,}=useAlert();
     onMounted(async () => {
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
@@ -228,12 +230,18 @@ export default defineComponent({
       {
         store.dispatch('setIsTeacherState',payload);
         store.dispatch('setUserDataDetails', response.UserDataDetails);
+        openAlert();
+        setTitle('Επιτυχής Σύνδεση ως Καθηγητής');
+        setTypeOfAlert('success');
         router.replace({name:'submittedLabs'});
       }
       else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
       {
         store.dispatch('setIsStudentState',payload);
         store.dispatch('setUserDataDetails', response.UserDataDetails);
+        openAlert();
+        setTitle('Επιτυχής Σύνδεση ως Φοιτηής');
+        setTypeOfAlert('success');
         router.replace({name:'submittedLabs'});
       }
       else
