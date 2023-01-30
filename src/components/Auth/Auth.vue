@@ -28,7 +28,7 @@ export default defineComponent({
         setBackendInstanceUnAuth,
         setBackendInstanceAuth,
       } = useAxiosInstance();
-    const {openAlert,setTitle,setTypeOfAlert,}=useAlert();
+    const {openAlert,setTypeOfAlert,}=useAlert();
     onMounted(async () => {
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
@@ -230,8 +230,7 @@ export default defineComponent({
       {
         store.dispatch('setIsTeacherState',payload);
         store.dispatch('setUserDataDetails', response.UserDataDetails);
-        openAlert();
-        setTitle('Επιτυχής Σύνδεση ως Καθηγητής');
+        openAlert('Επιτυχής Σύνδεση ως Καθηγητής');
         setTypeOfAlert('success');
         router.replace({name:'submittedLabs'});
       }
@@ -239,8 +238,7 @@ export default defineComponent({
       {
         store.dispatch('setIsStudentState',payload);
         store.dispatch('setUserDataDetails', response.UserDataDetails);
-        openAlert();
-        setTitle('Επιτυχής Σύνδεση ως Φοιτηής');
+        openAlert('Επιτυχής Σύνδεση ως Φοιτητής');
         setTypeOfAlert('success');
         router.replace({name:'submittedLabs'});
       }

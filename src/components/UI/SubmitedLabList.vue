@@ -62,7 +62,7 @@ export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {
     const isError = false;
-    const {title,typeOfAlert,showAlert,closeAlert} = useAlert();
+    const {alertTitle,typeOfAlert,showAlert,closeAlert} = useAlert();
     const sLabs = ref([
       {
         labId: "1601",
@@ -135,7 +135,7 @@ export default defineComponent({
       pushToPdf: invokeGeneratePdf,
       pdfCreationCompleted,
       callToGeneratePdf,
-      alertTitle:title,
+      alertTitle,
       typeOfAlert,
       showAlert
     };

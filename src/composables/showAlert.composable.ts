@@ -1,20 +1,16 @@
 import { ref } from 'vue'
 const typeOfAlert = ref<string>('success');
-const title = ref<string>("")
+const alertTitle = ref<string>("")
 const showAlert = ref<boolean>(false);
 
 export function useAlert() {
-    const openAlert = () => {
+    const openAlert = (val:string) => {
         showAlert.value = true;
+        alertTitle.value = val;
     }
     const closeAlert = () => {
         showAlert.value = false;
-    }
-    const setTitle = (val:string) => {
-        title.value = val;
-    }
-    const clearTitle = () => {
-        title.value = "";
+        alertTitle.value = "";
     }
     const setTypeOfAlert = (val:string) => {
         if(!val)
@@ -29,5 +25,5 @@ export function useAlert() {
         }
         typeOfAlert.value = val;
     } 
-    return { typeOfAlert,title,showAlert,openAlert,closeAlert, setTitle, clearTitle,setTypeOfAlert };
+    return { typeOfAlert,alertTitle,showAlert,openAlert,closeAlert,setTypeOfAlert };
 }
