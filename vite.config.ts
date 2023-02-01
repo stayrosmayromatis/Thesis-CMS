@@ -31,6 +31,7 @@ export default defineConfig({
     ],
   },
   server: {
+    host: 'ptixiaki.test.domain',
     port: 5132,
   },
 })
