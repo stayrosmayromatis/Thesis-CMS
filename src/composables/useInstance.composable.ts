@@ -25,3 +25,8 @@ export function useAxiosInstance() {
 
     return { setBackendInstanceUnAuth,setBackendInstanceAuth, setCustomInstance}
 }
+//OLD CREDENTIALS
+// VITE_CLIENT_ID=63d28218cf6c955cc75f458c
+// VITE_CLIENT_SECRET=6bzk9trfo4y8rx32qmkkmai10hkte9agnks9qg0phr9wgsoe9g
+//VITE_REDIRECT_URI=http://127.0.0.1:5132/auth
+//VITE_BACK_END_URI = http://localhost:5301/api
