@@ -1,5 +1,4 @@
 import { store } from "@/store/index";
-import { key } from "@/store/index";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { UserDataDetails } from "@/models/BACKEND-MODELS/UserDataDetails";
 import {useAxiosInstance} from '@/composables/useInstance.composable';
@@ -26,14 +25,11 @@ export function useAuth() {
     }
   };
   const SetNotAuthenticated = ():void => {
-    //const store = useStore(key);
-
-    store.commit('setAuthState',false);
+    store.dispatch('setAuthState',false);
     return;
   }
   const GetTypeStaff = (): TypeStaff | null => {
     try {
-      //const store = useStore(key);
       return store.getters.getStaffType ?? null;
     } catch (error) {
       console.log(error);
@@ -45,7 +41,6 @@ export function useAuth() {
 
   const GetUserDataDetails = (): UserDataDetails | null => {
     try {
-      //const store = useStore(key);
       return store.getters.getUserDataDetails ?? null;
     } catch (error) {
       console.log(error);
@@ -54,7 +49,6 @@ export function useAuth() {
   };
   const MakeInfoCall = async ():Promise<InternalDataTransfter<BaseUserAuthStateResponse>>=>{
     const {setBackendInstanceAuth} = useAxiosInstance();
-    //const store = useStore(key);
     const info_response = await useAxios("/info/infos",setBackendInstanceAuth());
     if (info_response.isFinished.value && ( !info_response.data.value || info_response.error.value) )
     {
@@ -67,10 +61,9 @@ export function useAuth() {
       store.dispatch('setAuthState',false);
       return {Status:false,Data:null,Error: "Σφάλμα Εξουσιοδήτησης",Description:"Η διαδίκασία δεν ολοκληρώθηκε"};
     }
-    return {Status:true,Data:info_response_data.Data,Error:null}
+    return {Status:true,Data:info_response_data.Data}
   }
   const DetermineIfAuth = async (response:BaseUserAuthStateResponse):Promise<InternalDataTransfter<boolean>> => {
-    //const store = useStore(key);
     const {openAlert,setTypeOfAlert,}=useAlert();
     if(!response)
     {
@@ -95,24 +88,23 @@ export function useAuth() {
     {
       store.dispatch('setIsTeacherState',payload);
       store.dispatch('setUserDataDetails', response.UserDataDetails);
-      openAlert('Επιτυχής Σύνδεση ως Καθηγητής');
+      openAlert('Επιτυχής Σύνδεση');
       setTypeOfAlert('success');
-      //router.replace({name:'submittedLabs'});
+      return {Status:true,Data:true};
     }
     else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
     {
       store.dispatch('setIsStudentState',payload);
       store.dispatch('setUserDataDetails', response.UserDataDetails);
-      openAlert('Επιτυχής Σύνδεση ως Φοιτητής');
+      openAlert('Επιτυχής Σύνδεση');
       setTypeOfAlert('success');
-      //router.replace({name:'submittedLabs'});
+      return {Status:true,Data:true};
     }
     else
     {
        store.dispatch('setAuthState',false);
        return {Status:false,Data:false,Error: "Σφάλμα Αυθεντικοποίησης",Description:"Η διαδίκασία δεν ολοκληρώθηκε"};
     }
-    return {Status:false,Data:false,Error: "Σφάλμα Αυθεντικοποίησης",Description:"Η διαδίκασία δεν ολοκληρώθηκε"};
   }
 
   return { IsAuthenticated, GetTypeStaff,GetUserDataDetails ,SetNotAuthenticated,IsTeacher,IsStudent,MakeInfoCall,DetermineIfAuth};

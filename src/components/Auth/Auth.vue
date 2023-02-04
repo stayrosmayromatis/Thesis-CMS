@@ -77,7 +77,7 @@ export default defineComponent({
       );
     });
 
-    const setErrorPushToHome = (title: string | null, description?: string | null): void => {
+    const setErrorPushToHome = (title: string | undefined, description?: string | undefined): void => {
       const { setError } = useErrorFunctions();
       setError(title ??  "Σφάλμα Αυθεντικοποίησης", description ?? "Η διαδίκασία δεν ολοκληρώθηκε");
       store.dispatch("setAuthState", false);
@@ -110,7 +110,7 @@ export default defineComponent({
             setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
              return {Status : false,Data:null,Error:"error"};
       }
-       return {Status : true,Data:access_token_object.data.value!.access_token,Error:null};
+       return {Status : true,Data:access_token_object.data.value!.access_token};
 
     };
     const makeProfileCall = async (accessToken:string):Promise<InternalDataTransfter<Staff|Student>> => {
@@ -176,7 +176,7 @@ export default defineComponent({
             setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
             return {Status : false,Data:null,Error:"error"};
       }
-      return {Status : true,Data:objectToPush,Error:null};
+      return {Status : true,Data:objectToPush};
     };
     const makeSignInCall = async (object:Student | Staff):Promise<InternalDataTransfter<boolean>>=>
     {
@@ -200,7 +200,7 @@ export default defineComponent({
           setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
           return {Status : false,Data:null,Error:"error"};
         }
-        return {Status:true,Data:true,Error:null};
+        return {Status:true,Data:true};
     };
     // const makeInfoCall = async ():Promise<InternalDataTransfter<BaseUserAuthStateResponse>>=>{
     //     const info_response = await useAxios("/info/infos",setBackendInstanceAuth());

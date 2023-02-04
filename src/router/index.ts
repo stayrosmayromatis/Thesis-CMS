@@ -28,7 +28,12 @@ const routes: Array<RouteRecordRaw> = [
     component : () => import("@/components/Auth/Auth.vue"),
     meta : {requiresAuth :false}
   },
-
+  {
+    path:"/red",
+    name:"red",
+    redirect: (to) => window.location.href = login_redirect_url,
+    meta : {requiresAuth :false}
+  },
   {
     path : "/lab-list",
     name : 'labList',
@@ -57,17 +62,30 @@ const router = createRouter({
   routes : routes
 });
 
-router.beforeEach((to,_,next) => {
-  if(to.meta.requiresAuth === false &&  store.getters.IsAuth === false){
+router.beforeEach(async (to,_,next) => {
+  const {IsAuthenticated,SetNotAuthenticated} = useAuth();
+  //const apiIsAuth = await IsAuthenticated();
+  const storeIsAuth = store.getters.IsAuth;
+  if(to.meta.requiresAuth === false && storeIsAuth == false){
     next();
     return;
   }
-  if(to.meta.requiresAuth === true && store.getters.IsAuth === true)
+  if(to.meta.requiresAuth === false && storeIsAuth == true){
+    SetNotAuthenticated();
+    next();
+    return;
+  }
+  if(to.meta.requiresAuth === true && storeIsAuth === true)
   {
     next();
     return;
   }
-  next({name:'welcome'});
+  if(to.meta.requiresAuth === true && storeIsAuth === false)
+  {
+    next({name:'red'});
+    return;
+  }
+  next(false);
   return;
 });
 

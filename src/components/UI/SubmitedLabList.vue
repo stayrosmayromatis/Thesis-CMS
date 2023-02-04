@@ -117,7 +117,7 @@ export default defineComponent({
       {
         setTimeout(() => {
           closeAlert();
-        },2000);
+        },360000000);
       }
       return;
     });

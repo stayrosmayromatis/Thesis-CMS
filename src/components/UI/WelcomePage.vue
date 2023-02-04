@@ -62,7 +62,7 @@ export default defineComponent({
                 },1000)
                 setTimeout(() => {
                     closeAlert();
-                },2000)
+                },360000)
             }
             context.emit('closeMobileView', true);
             return;

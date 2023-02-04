@@ -2,6 +2,6 @@ export interface InternalDataTransfter<T>
 {
   Status:boolean;
   Data:T | null;
-  Error:string|null;
-  Description?: string | null;
+  Error?:string;
+  Description?: string ;
 }
