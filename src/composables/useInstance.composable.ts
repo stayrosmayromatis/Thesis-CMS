@@ -35,5 +35,5 @@ export function useAxiosInstance() {
 // VITE_BASE_URI=http://localhost:5132/
 // VITE_REDIRECT_URI=http://localhost:5132/auth
 // VITE_BACK_END_URI = http://localhost:5301/api
-// VITE_CLIENT_SECRET=0o603mdj68ppdziwfcmhbh73v8rr7tfs3874q57no64h4yra89
 // VITE_CLIENT_ID=63da7a8d7cf7bb02d67317e5
+// VITE_CLIENT_SECRET=0o603mdj68ppdziwfcmhbh73v8rr7tfs3874q57no64h4yra89

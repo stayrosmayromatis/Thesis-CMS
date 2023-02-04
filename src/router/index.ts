@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { store }from '@/store/index';
 import { login_redirect_url } from '@/config';
+import {useAuth} from '@/composables/useAuth.composable'
 const LabAccordion= () => import('@/components/UI/LabAccordion.vue');
 const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
 const AddLab = () => import('@/components/UI/AddLab.vue');
@@ -54,11 +55,10 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes : routes
-})
+});
 
-router.beforeEach( (to,from,next) => {
-
-  if(to.meta.requiresAuth === false && store.getters.IsAuth === false){
+router.beforeEach((to,_,next) => {
+  if(to.meta.requiresAuth === false &&  store.getters.IsAuth === false){
     next();
     return;
   }

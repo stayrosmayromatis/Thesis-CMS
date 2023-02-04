@@ -106,6 +106,8 @@ import { onMounted, defineComponent, ref, watch, computed, toRefs } from "vue";
 import { useWindowSize } from '@vueuse/core';
 import { useRouter } from "vue-router";
 import { useAuth } from '@/composables/useAuth.composable';
+import { useStore } from 'vuex';
+import {key} from '@/store/index';
 export default defineComponent({
   props: {
     closeInstantlyDirective: {
@@ -119,11 +121,14 @@ export default defineComponent({
     const { width } = useWindowSize();
     const { closeInstantlyDirective } = toRefs(props);
     let title = "IHU SUBMISSIONS";
+    const store = useStore(key)
     const router = useRouter();
-    const {IsAuthenticated,GetUserDataDetails,SetNotAuthenticated,IsTeacher} = useAuth();
-    const isLoggedIn = computed(() => IsAuthenticated());
+    const {GetUserDataDetails,SetNotAuthenticated,IsTeacher} = useAuth();
+    const isLoggedIn = computed(():boolean => {
+        return store.getters.IsAuth;
+    });
     const userName = computed(() => {
-        if(isLoggedIn.value)
+        if(isLoggedIn.value === true)
             return GetUserDataDetails()?.DisplayNameEn ?? "User";
         SetNotAuthenticated();
         return "";

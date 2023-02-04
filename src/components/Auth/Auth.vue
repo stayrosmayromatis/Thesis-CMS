@@ -17,7 +17,7 @@ import { BaseUserAuthStateResponse } from '@/models/BACKEND-MODELS/BaseUserAuthS
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { StoreSth } from "@/store/actions";
 import { useAlert } from "@/composables/showAlert.composable";
-
+import {useAuth} from '@/composables/useAuth.composable';
 export default defineComponent({
   setup() {
     const route = useRoute();
@@ -29,6 +29,7 @@ export default defineComponent({
         setBackendInstanceAuth,
       } = useAxiosInstance();
     const {openAlert,setTypeOfAlert,}=useAlert();
+    const {MakeInfoCall,DetermineIfAuth} = useAuth();
     onMounted(async () => {
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
@@ -48,10 +49,25 @@ export default defineComponent({
           const signInResponse = await makeSignInCall(makeProfileCallResponse.Data);
           if(signInResponse.Status === false || signInResponse.Error || !signInResponse.Data )
             return;
-          const makeInfoCallResponse = await makeInfoCall();
-           if(makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data )
+          const makeInfoCallResponse = await MakeInfoCall();
+          if(!makeInfoCallResponse || makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data )
+          {
+            setErrorPushToHome(
+              makeInfoCallResponse.Error,
+              makeInfoCallResponse.Description
+            );
             return;
-          await determineIfAuth(makeInfoCallResponse.Data);
+          }
+          const determineIfAuthResponse = await DetermineIfAuth(makeInfoCallResponse.Data);
+          if(!determineIfAuthResponse || determineIfAuthResponse.Status === false || determineIfAuthResponse.Error || !determineIfAuthResponse.Data )
+          {
+            setErrorPushToHome(
+              determineIfAuthResponse.Error,
+              determineIfAuthResponse.Description
+            );
+            return;
+          }
+          router.replace({name:'submittedLabs'});
           return;
         }
       }
@@ -61,9 +77,9 @@ export default defineComponent({
       );
     });
 
-    const setErrorPushToHome = (title: string, description: string): void => {
+    const setErrorPushToHome = (title: string | null, description?: string | null): void => {
       const { setError } = useErrorFunctions();
-      setError(title, description);
+      setError(title ??  "Σφάλμα Αυθεντικοποίησης", description ?? "Η διαδίκασία δεν ολοκληρώθηκε");
       store.dispatch("setAuthState", false);
       router.replace({ name: "welcome" });
       return;
@@ -186,69 +202,69 @@ export default defineComponent({
         }
         return {Status:true,Data:true,Error:null};
     };
-    const makeInfoCall = async ():Promise<InternalDataTransfter<BaseUserAuthStateResponse>>=>{
-        const info_response = await useAxios("/info/infos",setBackendInstanceAuth());
-        if (info_response.isFinished.value && ( !info_response.data.value || info_response.error.value) )
-        {
-            setErrorPushToHome(
-              "Σφάλμα Εξουσιοδήτησης",
-              "Η διαδίκασία δεν ολοκληρώθηκε"
-            );
-            return {Status:false,Data:null,Error:"error"};
-          }
-        const info_response_data: ApiResult<BaseUserAuthStateResponse> =info_response.data.value;
-        if (!info_response_data || info_response_data.Status === false || !info_response_data.Status || !info_response_data.Data) {
-          setErrorPushToHome(
-            "Σφάλμα Εξουσιοδήτησης",
-            "Η διαδίκασία δεν ολοκληρώθηκε"
-          );
-          return {Status:false,Data:null,Error:"error"};
-        }
-        return {Status:true,Data:info_response_data.Data,Error:null}
-    }
-    const determineIfAuth = async (response:BaseUserAuthStateResponse):Promise<void> => {
-      if(!response)
-      {
-        store.dispatch('setAuthState',false);
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-      }
-      if(response.IsAuth === false || !response.IsAuth)
-      {
-        store.dispatch('setAuthState',false);
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-      }
-      if(!response.UserDataDetails)
-      {
-        store.dispatch('setAuthState',false);
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-      }
-      const payload:StoreSth = {
-        authState:response.IsAuth,
-        eduPersonAffiliation:response.UserDataDetails.EduPersonAffiliation
-      }
-      if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STAFF)
-      {
-        store.dispatch('setIsTeacherState',payload);
-        store.dispatch('setUserDataDetails', response.UserDataDetails);
-        openAlert('Επιτυχής Σύνδεση ως Καθηγητής');
-        setTypeOfAlert('success');
-        router.replace({name:'submittedLabs'});
-      }
-      else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
-      {
-        store.dispatch('setIsStudentState',payload);
-        store.dispatch('setUserDataDetails', response.UserDataDetails);
-        openAlert('Επιτυχής Σύνδεση ως Φοιτητής');
-        setTypeOfAlert('success');
-        router.replace({name:'submittedLabs'});
-      }
-      else
-      {
-         store.dispatch('setAuthState',false);
-          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-      }
-      return;
-    }
+    // const makeInfoCall = async ():Promise<InternalDataTransfter<BaseUserAuthStateResponse>>=>{
+    //     const info_response = await useAxios("/info/infos",setBackendInstanceAuth());
+    //     if (info_response.isFinished.value && ( !info_response.data.value || info_response.error.value) )
+    //     {
+    //         setErrorPushToHome(
+    //           "Σφάλμα Εξουσιοδήτησης",
+    //           "Η διαδίκασία δεν ολοκληρώθηκε"
+    //         );
+    //         return {Status:false,Data:null,Error:"error"};
+    //       }
+    //     const info_response_data: ApiResult<BaseUserAuthStateResponse> =info_response.data.value;
+    //     if (!info_response_data || info_response_data.Status === false || !info_response_data.Status || !info_response_data.Data) {
+    //       setErrorPushToHome(
+    //         "Σφάλμα Εξουσιοδήτησης",
+    //         "Η διαδίκασία δεν ολοκληρώθηκε"
+    //       );
+    //       return {Status:false,Data:null,Error:"error"};
+    //     }
+    //     return {Status:true,Data:info_response_data.Data,Error:null}
+    // }
+    // const determineIfAuth = async (response:BaseUserAuthStateResponse):Promise<void> => {
+    //   if(!response)
+    //   {
+    //     store.dispatch('setAuthState',false);
+    //     setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+    //   }
+    //   if(response.IsAuth === false || !response.IsAuth)
+    //   {
+    //     store.dispatch('setAuthState',false);
+    //     setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+    //   }
+    //   if(!response.UserDataDetails)
+    //   {
+    //     store.dispatch('setAuthState',false);
+    //     setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+    //   }
+    //   const payload:StoreSth = {
+    //     authState:response.IsAuth,
+    //     eduPersonAffiliation:response.UserDataDetails.EduPersonAffiliation
+    //   }
+    //   if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STAFF)
+    //   {
+    //     store.dispatch('setIsTeacherState',payload);
+    //     store.dispatch('setUserDataDetails', response.UserDataDetails);
+    //     openAlert('Επιτυχής Σύνδεση ως Καθηγητής');
+    //     setTypeOfAlert('success');
+    //     router.replace({name:'submittedLabs'});
+    //   }
+    //   else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
+    //   {
+    //     store.dispatch('setIsStudentState',payload);
+    //     store.dispatch('setUserDataDetails', response.UserDataDetails);
+    //     openAlert('Επιτυχής Σύνδεση ως Φοιτητής');
+    //     setTypeOfAlert('success');
+    //     router.replace({name:'submittedLabs'});
+    //   }
+    //   else
+    //   {
+    //      store.dispatch('setAuthState',false);
+    //       setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+    //   }
+    //   return;
+    // }
   },
 });
 </script>

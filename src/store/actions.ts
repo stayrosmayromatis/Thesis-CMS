@@ -1,5 +1,6 @@
 import { TypeStaff } from '@/enums/StaffTypeEnum';
 import { UserDataDetails } from '@/models/BACKEND-MODELS/UserDataDetails';
+
 export interface StoreSth {
   authState : boolean;
   eduPersonAffiliation:TypeStaff
@@ -28,4 +29,5 @@ const setUserDataDetails = (context:any,payload:UserDataDetails) =>
     return;
   context.commit('setUserDataDetails',payload);
 }
+
 export default { setAuthState,setIsTeacherState,setIsStudentState,setUserDataDetails };

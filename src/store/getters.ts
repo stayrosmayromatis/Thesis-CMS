@@ -1,7 +1,7 @@
 import { State } from "@/models/stateInterface.type";
 import { UserDataDetails } from '@/models/BACKEND-MODELS/UserDataDetails';
 import { TypeStaff } from '@/enums/StaffTypeEnum';
-const IsAuth=(state: State) => {
+const IsAuth=(state: State):boolean => {
         return state.IsAuth;
     }
 const IsStudent=(state: State) => {
@@ -16,4 +16,6 @@ const getStaffType=(state:State):TypeStaff | null=>{
 const getUserDataDetails = (state:State):UserDataDetails | null => {
   return state.UserDataDetails ?? null
 }
-export default {IsAuth,IsStudent,IsTeacher,getStaffType,getUserDataDetails};
+export default {
+  IsAuth,
+  IsStudent,IsTeacher,getStaffType,getUserDataDetails};
