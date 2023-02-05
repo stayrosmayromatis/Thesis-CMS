@@ -2,69 +2,136 @@
   <div class="form-control-add-field">
     <div class="mobile-form-control">
       <div class="div-input-placeholder">
-        <input :class="{ 'error-border': department.errorOnDeptId }" @input="isInputEmpty" class="input-placeholder"
-          type="text" placeholder="(π.χ. Τ1)" v-model="department.deptId" />
+        <input
+          :class="{ 'error-border': department.errorOnDeptId }"
+          @input="isInputEmpty"
+          class="input-placeholder"
+          type="text"
+          placeholder="(π.χ. Τ1)"
+          v-model="department.deptId"
+        />
       </div>
       <div class="slider-grow">
-        <base-slider @update:model-value="changeNumberOfStudents" :min-value="10" :max-value="50" :starting-value="department.numberOfStudents"></base-slider>
+        <base-slider
+          @update:model-value="changeNumberOfStudents"
+          :min-value="10"
+          :max-value="50"
+          :starting-value="department.numberOfStudents"
+        ></base-slider>
       </div>
     </div>
 
     <div class="mobile-date-picker">
-      <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
-        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" required>
+      <date-picker
+        :class="{ 'error-border': department.errorOnFromTime }"
+        v-model="department.fromTime"
+        time-picker
+        disable-time-range-validation
+        placeholder="Απο"
+        @update:model-value="isFromTimeEmpty"
+        required
+      >
       </date-picker>
-      <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
-        disable-time-range-validation placeholder="Εως" @update:model-value="isToTimeEmpty">
+      <date-picker
+        :class="{ 'error-border': department.errorOnToTime }"
+        v-model="department.toTime"
+        time-picker
+        disable-time-range-validation
+        placeholder="Εως"
+        @update:model-value="isToTimeEmpty"
+      >
       </date-picker>
-
-      <v-select class="v-input_max-width" :items="days" variant="solo" label="Ημέρα" hide-details density="comfortable"
-        persistent-hint direction="horizontal" single-line v-model="department.day"></v-select>
+      <v-select
+        class="v-input_max-width"
+        :items="days"
+        variant="solo"
+        label="Ημέρα"
+        hide-details
+        density="comfortable"
+        persistent-hint
+        direction="horizontal"
+        single-line
+        v-model="department.day"
+      ></v-select>
+      <div class="teacher-select-box">
+        <teacher-select></teacher-select>
+      </div>
     </div>
     <div class="mobile-actions">
-      <v-btn color="error" variant="outlined" @click="deleteByDeptId()"> Καταργηση </v-btn>
+      <v-btn color="error" variant="outlined" @click="deleteByDeptId()">
+        Καταργηση
+      </v-btn>
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
-import { Department } from '@/models/department.type'
+import { Department } from "@/models/department.type";
+import TeacherSelect from "@/components/UI/TeacherSelect.vue";
 export default defineComponent({
   props: {
     department: {
       type: Object as PropType<Department>,
       required: true,
-    }
+    },
   },
-  emits: ['deleteByDeptId'],
+  components: {
+    TeacherSelect,
+  },
+  emits: ["deleteByDeptId"],
   setup(props, context) {
     const days = daysOfWeek;
     const { department } = toRefs(props);
     const deleteByDeptId = () => {
-      context.emit('deleteByDeptId', department.value.deptId);
-    }
+      context.emit("deleteByDeptId", department.value.deptId);
+    };
     const isInputEmpty = () => {
-      department.value.deptId === "" || department.value.deptId === " " || department.value.deptId === null ? department.value.errorOnDeptId = true : department.value.errorOnDeptId = false;
-    }
+      department.value.deptId === "" ||
+      department.value.deptId === " " ||
+      department.value.deptId === null
+        ? (department.value.errorOnDeptId = true)
+        : (department.value.errorOnDeptId = false);
+    };
     const isFromTimeEmpty = () => {
-      department.value.fromTime === "" || department.value.fromTime === " " || department.value.fromTime === null ? department.value.errorOnFromTime = true : department.value.errorOnFromTime = false;
-    }
+      department.value.fromTime === "" ||
+      department.value.fromTime === " " ||
+      department.value.fromTime === null
+        ? (department.value.errorOnFromTime = true)
+        : (department.value.errorOnFromTime = false);
+    };
     const isToTimeEmpty = () => {
-      department.value.toTime === "" || department.value.toTime === " " || department.value.toTime === null ? department.value.errorOnToTime = true : department.value.errorOnToTime = false;
-    }
-    const changeNumberOfStudents = (value:number) => {
-      if(value && value >0)
-      department.value.numberOfStudents=value;
-    }
-    return { days, deleteByDeptId, isInputEmpty, isFromTimeEmpty, isToTimeEmpty,changeNumberOfStudents };
+      department.value.toTime === "" ||
+      department.value.toTime === " " ||
+      department.value.toTime === null
+        ? (department.value.errorOnToTime = true)
+        : (department.value.errorOnToTime = false);
+    };
+    const changeNumberOfStudents = (value: number) => {
+      if (value && value > 0) department.value.numberOfStudents = value;
+    };
+    return {
+      days,
+      deleteByDeptId,
+      isInputEmpty,
+      isFromTimeEmpty,
+      isToTimeEmpty,
+      changeNumberOfStudents,
+    };
   },
 });
 </script>
 
 <style scoped>
+.teacher-select-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0.3rem;
+}
 .slider-grow {
   margin: 0 1rem;
   padding: 0 1.6rem;
@@ -123,11 +190,13 @@ export default defineComponent({
   min-width: 320px;
 }
 
-.mobile-date-picker>* {
+.mobile-date-picker > * {
   width: 100%;
 }
 
-:deep(.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg) {
+:deep(
+    .dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg
+  ) {
   height: 3rem;
 }
 
@@ -136,7 +205,7 @@ export default defineComponent({
 }
 
 :deep(.v-btn.v-btn--density-default) {
-  background-color: #e99aa7;
+  background-color: transparent;
   color: #e6415d;
 }
 
@@ -220,7 +289,7 @@ export default defineComponent({
     align-items: center;
     margin: 0.5rem 0;
     width: 33%;
-    gap: 0.2rem
+    gap: 0.2rem;
   }
 
   .form-control-add-field {

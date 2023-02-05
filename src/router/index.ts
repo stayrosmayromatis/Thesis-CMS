@@ -54,6 +54,13 @@ const routes: Array<RouteRecordRaw> = [
     component : AddLab,
     props : true,
     meta : {requiresAuth :true,requiresIsTeacher : true}
+  },
+  {
+    path : "/poutsa",
+    name : 'poutsa',
+    component : import('@/components/UI/TeacherSelect.vue'),
+    props : true,
+    meta : {requiresAuth :false}
   }
 ];
 
