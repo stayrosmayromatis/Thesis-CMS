@@ -55,11 +55,15 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   background-color: #aacaf3;
   padding: 1rem;
   text-transform: capitalize;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  width: 100%;
+  word-break: break-word;
+  white-space: pre-line;
+  text-align: center;
 }
 
 :deep(.v-card-text) {

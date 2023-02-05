@@ -1,6 +1,6 @@
 <template>
     <div class="container" @click="emitMobileViewClose">
-        <base-dialog v-if="error === true" @close-modal="clearError">
+        <base-dialog v-if="error === true"  @close-modal="clearError">
             <template #title>
                 <h1>{{errorTit}}</h1>
             </template>

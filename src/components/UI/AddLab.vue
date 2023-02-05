@@ -60,6 +60,13 @@
             <div class="label-centerer">
               <label for="year">Ώρες Διαθεσιμόςτητας</label>
             </div>
+            <div class="info-centerer">
+              <base-alert
+                :alert-type-prop="'info'"
+                :show="true"
+                :title="'Εαν θέτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (Τ)'"
+              ></base-alert>
+            </div>
             <div class="form-control-add-btn">
               <v-btn
                 type="button"
@@ -110,17 +117,19 @@ import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
 import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { reactive, Ref, ref, onMounted } from "vue";
-import { DisplayedSemster } from "@/types/displayedsemester.type";
+import { DisplayedSemster } from "@/models/displayedsemester.type";
 import LabForm from "./LabForm.vue";
-import { Department } from "@/types/department.type";
+import { Department } from "@/models/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
-import { Lab } from "@/types/lab.type";
+import { Lab } from "@/models/lab.type";
 import { isNumber } from "@vueuse/shared";
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
+import BaseAlert from "@/components/Base/BaseAlert.vue";
 
 export default defineComponent({
   components: {
     LabForm,
+    BaseAlert,
   },
   emits: ["closeMobileView"],
   setup(_, context) {
@@ -409,7 +418,7 @@ export default defineComponent({
   width: 15rem;
   background-color: #156ed3;
 }
-.percent49-5{
+.percent49-5 {
   width: 100%;
 }
 .submit-button {
@@ -542,14 +551,31 @@ export default defineComponent({
   gap: 0.2rem;
 }
 
+:deep(.positioner) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  margin: 1rem 1rem;
+  text-align: center;
+}
+
+.info-centerer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 @media (min-width: 769px) {
   #submit-btn:disabled {
     color: #f3f3f3;
     width: 15rem;
   }
-.percent49-5{
-  width: 49.5%;
-}
+  .percent49-5 {
+    width: 49.5%;
+  }
   #submit-btn {
     color: white;
     width: 15rem;
@@ -627,9 +653,9 @@ export default defineComponent({
     max-width: 10rem;
     width: 100%;
   }
-.percent49-5{
-  width: 49.5%;
-}
+  .percent49-5 {
+    width: 49.5%;
+  }
   #submit-btn {
     color: white;
     min-width: 5rem;

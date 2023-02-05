@@ -175,15 +175,20 @@
                 d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm7.753 18.305c-.261-.586-.789-.991-1.871-1.241-2.293-.529-4.428-.993-3.393-2.945 3.145-5.942.833-9.119-2.489-9.119-3.388 0-5.644 3.299-2.489 9.119 1.066 1.964-1.148 2.427-3.393 2.945-1.084.25-1.608.658-1.867 1.246-1.405-1.723-2.251-3.919-2.251-6.31 0-5.514 4.486-10 10-10s10 4.486 10 10c0 2.389-.845 4.583-2.247 6.305z"
               />
             </svg>
-            <router-link to="/">{{ userName }}</router-link>
+            <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link>
           </div>
-          <div style="cursor:pointer;" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
+          <div
+            style="cursor: pointer"
+            class="logout-btn svg-center"
+            v-if="isLoggedIn"
+            @click="logOut"
+          >
             <!-- ΑΠΟΣΥΝΔΕΣΗ -->
 
             <v-tooltip text="Αποσύνδεση" location="bottom">
               <template v-slot:activator="{ props }">
                 <svg
-                v-bind="props"
+                  v-bind="props"
                   fill="#000000"
                   height="30"
                   width="30"
@@ -243,7 +248,7 @@ export default defineComponent({
     });
     const userName = computed(() => {
       if (isLoggedIn.value === true)
-        return GetUserDataDetails()?.DisplayNameEn ?? "User";
+        return GetUserDataDetails()?.DisplayNameEl ?? "User";
       SetNotAuthenticated();
       return "";
     });
@@ -298,7 +303,7 @@ export default defineComponent({
 
     const logOut = async () => {
       await SetNotAuthenticated();
-      router.replace({name:"welcome"});
+      router.replace({ name: "welcome" });
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
@@ -312,7 +317,7 @@ export default defineComponent({
       isLoggedIn,
       userName,
       IsStaff,
-      logOut
+      logOut,
     };
   },
 });

@@ -202,69 +202,6 @@ export default defineComponent({
         }
         return {Status:true,Data:true};
     };
-    // const makeInfoCall = async ():Promise<InternalDataTransfter<BaseUserAuthStateResponse>>=>{
-    //     const info_response = await useAxios("/info/infos",setBackendInstanceAuth());
-    //     if (info_response.isFinished.value && ( !info_response.data.value || info_response.error.value) )
-    //     {
-    //         setErrorPushToHome(
-    //           "Σφάλμα Εξουσιοδήτησης",
-    //           "Η διαδίκασία δεν ολοκληρώθηκε"
-    //         );
-    //         return {Status:false,Data:null,Error:"error"};
-    //       }
-    //     const info_response_data: ApiResult<BaseUserAuthStateResponse> =info_response.data.value;
-    //     if (!info_response_data || info_response_data.Status === false || !info_response_data.Status || !info_response_data.Data) {
-    //       setErrorPushToHome(
-    //         "Σφάλμα Εξουσιοδήτησης",
-    //         "Η διαδίκασία δεν ολοκληρώθηκε"
-    //       );
-    //       return {Status:false,Data:null,Error:"error"};
-    //     }
-    //     return {Status:true,Data:info_response_data.Data,Error:null}
-    // }
-    // const determineIfAuth = async (response:BaseUserAuthStateResponse):Promise<void> => {
-    //   if(!response)
-    //   {
-    //     store.dispatch('setAuthState',false);
-    //     setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-    //   }
-    //   if(response.IsAuth === false || !response.IsAuth)
-    //   {
-    //     store.dispatch('setAuthState',false);
-    //     setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-    //   }
-    //   if(!response.UserDataDetails)
-    //   {
-    //     store.dispatch('setAuthState',false);
-    //     setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-    //   }
-    //   const payload:StoreSth = {
-    //     authState:response.IsAuth,
-    //     eduPersonAffiliation:response.UserDataDetails.EduPersonAffiliation
-    //   }
-    //   if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STAFF)
-    //   {
-    //     store.dispatch('setIsTeacherState',payload);
-    //     store.dispatch('setUserDataDetails', response.UserDataDetails);
-    //     openAlert('Επιτυχής Σύνδεση ως Καθηγητής');
-    //     setTypeOfAlert('success');
-    //     router.replace({name:'submittedLabs'});
-    //   }
-    //   else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
-    //   {
-    //     store.dispatch('setIsStudentState',payload);
-    //     store.dispatch('setUserDataDetails', response.UserDataDetails);
-    //     openAlert('Επιτυχής Σύνδεση ως Φοιτητής');
-    //     setTypeOfAlert('success');
-    //     router.replace({name:'submittedLabs'});
-    //   }
-    //   else
-    //   {
-    //      store.dispatch('setAuthState',false);
-    //       setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-    //   }
-    //   return;
-    // }
   },
 });
 </script>
