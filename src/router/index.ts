@@ -7,6 +7,7 @@ const LabAccordion= () => import('@/components/UI/LabAccordion.vue');
 const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
 const AddLab = () => import('@/components/UI/AddLab.vue');
 const WelcomePage = () => import('@/components/UI/WelcomePage.vue');
+const {SetNotAuthenticated} = useAuth();
 const routes: Array<RouteRecordRaw> = [
   {
     path : "/",
@@ -31,8 +32,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path:"/red",
     name:"red",
-    redirect: (to) => window.location.href = login_redirect_url,
-    meta : {requiresAuth :false}
+    redirect: (to) => window.location.href = login_redirect_url
   },
   {
     path : "/lab-list",
@@ -63,8 +63,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to,_,next) => {
-  const {IsAuthenticated,SetNotAuthenticated} = useAuth();
-  //const apiIsAuth = await IsAuthenticated();
+
   const storeIsAuth = store.getters.IsAuth;
   if(to.meta.requiresAuth === false && storeIsAuth == false){
     next();

@@ -62,7 +62,7 @@ export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {
     const isError = false;
-    const {alertTitle,typeOfAlert,showAlert,closeAlert} = useAlert();
+    const {alertTitle,typeOfAlert,showAlert,closeAlert,openAlert} = useAlert();
     const sLabs = ref([
       {
         labId: "1601",
@@ -113,11 +113,13 @@ export default defineComponent({
     };
     onMounted(() => {
       context.emit("closeMobileView", true);
-      if(showAlert.value === true)
-      {
+      if(showAlert.value === true){
         setTimeout(() => {
-          closeAlert();
-        },360000000);
+            openAlert(alertTitle.value);
+        },1000)
+        setTimeout(() => {
+            closeAlert();
+        },1500)
       }
       return;
     });

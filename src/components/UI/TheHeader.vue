@@ -138,9 +138,7 @@
             <router-link :to="{ name: 'labList' }">ΕΡΓΑΣΤΗΡΙΑ</router-link>
           </li>
           <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
-            <router-link :to="{ name: 'submittedLabs' }"
-              >ΔΗΛΩΘΕΝΤΑ</router-link
-            >
+            <router-link :to="{ name: 'submittedLabs' }">ΔΗΛΩΘΕΝΤΑ</router-link>
           </li>
           <li
             v-if="isLoggedIn && IsStaff"
@@ -179,20 +177,33 @@
             </svg>
             <router-link to="/">{{ userName }}</router-link>
           </div>
-          <div class="logout-btn" v-if="isLoggedIn">
-            <!-- <v-btn @click="redirectToLogin" class="sign-btn" rounded="pill" variant="outlined"> -->
+          <div style="cursor:pointer;" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
             <!-- ΑΠΟΣΥΝΔΕΣΗ -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M14 12h-4v-12h4v12zm4.213-10.246l-1.213 1.599c2.984 1.732 5 4.955 5 8.647 0 5.514-4.486 10-10 10s-10-4.486-10-10c0-3.692 2.016-6.915 5-8.647l-1.213-1.599c-3.465 2.103-5.787 5.897-5.787 10.246 0 6.627 5.373 12 12 12s12-5.373 12-12c0-4.349-2.322-8.143-5.787-10.246z"
-              />
-            </svg>
-            <!-- </v-btn> -->
+
+            <v-tooltip text="Αποσύνδεση" location="bottom">
+              <template v-slot:activator="{ props }">
+                <svg
+                v-bind="props"
+                  fill="#000000"
+                  height="30"
+                  width="30"
+                  version="1.1"
+                  id="XMLID_173_"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 24 26"
+                  xml:space="preserve"
+                >
+                  <g id="logout">
+                    <g>
+                      <path
+                        d="M15,24H0V2h15v8h-2V4H2v18h11v-6h2V24z M18.4,18.7L17,17.3l3.3-3.3H5v-2h15.3L17,8.7l1.4-1.4L24,13L18.4,18.7z"
+                      />
+                    </g>
+                  </g>
+                </svg>
+              </template>
+            </v-tooltip>
           </div>
         </div>
       </div>
@@ -285,6 +296,10 @@ export default defineComponent({
       router.replace({ name: "sign-in" });
     };
 
+    const logOut = async () => {
+      await SetNotAuthenticated();
+      router.replace({name:"welcome"});
+    };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
@@ -297,6 +312,7 @@ export default defineComponent({
       isLoggedIn,
       userName,
       IsStaff,
+      logOut
     };
   },
 });
@@ -323,7 +339,6 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
-
 .header {
   border: 1px solid #a2a2a2;
   background-color: #dae3f7;
@@ -444,7 +459,7 @@ a::after {
 }
 .logout-btn {
   padding: 0;
-  width:fit-content;
+  width: fit-content;
 }
 @media (min-width: 769px) {
   .header {
@@ -475,7 +490,7 @@ a::after {
   .main-nav {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     width: 100%;
     gap: 0;
@@ -527,8 +542,7 @@ a::after {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-right: 0.5rem;
-    gap: 0.7rem;
+    gap: 0.5rem;
   }
 }
 

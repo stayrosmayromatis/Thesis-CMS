@@ -24,7 +24,19 @@ export function useAuth() {
       return false;
     }
   };
-  const SetNotAuthenticated = ():void => {
+  const SetNotAuthenticated = async ():Promise<void> => {
+    const {setBackendInstanceAuth} = useAxiosInstance();
+    const {openAlert,setTypeOfAlert}=useAlert();
+    const logout_response = await useAxios("/authclient/sign-out",
+    {
+      method:"POST",
+    },
+    setBackendInstanceAuth());
+    if(logout_response.isFinished)
+    {
+      openAlert('Επιτυχής Αποσύνδεση');
+      setTypeOfAlert('success');
+    }
     store.dispatch('setAuthState',false);
     return;
   }

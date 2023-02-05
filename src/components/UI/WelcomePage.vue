@@ -26,7 +26,7 @@
             </div>
             <div class="please-log-in">
                 <p>Παρακαλώ συνδεθείτε μέσω
-                    <a href="https://google.com"> Apps</a>
+                    <router-link :to="{name:'red'}" > Apps</router-link>
                     για να συνεχίσετε στην εφαρμογή.
                 </p>
             </div>
@@ -56,13 +56,13 @@ export default defineComponent({
             error.value = isError.value;
             errorDesc.value=errorDescription.value;
             errorTit.value= errorTitle.value;
-            if(showAlert.value === false){
+            if(showAlert.value === true){
                 setTimeout(() => {
-                    openAlert('Επιτυχής Σύνδεση');
+                    openAlert(alertTitle.value);
                 },1000)
                 setTimeout(() => {
                     closeAlert();
-                },360000)
+                },1500)
             }
             context.emit('closeMobileView', true);
             return;
