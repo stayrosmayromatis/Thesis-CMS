@@ -1,19 +1,15 @@
 <template>
-  <!-- <v-row> -->
-    <!-- justify="center" -->
-    <v-dialog
-      v-model="dialog"
-      scrollable
-      close-on-back
-      contained
-      class="dialog-override"
+    <v-dialog v-model="dialog" 
+    :scrollable="false" 
+    close-on-back 
+    :contained="false"
+    width="100%"
+    max-width="40rem"
+    min-width="320px"
+    attach="body"
     >
       <template v-slot:activator="{ props }">
-        <v-btn
-          class="button-dimensions-adjustment"
-          color="primary"
-          v-bind="props"
-        >
+        <v-btn class="button-dimensions-adjustment" color="primary" v-bind="props">
           Καθηγητες
         </v-btn>
       </template>
@@ -22,23 +18,14 @@
           <v-card-title>Επιλέξτε Καθηγητή</v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <v-autocomplete
-              autofocus
-              clearable
-              label="Αναζητήστε εδώ"
-              :items="[
-                'California',
-                'Colorado',
-                'Florida',
-                'Georgia',
-                'Texas',
-                'Wyoming',
-              ]"
-              :multiple="false"
-              variant="plain"
-              density="comfortable"
-              :open-on-clear="false"
-            ></v-autocomplete>
+            <v-autocomplete autofocus clearable label="Αναζητήστε εδώ" :items="[
+              'California',
+              'Colorado',
+              'Florida',
+              'Georgia',
+              'Texas',
+              'Wyoming',
+            ]" :multiple="false" variant="plain" density="comfortable" :open-on-clear="false"></v-autocomplete>
           </v-card-text>
           <v-divider></v-divider>
           <v-card-actions>
@@ -52,7 +39,6 @@
         </v-card>
       </div>
     </v-dialog>
-  <!-- </v-row> -->
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
@@ -66,25 +52,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-:deep(.v-dialog--scrollable .v-overlay__content) {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-}
-:deep(.v-dialog) {
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  min-width: 320px;
-}
 
-.card-override {
-  max-width: 40rem;
-  min-width: 320px;
-  width: 100%;
-}
+/* .card-override {
+  max-width: 40rem !important;
+  min-width: 320px !important;
+  width: 100% !important;
+} */
 
 :deep(.v-card-actions) {
   display: flex;
