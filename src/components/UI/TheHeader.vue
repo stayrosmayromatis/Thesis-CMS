@@ -73,6 +73,7 @@
         </g>
       </svg>
       <!-- IHU LOGO SVG END -->
+
     </div>
 
     <div style="width: 100%">
@@ -91,7 +92,7 @@
             <router-link to="/">Επικοινωνία</router-link>
           </li>
         </ul>
-
+        <div class="menu-divider"></div>
         <div class="button-groupper">
           <div class="nav__item--cta" v-if="!isLoggedIn">
             <v-btn @click="redirectToLogin" class="sign-btn" rounded="pill" variant="outlined">
@@ -489,6 +490,18 @@ a::after {
 }
 
 @media (min-width: 1025px) {
+  .menu-divider {
+    margin: 0 0.3rem;
+    opacity: 0.1;
+    border: 0.1px solid rgb(0, 0, 0);
+    width: 0.1px;
+    height: 6rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
   a:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
@@ -500,7 +513,7 @@ a::after {
     width: 100%;
     transform: scaleX(0);
     height: 3px;
-    bottom: -1rem;
+    bottom: -0.3rem;
     left: 0;
     background-color: #0a369d;
     transform-origin: bottom right;
@@ -584,6 +597,7 @@ a::after {
     margin: 0;
     width: fit-content;
     gap: 0.5rem;
+    margin: 0 0.5rem;
   }
 }
 </style>
