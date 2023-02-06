@@ -361,7 +361,7 @@ a::after {
   justify-content: center;
   gap: 0.3rem;
   align-items: center;
-  font-weight: 600;
+  font-weight: 450;
   margin-bottom: 0.5rem;
 }
 
@@ -465,7 +465,7 @@ a::after {
     justify-content: space-between;
     gap: 0.5rem;
     align-items: center;
-    font-weight: 600;
+    font-weight: 450;
     margin: 0;
   }
 
@@ -569,7 +569,7 @@ a::after {
     justify-content: space-between;
     gap: 0.5rem;
     align-items: center;
-    font-weight: 600;
+    font-weight: 450;
   }
 
   .mobile-logo {
