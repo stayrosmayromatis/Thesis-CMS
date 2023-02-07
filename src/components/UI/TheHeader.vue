@@ -164,7 +164,6 @@ export default defineComponent({
     const userName = computed(() => {
       if (isLoggedIn.value === true)
         return GetUserDataDetails()?.DisplayNameEl ?? "User";
-      SetNotAuthenticated();
       return "";
     });
     const IsStaff = computed(() => {
