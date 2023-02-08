@@ -125,7 +125,7 @@ import { Lab } from "@/models/lab.type";
 import { isNumber } from "@vueuse/shared";
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import BaseAlert from "@/components/Base/BaseAlert.vue";
-
+import {useProfessor} from "@/composables/useProfessors.composable";
 export default defineComponent({
   components: {
     LabForm,
@@ -133,7 +133,9 @@ export default defineComponent({
   },
   emits: ["closeMobileView"],
   setup(_, context) {
-    onMounted(() => {
+    const {GetSeededProfessors} = useProfessor();
+    onMounted(async () => {
+      await GetSeededProfessors();
       context.emit("closeMobileView", true);
       return;
     });

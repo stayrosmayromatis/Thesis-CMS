@@ -2,6 +2,7 @@
 import { UserDataDetails } from "@/models/BACKEND-MODELS/UserDataDetails";
 import { State } from "@/models/stateInterface.type";
 import { StoreSth } from "@/store/actions";
+import { BaseUser } from '../models/BACKEND-MODELS/BaseUser';
 
 const setAuthState = (state: State, authState: boolean) => {
   state.IsAuth = authState;
@@ -23,4 +24,8 @@ const setUserDataDetails = (state:State,payload:UserDataDetails) =>
 {
   state.UserDataDetails = payload;
 }
-export default { setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails };
+
+const setSeededProfessors = (state:State,payload:Array<Partial<BaseUser>>) => {
+  state.SeededProfessors = payload;
+}
+export default { setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors };

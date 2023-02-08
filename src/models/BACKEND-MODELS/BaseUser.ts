@@ -7,4 +7,5 @@ export interface BaseUser {
   eduPersonAffiliation: TypeStaff;
   titleEn: string;
   titleEl: string;
+  Guid? :string;
 }
