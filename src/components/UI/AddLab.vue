@@ -398,7 +398,6 @@ export default defineComponent({
         if (!isNumber(dept.numberOfStudents)) {
           dept.numberOfStudents = <number>dept.numberOfStudents;
         }
-        continue;
       }
 
       if (!allDeptsAreCorrect) return;

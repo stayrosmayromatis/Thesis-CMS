@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, PropType, ref, Ref, toRefs } from "vue";
+import { defineComponent,PropType,ref,toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
@@ -92,11 +92,7 @@ export default defineComponent({
     const { department,seeded_professors } = toRefs(props);
     //SeededProfessors for autocomplete
     const isValid = ref(false);
-    // onMounted(() => {
-    //   department.value.errorOnSelectedTeacher = true;
-    // });
     const seeded_professors_reactive = seeded_professors;
-
     const populateFormWithSelectedTeacher = (teacher:BaseUser | undefined) => {
       if(!teacher || teacher == undefined)
       {
@@ -113,8 +109,6 @@ export default defineComponent({
       }
       console.log(department.value);
       return;
-      
-      
     };
     //SeededProfessors for autocomplete
     const deleteByDeptId = () => {

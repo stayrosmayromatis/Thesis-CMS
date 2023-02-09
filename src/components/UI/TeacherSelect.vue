@@ -83,12 +83,13 @@ export default defineComponent({
       if(!selectedTeacher.value ){
         errorMessage.value="Επιλέξτε καθηγητή παρακαλώ"
         error.value = true;
+        return false;
       }
       else{
         errorMessage.value=""
         error.value = false;
+        return true;
       }
-      return false;
     }
     const configSelectedTeacher = () => {
       if(!validateAutoComplete() ){
