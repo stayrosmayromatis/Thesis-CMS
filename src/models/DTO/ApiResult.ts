@@ -1,4 +1,4 @@
-export interface ApiResult<T> {
+export interface ApiResult<W> {
   Status: boolean;
-  Data: T;
+  Data: W;
 }
