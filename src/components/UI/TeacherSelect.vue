@@ -28,9 +28,9 @@
           </div>
           <div class="cant-find-teacher-fields">
             <v-text-field label="Όνομα" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newName"
-              :error-messages="errorMessageName" :error="errorOnName"></v-text-field>
+              :error-messages="errorMessageName" :error="errorOnName" @input="validateName"></v-text-field>
             <v-text-field label="Επώνυμο" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newSurname"
-              :error-messages="errorMessageSurname" :error="errorOnSurname"></v-text-field>
+              :error-messages="errorMessageSurname" :error="errorOnSurname" @input="validateSurname"></v-text-field>
           </div>
         </div>
         <v-divider></v-divider>
@@ -47,8 +47,9 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, ref, toRefs } from "vue";
+import { computed, defineComponent, PropType, ref, toRefs } from "vue";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
+import { isNumber } from "@vueuse/shared";
 export default defineComponent({
   props:
   {
@@ -69,10 +70,10 @@ export default defineComponent({
 
     const errorMessageName = ref<string>('');
     const errorOnName = ref<boolean>(false);
-    
+
     const errorMessageSurname = ref<string>('');
     const errorOnSurname = ref<boolean>(false);
-    
+
     const newName = ref<string>('');
     const newSurname = ref<string>('');
     const { seeded_professors, is_valid } = toRefs(props);
@@ -97,6 +98,18 @@ export default defineComponent({
     }
     const configSelectedTeacher = () => {
       //Needs the extra validation for inpute fields
+      if (cantFindTeacherFlag.value === true) {
+        const isValidName = validateName();
+        const isValidSurname = validateName();
+        if (isValidName === true && isValidSurname === true) {
+          //Progress with the API Call
+        }
+        else {
+          context.emit('emit-selected-teacher', undefined);
+          dialog.value = false;
+        }
+      }
+      else {
         if (!validateAutoComplete()) {
           context.emit('emit-selected-teacher', undefined);
         }
@@ -104,37 +117,36 @@ export default defineComponent({
           context.emit('emit-selected-teacher', selectedTeacher.value);
         }
         dialog.value = false;
-      
+      }
     };
+    const validateName = () => {
+      if (!newName.value || newName.value === " " || isNumber(newName.value)) {
+        errorMessageName.value = "Υποχρεωτικό όνομα"
+        errorOnName.value = true;
+        return false;
 
-    const isValidName = () => {
-      if (cantFindTeacherFlag.value === true) {
-        if (!newName.value || newName.value) {
-          errorMessageName.value = "Συμπληρώστε όνομα"
-          errorOnName.value = true;
-          return false;
-        }
-        else{
-          errorMessageName.value = ""
-          errorOnName.value = false;
-          return true;
-        }
+      }
+      else {
+        errorMessageName.value = ""
+        errorOnName.value = false;
+        return true;
+      }
+
+    };
+    const validateSurname = () => {
+      if (!newSurname.value || newSurname.value === " " || isNumber(newSurname.value)) {
+        errorMessageSurname.value = "Υποχρεωτικό επώνυμο"
+        errorOnSurname.value = true;
+        return false;
+      }
+      else {
+        errorMessageSurname.value = ""
+        errorOnSurname.value = false;
+        return true;
       }
     }
-    const isValidSurname = () => {
-      if (cantFindTeacherFlag.value === true) {
-        if (!newSurname.value || newSurname.value) {
-          errorMessageSurname.value = "Συμπληρώστε επώνυμο"
-          errorOnSurname.value = true;
-          return false;
-        }
-        else{
-          errorMessageName.value = ""
-          errorOnSurname.value = false;
-          return true;
-        }
-      }
-    }
+
+
     const dialog = ref<boolean>(false);
     return {
       error,
@@ -148,12 +160,12 @@ export default defineComponent({
       cantFindTeacherFlag,
       errorMessageName,
       errorMessageSurname,
-      isValidName,
-      isValidSurname,
       newName,
       newSurname,
       errorOnName,
-      errorOnSurname
+      errorOnSurname,
+      validateName,
+      validateSurname
     };
   },
 });
