@@ -9,14 +9,15 @@
     min-width="320px"
     attach="body"
   >
+  <!-- :color="isValid ? '#4CAF50' : 'primary'" -->
+  <!--  -->
     <template v-slot:activator="{ props }">
       <v-btn
-        class="button-dimensions-adjustment"
-        color="primary"
+      class="button-dimensions-adjustment"
+        :class="{ 'teacher-button-success' : isValid === true  , 'teacher-button-failure' : !isValid} "
         v-bind="props"
-        @click="fillAutocomplete"
       >
-        Καθηγητες
+        {{isValid ?selectedTeacher?.displayNameEl.split(' ')[1] : "Καθηγητες" }}
       </v-btn>
     </template>
     <div class="card-override">
@@ -29,19 +30,23 @@
             clearable
             label="Αναζητήστε εδώ"
             :items="autoCompleteItems"
+            :item-title="'displayNameEl'"
+            return-object
             :multiple="false"
             variant="plain"
             density="comfortable"
-            v-model="modelValue"
+            v-model="selectedTeacher"
+            @update:model-value="validateAutoComplete"
             :open-on-clear="false"
+            :error-messages="errorMessage"
           ></v-autocomplete>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="red-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="red-darken-1" variant="text" @click="configSelectedTeacher">
             Κλεισιμο
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="blue-darken-1" variant="text" @click="configSelectedTeacher">
             Επιλογή
           </v-btn>
         </v-card-actions>
@@ -50,49 +55,65 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useStore } from "vuex";
-import { key } from "@/store/index";
+import { defineComponent, PropType, ref, toRefs } from "vue";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
-import { computed } from '@vue/runtime-core';
-interface AutocompleteMap extends BaseUser {
-  title: string;
-  value: string;
-}
 export default defineComponent({
-  setup() {
-    const store = useStore(key);
-    let iterableItems: Array<BaseUser> = Array<BaseUser>();
-    const autoCompleteItems = ref<Array<AutocompleteMap>>(
-      new Array<AutocompleteMap>()
-    );
-    const modelValue = ref<any>();
-    async function fillAutocomplete() {
-      await delay(1000);
-      iterableItems = store.getters.getSeededProfessors;
-      if (!iterableItems || iterableItems.length === 0) {
-        return;
-      }
-      iterableItems.forEach((item) => {
-        const obj: AutocompleteMap = {
-          title: item.displayNameEl ?? "",
-          value: item.Guid ?? "",
-          ...item,
-        };
-        autoCompleteItems.value.push(obj);
-      });
+  props:
+  {
+    seeded_professors : {
+        type : Object as PropType<Array<BaseUser>>,
+        required : false,
+        default : Array<BaseUser>()
+    },
+    is_valid:{
+      type:Boolean,
+      required:false
     }
+  },
+  emits:['emit-selected-teacher'],
+  setup(props,context) {
+    const errorMessage = ref<string>('');
+    const error = ref<boolean>(false);
+    const {seeded_professors , is_valid} = toRefs(props);
+    const seeded_professors_reactive = seeded_professors;
+    const isValid = is_valid;
+    const selectedTeacher = ref<BaseUser>();
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
+    };
+    const validateAutoComplete =() => {
+      if(!selectedTeacher.value ){
+        errorMessage.value="Επιλέξτε έναν καθηγητή"
+        error.value = true;
+        return false;
+      }
+      else{
+        errorMessage.value=""
+        error.value = false;
+        return true;
+      }
+    }
+    const configSelectedTeacher = () => {
+      if(!validateAutoComplete() ){
+        context.emit('emit-selected-teacher',undefined);
+      }
+      else{
+        context.emit('emit-selected-teacher',selectedTeacher.value);
+      }
+      dialog.value = false;
     };
     const dialog = ref<boolean>(false);
     const dialogm1 = ref<string>("");
     return {
+      error,
       dialog,
       dialogm1,
-      autoCompleteItems,
-      fillAutocomplete,
-      modelValue
+      autoCompleteItems:seeded_professors_reactive,
+      selectedTeacher,
+      errorMessage,
+      validateAutoComplete,
+      configSelectedTeacher,
+      isValid
     };
   },
 });
@@ -105,6 +126,14 @@ export default defineComponent({
   width: 100% !important;
 } */
 
+.teacher-button-success{
+  color: white !important;
+  background-color: #4CAF50 !important;
+}
+.teacher-button-failure{
+  color: white !important;
+  background-color: #156ed3 !important;
+}
 :deep(.v-card-actions) {
   display: flex;
   flex-direction: row;

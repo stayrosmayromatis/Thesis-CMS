@@ -95,6 +95,7 @@
               v-for="(department, index) in departments"
               :key="index"
               :department="department"
+              :seeded_professors="seededProfessors"
               @deleteByDeptId="removeFormGroup"
               @global-error="dateNotEmpty"
             ></lab-form>
@@ -126,6 +127,9 @@ import { isNumber } from "@vueuse/shared";
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import BaseAlert from "@/components/Base/BaseAlert.vue";
 import {useProfessor} from "@/composables/useProfessors.composable";
+import { useStore } from "vuex";
+import { key } from "@/store";
+import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 export default defineComponent({
   components: {
     LabForm,
@@ -134,16 +138,26 @@ export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {
     const {GetSeededProfessors} = useProfessor();
+    const store= useStore(key);
+    const seededProfessors = ref<Array<BaseUser>>(new Array<BaseUser>());
     onMounted(async () => {
+      
+      //SeedProfessorsSegment
       await GetSeededProfessors();
+      seededProfessors.value = store.getters.getSeededProfessors;
+      while(!seededProfessors.value || seededProfessors.value.length == 0)
+      {
+        await GetSeededProfessors();
+        seededProfessors.value = store.getters.getSeededProfessors;
+      }
       context.emit("closeMobileView", true);
       return;
     });
+    //SeedProfessorsSegment
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
       return;
     };
-
     let deptIncremental = 1;
     const show = true;
     const departments = ref(Array<Department>());
@@ -405,6 +419,7 @@ export default defineComponent({
       dateNotEmpty,
       show,
       displayedAttendaceValues,
+      seededProfessors
     };
   },
 });

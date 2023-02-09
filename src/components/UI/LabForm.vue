@@ -54,7 +54,7 @@
         v-model="department.day"
       ></v-select>
       <div class="teacher-select-box">
-        <teacher-select></teacher-select>
+        <teacher-select :is_valid="isValid" @emit-selected-teacher="populateFormWithSelectedTeacher" :seeded_professors="seeded_professors_reactive"></teacher-select>
       </div>
     </div>
     <div class="mobile-actions">
@@ -66,16 +66,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from "vue";
+import { defineComponent, PropType, ref, Ref, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
+import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 export default defineComponent({
   props: {
     department: {
       type: Object as PropType<Department>,
       required: true,
     },
+    seeded_professors : {
+      type : Object as PropType<Array<BaseUser>>,
+        required : false,
+        default : Array<BaseUser>()
+    }
   },
   components: {
     TeacherSelect,
@@ -83,7 +89,26 @@ export default defineComponent({
   emits: ["deleteByDeptId"],
   setup(props, context) {
     const days = daysOfWeek;
-    const { department } = toRefs(props);
+    
+    const { department,seeded_professors } = toRefs(props);
+    //SeededProfessors for autocomplete
+    const isValid = ref<boolean>();
+    const seeded_professors_reactive = seeded_professors;
+    const populateFormWithSelectedTeacher = (teacher:BaseUser | undefined) => {
+      if(!teacher || teacher == undefined)
+      {
+        department.value.selectedTeacher = undefined;
+        isValid.value = false;
+        return;
+      }
+      console.log(teacher);
+      department.value.selectedTeacher = teacher;
+      isValid.value = true;
+      console.log(department.value);
+      
+      
+    };
+    //SeededProfessors for autocomplete
     const deleteByDeptId = () => {
       context.emit("deleteByDeptId", department.value.deptId);
     };
@@ -108,6 +133,11 @@ export default defineComponent({
         ? (department.value.errorOnToTime = true)
         : (department.value.errorOnToTime = false);
     };
+    const isTeacherSelectValid = () => {
+      if(isValid.value === false || !isValid.value)
+        return false;
+      return true;
+    }
     const changeNumberOfStudents = (value: number) => {
       if (value && value > 0) department.value.numberOfStudents = value;
     };
@@ -118,6 +148,9 @@ export default defineComponent({
       isFromTimeEmpty,
       isToTimeEmpty,
       changeNumberOfStudents,
+      seeded_professors_reactive,
+      populateFormWithSelectedTeacher,
+      isValid
     };
   },
 });
