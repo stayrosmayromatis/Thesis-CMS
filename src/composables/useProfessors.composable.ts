@@ -49,7 +49,7 @@ export function useProfessor() {
       }
       if(!arrayOfBaseUsers ||arrayOfBaseUsers.length === 0 )
       {
-        setError('Error fetching Teachers', "Try Again");
+         setError('Error fetching Teachers', "Try Again");
         return;
       }
       store.dispatch('setSeededProfessors', arrayOfBaseUsers);

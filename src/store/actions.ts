@@ -38,7 +38,7 @@ const setUserDataDetails = (context: any, payload: UserDataDetails) => {
   context.commit("setUserDataDetails", payload);
 };
 
-const setSeededProfessors = (context: any, payload: Array<Partial<BaseUser>>) => {
+const setSeededProfessors = (context: any, payload: Array<BaseUser>) => {
   if (!payload || payload.length === 0) return;
   context.commit("setSeededProfessors", payload);
 };

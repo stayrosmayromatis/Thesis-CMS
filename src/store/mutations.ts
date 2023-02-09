@@ -25,7 +25,7 @@ const setUserDataDetails = (state:State,payload:UserDataDetails) =>
   state.UserDataDetails = payload;
 }
 
-const setSeededProfessors = (state:State,payload:Array<Partial<BaseUser>>) => {
+const setSeededProfessors = (state:State,payload:Array<BaseUser>) => {
   state.SeededProfessors = payload;
 }
 export default { setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors };

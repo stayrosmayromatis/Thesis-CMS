@@ -7,5 +7,5 @@ export interface State{
     IsTeacher:boolean;
     IsStaffType:TypeStaff | null;
     UserDataDetails : UserDataDetails | null;
-    SeededProfessors : Array<Partial<BaseUser>>;
+    SeededProfessors : Array<BaseUser>;
 }
