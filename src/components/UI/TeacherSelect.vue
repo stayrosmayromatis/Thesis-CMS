@@ -28,9 +28,9 @@
           </div>
           <div class="cant-find-teacher-fields">
             <v-text-field label="Όνομα" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newName"
-              :error-messages="errorMessageName"></v-text-field>
+              :error-messages="errorMessageName" :error="errorOnName"></v-text-field>
             <v-text-field label="Επώνυμο" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newSurname"
-              :error-messages="errorMessageSurname"></v-text-field>
+              :error-messages="errorMessageSurname" :error="errorOnSurname"></v-text-field>
           </div>
         </div>
         <v-divider></v-divider>
@@ -65,9 +65,14 @@ export default defineComponent({
   emits: ['emit-selected-teacher'],
   setup(props, context) {
     const errorMessage = ref<string>('');
-    const errorMessageName = ref<string>('');
-    const errorMessageSurname = ref<string>('');
     const error = ref<boolean>(false);
+
+    const errorMessageName = ref<string>('');
+    const errorOnName = ref<boolean>(false);
+    
+    const errorMessageSurname = ref<string>('');
+    const errorOnSurname = ref<boolean>(false);
+    
     const newName = ref<string>('');
     const newSurname = ref<string>('');
     const { seeded_professors, is_valid } = toRefs(props);
@@ -91,22 +96,7 @@ export default defineComponent({
       }
     }
     const configSelectedTeacher = () => {
-      if (cantFindTeacherFlag.value === true) 
-      {
-        if (validateName() === false) {
-          dialog.value = true;
-        }
-        if(validateSurname() === false)
-        {
-          dialog.value = true;
-        }
-        else 
-        {
-          dialog.value = false;
-        }
-      }
-      else 
-      {
+      //Needs the extra validation for inpute fields
         if (!validateAutoComplete()) {
           context.emit('emit-selected-teacher', undefined);
         }
@@ -114,29 +104,33 @@ export default defineComponent({
           context.emit('emit-selected-teacher', selectedTeacher.value);
         }
         dialog.value = false;
-      }
+      
     };
 
-    const validateName = () => {
+    const isValidName = () => {
       if (cantFindTeacherFlag.value === true) {
         if (!newName.value || newName.value) {
           errorMessageName.value = "Συμπληρώστε όνομα"
+          errorOnName.value = true;
           return false;
         }
         else{
           errorMessageName.value = ""
+          errorOnName.value = false;
           return true;
         }
       }
     }
-    const validateSurname = () => {
+    const isValidSurname = () => {
       if (cantFindTeacherFlag.value === true) {
         if (!newSurname.value || newSurname.value) {
           errorMessageSurname.value = "Συμπληρώστε επώνυμο"
+          errorOnSurname.value = true;
           return false;
         }
         else{
           errorMessageName.value = ""
+          errorOnSurname.value = false;
           return true;
         }
       }
@@ -154,10 +148,12 @@ export default defineComponent({
       cantFindTeacherFlag,
       errorMessageName,
       errorMessageSurname,
-      validateName,
-      validateSurname,
+      isValidName,
+      isValidSurname,
       newName,
-      newSurname
+      newSurname,
+      errorOnName,
+      errorOnSurname
     };
   },
 });
