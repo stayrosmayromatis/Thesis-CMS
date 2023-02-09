@@ -8,6 +8,7 @@ export interface Department {
   numberOfStudents: number,
   selectedTeacher? :BaseUser,
   errorOnDeptId?:boolean,
+  errorOnSelectedTeacher?:boolean,
   errorOnFromTime?:boolean,
   errorOnToTime?:boolean
 }

@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, Ref, toRefs } from "vue";
+import { computed, defineComponent, onMounted, PropType, ref, Ref, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
@@ -89,22 +89,30 @@ export default defineComponent({
   emits: ["deleteByDeptId"],
   setup(props, context) {
     const days = daysOfWeek;
-    
     const { department,seeded_professors } = toRefs(props);
     //SeededProfessors for autocomplete
-    const isValid = ref<boolean>();
+    const isValid = ref(false);
+    // onMounted(() => {
+    //   department.value.errorOnSelectedTeacher = true;
+    // });
     const seeded_professors_reactive = seeded_professors;
+
     const populateFormWithSelectedTeacher = (teacher:BaseUser | undefined) => {
       if(!teacher || teacher == undefined)
       {
         department.value.selectedTeacher = undefined;
+        department.value.errorOnSelectedTeacher = true;
         isValid.value = false;
-        return;
       }
-      console.log(teacher);
-      department.value.selectedTeacher = teacher;
-      isValid.value = true;
+      else
+      {
+        department.value.selectedTeacher = teacher;
+        department.value.errorOnSelectedTeacher = false;
+        isValid.value = true;
+        
+      }
       console.log(department.value);
+      return;
       
       
     };
@@ -133,11 +141,6 @@ export default defineComponent({
         ? (department.value.errorOnToTime = true)
         : (department.value.errorOnToTime = false);
     };
-    const isTeacherSelectValid = () => {
-      if(isValid.value === false || !isValid.value)
-        return false;
-      return true;
-    }
     const changeNumberOfStudents = (value: number) => {
       if (value && value > 0) department.value.numberOfStudents = value;
     };

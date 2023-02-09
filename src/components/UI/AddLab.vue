@@ -97,7 +97,7 @@
               :department="department"
               :seeded_professors="seededProfessors"
               @deleteByDeptId="removeFormGroup"
-              @global-error="dateNotEmpty"
+              @global-error="validateEachDepartment"
             ></lab-form>
             <div class="submit-button">
               <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit"
@@ -350,7 +350,7 @@ export default defineComponent({
         return true;
       return false;
     });
-    const dateNotEmpty = (dept: Department) => {
+    const validateEachDepartment = (dept: Department) => {
       if (dept.deptId === "" || dept.deptId === " " || dept.deptId === null) {
         dept.errorOnDeptId = true;
       }
@@ -366,11 +366,14 @@ export default defineComponent({
       if (dept.toTime === "" || dept.toTime === " " || dept.toTime === null) {
         dept.errorOnToTime = true;
       }
-
+      if(dept.selectedTeacher === null || dept.selectedTeacher === undefined || !dept.selectedTeacher){
+        dept.errorOnSelectedTeacher = true;
+      }
       if (
         dept.errorOnDeptId === true ||
         dept.errorOnFromTime === true ||
-        dept.errorOnToTime === true
+        dept.errorOnToTime === true || 
+        dept.errorOnSelectedTeacher === true
       ) {
         console.log("There are errors");
         return false;
@@ -389,7 +392,7 @@ export default defineComponent({
         return;
       }
       for (let dept of formState.departments) {
-        if (dateNotEmpty(dept) === false) {
+        if (validateEachDepartment(dept) === false) {
           allDeptsAreCorrect = false;
         }
         if (!isNumber(dept.numberOfStudents)) {
@@ -416,7 +419,7 @@ export default defineComponent({
       errorOfLabTitle,
       errorOfDescription,
       errorOfAttendance,
-      dateNotEmpty,
+      validateEachDepartment,
       show,
       displayedAttendaceValues,
       seededProfessors

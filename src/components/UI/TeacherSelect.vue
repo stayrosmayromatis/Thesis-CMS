@@ -2,22 +2,20 @@
   <v-dialog
     v-model="dialog"
     :scrollable="false"
-    close-on-back
+    :close-on-back="false"
     :contained="false"
     width="100%"
     max-width="40rem"
     min-width="320px"
     attach="body"
   >
-  <!-- :color="isValid ? '#4CAF50' : 'primary'" -->
-  <!--  -->
     <template v-slot:activator="{ props }">
       <v-btn
       class="button-dimensions-adjustment"
         :class="{ 'teacher-button-success' : isValid === true  , 'teacher-button-failure' : !isValid} "
         v-bind="props"
       >
-        {{isValid ?selectedTeacher?.displayNameEl.split(' ')[1] : "Καθηγητες" }}
+        {{isValid ? selectedTeacher?.displayNameEl.split(' ')[1] : "Καθηγητες" }}
       </v-btn>
     </template>
     <div class="card-override">
@@ -83,7 +81,7 @@ export default defineComponent({
     };
     const validateAutoComplete =() => {
       if(!selectedTeacher.value ){
-        errorMessage.value="Επιλέξτε έναν καθηγητή"
+        errorMessage.value="Επιλέξτε καθηγητή παρακαλώ"
         error.value = true;
         return false;
       }
@@ -103,11 +101,9 @@ export default defineComponent({
       dialog.value = false;
     };
     const dialog = ref<boolean>(false);
-    const dialogm1 = ref<string>("");
     return {
       error,
       dialog,
-      dialogm1,
       autoCompleteItems:seeded_professors_reactive,
       selectedTeacher,
       errorMessage,
