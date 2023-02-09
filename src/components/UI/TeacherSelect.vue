@@ -1,21 +1,10 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :scrollable="false"
-    :close-on-back="false"
-    :contained="false"
-    width="100%"
-    max-width="40rem"
-    min-width="320px"
-    attach="body"
-  >
+  <v-dialog v-model="dialog" :scrollable="false" :close-on-back="false" :contained="false" width="100%"
+    max-width="40rem" min-width="320px" attach="body">
     <template v-slot:activator="{ props }">
-      <v-btn
-      class="button-dimensions-adjustment"
-        :class="{ 'teacher-button-success' : isValid === true  , 'teacher-button-failure' : !isValid} "
-        v-bind="props"
-      >
-        {{isValid ? selectedTeacher?.displayNameEl.split(' ')[1] : "Καθηγητες" }}
+      <v-btn class="button-dimensions-adjustment"
+        :class="{ 'teacher-button-success': isValid === true, 'teacher-button-failure': !isValid }" v-bind="props">
+        {{ isValid? selectedTeacher?.displayNameEl.split(' ')[1] : "Καθηγητες" }}
       </v-btn>
     </template>
     <div class="card-override">
@@ -23,22 +12,27 @@
         <v-card-title>Επιλέξτε Καθηγητή</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-autocomplete
-            autofocus
-            clearable
-            label="Αναζητήστε εδώ"
-            :items="autoCompleteItems"
-            :item-title="'displayNameEl'"
-            return-object
-            :multiple="false"
-            variant="plain"
-            density="comfortable"
-            v-model="selectedTeacher"
-            @update:model-value="validateAutoComplete"
-            :open-on-clear="false"
-            :error-messages="errorMessage"
-          ></v-autocomplete>
+          <div class="autocomplete-padder">
+            <v-autocomplete :disabled="cantFindTeacherFlag" autofocus clearable label="Αναζητήστε εδώ"
+              :items="autoCompleteItems" :item-title="'displayNameEl'" return-object :multiple="false" variant="plain"
+              density="comfortable" v-model="selectedTeacher" @update:model-value="validateAutoComplete"
+              :open-on-clear="false" :error-messages="errorMessage"></v-autocomplete>
+          </div>
         </v-card-text>
+        <div class="cant-find-teacher-outer-div">
+          <div class="cant-find-teacher">
+            <v-card-title :class="{ 'gray-out': !cantFindTeacherFlag }">Δεν βρίσκω τον καθηγητή</v-card-title>
+            <span>
+              <v-switch color="primary" v-model="cantFindTeacherFlag" :value="true" hide-details></v-switch>
+            </span>
+          </div>
+          <div class="cant-find-teacher-fields">
+            <v-text-field label="Όνομα" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newName"
+              :error-messages="errorMessageName"></v-text-field>
+            <v-text-field label="Επώνυμο" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newSurname"
+              :error-messages="errorMessageSurname"></v-text-field>
+          </div>
+        </div>
         <v-divider></v-divider>
         <v-card-actions>
           <v-btn color="red-darken-1" variant="text" @click="configSelectedTeacher">
@@ -58,78 +52,172 @@ import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 export default defineComponent({
   props:
   {
-    seeded_professors : {
-        type : Object as PropType<Array<BaseUser>>,
-        required : false,
-        default : Array<BaseUser>()
+    seeded_professors: {
+      type: Object as PropType<Array<BaseUser>>,
+      required: false,
+      default: Array<BaseUser>()
     },
-    is_valid:{
-      type:Boolean,
-      required:false
+    is_valid: {
+      type: Boolean,
+      required: false
     }
   },
-  emits:['emit-selected-teacher'],
-  setup(props,context) {
+  emits: ['emit-selected-teacher'],
+  setup(props, context) {
     const errorMessage = ref<string>('');
+    const errorMessageName = ref<string>('');
+    const errorMessageSurname = ref<string>('');
     const error = ref<boolean>(false);
-    const {seeded_professors , is_valid} = toRefs(props);
+    const newName = ref<string>('');
+    const newSurname = ref<string>('');
+    const { seeded_professors, is_valid } = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
     const isValid = is_valid;
     const selectedTeacher = ref<BaseUser>();
+    const cantFindTeacherFlag = ref(false);
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
-    const validateAutoComplete =() => {
-      if(!selectedTeacher.value ){
-        errorMessage.value="Επιλέξτε καθηγητή παρακαλώ"
+    const validateAutoComplete = () => {
+      if (!selectedTeacher.value) {
+        errorMessage.value = "Επιλέξτε καθηγητή παρακαλώ"
         error.value = true;
         return false;
       }
-      else{
-        errorMessage.value=""
+      else {
+        errorMessage.value = ""
         error.value = false;
         return true;
       }
     }
     const configSelectedTeacher = () => {
-      if(!validateAutoComplete() ){
-        context.emit('emit-selected-teacher',undefined);
+      if (cantFindTeacherFlag.value === true) 
+      {
+        if (validateName() === false) {
+          dialog.value = true;
+        }
+        if(validateSurname() === false)
+        {
+          dialog.value = true;
+        }
+        else 
+        {
+          dialog.value = false;
+        }
       }
-      else{
-        context.emit('emit-selected-teacher',selectedTeacher.value);
+      else 
+      {
+        if (!validateAutoComplete()) {
+          context.emit('emit-selected-teacher', undefined);
+        }
+        else {
+          context.emit('emit-selected-teacher', selectedTeacher.value);
+        }
+        dialog.value = false;
       }
-      dialog.value = false;
     };
+
+    const validateName = () => {
+      if (cantFindTeacherFlag.value === true) {
+        if (!newName.value || newName.value) {
+          errorMessageName.value = "Συμπληρώστε όνομα"
+          return false;
+        }
+        else{
+          errorMessageName.value = ""
+          return true;
+        }
+      }
+    }
+    const validateSurname = () => {
+      if (cantFindTeacherFlag.value === true) {
+        if (!newSurname.value || newSurname.value) {
+          errorMessageSurname.value = "Συμπληρώστε επώνυμο"
+          return false;
+        }
+        else{
+          errorMessageName.value = ""
+          return true;
+        }
+      }
+    }
     const dialog = ref<boolean>(false);
     return {
       error,
       dialog,
-      autoCompleteItems:seeded_professors_reactive,
+      autoCompleteItems: seeded_professors_reactive,
       selectedTeacher,
       errorMessage,
       validateAutoComplete,
       configSelectedTeacher,
-      isValid
+      isValid,
+      cantFindTeacherFlag,
+      errorMessageName,
+      errorMessageSurname,
+      validateName,
+      validateSurname,
+      newName,
+      newSurname
     };
   },
 });
 </script>
 
 <style scoped>
-/* .card-override {
-  max-width: 40rem !important;
-  min-width: 320px !important;
-  width: 100% !important;
-} */
+.card-override {
+  min-width: 320px;
+}
 
-.teacher-button-success{
+.teacher-button-success {
   color: white !important;
   background-color: #4CAF50 !important;
 }
-.teacher-button-failure{
+
+.teacher-button-failure {
   color: white !important;
   background-color: #156ed3 !important;
 }
+
+.cant-find-teacher {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-width: 320px;
+}
+
+.cant-find-teacher span {
+  margin: 0 1rem;
+}
+
+.cant-find-teacher-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  min-width: 320px;
+}
+
+.autocomplete-padder {
+  padding: 0.5rem 0.5rem
+}
+
+.cant-find-teacher-outer-div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  min-width: 320px;
+  padding: 1rem 1rem;
+}
+
+.gray-out {
+  color: #f3f3f3;
+}
+
 :deep(.v-card-actions) {
   display: flex;
   flex-direction: row;
@@ -162,5 +250,29 @@ export default defineComponent({
 .button-dimensions-adjustment {
   width: 11rem;
   height: 3rem;
+}
+
+@media (min-width: 769px) {
+  .cant-find-teacher-fields {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+
+}
+
+@media (min-width:1025px) {
+  .cant-find-teacher-fields {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+
 }
 </style>
