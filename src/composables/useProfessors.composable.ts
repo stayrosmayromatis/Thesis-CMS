@@ -6,6 +6,7 @@ import { useErrorFunctions } from "@/composables/throwError.composable";
 import { ApiResult } from '@/models/DTO/ApiResult';
 import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
 import { store } from '@/store/index';
+import { CreateProfRequest } from '@/components/UI/TeacherSelect.vue';
 
 interface AllProf {
   BaseUser: BaseUserResponse,
@@ -23,7 +24,7 @@ export function useProfessor() {
   const GetSeededProfessors = async () => {
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { setError } = useErrorFunctions();
-    const api_response = await useAxios('/user/get-all-prof',
+    const api_response = await useAxios('/info/get-all-prof',
       {
         method: 'GET'
       },
@@ -56,5 +57,23 @@ export function useProfessor() {
     }
   }
 
-  return { GetSeededProfessors };
+  const CreateProfessor = async (payload:CreateProfRequest) => {
+   
+
+    const { setBackendInstanceAuth } = useAxiosInstance();
+    const { setError } = useErrorFunctions();
+    if(!payload){
+      setError('Error creating teacher', "Try Again");
+        return;
+    }
+    const api_response = await useAxios('/createprofessor/create-professor',
+      {
+        method: 'POST',
+        data:payload
+      },
+      setBackendInstanceAuth()
+    );
+  };
+
+  return { GetSeededProfessors,CreateProfessor };
 };

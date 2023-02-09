@@ -3,8 +3,8 @@
     max-width="40rem" min-width="320px" attach="body">
     <template v-slot:activator="{ props }">
       <v-btn class="button-dimensions-adjustment"
-        :class="{ 'teacher-button-success': isValid === true, 'teacher-button-failure': !isValid }" v-bind="props">
-        {{ isValid? selectedTeacher?.displayNameEl.split(' ')[1] : "Καθηγητες" }}
+        :class="{ 'teacher-button-success': (isValid === true && selectedTeacher), 'teacher-button-failure': (!isValid || !selectedTeacher) }" v-bind="props">
+        {{lastNameProp}}
       </v-btn>
     </template>
     <div class="card-override">
@@ -35,7 +35,7 @@
         </div>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="red-darken-1" variant="text" @click="configSelectedTeacher">
+          <v-btn color="red-darken-1" variant="text" @click="dialog = false">
             Κλεισιμο
           </v-btn>
           <v-btn color="blue-darken-1" variant="text" @click="configSelectedTeacher">
@@ -50,6 +50,11 @@
 import { computed, defineComponent, PropType, ref, toRefs } from "vue";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { isNumber } from "@vueuse/shared";
+import { useProfessor } from "@/composables/useProfessors.composable";
+export interface CreateProfRequest{
+  ProfFirstName:string,
+  ProfSureName:string
+}
 export default defineComponent({
   props:
   {
@@ -65,6 +70,7 @@ export default defineComponent({
   },
   emits: ['emit-selected-teacher'],
   setup(props, context) {
+    const {CreateProfessor}  = useProfessor();
     const errorMessage = ref<string>('');
     const error = ref<boolean>(false);
 
@@ -96,13 +102,18 @@ export default defineComponent({
         return true;
       }
     }
-    const configSelectedTeacher = () => {
+    const configSelectedTeacher = async () => {
       //Needs the extra validation for inpute fields
       if (cantFindTeacherFlag.value === true) {
         const isValidName = validateName();
         const isValidSurname = validateName();
         if (isValidName === true && isValidSurname === true) {
           //Progress with the API Call
+          const payload:CreateProfRequest= {
+            ProfFirstName:newName.value,
+            ProfSureName : newSurname.value
+          }
+          await CreateProfessor(payload);
         }
         else {
           context.emit('emit-selected-teacher', undefined);
@@ -145,7 +156,14 @@ export default defineComponent({
         return true;
       }
     }
-
+    const lastNameProp = computed(() => {
+      if(!isValid || !selectedTeacher.value)
+        return "Καθηγητές"
+      const splitted = selectedTeacher.value?.displayNameEl.split(' ');
+      if(!splitted || splitted.length == 0)
+        return "Καθηγητές";
+      return splitted[splitted.length-1];
+    });
 
     const dialog = ref<boolean>(false);
     return {
@@ -165,7 +183,8 @@ export default defineComponent({
       errorOnName,
       errorOnSurname,
       validateName,
-      validateSurname
+      validateSurname,
+      lastNameProp
     };
   },
 });
@@ -203,7 +222,7 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  gap: 0;
+  gap: 0.5rem;
   width: 100%;
   min-width: 320px;
 }
