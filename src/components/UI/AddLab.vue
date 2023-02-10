@@ -55,7 +55,7 @@
                 ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
               </v-btn>
             </div>
-            <lab-form v-for="(department, index) in departments" :key="index" :department="department"
+            <lab-form v-for="department in departments" :key="department.deptId" :department="department"
               :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup"
               @global-error="validateEachDepartment"></lab-form>
             <div class="submit-button">
@@ -84,8 +84,6 @@ import { isNumber } from "@vueuse/shared";
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import BaseAlert from "@/components/Base/BaseAlert.vue";
 import { useProfessor } from "@/composables/useProfessors.composable";
-import { useStore } from "vuex";
-import { key } from "@/store";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { useAlert } from "@/composables/showAlert.composable";
 export default defineComponent({
@@ -107,7 +105,7 @@ export default defineComponent({
           closeAlert();
         }, 1000)
       }
-      //SeedProfessorsSegment
+    //SeedProfessorsSegment
       await GetSeededProfessors();
       seededProfessors.value = SeedProfessorsArray.value;
       context.emit("closeMobileView", true);
@@ -169,15 +167,15 @@ export default defineComponent({
     const displayedAttendaceValues = Array(
       {
         value: AttendanceEnum.ΥΠ,
-        title: "ΥΠ",
+        title: "ΥΠΟΡΧΡΕΩΤΙΚΗ",
       },
       {
         value: AttendanceEnum.ΠΡ,
-        title: "ΠΡ",
+        title: "ΠΡΟΑΙΡΕΤΙΚΗ",
       },
       {
         value: AttendanceEnum.ΥΠ_ΠΡ,
-        title: "ΥΠ ΠΡ",
+        title: "ΥΠΟΧΡΕΩΤΙΚΗ - ΠΡΟΑΙΡΕΤΙΚΗ",
       }
     );
     // -------FORM VALIDATION-------
@@ -310,7 +308,7 @@ export default defineComponent({
         return true;
       return false;
     });
-    const validateEachDepartment = (dept: Department) => {
+    const validateEachDepartment = (dept: Department):boolean => {
       if (dept.deptId === "" || dept.deptId === " " || dept.deptId === null) {
         dept.errorOnDeptId = true;
       }

@@ -36,7 +36,7 @@
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-1"
               >
-                Όνομα: [[NAME]]
+                {{ 'Όνομα: '+firstName }}
               </p>
             </div>
           </div>
@@ -49,7 +49,7 @@
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-2"
               >
-                Επώνυμο: [[SURNAME]]
+              {{'Επώνυμο: '+lastName}}
               </p>
             </div>
           </div>
@@ -129,9 +129,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref,watch, toRefs, PropType} from "vue";
+import { defineComponent, ref, watch, toRefs, PropType, onMounted } from 'vue';
 import html2canvas from "html2canvas";
 import jsPDF, { ImageOptions } from "jspdf";
+import { useAuth } from '@/composables/useAuth.composable';
 export default defineComponent({
   props: {
     labs: {
@@ -140,7 +141,7 @@ export default defineComponent({
       default: null,
     },
     callToGeneratePdf:{
-      type: Object as PropType<Boolean>,
+      type: Boolean,
       required : true,
       default:false
     },
@@ -148,7 +149,34 @@ export default defineComponent({
   emits: ["pdfCreated"],
   setup(props, context) {
     const pdfContent = ref<HTMLElement>();
+    const {GetUserDataDetails} = useAuth();
     const {labs,callToGeneratePdf} = toRefs(props);
+    const firstName =ref<string>("");
+    const lastName = ref<string>("");
+    onMounted(() => {
+      const userDetails = GetUserDataDetails();
+      if(!userDetails)
+      {
+        firstName.value="";
+        lastName.value="";
+      }
+      else{
+        let splitted = userDetails.DisplayNameEl.replaceAll('-',' ').split(' ');
+        if(!splitted || splitted.length === 0){
+          firstName.value="";
+          lastName.value="";
+        }
+        else{
+          lastName.value = splitted[splitted.length-1];
+          if(splitted.length >= 3){
+            firstName.value = splitted[0]+" - "+splitted[1];
+          }
+          else{
+            firstName.value = splitted[0];
+          }
+        }
+      }
+    });
     const generatePdf = async () => {
       if (!pdfContent.value)
         return;
@@ -188,11 +216,12 @@ export default defineComponent({
         generatePdf();
       }
     });
-    return {labs, pdfContent, generatePdf };
+    return {labs, pdfContent, generatePdf, firstName,lastName};
   },
 });
 </script>
 <style scoped>
 @import "@/assets/pdf-styles/Home.css";
 @import "@/assets/pdf-styles/nicepage.css";
+
 </style>

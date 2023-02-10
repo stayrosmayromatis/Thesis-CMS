@@ -109,8 +109,8 @@ import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { isNumber } from "@vueuse/shared";
 import { useProfessor } from "@/composables/useProfessors.composable";
 export interface CreateProfRequest {
-  ProfFirstName: string;
-  ProfSureName: string;
+  Firstname: string;
+  Lastname: string;
 }
 export default defineComponent({
   props: {
@@ -135,17 +135,19 @@ export default defineComponent({
 
     const errorMessageSurname = ref<string>("");
     const errorOnSurname = ref<boolean>(false);
-
+    
+    const dialog = ref<boolean>(false);
+    
     const newName = ref<string>("");
     const newSurname = ref<string>("");
+    
     const { seeded_professors, is_valid } = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
     const isValid = is_valid;
+    
     const selectedTeacher = ref<BaseUser>();
     const cantFindTeacherFlag = ref(false);
-    const delay = async (time: number) => {
-      return new Promise((resolve) => setTimeout(resolve, time));
-    };
+    
     const validateAutoComplete = () => {
       if (!selectedTeacher.value) {
         errorMessage.value = "Επιλέξτε καθηγητή παρακαλώ";
@@ -162,10 +164,9 @@ export default defineComponent({
         const isValidName = validateName();
         const isValidSurname = validateName();
         if (isValidName === true && isValidSurname === true) {
-          //Progress with the API Call
           const payload: CreateProfRequest = {
-            ProfFirstName: newName.value,
-            ProfSureName: newSurname.value,
+            Firstname: newName.value,
+            Lastname: newSurname.value,
           };
           const profIDT = await CreateProfessor(payload);
           if (!profIDT || !profIDT.Status || !profIDT.Data) {
@@ -225,9 +226,9 @@ export default defineComponent({
       }
     };
     const lastNameProp = computed(() => {
-      if (!isValid || !selectedTeacher.value) return "Καθηγητές";
+      if (!isValid || !selectedTeacher.value) return "Καθηγητες";
       const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-      if (!splitted || splitted.length == 0) return "Καθηγητές";
+      if (!splitted || splitted.length == 0) return "Καθηγητες";
       return splitted[splitted.length - 1];
     });
     const containsNumbers = (str: string) => {
@@ -236,7 +237,6 @@ export default defineComponent({
       return Boolean(str.match(numberpattern) || str.match(pattern));
     }
 
-    const dialog = ref<boolean>(false);
     return {
       error,
       dialog,

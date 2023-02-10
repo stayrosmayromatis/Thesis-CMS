@@ -161,9 +161,9 @@ export default defineComponent({
 
 <style scoped>
 .chip-bg {
-  background-color: #03045e;
-  border: 1px solid black;
-  color: #f3f3f3;
+  background: #f7f7f7;
+  border: 1px solid #1c4397;
+  color: #1c4397;
   word-wrap: break-word;
 }
 .chip-separator {
@@ -190,9 +190,10 @@ export default defineComponent({
   justify-content: flex-start;
 }
 .chip-attendance {
-  background-color: #00c900;
-  border: 1px solid black;
-  color: #000000;
+  background: #f3f3f3;
+  /* border: 1px solid black; */
+  border: 1px solid #00c900;
+  color: #00c900;
   word-wrap: break-word;
   width: inherit;
   display: flex;
@@ -201,7 +202,7 @@ export default defineComponent({
   align-items: center;
 }
 .large-font {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .classOne {
@@ -287,9 +288,9 @@ export default defineComponent({
     justify-content: flex-start;
   }
   .chip-attendance {
-    background-color: #00c900;
-    border: 1px solid black;
-    color: #000000;
+    background: #f3f3f3;
+    border: 1px solid #00c900;
+    color: #00c900;
     word-wrap: break-word;
     width: inherit;
     display: flex;
@@ -352,9 +353,9 @@ export default defineComponent({
     justify-content: flex-start;
   }
   .chip-attendance {
-    background-color: #00c900;
-    border: 1px solid black;
-    color: #000000;
+    background: #f3f3f3;
+    border: 1px solid #00c900;
+    color: #00c900;
     word-wrap: break-word;
     width: inherit;
     display: flex;
@@ -399,9 +400,9 @@ export default defineComponent({
     justify-content: flex-start;
   }
   .chip-attendance {
-    background-color: #00c900;
-    border: 1px solid black;
-    color: #000000;
+    background: #f3f3f3;
+    border: 1px solid #00c900;
+    color: #00c900;
     word-wrap: break-word;
     width: inherit;
     display: flex;
