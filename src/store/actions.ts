@@ -43,10 +43,16 @@ const setSeededProfessors = (context: any, payload: Array<BaseUser>) => {
   context.commit("setSeededProfessors", payload);
 };
 
+const addSeededProfessors = (context:any,payload:BaseUser) => {
+  if (!payload) return;
+  context.commit("addSeededProfessors", payload);
+}
+
 export default {
   setAuthState,
   setIsTeacherState,
   setIsStudentState,
   setUserDataDetails,
   setSeededProfessors,
+  addSeededProfessors
 };

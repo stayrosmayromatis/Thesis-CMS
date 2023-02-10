@@ -28,4 +28,9 @@ const setUserDataDetails = (state:State,payload:UserDataDetails) =>
 const setSeededProfessors = (state:State,payload:Array<BaseUser>) => {
   state.SeededProfessors = payload;
 }
-export default { setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors };
+const addSeededProfessors = (state:State , payload : BaseUser) => {
+  const arrayOfSeeded = state.SeededProfessors;
+  arrayOfSeeded.push(payload);
+  setSeededProfessors(state,arrayOfSeeded);
+}
+export default {addSeededProfessors, setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors };

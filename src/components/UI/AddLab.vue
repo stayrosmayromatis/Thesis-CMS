@@ -96,11 +96,10 @@ export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {
     const { openAlert, setTypeOfAlert, alertTitle, typeOfAlert, showAlert, closeAlert } = useAlert();
-    const { GetSeededProfessors } = useProfessor();
+    const { GetSeededProfessors,SeedProfessorsArray } = useProfessor();
     const validationAlertShow = showAlert;
     const validationAlertType = typeOfAlert;
     const validationAlertTitle = alertTitle;
-    const store = useStore(key);
     const seededProfessors = ref<Array<BaseUser>>(new Array<BaseUser>());
     onMounted(async () => {
       if (showAlert.value === true) {
@@ -110,11 +109,7 @@ export default defineComponent({
       }
       //SeedProfessorsSegment
       await GetSeededProfessors();
-      seededProfessors.value = store.getters.getSeededProfessors;
-      while (!seededProfessors.value || seededProfessors.value.length == 0) {
-        await GetSeededProfessors();
-        seededProfessors.value = store.getters.getSeededProfessors;
-      }
+      seededProfessors.value = SeedProfessorsArray.value;
       context.emit("closeMobileView", true);
       return;
     });
@@ -376,7 +371,7 @@ export default defineComponent({
       }
       if(showAlert.value === true){
         closeAlert();
-      }  
+      }
       console.log(formState);
     };
     return {

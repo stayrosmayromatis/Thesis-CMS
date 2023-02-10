@@ -1,10 +1,24 @@
 <template>
-  <v-dialog v-model="dialog" :scrollable="false" :close-on-back="false" :contained="false" width="100%"
-    max-width="40rem" min-width="320px" attach="body">
+  <v-dialog
+    v-model="dialog"
+    :scrollable="false"
+    :close-on-back="false"
+    :contained="false"
+    width="100%"
+    max-width="40rem"
+    min-width="320px"
+    attach="body"
+  >
     <template v-slot:activator="{ props }">
-      <v-btn class="button-dimensions-adjustment"
-        :class="{ 'teacher-button-success': (isValid === true && selectedTeacher), 'teacher-button-failure': (!isValid || !selectedTeacher) }" v-bind="props">
-        {{lastNameProp}}
+      <v-btn
+        class="button-dimensions-adjustment"
+        :class="{
+          'teacher-button-success': isValid === true && selectedTeacher,
+          'teacher-button-failure': !isValid || !selectedTeacher,
+        }"
+        v-bind="props"
+      >
+        {{ lastNameProp }}
       </v-btn>
     </template>
     <div class="card-override">
@@ -13,24 +27,57 @@
         <v-divider></v-divider>
         <v-card-text>
           <div class="autocomplete-padder">
-            <v-autocomplete :disabled="cantFindTeacherFlag" autofocus clearable label="Αναζητήστε εδώ"
-              :items="autoCompleteItems" :item-title="'displayNameEl'" return-object :multiple="false" variant="plain"
-              density="comfortable" v-model="selectedTeacher" @update:model-value="validateAutoComplete"
-              :open-on-clear="false" :error-messages="errorMessage"></v-autocomplete>
+            <v-autocomplete
+              :disabled="cantFindTeacherFlag"
+              autofocus
+              clearable
+              label="Αναζητήστε εδώ"
+              :items="autoCompleteItems"
+              :item-title="'displayNameEl'"
+              return-object
+              :multiple="false"
+              variant="plain"
+              density="comfortable"
+              v-model="selectedTeacher"
+              @update:model-value="validateAutoComplete"
+              :open-on-clear="false"
+              :error-messages="errorMessage"
+            ></v-autocomplete>
           </div>
         </v-card-text>
         <div class="cant-find-teacher-outer-div">
           <div class="cant-find-teacher">
-            <v-card-title :class="{ 'gray-out': !cantFindTeacherFlag }">Δεν βρίσκω τον καθηγητή</v-card-title>
+            <v-card-title :class="{ 'gray-out': !cantFindTeacherFlag }"
+              >Δεν βρίσκω τον καθηγητή</v-card-title
+            >
             <span>
-              <v-switch color="primary" v-model="cantFindTeacherFlag" :value="true" hide-details></v-switch>
+              <v-switch
+                color="primary"
+                v-model="cantFindTeacherFlag"
+                :value="true"
+                hide-details
+              ></v-switch>
             </span>
           </div>
           <div class="cant-find-teacher-fields">
-            <v-text-field label="Όνομα" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newName"
-              :error-messages="errorMessageName" :error="errorOnName" @input="validateName"></v-text-field>
-            <v-text-field label="Επώνυμο" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newSurname"
-              :error-messages="errorMessageSurname" :error="errorOnSurname" @input="validateSurname"></v-text-field>
+            <v-text-field
+              label="Όνομα"
+              variant="solo"
+              :disabled="!cantFindTeacherFlag"
+              v-model.trim="newName"
+              :error-messages="errorMessageName"
+              :error="errorOnName"
+              @input="validateName"
+            ></v-text-field>
+            <v-text-field
+              label="Επώνυμο"
+              variant="solo"
+              :disabled="!cantFindTeacherFlag"
+              v-model.trim="newSurname"
+              :error-messages="errorMessageSurname"
+              :error="errorOnSurname"
+              @input="validateSurname"
+            ></v-text-field>
           </div>
         </div>
         <v-divider></v-divider>
@@ -38,7 +85,11 @@
           <v-btn color="red-darken-1" variant="text" @click="dialog = false">
             Κλεισιμο
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="configSelectedTeacher">
+          <v-btn
+            color="blue-darken-1"
+            variant="text"
+            @click="configSelectedTeacher"
+          >
             Επιλογή
           </v-btn>
         </v-card-actions>
@@ -47,41 +98,46 @@
   </v-dialog>
 </template>
 <script lang="ts">
-import { computed, defineComponent, PropType, ref, toRefs } from "vue";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  toRefs,
+} from "vue";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { isNumber } from "@vueuse/shared";
 import { useProfessor } from "@/composables/useProfessors.composable";
-export interface CreateProfRequest{
-  ProfFirstName:string,
-  ProfSureName:string
+export interface CreateProfRequest {
+  ProfFirstName: string;
+  ProfSureName: string;
 }
 export default defineComponent({
-  props:
-  {
+  props: {
     seeded_professors: {
       type: Object as PropType<Array<BaseUser>>,
       required: false,
-      default: Array<BaseUser>()
+      default: Array<BaseUser>(),
     },
     is_valid: {
       type: Boolean,
-      required: false
-    }
+      required: false,
+    },
   },
-  emits: ['emit-selected-teacher'],
+  emits: ["emit-selected-teacher"],
   setup(props, context) {
-    const {CreateProfessor}  = useProfessor();
-    const errorMessage = ref<string>('');
+    const { CreateProfessor } = useProfessor();
+    const errorMessage = ref<string>("");
     const error = ref<boolean>(false);
 
-    const errorMessageName = ref<string>('');
+    const errorMessageName = ref<string>("");
     const errorOnName = ref<boolean>(false);
 
-    const errorMessageSurname = ref<string>('');
+    const errorMessageSurname = ref<string>("");
     const errorOnSurname = ref<boolean>(false);
 
-    const newName = ref<string>('');
-    const newSurname = ref<string>('');
+    const newName = ref<string>("");
+    const newSurname = ref<string>("");
     const { seeded_professors, is_valid } = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
     const isValid = is_valid;
@@ -92,78 +148,93 @@ export default defineComponent({
     };
     const validateAutoComplete = () => {
       if (!selectedTeacher.value) {
-        errorMessage.value = "Επιλέξτε καθηγητή παρακαλώ"
+        errorMessage.value = "Επιλέξτε καθηγητή παρακαλώ";
         error.value = true;
         return false;
-      }
-      else {
-        errorMessage.value = ""
+      } else {
+        errorMessage.value = "";
         error.value = false;
         return true;
       }
-    }
+    };
     const configSelectedTeacher = async () => {
-      //Needs the extra validation for inpute fields
       if (cantFindTeacherFlag.value === true) {
         const isValidName = validateName();
         const isValidSurname = validateName();
         if (isValidName === true && isValidSurname === true) {
           //Progress with the API Call
-          const payload:CreateProfRequest= {
-            ProfFirstName:newName.value,
-            ProfSureName : newSurname.value
+          const payload: CreateProfRequest = {
+            ProfFirstName: newName.value,
+            ProfSureName: newSurname.value,
+          };
+          const profIDT = await CreateProfessor(payload);
+          if (!profIDT || !profIDT.Status || !profIDT.Data) {
+            context.emit("emit-selected-teacher", undefined);
+            dialog.value = false;
           }
-          await CreateProfessor(payload);
-        }
-        else {
-          context.emit('emit-selected-teacher', undefined);
+          selectedTeacher.value = profIDT.Data!;
+          context.emit("emit-selected-teacher", selectedTeacher.value);
+          newName.value = "";
+          newSurname.value = "";
+          cantFindTeacherFlag.value = false;
+          (errorMessage.value = ""), (error.value = false);
+        } else {
+          context.emit("emit-selected-teacher", undefined);
           dialog.value = false;
         }
-      }
-      else {
+      } else {
         if (!validateAutoComplete()) {
-          context.emit('emit-selected-teacher', undefined);
-        }
-        else {
-          context.emit('emit-selected-teacher', selectedTeacher.value);
+          context.emit("emit-selected-teacher", undefined);
+        } else {
+          context.emit("emit-selected-teacher", selectedTeacher.value);
         }
         dialog.value = false;
       }
     };
     const validateName = () => {
-      if (!newName.value || newName.value === " " || isNumber(newName.value)) {
-        errorMessageName.value = "Υποχρεωτικό όνομα"
+      if (!newName.value || newName.value === " ") {
+        errorMessageName.value = "Υποχρεωτικό όνομα";
         errorOnName.value = true;
         return false;
-
-      }
-      else {
-        errorMessageName.value = ""
+      } else if (isNumber(newName.value) || containsNumbers(newName.value)) {
+        errorMessageName.value = "Οχι Ψηφία ή/και σύμβολα";
+        errorOnName.value = true;
+        return false;
+      } else {
+        errorMessageName.value = "";
         errorOnName.value = false;
         return true;
       }
-
     };
     const validateSurname = () => {
-      if (!newSurname.value || newSurname.value === " " || isNumber(newSurname.value)) {
-        errorMessageSurname.value = "Υποχρεωτικό επώνυμο"
+      if (!newSurname.value || newSurname.value === " ") {
+        errorMessageSurname.value = "Υποχρεωτικό επώνυμο";
         errorOnSurname.value = true;
         return false;
-      }
-      else {
-        errorMessageSurname.value = ""
+      } else if (
+        isNumber(newSurname.value) ||
+        containsNumbers(newSurname.value)
+      ) {
+        errorMessageSurname.value = "Οχι Ψηφία ή/και σύμβολα";
+        errorOnSurname.value = true;
+        return false;
+      } else {
+        errorMessageSurname.value = "";
         errorOnSurname.value = false;
         return true;
       }
-    }
+    };
     const lastNameProp = computed(() => {
-      if(!isValid || !selectedTeacher.value)
-        return "Καθηγητές"
-      const splitted = selectedTeacher.value?.displayNameEl.split(' ');
-      if(!splitted || splitted.length == 0)
-        return "Καθηγητές";
-      return splitted[splitted.length-1];
+      if (!isValid || !selectedTeacher.value) return "Καθηγητές";
+      const splitted = selectedTeacher.value?.displayNameEl.split(" ");
+      if (!splitted || splitted.length == 0) return "Καθηγητές";
+      return splitted[splitted.length - 1];
     });
+    const containsNumbers = (str: string) => {
+      const pattern = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+      const numberpattern = /\d/;
+      return Boolean(str.match(numberpattern) || str.match(pattern));
+    }
 
     const dialog = ref<boolean>(false);
     return {
@@ -184,7 +255,7 @@ export default defineComponent({
       errorOnSurname,
       validateName,
       validateSurname,
-      lastNameProp
+      lastNameProp,
     };
   },
 });
@@ -197,7 +268,7 @@ export default defineComponent({
 
 .teacher-button-success {
   color: white !important;
-  background-color: #4CAF50 !important;
+  background-color: #4caf50 !important;
 }
 
 .teacher-button-failure {
@@ -228,7 +299,7 @@ export default defineComponent({
 }
 
 .autocomplete-padder {
-  padding: 0.5rem 0.5rem
+  padding: 0.5rem 0.5rem;
 }
 
 .cant-find-teacher-outer-div {
@@ -288,10 +359,9 @@ export default defineComponent({
     width: 100%;
     gap: 1rem;
   }
-
 }
 
-@media (min-width:1025px) {
+@media (min-width: 1025px) {
   .cant-find-teacher-fields {
     display: flex;
     flex-direction: row;
@@ -300,6 +370,5 @@ export default defineComponent({
     width: 100%;
     gap: 1rem;
   }
-
 }
 </style>
