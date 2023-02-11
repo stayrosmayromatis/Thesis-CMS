@@ -17,8 +17,8 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <div v-if="routeChangeAuthorizer" >
-            <v-btn variant="flat" color="red darken-1" text @click="closeDialog(false)">ΑΚΥΡΩΣΗ</v-btn>
-            <v-btn variant="flat" color="green" text @click="closeDialog">ΟΚ</v-btn>
+            <v-btn variant="text" color="red-darken-1" text @click="closeDialog(false)">ΑΚΥΡΩΣΗ</v-btn>
+            <v-btn variant="text" color="blue-darken-1" text @click="closeDialog">ΟΚ</v-btn>
           </div>
           <div v-else>
           <v-btn variant="flat" color="red darken-1" text @click="closeModal">ΟΚ</v-btn>

@@ -282,6 +282,10 @@ export default defineComponent({
     const atLeastOneAttendanceSelected = (value: number) => {
       return !value ? false : true;
     };
+    const mustBeANumberOrDash = (value:string) => {
+      const pattern = /^[0-9]{4}\-[0-9]{4}$/;
+      return value.match(pattern);
+    }
     const rules = computed(() => {
       return {
         labId: {
@@ -297,10 +301,11 @@ export default defineComponent({
             "Ελάχιστο όριο 9 χαρακτήρες",
             minLength(9)
           ),
-          MustContainDash: helpers.withMessage(
-            "Ο κωδικός πρέπει να περιέχει παύλα",
-            mustContainDash
-          ),
+          // MustContainDash: helpers.withMessage(
+          //   "Ο κωδικός πρέπει να περιέχει παύλα",
+          //   mustContainDash
+          // ),
+          MustBeANumber : helpers.withMessage("Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες",mustBeANumberOrDash)          
         },
         labTitle: {
           Required: helpers.withMessage(
