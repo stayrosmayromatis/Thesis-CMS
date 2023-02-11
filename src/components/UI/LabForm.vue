@@ -105,14 +105,14 @@ export default defineComponent({
         department.value.selectedTeacher = teacher;
         department.value.errorOnSelectedTeacher = false;
         isValid.value = true;
-        
+
       }
       console.log(department.value);
       return;
     };
     //SeededProfessors for autocomplete
     const deleteByDeptId = () => {
-      context.emit("deleteByDeptId", department.value.deptId);
+      context.emit("deleteByDeptId", department.value.Guid);
     };
     const isInputEmpty = () => {
       department.value.deptId === "" ||

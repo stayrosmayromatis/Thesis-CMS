@@ -23,11 +23,11 @@
             <div :class="{ 'error-color': v$.semester.$error }">
               <v-chip-group>
                 <v-chip
-                  :class="{ 'active-chip': lab.isActive }"
-                  @click="clickOnChip(lab.value)"
-                  v-for="lab in displayedSemester"
-                  :key="lab.title"
-                  >{{ lab.title }}</v-chip
+                  :class="{ 'active-chip': semester.isActive }"
+                  @click="clickOnChip(semester.value)"
+                  v-for="semester in displayedSemester"
+                  :key="semester.title"
+                  >{{ semester.title }}</v-chip
                 >
               </v-chip-group>
             </div>
@@ -104,7 +104,7 @@
             </div>
             <lab-form
               v-for="department in departments"
-              :key="department.deptId"
+              :key="department.Guid"
               :department="department"
               :seeded_professors="seededProfessors"
               @deleteByDeptId="removeFormGroup"
@@ -125,8 +125,7 @@
 import { computed, defineComponent } from "@vue/runtime-core";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
-
-import { displayedLabs } from "@/composables/displayedSemesterArray.composable";
+import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { reactive, Ref, ref, onMounted } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
@@ -143,6 +142,7 @@ import { useAlert } from "@/composables/showAlert.composable";
 import { onBeforeRouteLeave } from "vue-router";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import {confirm} from '@/composables/dialog.composable';
+import { v4 as uuidv4 } from 'uuid';
 export default defineComponent({
   components: {
     LabForm,
@@ -159,6 +159,7 @@ export default defineComponent({
       showAlert,
       closeAlert,
     } = useAlert();
+    const {GetDisplayedLabs,DisplayedLabs} = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
     const validationAlertShow = showAlert;
     const validationAlertType = typeOfAlert;
@@ -187,6 +188,11 @@ export default defineComponent({
           closeAlert();
         }, 1000);
       }
+      //DisplayedSemester
+      GetDisplayedLabs();
+      displayedSemester.value = DisplayedLabs.value;
+      //DisplayedSemester
+
       //SeedProfessorsSegment
       await GetSeededProfessors();
       seededProfessors.value = SeedProfessorsArray.value;
@@ -201,9 +207,10 @@ export default defineComponent({
     let deptIncremental = 1;
     const show = true;
     const departments = ref(Array<Department>());
-    const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
-      displayedLabs()
-    );
+    const displayedSemester = ref<Array<DisplayedSemster>>( new Array<DisplayedSemster>());
+    // const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
+    //   displayedLabs()
+    // );
     const clickOnChip = (value: LabSemesterEnum) => {
       const selectedLab = displayedSemester.value.find(
         (lab) => lab.value == value
@@ -232,6 +239,7 @@ export default defineComponent({
         deptIncremental = 1;
       }
       departments.value.push({
+        Guid : uuidv4().toString(),
         deptId: `T${deptIncremental++}`,
         fromTime: "",
         toTime: "",
@@ -239,10 +247,10 @@ export default defineComponent({
         numberOfStudents: 30,
       });
     };
-    const removeFormGroup = (deptId: string) => {
-      if (deptId === null || deptId === undefined) return;
+    const removeFormGroup = (deptGuid: string) => {
+      if (deptGuid === null || deptGuid === undefined) return;
       departments.value = departments.value.filter(
-        (val) => val.deptId !== deptId
+        (val) => val.Guid !== deptGuid
       );
     };
     //Just the initial values
@@ -273,9 +281,6 @@ export default defineComponent({
         title: "ΥΠ",
       },
     });
-    const mustContainDash = (value: string) => {
-      return value.includes("-") ? true : false;
-    };
     const atLeaseOneDepartment = () => {
       return departments.value.length >= 1 ? true : false;
     };
@@ -284,7 +289,10 @@ export default defineComponent({
     };
     const mustBeANumberOrDash = (value:string) => {
       const pattern = /^[0-9]{4}\-[0-9]{4}$/;
-      return value.match(pattern);
+      if(value.match(pattern)){
+        return true
+      }
+      return false;
     }
     const rules = computed(() => {
       return {
@@ -301,11 +309,7 @@ export default defineComponent({
             "Ελάχιστο όριο 9 χαρακτήρες",
             minLength(9)
           ),
-          // MustContainDash: helpers.withMessage(
-          //   "Ο κωδικός πρέπει να περιέχει παύλα",
-          //   mustContainDash
-          // ),
-          MustBeANumber : helpers.withMessage("Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες",mustBeANumberOrDash)          
+          MustBeANumber : helpers.withMessage("Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες",mustBeANumberOrDash)
         },
         labTitle: {
           Required: helpers.withMessage(
@@ -388,7 +392,7 @@ export default defineComponent({
       if (
         !formState.labId ||
         !formState.labTitle ||
-        !formState.semester ||
+        formState.semester === null ||
         !formState.description ||
         departments.value.length <= 0
       )
@@ -461,6 +465,7 @@ export default defineComponent({
       if (showAlert.value === true) {
         closeAlert();
       }
+      //toTimeString for conversion to TimeOnly string
       console.log(formState);
     };
     const anythingIsPopulated = computed(() => {
@@ -474,6 +479,34 @@ export default defineComponent({
         return true;
       return false;
     });
+
+    const toTimeString = (timeObject:{
+      hours:number,
+      minutes:number,
+      seconds:number
+    }) => {
+      let result:string = "";
+      if(timeObject.hours < 10){
+        result =`0${timeObject.hours}:`;
+      }
+      else{
+        result =`${timeObject.hours}:`;
+      }
+      if(timeObject.minutes < 10){
+        result += `0${timeObject.minutes}:`
+      }
+      else{
+        result += `${timeObject.minutes}:`
+      }
+      if(timeObject.seconds < 10){
+        result += `0${timeObject.seconds}:`
+      }
+      else{
+        result += `${timeObject.seconds}:`
+      }
+      return result;
+    }
+
     return {
       emitMobileViewClose,
       buttonDisablity,

@@ -1,6 +1,7 @@
 import { DaysOfWeekEnum } from '../enums/DaysOfWeekEnum';
 import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
 export interface Department {
+  Guid:string,
   deptId:string,
   fromTime:string,
   toTime:string,

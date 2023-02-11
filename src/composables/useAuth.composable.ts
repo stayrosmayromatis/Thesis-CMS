@@ -10,12 +10,12 @@ import { StoreSth } from "@/store/actions";
 import { useAlert } from "@/composables/showAlert.composable";
 export function useAuth() {
 
-  const IsAuthenticated = async (): Promise<boolean> => {
+  const IsAuthenticated = async ( byInternalUse : boolean = false): Promise<boolean> => {
     try {
       const info_result = await MakeInfoCall();
       if(!info_result || info_result.Status === false || info_result.Error || !info_result.Data)
         return false;
-      const auth_response = await DetermineIfAuth(info_result.Data);
+      const auth_response = await DetermineIfAuth(info_result.Data,byInternalUse);
       if(!auth_response || auth_response.Status === false ||auth_response.Data ===false ||  auth_response.Error)
         return false;
       return true;
@@ -75,7 +75,7 @@ export function useAuth() {
     }
     return {Status:true,Data:info_response_data.Data}
   }
-  const DetermineIfAuth = async (response:BaseUserAuthStateResponse):Promise<InternalDataTransfter<boolean>> => {
+  const DetermineIfAuth = async (response:BaseUserAuthStateResponse,byInternalUse : boolean = false):Promise<InternalDataTransfter<boolean>> => {
     const {openAlert,setTypeOfAlert,}=useAlert();
     if(!response)
     {
@@ -100,16 +100,22 @@ export function useAuth() {
     {
       store.dispatch('setIsTeacherState',payload);
       store.dispatch('setUserDataDetails', response.UserDataDetails);
-      openAlert('Επιτυχής Σύνδεση');
-      setTypeOfAlert('success');
+      if(byInternalUse === false)
+      {
+        openAlert('Επιτυχής Σύνδεση');
+        setTypeOfAlert('success');
+      }
       return {Status:true,Data:true};
     }
     else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
     {
       store.dispatch('setIsStudentState',payload);
       store.dispatch('setUserDataDetails', response.UserDataDetails);
-      openAlert('Επιτυχής Σύνδεση');
-      setTypeOfAlert('success');
+      if(byInternalUse === false)
+      {
+        openAlert('Επιτυχής Σύνδεση');
+        setTypeOfAlert('success');
+      }
       return {Status:true,Data:true};
     }
     else

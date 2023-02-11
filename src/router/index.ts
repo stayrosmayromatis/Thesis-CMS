@@ -71,7 +71,7 @@ const router = createRouter({
 
 router.beforeEach(async (to,_,next) => {
   const  {IsAuthenticated} = useAuth();
-  const isAuth = await IsAuthenticated();
+  const isAuth = await IsAuthenticated(true);
   const storeIsAuth = store.getters.IsAuth;
   if(to.meta.requiresAuth === false && storeIsAuth == false){
     isAuth === false ? next() : next(false);
@@ -86,7 +86,7 @@ router.beforeEach(async (to,_,next) => {
   }
   if(to.meta.requiresAuth === true && storeIsAuth === true)
   {
-    isAuth === true ? next() :next({name:'red'});
+    isAuth === true ? next() : next({name:'red'});
     return;
   }
   if(to.meta.requiresAuth === true && storeIsAuth === false)
