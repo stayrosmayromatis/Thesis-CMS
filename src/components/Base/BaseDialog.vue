@@ -16,7 +16,13 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn variant="flat" color="red darken-1" text @click="closeModal">ok</v-btn>
+          <div v-if="routeChangeAuthorizer" >
+            <v-btn variant="flat" color="red darken-1" text @click="closeDialog(false)">ΑΚΥΡΩΣΗ</v-btn>
+            <v-btn variant="flat" color="green" text @click="closeDialog">ΟΚ</v-btn>
+          </div>
+          <div v-else>
+          <v-btn variant="flat" color="red darken-1" text @click="closeModal">ΟΚ</v-btn>
+        </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -25,7 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-
+import {closeDialog} from 'vue3-promise-dialog';
 export default defineComponent({
   props: {
     innerTitle: {
@@ -38,6 +44,11 @@ export default defineComponent({
       type: String,
       default: 'The has been an error'
     },
+    routeChangeAuthorizer:{
+      type:Boolean,
+      required:false,
+      default:false
+    }
   },
   emits:['close-modal'],
   setup(_,context) {
@@ -46,7 +57,10 @@ export default defineComponent({
       modal.value = false;
       context.emit('close-modal');
     };
-    return { modal, closeModal };
+    function returnValue() {
+      return true;
+    }
+    return { modal, closeModal,closeDialog,returnValue };
   },
 });
 </script>
