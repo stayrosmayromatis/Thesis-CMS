@@ -14,7 +14,7 @@
       v-if="showRouteLeaveModal"
       :route-change-authorizer="true"
       inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-      inner-description="Οι αλλαγές σας δεν θα αποθηκευτούν , θα θέλατε να συνεχίσεται;"
+      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"
     ></base-dialog>
     <div class="parent-card-form">
       <v-card elevation="5">
@@ -69,13 +69,13 @@
             </div>
             <v-divider inset></v-divider>
             <div class="label-centerer">
-              <label for="year">Ώρες Διαθεσιμόςτητας</label>
+              <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
             </div>
             <div class="info-centerer">
               <base-alert
                 :alert-type-prop="'info'"
                 :show="true"
-                :title="'Εαν θέτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (Τ)'"
+                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"
               ></base-alert>
             </div>
             <div class="form-control-add-btn">
@@ -257,7 +257,7 @@ export default defineComponent({
     const displayedAttendaceValues = Array(
       {
         value: AttendanceEnum.ΥΠ,
-        title: "ΥΠΟΡΧΡΕΩΤΙΚΗ",
+        title: "ΥΠΟΧΡΕΩΤΙΚΗ",
       },
       {
         value: AttendanceEnum.ΠΡ,
@@ -543,7 +543,10 @@ export default defineComponent({
 :deep(.v-alert-title) {
   font-size: 1rem;
 }
-
+:deep(.v-card-text){
+  font-weight: 500;
+  text-transform: inherit;
+}
 .positioner {
   width: 100% !important;
 }

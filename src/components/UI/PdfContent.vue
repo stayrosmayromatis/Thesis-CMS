@@ -62,7 +62,7 @@
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3"
               >
-                Εξάμηνο: [[SEMESTER]]
+                {{'Περίοδος Δηλώσεων: [[SEMESTER]]'}}
               </p>
             </div>
           </div>
