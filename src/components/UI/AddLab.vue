@@ -5,30 +5,18 @@
         <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
       </v-card>
     </div>
-    <base-alert
-      :alert-type-prop="validationAlertType"
-      :show="validationAlertShow"
-      :title="validationAlertTitle"
-    ></base-alert>
-    <base-dialog
-      v-if="showRouteLeaveModal"
-      :route-change-authorizer="true"
-      inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"
-    ></base-dialog>
+    <base-alert :alert-type-prop="validationAlertType" :show="validationAlertShow"
+      :title="validationAlertTitle"></base-alert>
+    <base-dialog v-if="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
+      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"></base-dialog>
     <div class="parent-card-form">
       <v-card elevation="5">
         <v-form @submit.prevent="submitForm">
           <v-container>
             <div :class="{ 'error-color': v$.semester.$error }">
               <v-chip-group>
-                <v-chip
-                  :class="{ 'active-chip': semester.isActive }"
-                  @click="clickOnChip(semester.value)"
-                  v-for="semester in displayedSemester"
-                  :key="semester.title"
-                  >{{ semester.title }}</v-chip
-                >
+                <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
+                  v-for="semester in displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
               </v-chip-group>
             </div>
             <v-divider inset></v-divider>
@@ -36,35 +24,18 @@
               <label for="year">Βασικά Στοιχεία</label>
             </div>
             <div class="form-first">
-              <v-text-field
-                :class="{ 'error-color': v$.labId.$error }"
-                :error-messages="errorOfLabId"
-                label="Κωδικός Εργαστηρίου"
-                v-model.trim="formState.labId"
-              ></v-text-field>
-              <v-text-field
-                :class="{ 'error-color': v$.labTitle.$error }"
-                :error-messages="errorOfLabTitle"
-                label="Τίτλος Εργαστηρίου"
-                v-model.trim="formState.labTitle"
-              ></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
+                label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
+                label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
             </div>
             <div class="form-first">
-              <v-text-field
-                :class="{ 'error-color': v$.description.$error }"
-                :error-messages="errorOfDescription"
-                label="Περιγραφή Εργαστηρίου"
-                v-model.trim="formState.description"
-              ></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.description.$error }" :error-messages="errorOfDescription"
+                label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
               <div class="percent49-5">
-                <v-select
-                  :class="{ 'error-color': v$.labTitle.$error }"
-                  :items="displayedAttendaceValues"
-                  :error-messages="errorOfAttendance"
-                  label="Παρακολούθηση"
-                  density="default"
-                  v-model="formState.attendance"
-                ></v-select>
+                <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
+                  :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
+                  v-model="formState.attendance"></v-select>
               </div>
             </div>
             <v-divider inset></v-divider>
@@ -72,48 +43,25 @@
               <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
             </div>
             <div class="info-centerer">
-              <base-alert
-                :alert-type-prop="'info'"
-                :show="true"
-                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"
-              ></base-alert>
+              <base-alert :alert-type-prop="'info'" :show="true"
+                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
             </div>
             <div class="form-control-add-btn">
-              <v-btn
-                type="button"
-                @click="addFormGroup"
-                elevation="4"
-                color="green"
-                ><svg
-                  width="30"
-                  height="30"
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
-                  stroke-linejoin="round"
-                  stroke-miterlimit="2"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+              <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
+                  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                    fill-rule="nonzero"
-                  />
+                    fill-rule="nonzero" />
                 </svg>
                 ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
               </v-btn>
             </div>
-            <lab-form
-              v-for="department in departments"
-              :key="department.Guid"
-              :department="department"
-              :seeded_professors="seededProfessors"
-              @deleteByDeptId="removeFormGroup"
-              @global-error="validateEachDepartment"
-            ></lab-form>
+            <lab-form v-for="department in departments" :key="department.Guid" :department="department"
+              :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup"
+              @global-error="validateEachDepartment"></lab-form>
             <div class="submit-button">
-              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit"
-                >ΚΑΤΑΧΩΡΗΣΗ</v-btn
-              >
+              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ</v-btn>
             </div>
           </v-container>
         </v-form>
@@ -141,8 +89,11 @@ import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { useAlert } from "@/composables/showAlert.composable";
 import { onBeforeRouteLeave } from "vue-router";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
-import {confirm} from '@/composables/dialog.composable';
+import { confirm } from '@/composables/dialog.composable';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateCourseRequest, LaboratoryRequest } from "@/models/BACKEND-MODELS/CreateCourseRequest";
+import { useAxios } from "@vueuse/integrations/useAxios";
+import { useAxiosInstance } from "@/composables/useInstance.composable";
 export default defineComponent({
   components: {
     LabForm,
@@ -159,7 +110,8 @@ export default defineComponent({
       showAlert,
       closeAlert,
     } = useAlert();
-    const {GetDisplayedLabs,DisplayedLabs} = useDisplayedLabs();
+    const {setBackendInstanceAuth} = useAxiosInstance();
+    const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
     const validationAlertShow = showAlert;
     const validationAlertType = typeOfAlert;
@@ -169,11 +121,11 @@ export default defineComponent({
     onBeforeRouteLeave(async () => {
       if (anythingIsPopulated.value === true) {
         showRouteLeaveModal.value = true;
-        if(await confirm()){
+        if (await confirm()) {
           showRouteLeaveModal.value = false;
           return true;
         }
-        else{
+        else {
           showRouteLeaveModal.value = false;
           return false;
         }
@@ -207,7 +159,7 @@ export default defineComponent({
     let deptIncremental = 1;
     const show = true;
     const departments = ref(Array<Department>());
-    const displayedSemester = ref<Array<DisplayedSemster>>( new Array<DisplayedSemster>());
+    const displayedSemester = ref<Array<DisplayedSemster>>(new Array<DisplayedSemster>());
     // const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
     //   displayedLabs()
     // );
@@ -239,7 +191,7 @@ export default defineComponent({
         deptIncremental = 1;
       }
       departments.value.push({
-        Guid : uuidv4().toString(),
+        Guid: uuidv4().toString(),
         deptId: `T${deptIncremental++}`,
         fromTime: "",
         toTime: "",
@@ -287,9 +239,9 @@ export default defineComponent({
     const atLeastOneAttendanceSelected = (value: number) => {
       return !value ? false : true;
     };
-    const mustBeANumberOrDash = (value:string) => {
+    const mustBeANumberOrDash = (value: string) => {
       const pattern = /^[0-9]{4}\-[0-9]{4}$/;
-      if(value.match(pattern)){
+      if (value.match(pattern)) {
         return true
       }
       return false;
@@ -309,7 +261,7 @@ export default defineComponent({
             "Ελάχιστο όριο 9 χαρακτήρες",
             minLength(9)
           ),
-          MustBeANumber : helpers.withMessage("Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες",mustBeANumberOrDash)
+          MustBeANumber: helpers.withMessage("Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες", mustBeANumberOrDash)
         },
         labTitle: {
           Required: helpers.withMessage(
@@ -433,7 +385,33 @@ export default defineComponent({
       }
       return true;
     };
-    const submitForm = () => {
+    function toTimeString(timeObject: {
+      hours: number,
+      minutes: number,
+      seconds: number
+    }): string {
+      let result: string = "";
+      if (timeObject.hours < 10) {
+        result = `0${timeObject.hours}:`;
+      }
+      else {
+        result = `${timeObject.hours}:`;
+      }
+      if (timeObject.minutes < 10) {
+        result += `0${timeObject.minutes}:`
+      }
+      else {
+        result += `${timeObject.minutes}:`
+      }
+      if (timeObject.seconds < 10) {
+        result += `0${timeObject.seconds}`
+      }
+      else {
+        result += `${timeObject.seconds}`
+      }
+      return result;
+    }
+    const submitForm = async () => {
       v$.value.$validate();
       if (v$.value.$error) {
         console.log(v$.value.$errors);
@@ -462,6 +440,40 @@ export default defineComponent({
         setTypeOfAlert("error");
         return;
       }
+      const createCourseRequest: CreateCourseRequest =
+      {
+        CourseCode: formState.labId,
+        CourseName: formState.labTitle,
+        Semester: formState.semester!,
+        ShortDescription: formState.description!,
+        CourseAttentance: formState.attendance!.value!,
+        Labs: Array<LaboratoryRequest>(),
+      };
+      if (!createCourseRequest)
+        return;
+
+      for (const department of formState.departments) {
+        createCourseRequest.Labs!.push({
+          DaysOfWeekEnums: department.day,
+          From: toTimeString(department.fromTime),
+          To: toTimeString(department.toTime),
+          LabName: department.deptId,
+          ProfId: department.selectedTeacher!.Guid!,
+          Seats: department.numberOfStudents,
+
+        });
+      }
+      console.dir(createCourseRequest);
+      const createCourseRespose = await useAxios('/course/create-course',
+      {
+        method : 'POST',
+        data:createCourseRequest
+      },
+      setBackendInstanceAuth()
+      );
+      console.dir(createCourseRespose);
+
+
       if (showAlert.value === true) {
         closeAlert();
       }
@@ -480,32 +492,7 @@ export default defineComponent({
       return false;
     });
 
-    const toTimeString = (timeObject:{
-      hours:number,
-      minutes:number,
-      seconds:number
-    }) => {
-      let result:string = "";
-      if(timeObject.hours < 10){
-        result =`0${timeObject.hours}:`;
-      }
-      else{
-        result =`${timeObject.hours}:`;
-      }
-      if(timeObject.minutes < 10){
-        result += `0${timeObject.minutes}:`
-      }
-      else{
-        result += `${timeObject.minutes}:`
-      }
-      if(timeObject.seconds < 10){
-        result += `0${timeObject.seconds}:`
-      }
-      else{
-        result += `${timeObject.seconds}:`
-      }
-      return result;
-    }
+
 
     return {
       emitMobileViewClose,
@@ -530,6 +517,7 @@ export default defineComponent({
       validationAlertType,
       validationAlertTitle,
       showRouteLeaveModal,
+      toTimeString
     };
   },
 });
@@ -543,10 +531,12 @@ export default defineComponent({
 :deep(.v-alert-title) {
   font-size: 1rem;
 }
-:deep(.v-card-text){
+
+:deep(.v-card-text) {
   font-weight: 500;
   text-transform: inherit;
 }
+
 .positioner {
   width: 100% !important;
 }
