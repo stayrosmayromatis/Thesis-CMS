@@ -9,6 +9,8 @@
       :title="validationAlertTitle"></base-alert>
     <base-dialog v-if="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
       inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"></base-dialog>
+    <base-dialog v-if="somethingWentWrongModal" :route-change-authorizer="false" inner-title="FATAL ERROR"
+      inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"></base-dialog>
     <div class="parent-card-form">
       <v-card elevation="5">
         <v-form @submit.prevent="submitForm">
@@ -87,13 +89,15 @@ import BaseAlert from "@/components/Base/BaseAlert.vue";
 import { useProfessor } from "@/composables/useProfessors.composable";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { useAlert } from "@/composables/showAlert.composable";
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, useRouter } from "vue-router";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import { confirm } from '@/composables/dialog.composable';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateCourseRequest, LaboratoryRequest } from "@/models/BACKEND-MODELS/CreateCourseRequest";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
+import { ApiResult } from "@/models/DTO/ApiResult";
+import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
 export default defineComponent({
   components: {
     LabForm,
@@ -110,15 +114,20 @@ export default defineComponent({
       showAlert,
       closeAlert,
     } = useAlert();
-    const {setBackendInstanceAuth} = useAxiosInstance();
+    const { setBackendInstanceAuth } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
+    const router = useRouter();
     const validationAlertShow = showAlert;
     const validationAlertType = typeOfAlert;
     const validationAlertTitle = alertTitle;
     const seededProfessors = ref<Array<BaseUser>>(new Array<BaseUser>());
     const showRouteLeaveModal = ref(false);
+    const somethingWentWrongModal = ref(false);
+    const successFullSubmision = ref(false);
     onBeforeRouteLeave(async () => {
+      if (successFullSubmision.value === true)
+        return true;
       if (anythingIsPopulated.value === true) {
         showRouteLeaveModal.value = true;
         if (await confirm()) {
@@ -463,22 +472,31 @@ export default defineComponent({
 
         });
       }
-      console.dir(createCourseRequest);
-      const createCourseRespose = await useAxios('/course/create-course',
-      {
-        method : 'POST',
-        data:createCourseRequest
-      },
-      setBackendInstanceAuth()
+      const createCourseApiRequest = await useAxios('/course/create-course',
+        {
+          method: 'POST',
+          data: createCourseRequest
+        },
+        setBackendInstanceAuth()
       );
-      console.dir(createCourseRespose);
-
-
-      if (showAlert.value === true) {
-        closeAlert();
+      if (createCourseApiRequest.isFinished) {
+        const createCourseApiResponse: ApiResult<CreateCourseResponse> = createCourseApiRequest.data.value;
+        if (createCourseApiResponse.Status === false || !createCourseApiResponse.Status) {
+          somethingWentWrongModal.value = true;
+          return;
+        }
+        openAlert("Επιτυχής καταχώρηση εργαστηρίου");
+        setTypeOfAlert("success");
+        setTimeout(() => {
+          closeAlert();
+          successFullSubmision.value = true;
+          router.replace({ name: 'labList' })
+        }, 1500);
       }
-      //toTimeString for conversion to TimeOnly string
-      console.log(formState);
+
+      // if (showAlert.value === true) {
+      //   closeAlert();
+      // }
     };
     const anythingIsPopulated = computed(() => {
       if (
@@ -517,7 +535,8 @@ export default defineComponent({
       validationAlertType,
       validationAlertTitle,
       showRouteLeaveModal,
-      toTimeString
+      toTimeString,
+      somethingWentWrongModal
     };
   },
 });
