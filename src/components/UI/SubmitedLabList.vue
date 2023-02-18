@@ -14,9 +14,8 @@
       <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
       <submited-lab
         v-for="sLab in sLabs"
-        :key="sLab.labId"
-        :title="sLab.title"
-        :description="sLab.description"
+        :key="sLab.CourseCode"
+        :lab="sLab"
       >
       </submited-lab>
       <div class="pdf-button">
@@ -52,6 +51,12 @@ import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { Department } from "@/models/department.type";
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from "@/composables/showAlert.composable";
+import {useAxiosInstance} from '@/composables/useInstance.composable';
+import {InfoController} from '@/config';
+import { useAxios } from "@vueuse/integrations/useAxios";
+import { ApiResult } from '@/models/DTO/ApiResult';
+import { StudentInfoResponse, SubmittedLab } from '@/models/BACKEND-MODELS/StudentInfoResponse';
+import { DaysOfWeekEnum } from '@/enums/DaysOfWeekEnum';
 export default defineComponent({
   components: {
     SubmitedLab,
@@ -63,55 +68,57 @@ export default defineComponent({
   setup(_, context) {
     const isError = false;
     const {alertTitle,typeOfAlert,showAlert,closeAlert,openAlert} = useAlert();
-    const sLabs = ref([
-      {
-        labId: "1601",
-        title: "Οργάνωση και αρχιτεκτονική",
-        semester: LabSemesterEnum.A_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1602",
-        title: "Δικτυα και αρχιτεκτονική",
-        semester: LabSemesterEnum.B_EAR,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1603",
-        title: "Δομημένος Προγραμματισμός",
-        semester: LabSemesterEnum.C_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1601",
-        title: "Οργάνωση και αρχιτεκτονική",
-        semester: LabSemesterEnum.A_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1602",
-        title: "Δικτυα και αρχιτεκτονική",
-        semester: LabSemesterEnum.B_EAR,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-      {
-        labId: "1603",
-        title: "Δομημένος Προγραμματισμός",
-        semester: LabSemesterEnum.C_XEIM,
-        description: "Πληροφορίες Εργαστηρίου",
-        departments: Array<Department>(),
-      },
-    ]);
+    // const sLabs = ref([
+    //   {
+    //     labId: "1601",
+    //     title: "Οργάνωση και αρχιτεκτονική",
+    //     semester: LabSemesterEnum.A_XEIM,
+    //     description: "Πληροφορίες Εργαστηρίου",
+    //     departments: Array<Department>(),
+    //   },
+    //   {
+    //     labId: "1602",
+    //     title: "Δικτυα και αρχιτεκτονική",
+    //     semester: LabSemesterEnum.B_EAR,
+    //     description: "Πληροφορίες Εργαστηρίου",
+    //     departments: Array<Department>(),
+    //   },
+    //   {
+    //     labId: "1603",
+    //     title: "Δομημένος Προγραμματισμός",
+    //     semester: LabSemesterEnum.C_XEIM,
+    //     description: "Πληροφορίες Εργαστηρίου",
+    //     departments: Array<Department>(),
+    //   },
+    //   {
+    //     labId: "1601",
+    //     title: "Οργάνωση και αρχιτεκτονική",
+    //     semester: LabSemesterEnum.A_XEIM,
+    //     description: "Πληροφορίες Εργαστηρίου",
+    //     departments: Array<Department>(),
+    //   },
+    //   {
+    //     labId: "1602",
+    //     title: "Δικτυα και αρχιτεκτονική",
+    //     semester: LabSemesterEnum.B_EAR,
+    //     description: "Πληροφορίες Εργαστηρίου",
+    //     departments: Array<Department>(),
+    //   },
+    //   {
+    //     labId: "1603",
+    //     title: "Δομημένος Προγραμματισμός",
+    //     semester: LabSemesterEnum.C_XEIM,
+    //     description: "Πληροφορίες Εργαστηρίου",
+    //     departments: Array<Department>(),
+    //   },
+    // ]);
+    const sLabs = ref<Array<SubmittedLab>>(new Array<SubmittedLab>());
+    const {setBackendInstanceAuth} = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
       return;
     };
-    onMounted(() => {
+    onMounted(async () => {
       context.emit("closeMobileView", true);
       if(showAlert.value === true){
         setTimeout(() => {
@@ -121,6 +128,7 @@ export default defineComponent({
             closeAlert();
         },1500)
       }
+      await populateSubmittedLabs();
       return;
     });
     const pdfCreationCompleted = (val: boolean) => {
@@ -130,6 +138,28 @@ export default defineComponent({
     const invokeGeneratePdf = () => {
       callToGeneratePdf.value = true;
     };
+
+    const populateSubmittedLabs = async ():Promise<void> => {
+      const apiGetInfos = await useAxios(
+        InfoController+"get-info-as-student",
+        {
+          method:'GET'
+        },
+        setBackendInstanceAuth()
+      );
+      if(apiGetInfos.isFinished)
+      {
+        const getInfoData:ApiResult<StudentInfoResponse> = apiGetInfos.data.value;
+        if(getInfoData.Status === false || !getInfoData.Status){
+          return;
+        }
+        if(!getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs){
+          return;
+        }
+        sLabs.value = getInfoData.Data.SubmittedLabs;
+        console.log(sLabs);
+      }
+    }
     return {
       sLabs,
       isError,

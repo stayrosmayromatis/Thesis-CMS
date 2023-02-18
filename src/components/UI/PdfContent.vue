@@ -113,13 +113,13 @@
                 Παρακολούθηση
               </td>
             </tr>
-            <tr v-for="lab in labs" :key="lab.labId" style="height: 79px; text-align:center;">
-              <td class="u-table-cell">{{ lab.labId }}</td>
-              <td class="u-table-cell">{{ lab.title }}</td>
-              <td class="u-table-cell">{{ "Τμήμα" }}</td>
-              <td class="u-table-cell">{{ "Ημέρα" }}</td>
-              <td class="u-table-cell">{{ "Ωρα" }}</td>
-              <td class="u-table-cell">{{ "Παρακ" }}</td>
+            <tr v-for="lab in labs" :key="lab.CourseCode" style="height: 79px; text-align:center;">
+              <td class="u-table-cell">{{ lab.CourseCode }}</td>
+              <td class="u-table-cell">{{ lab.CourseName }}</td>
+              <td class="u-table-cell">{{ lab.LabName }}</td>
+              <td class="u-table-cell">{{ lab.DayString }}</td>
+              <td class="u-table-cell">{{ `${lab.From} - ${lab.To}` }}</td>
+              <td class="u-table-cell">{{ lab.AttendanceString }}</td>
             </tr>
           </tbody>
         </table>
@@ -129,6 +129,7 @@
 </template>
 
 <script lang="ts">
+import { SubmittedLab } from '@/models/BACKEND-MODELS/StudentInfoResponse';
 import { defineComponent, ref, watch, toRefs, PropType, onMounted } from 'vue';
 import html2canvas from "html2canvas";
 import jsPDF, { ImageOptions } from "jspdf";
@@ -136,8 +137,8 @@ import { useAuth } from '@/composables/useAuth.composable';
 export default defineComponent({
   props: {
     labs: {
-      type: Object,
-      required: false,
+      type: Object as PropType<Array<SubmittedLab>>,
+      required: true,
       default: null,
     },
     callToGeneratePdf:{
@@ -223,5 +224,6 @@ export default defineComponent({
 <style scoped>
 @import "@/assets/pdf-styles/Home.css";
 @import "@/assets/pdf-styles/nicepage.css";
+
 
 </style>

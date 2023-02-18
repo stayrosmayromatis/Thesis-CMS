@@ -3,27 +3,49 @@
     <v-card elevation="5" class="card-item">
       <div class="spacer">
         <v-card-title>
-          {{ title }}
+          {{ LabName }}
         </v-card-title>
         <v-card-text>
-          {{ description }}
+          {{ LabDescription }}
         </v-card-text>
-        <v-chip outlined="true" class="card-chip">Α Χειμερινό</v-chip>
+
+        <!-- //<v-chip v-for="infoChip in lab.CourseInfo" outlined="true" class="card-chip">Α Χειμερινό</v-chip> -->
+        <div class="chip-group">
+          <v-chip
+            v-for="infoChip in lab.CourseInfo"
+            outlined="true"
+            class="card-chip"
+            >{{ infoChip }}</v-chip
+          >
+        </div>
       </div>
     </v-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType, toRefs, computed } from "vue";
+import { SubmittedLab } from "@/models/BACKEND-MODELS/StudentInfoResponse";
 
 export default defineComponent({
   props: {
     title: String,
     description: String,
+    lab: {
+      type: Object as PropType<SubmittedLab>,
+      required: true,
+      default: null,
+    },
   },
-  setup() {
-    return {};
+  setup(props) {
+    const { lab } = toRefs(props);
+    const LabName = computed(() => {
+      return `${lab.value.CourseCode} - ${lab.value.CourseName}`;
+    });
+    const LabDescription = computed(() => {
+      return `${lab.value.LabName} / ${lab.value.DayString} (${lab.value.From} - ${lab.value.To})`;
+    });
+    return { LabName, LabDescription };
   },
 });
 </script>
@@ -53,17 +75,25 @@ export default defineComponent({
   width: 100%;
 }
 .card-chip {
-  width: 100%;
+  width: fit-content;
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0.5rem;
-  padding: 0;
+  padding: 1rem 2rem;
   font-weight: 500;
   border: 1px solid #09aa09;
   color: #09aa09;
   background: #f3f3f3;
   max-width: 16rem;
+}
+.chip-group {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 :deep(.v-card-text) {
   flex: 0;
@@ -96,7 +126,7 @@ export default defineComponent({
   }
   :deep(.v-card-title) {
     display: block;
-    flex: none;
+    flex: 1 0;
     font-size: 1.25rem;
     font-weight: 500;
     -webkit-hyphens: auto;
@@ -120,24 +150,32 @@ export default defineComponent({
     text-transform: none;
     margin: 1rem 1rem;
     padding: 0;
-    width: 40%;
+    width: fit-content;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    flex: 1;
+    justify-content: center;
+    flex: 1 0;
   }
   .card-chip {
-    width: 20%;
+    width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0.5rem;
-    padding: 0;
+    padding: 1rem 2rem;
     font-weight: 500;
     border: 1px solid #09aa09;
     color: #09aa09;
     background: #f3f3f3;
     max-width: 6rem;
+  }
+  .chip-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: fit-content;
+    flex: 1 0;
   }
 }
 @media (min-width: 1025px) {
@@ -162,7 +200,7 @@ export default defineComponent({
   }
   :deep(.v-card-title) {
     display: block;
-    flex: none;
+    flex: 1 0;
     font-size: 1.25rem;
     font-weight: 500;
     -webkit-hyphens: auto;
@@ -186,23 +224,32 @@ export default defineComponent({
     text-transform: none;
     margin: 1rem 1rem;
     padding: 0;
-    width: 40%;
+    width: fit-content;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;
+    flex: 1;
   }
   .card-chip {
-    width: 20%;
+    width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0.5rem;
-    padding: 0;
+    padding: 1rem 2rem;
     font-weight: 500;
     border: 1px solid #09aa09;
     color: #09aa09;
     background: #f3f3f3;
     max-width: 6rem;
+  }
+  .chip-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: fit-content;
+    flex: 1 0;
   }
 }
 </style>
