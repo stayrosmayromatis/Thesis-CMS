@@ -15,9 +15,10 @@
           <v-chip outlined="true" class="card-chip">{{
             lab.AttendanceString
           }}</v-chip>
-        </div>
-        <div>
-          
+          <v-btn class="delete-button" variant="tonal">
+            <v-icon icon="mdi-cancel"></v-icon>
+            Διαγραφη
+          </v-btn>
         </div>
       </div>
     </v-card>
@@ -74,10 +75,10 @@ export default defineComponent({
         case LabSemesterEnum.L_EAR:
           return "Λ ΕΞΑΜΗΝΟ";
         default:
-          return 'N/A';
+          return "N/A";
       }
     });
-    return { LabName, LabDescription,Semester };
+    return { LabName, LabDescription, Semester };
   },
 });
 </script>
@@ -119,7 +120,7 @@ export default defineComponent({
   background: #f3f3f3;
   max-width: 16rem;
 }
-.card-chip-semester{
+.card-chip-semester {
   background: #f7f7f7;
   border: 1px solid #1c4397;
   color: #1c4397;
@@ -147,6 +148,39 @@ export default defineComponent({
   letter-spacing: 0.0178571429em;
   padding: 0.5rem;
   text-transform: none;
+}
+
+.delete-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background: #f44336;
+  margin: 0 !important;
+  width: fit-content;
+  padding: 0.6em !important;
+  font-size: 0.8rem !important;
+  border-radius: 2rem !important;
+  height: 2rem !important;
+}
+:deep(.v-card-title) {
+  display: block;
+  flex: none;
+  font-size: 1.25rem;
+  font-weight: 500;
+  hyphens: auto;
+  letter-spacing: 0.0125em;
+  min-width: 0;
+  overflow-wrap: normal;
+  overflow: hidden;
+  padding: 0.5rem 1rem;
+  text-overflow: clip;
+  text-transform: none;
+  white-space: inherit;
+  word-break: break-word;
+  word-wrap: break-word;
+  text-align: center;
 }
 
 @media (min-width: 769px) {
@@ -187,6 +221,7 @@ export default defineComponent({
     word-break: normal;
     word-wrap: break-word;
     width: 45%;
+    text-align: inherit;
   }
   :deep(.v-card-text) {
     font-size: 0.875rem;
@@ -261,6 +296,7 @@ export default defineComponent({
     word-break: normal;
     word-wrap: break-word;
     width: 45%;
+    text-align: inherit;
   }
   :deep(.v-card-text) {
     font-size: 0.875rem;
