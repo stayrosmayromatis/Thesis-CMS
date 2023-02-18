@@ -29,7 +29,7 @@
           <div class="autocomplete-padder">
             <v-autocomplete
               :disabled="cantFindTeacherFlag"
-              autofocus
+              :autofocus="false"
               clearable
               label="Αναζητήστε εδώ"
               :items="autoCompleteItems"

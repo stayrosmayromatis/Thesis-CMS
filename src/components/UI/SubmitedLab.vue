@@ -8,15 +8,16 @@
         <v-card-text>
           {{ LabDescription }}
         </v-card-text>
-
-        <!-- //<v-chip v-for="infoChip in lab.CourseInfo" outlined="true" class="card-chip">Α Χειμερινό</v-chip> -->
         <div class="chip-group">
-          <v-chip
-            v-for="infoChip in lab.CourseInfo"
-            outlined="true"
-            class="card-chip"
-            >{{ infoChip }}</v-chip
-          >
+          <v-chip outlined="true" class="card-chip-semester">{{
+            Semester
+          }}</v-chip>
+          <v-chip outlined="true" class="card-chip">{{
+            lab.AttendanceString
+          }}</v-chip>
+        </div>
+        <div>
+          
         </div>
       </div>
     </v-card>
@@ -26,6 +27,7 @@
 <script lang="ts">
 import { defineComponent, PropType, toRefs, computed } from "vue";
 import { SubmittedLab } from "@/models/BACKEND-MODELS/StudentInfoResponse";
+import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 
 export default defineComponent({
   props: {
@@ -40,12 +42,42 @@ export default defineComponent({
   setup(props) {
     const { lab } = toRefs(props);
     const LabName = computed(() => {
-      return `${lab.value.CourseCode} - ${lab.value.CourseName}`;
+      return `(${lab.value.CourseCode.trim()}) ${lab.value.CourseName.trim()}`;
     });
     const LabDescription = computed(() => {
-      return `${lab.value.LabName} / ${lab.value.DayString} (${lab.value.From} - ${lab.value.To})`;
+      return `${lab.value.LabName.trim()} / ${lab.value.DayString.trim()} (${lab.value.From.trim()} - ${lab.value.To.trim()})`;
     });
-    return { LabName, LabDescription };
+    const Semester = computed(() => {
+      switch (lab.value.Semester) {
+        case LabSemesterEnum.A_XEIM:
+          return "Α ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.B_EAR:
+          return "Β ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.C_XEIM:
+          return "Γ ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.D_EAR:
+          return "Δ ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.E_XEIM:
+          return "E ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.ST_EAR:
+          return "ΣΤ ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.Z_XEIM:
+          return "Ζ ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.H_EAR:
+          return "Η ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.TH_XEIM:
+          return "Θ ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.I_EAR:
+          return "Ι ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.K_XEIM:
+          return "Κ ΕΞΑΜΗΝΟ";
+        case LabSemesterEnum.L_EAR:
+          return "Λ ΕΞΑΜΗΝΟ";
+        default:
+          return 'N/A';
+      }
+    });
+    return { LabName, LabDescription,Semester };
   },
 });
 </script>
@@ -86,6 +118,19 @@ export default defineComponent({
   color: #09aa09;
   background: #f3f3f3;
   max-width: 16rem;
+}
+.card-chip-semester{
+  background: #f7f7f7;
+  border: 1px solid #1c4397;
+  color: #1c4397;
+  max-width: 16rem;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem;
+  padding: 1rem 2rem;
+  font-weight: 500;
 }
 .chip-group {
   display: flex;
