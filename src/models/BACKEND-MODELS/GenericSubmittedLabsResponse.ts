@@ -1,10 +1,12 @@
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
 import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
+import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 
-export interface StudentInfoResponse {
+export interface GenericSubmittedLabsResponse {
   SubmittedLabs: Array<SubmittedLab>;
   Count: number;
+  UserType?:PersonAffiliation
 }
 
 export interface SubmittedLab {
@@ -19,5 +21,6 @@ export interface SubmittedLab {
   Attendance :AttendanceEnum,
   AttendanceString:string,
   Semester: LabSemesterEnum,
-  SemesterString:string
+  SemesterString:string,
+  IsAssistantProfessor?:boolean 
 }

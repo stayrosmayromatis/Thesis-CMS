@@ -15,10 +15,28 @@
           <v-chip outlined="true" class="card-chip">{{
             lab.AttendanceString
           }}</v-chip>
-          <v-btn class="delete-button" variant="tonal">
-            <v-icon icon="mdi-cancel"></v-icon>
-            Διαγραφη
-          </v-btn>
+          <!-- <v-btn class="delete-button" variant="tonal">
+                    <v-icon icon="mdi-cancel"></v-icon>
+                    Διαγραφη
+                  </v-btn> -->
+          <div class="media-button-group">
+            <div>
+              <v-tooltip :text="DeletionText" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
+                </template>
+              </v-tooltip>
+            </div>
+            <!-- <v-icon></v-icon> -->
+            <!-- Διαγραφη -->
+            <div v-if="IsStaffOrAdmin">
+              <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" class="edit-button" icon="mdi-pencil" size="x-small"></v-btn>
+                </template>
+              </v-tooltip>
+            </div>
+          </div>
         </div>
       </div>
     </v-card>
@@ -27,8 +45,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType, toRefs, computed } from "vue";
-import { SubmittedLab } from "@/models/BACKEND-MODELS/StudentInfoResponse";
+import { SubmittedLab } from "@/models/BACKEND-MODELS/GenericSubmittedLabsResponse";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
+import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 
 export default defineComponent({
   props: {
@@ -39,9 +58,14 @@ export default defineComponent({
       required: true,
       default: null,
     },
+    personAffiliation: {
+      type: Object as PropType<PersonAffiliation>,
+      required: true,
+      default: null,
+    }
   },
   setup(props) {
-    const { lab } = toRefs(props);
+    const { lab, personAffiliation } = toRefs(props);
     const LabName = computed(() => {
       return `(${lab.value.CourseCode.trim()}) ${lab.value.CourseName.trim()}`;
     });
@@ -78,7 +102,22 @@ export default defineComponent({
           return "N/A";
       }
     });
-    return { LabName, LabDescription, Semester };
+    const IsStaffOrAdmin = computed(() => {
+      if (!personAffiliation.value)
+        return false;
+      if (personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN)
+        return true;
+      return false;
+    });
+    const DeletionText = computed(() => {
+      if (!personAffiliation.value)
+        return "Διαγραφή δηλωτέου ";
+      if (personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN)
+        return "Διαγραφή εργαστηρίου";
+      return "Διαγραφή δηλωτέου";
+    });
+
+    return { LabName, LabDescription, Semester, IsStaffOrAdmin,DeletionText };
   },
 });
 </script>
@@ -89,6 +128,7 @@ export default defineComponent({
   margin-bottom: 0.5rem;
   min-width: 320px;
 }
+
 .card-item {
   display: flex;
   flex-direction: column;
@@ -98,6 +138,7 @@ export default defineComponent({
   padding: 0;
   min-width: 320px;
 }
+
 .spacer {
   display: flex;
   flex-direction: column;
@@ -107,6 +148,7 @@ export default defineComponent({
   min-width: 320px;
   width: 100%;
 }
+
 .card-chip {
   width: fit-content;
   display: flex;
@@ -120,6 +162,7 @@ export default defineComponent({
   background: #f3f3f3;
   max-width: 16rem;
 }
+
 .card-chip-semester {
   background: #f7f7f7;
   border: 1px solid #1c4397;
@@ -133,6 +176,7 @@ export default defineComponent({
   padding: 1rem 2rem;
   font-weight: 500;
 }
+
 .chip-group {
   display: flex;
   flex-direction: row;
@@ -141,6 +185,7 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
 }
+
 :deep(.v-card-text) {
   flex: 0;
   font-size: 0.875rem;
@@ -155,8 +200,11 @@ export default defineComponent({
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  color: white;
-  background: #f44336;
+  /* color: white; */
+  color: #f44336;
+  /* background: #f44336; */
+  background: #f7f7f7;
+  border: 1px solid #f44336;
   margin: 0 !important;
   width: fit-content;
   padding: 0.6em !important;
@@ -164,6 +212,35 @@ export default defineComponent({
   border-radius: 2rem !important;
   height: 2rem !important;
 }
+
+.delete-button:hover {
+  color: #f7f7f7;
+  /* background: #f44336; */
+  background: #f44336;
+}
+
+.edit-button:hover {
+  color: #f7f7f7;
+  /* background: #f44336; */
+  background: #1c4397;
+}
+
+.edit-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background: #f7f7f7;
+  border: 1px solid #1c4397;
+  color: #1c4397;
+  margin: 0 !important;
+  width: fit-content;
+  padding: 0.6em !important;
+  font-size: 0.8rem !important;
+  border-radius: 2rem !important;
+  height: 2rem !important;
+}
+
 :deep(.v-card-title) {
   display: block;
   flex: none;
@@ -183,12 +260,21 @@ export default defineComponent({
   text-align: center;
 }
 
+.media-button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 @media (min-width: 769px) {
   .card {
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
     /* //min-width: 770px; */
   }
+
   .card-item {
     display: flex;
     flex-direction: row;
@@ -196,6 +282,7 @@ export default defineComponent({
     justify-content: center;
     flex-wrap: nowrap;
   }
+
   .spacer {
     display: inline-flex;
     flex-direction: row;
@@ -203,6 +290,7 @@ export default defineComponent({
     justify-content: space-between;
     width: 100%;
   }
+
   :deep(.v-card-title) {
     display: block;
     flex: 1 0;
@@ -223,6 +311,7 @@ export default defineComponent({
     width: 45%;
     text-align: inherit;
   }
+
   :deep(.v-card-text) {
     font-size: 0.875rem;
     font-weight: 500;
@@ -236,6 +325,7 @@ export default defineComponent({
     justify-content: center;
     flex: 1 0;
   }
+
   .card-chip {
     width: fit-content;
     display: flex;
@@ -249,6 +339,7 @@ export default defineComponent({
     background: #f3f3f3;
     max-width: 6rem;
   }
+
   .chip-group {
     display: flex;
     flex-direction: row;
@@ -258,12 +349,14 @@ export default defineComponent({
     flex: 1 0;
   }
 }
+
 @media (min-width: 1025px) {
   .card {
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
     min-width: 770px;
   }
+
   .card-item {
     display: flex;
     flex-direction: row;
@@ -271,6 +364,7 @@ export default defineComponent({
     justify-content: center;
     flex-wrap: nowrap;
   }
+
   .spacer {
     display: inline-flex;
     flex-direction: row;
@@ -278,6 +372,7 @@ export default defineComponent({
     justify-content: flex-start;
     width: 100%;
   }
+
   :deep(.v-card-title) {
     display: block;
     flex: 1 0;
@@ -298,6 +393,7 @@ export default defineComponent({
     width: 45%;
     text-align: inherit;
   }
+
   :deep(.v-card-text) {
     font-size: 0.875rem;
     font-weight: 500;
@@ -311,6 +407,7 @@ export default defineComponent({
     justify-content: center;
     flex: 1;
   }
+
   .card-chip {
     width: fit-content;
     display: flex;
@@ -324,6 +421,7 @@ export default defineComponent({
     background: #f3f3f3;
     max-width: 6rem;
   }
+
   .chip-group {
     display: flex;
     flex-direction: row;

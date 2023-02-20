@@ -98,6 +98,11 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
+export interface TimeObject{
+      hours: number,
+      minutes: number,
+      seconds: number
+}
 export default defineComponent({
   components: {
     LabForm,
@@ -394,11 +399,7 @@ export default defineComponent({
       }
       return true;
     };
-    function toTimeString(timeObject: {
-      hours: number,
-      minutes: number,
-      seconds: number
-    }): string {
+    function toTimeString(timeObject:TimeObject): string {
       let result: string = "";
       if (timeObject.hours < 10) {
         result = `0${timeObject.hours}:`;
