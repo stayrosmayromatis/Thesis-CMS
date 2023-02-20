@@ -58,7 +58,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/poutsa",
     name : 'poutsa',
-    component : import('@/components/UI/TeacherSelect.vue'),
+    component : import('@/components/Base/BaseResultEmpty.vue'),
     props : true,
     meta : {requiresAuth :false}
   }
