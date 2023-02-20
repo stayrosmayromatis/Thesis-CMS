@@ -1,11 +1,11 @@
 <template>
     <div class="parent">
         <v-card elevation="5">
-            <div class="title">
-                <v-card-title>
+            <v-card-title>
+                <div class="title">
                     ΔΕΝ ΒΡΗΚΑ ΤΙΠΟΤΑ ΜΠΡΟ
-                </v-card-title>
-            </div>
+                </div>
+            </v-card-title>
             <div class="text">
                 <v-card-text>
                     ρε μπρο νταξει τώρα τι να κάνουμε
@@ -56,6 +56,35 @@ export default defineComponent({
     text-align: center;
 }
 
+/* :deep(.v-card-title) {
+    display: block;
+    flex: none;
+    font-size: 1.25rem;
+    font-weight: 500;
+    hyphens: auto;
+    letter-spacing: 0.0125em;
+    min-width: 0;
+    overflow-wrap: normal;
+    overflow: hidden;
+    padding: 0.5rem 1rem;
+    text-overflow: clip;
+    text-transform: none;
+    white-space: inherit;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: center;
+}
+
+:deep(.v-card-text) {
+    flex: 0;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.0178571429em;
+    padding: 0.5rem;
+    text-transform: none;
+} */
+
+
 @media (min-width: 769px) {
     .parent {
         margin-top: 1rem;
@@ -78,7 +107,7 @@ export default defineComponent({
         align-items: center;
         justify-content: center;
         flex-wrap: nowrap;
-        
+
     }
 }
 
