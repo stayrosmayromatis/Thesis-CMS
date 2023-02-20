@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <v-card elevation="5" class="card-item">
+    <v-card elevation="5" class="card-item" :class="{'gray-out' : IsAssistant}">
       <div class="spacer">
         <v-card-title>
           {{ LabName }}
@@ -9,10 +9,10 @@
           {{ LabDescription }}
         </v-card-text>
         <div class="chip-group">
-          <v-chip outlined="true" class="card-chip-semester">{{
+          <v-chip outlined="true" class="card-chip-semester" :class="{'gray-out-card-chip-semester' : IsAssistant}">{{
             Semester
           }}</v-chip>
-          <v-chip outlined="true" class="card-chip">{{
+          <v-chip outlined="true"  :class="{'gray-out-card-chip-attendance' : IsAssistant}" class="card-chip" >{{
             lab.AttendanceString
           }}</v-chip>
           <!-- <v-btn class="delete-button" variant="tonal">
@@ -23,7 +23,7 @@
             <div>
               <v-tooltip :text="DeletionText" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
+                  <v-btn :class="{'not-visible-buttons' : IsAssistant}" v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
                 </template>
               </v-tooltip>
             </div>
@@ -32,7 +32,7 @@
             <div v-if="IsStaffOrAdmin">
               <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn v-bind="props" class="edit-button" icon="mdi-pencil" size="x-small"></v-btn>
+                  <v-btn :class="{'not-visible-buttons' : IsAssistant}" v-bind="props" class="edit-button" icon="mdi-pencil" size="x-small"></v-btn>
                 </template>
               </v-tooltip>
             </div>
@@ -116,8 +116,12 @@ export default defineComponent({
         return "Διαγραφή εργαστηρίου";
       return "Διαγραφή δηλωτέου";
     });
-
-    return { LabName, LabDescription, Semester, IsStaffOrAdmin,DeletionText };
+    const IsAssistant = computed(() => {
+      if(!lab.value || lab.value.IsAssistantProfessor === false || !lab.value.IsAssistantProfessor)
+        return false;
+      return true;
+    });
+    return { LabName, LabDescription, Semester, IsStaffOrAdmin,DeletionText,IsAssistant };
   },
 });
 </script>
@@ -268,6 +272,23 @@ export default defineComponent({
   gap: 0.5rem;
 }
 
+.gray-out {
+  background-color: #f1eeee;
+}
+.gray-out-card-chip-semester{
+  background: #d1d3d8 !important;
+  border: 1px solid #273864 !important;
+  color: #273864 !important;
+}
+.gray-out-card-chip-attendance{
+  background: #f9f9f9 !important;
+  border: 1px solid #125e12 !important;
+  color: #125e12 !important;
+}
+
+.not-visible-buttons{
+  visibility: hidden;
+}
 @media (min-width: 769px) {
   .card {
     margin-bottom: 1.5rem;

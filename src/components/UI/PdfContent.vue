@@ -66,8 +66,11 @@
               <td class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Ώρα
               </td>
-              <td class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
+              <td v-if="!IsStaffOrAdmin" class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Παρακολούθηση
+              </td>
+              <td v-if="IsStaffOrAdmin" class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
+                Συνεργάτης
               </td>
             </tr>
             <tr v-for="lab in labs" :key="lab.CourseCode" style="height: 79px; text-align:center;">
@@ -76,8 +79,8 @@
               <td class="u-table-cell">{{ lab.LabName }}</td>
               <td class="u-table-cell">{{ lab.DayString }}</td>
               <td class="u-table-cell">{{ `${lab.From} - ${lab.To}` }}</td>
-              <!-- <td class="u-table-cell">{{ lab.AttendanceString }}</td> -->
-              <td class="u-table-cell">{{ AttendaceReformer(lab.Attendance) }}</td>
+              <td  v-if="!IsStaffOrAdmin" class="u-table-cell">{{ AttendaceReformer(lab.Attendance) }}</td>
+              <td v-if="IsStaffOrAdmin" class="u-table-cell">{{ IsAssistant(lab.IsAssistantProfessor) }}</td>
             </tr>
           </tbody>
         </table>
@@ -88,11 +91,12 @@
 
 <script lang="ts">
 import { SubmittedLab } from '@/models/BACKEND-MODELS/GenericSubmittedLabsResponse';
-import { defineComponent, ref, watch, toRefs, PropType, onMounted } from 'vue';
+import { defineComponent, ref, watch, toRefs, PropType, onMounted, computed } from 'vue';
 import html2canvas from "html2canvas";
 import jsPDF, { ImageOptions } from "jspdf";
 import { useAuth } from '@/composables/useAuth.composable';
 import { AttendanceEnum } from '@/enums/AttendanceEnums';
+import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
 export default defineComponent({
   props: {
     labs: {
@@ -105,12 +109,17 @@ export default defineComponent({
       required: true,
       default: false
     },
+    personAffiliation: {
+      type: Object as PropType<PersonAffiliation>,
+      required: true,
+      default: null,
+    }
   },
   emits: ["pdfCreated"],
   setup(props, context) {
     const pdfContent = ref<HTMLElement>();
     const { GetUserDataDetails } = useAuth();
-    const { labs, callToGeneratePdf } = toRefs(props);
+    const { labs, callToGeneratePdf ,personAffiliation} = toRefs(props);
     const firstName = ref<string>("");
     const lastName = ref<string>("");
     onMounted(() => {
@@ -190,7 +199,21 @@ export default defineComponent({
           return "ΥΠΟΧΡΕΩΤΙΚΗ";
       }
     }
-    return { labs, pdfContent, generatePdf, firstName, lastName, AttendaceReformer };
+
+    function IsAssistant(isAssistant?:boolean){
+      if(isAssistant === false || !isAssistant )
+        return "-";
+      if(isAssistant === true)
+        return "ΣΥΝΕΡΓΑΤΗΣ";
+    }
+    const IsStaffOrAdmin = computed(() => {
+      if (!personAffiliation.value)
+        return false;
+      if (personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN)
+        return true;
+      return false;
+    });
+    return { labs, pdfContent, generatePdf, firstName, lastName, AttendaceReformer,IsStaffOrAdmin,IsAssistant };
   },
 });
 </script>

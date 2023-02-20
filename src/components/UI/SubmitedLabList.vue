@@ -15,6 +15,7 @@
       <submited-lab
         v-for="sLab in sLabs"
         :key="sLab.CourseCode"
+        :person-affiliation="personAffiliation"
         :lab="sLab"
       >
       </submited-lab>
@@ -38,6 +39,7 @@
         @pdfCreated="pdfCreationCompleted"
         :callToGeneratePdf="callToGeneratePdf"
         :labs="sLabs"
+        :person-affiliation="personAffiliation"
       >
       </pdf-content>
     </div>
@@ -116,7 +118,7 @@ export default defineComponent({
     //   },
     // ]);
     const sLabs = ref<Array<SubmittedLab>>(new Array<SubmittedLab>());
-    const personAffiliation = ref<PersonAffiliation>();
+    const personAffiliation = ref<PersonAffiliation>(PersonAffiliation.STUDENT);
     const {setBackendInstanceAuth} = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
@@ -175,7 +177,8 @@ export default defineComponent({
       callToGeneratePdf,
       alertTitle,
       typeOfAlert,
-      showAlert
+      showAlert,
+      personAffiliation
     };
   },
 });
