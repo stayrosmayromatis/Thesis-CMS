@@ -22,7 +22,6 @@
       "@/composables/*":["src/composables/*"],
       "@/models/*":["src/models/*"],
       "@/store/*":["src/store/*"],
-      "@/configs":["src/config.*"]
       // "@":["src/*"]
     },
   },
