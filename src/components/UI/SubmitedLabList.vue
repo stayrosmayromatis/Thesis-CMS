@@ -12,36 +12,28 @@
     </base-alert>
     <div class="parent-card">
       <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
-      <submited-lab
-        v-for="sLab in sLabs"
-        :key="sLab.CourseCode"
-        :person-affiliation="personAffiliation"
-        :lab="sLab"
-      >
-      </submited-lab>
-      <div class="pdf-button">
-        <v-btn color="#ff5454" @click="pushToPdf">
-          <svg
-          style="margin-right: 0.3rem;"
-            fill="white"
-            xmlns="http://www.w3.org/2000/svg"
-            width="25"
-            height="25"
-            viewBox="0 0 24 24"
-          >
-          <path d="M12.819 14.427c.064.267.077.679-.021.948-.128.351-.381.528-.754.528h-.637v-2.12h.496c.474 0 .803.173.916.644zm3.091-8.65c2.047-.479 4.805.279 6.09 1.179-1.494-1.997-5.23-5.708-7.432-6.882 1.157 1.168 1.563 4.235 1.342 5.703zm-7.457 7.955h-.546v.943h.546c.235 0 .467-.027.576-.227.067-.123.067-.366 0-.489-.109-.198-.341-.227-.576-.227zm13.547-2.732v13h-20v-24h8.409c4.858 0 3.334 8 3.334 8 3.011-.745 8.257-.42 8.257 3zm-12.108 2.761c-.16-.484-.606-.761-1.224-.761h-1.668v3.686h.907v-1.277h.761c.619 0 1.064-.277 1.224-.763.094-.292.094-.597 0-.885zm3.407-.303c-.297-.299-.711-.458-1.199-.458h-1.599v3.686h1.599c.537 0 .961-.181 1.262-.535.554-.659.586-2.035-.063-2.693zm3.701-.458h-2.628v3.686h.907v-1.472h1.49v-.732h-1.49v-.698h1.721v-.784z"/>
-          </svg>
-          Μετατροπη σε PDF
-          </v-btn>
-      </div>
 
-      <pdf-content
-        @pdfCreated="pdfCreationCompleted"
-        :callToGeneratePdf="callToGeneratePdf"
-        :labs="sLabs"
-        :person-affiliation="personAffiliation"
-      >
-      </pdf-content>
+      <base-result-empty :show="showLabsNotFound" :title="showEmptyResultTitle" :description="showEmptyResultDescription"></base-result-empty>
+      <base-spinner :show="showSpinner"></base-spinner>
+
+      <div v-if="!showLabsNotFound">
+        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseCode" :person-affiliation="personAffiliation" :lab="sLab">
+        </submited-lab>
+        <div class="pdf-button">
+          <v-btn color="#ff5454" @click="pushToPdf">
+            <svg style="margin-right: 0.3rem;" fill="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
+              viewBox="0 0 24 24">
+              <path
+                d="M12.819 14.427c.064.267.077.679-.021.948-.128.351-.381.528-.754.528h-.637v-2.12h.496c.474 0 .803.173.916.644zm3.091-8.65c2.047-.479 4.805.279 6.09 1.179-1.494-1.997-5.23-5.708-7.432-6.882 1.157 1.168 1.563 4.235 1.342 5.703zm-7.457 7.955h-.546v.943h.546c.235 0 .467-.027.576-.227.067-.123.067-.366 0-.489-.109-.198-.341-.227-.576-.227zm13.547-2.732v13h-20v-24h8.409c4.858 0 3.334 8 3.334 8 3.011-.745 8.257-.42 8.257 3zm-12.108 2.761c-.16-.484-.606-.761-1.224-.761h-1.668v3.686h.907v-1.277h.761c.619 0 1.064-.277 1.224-.763.094-.292.094-.597 0-.885zm3.407-.303c-.297-.299-.711-.458-1.199-.458h-1.599v3.686h1.599c.537 0 .961-.181 1.262-.535.554-.659.586-2.035-.063-2.693zm3.701-.458h-2.628v3.686h.907v-1.472h1.49v-.732h-1.49v-.698h1.721v-.784z" />
+            </svg>
+            Μετατροπη σε PDF
+          </v-btn>
+        </div>
+
+        <pdf-content @pdfCreated="pdfCreationCompleted" :callToGeneratePdf="callToGeneratePdf" :labs="sLabs"
+          :person-affiliation="personAffiliation">
+        </pdf-content>
+      </div>
     </div>
   </div>
 </template>
@@ -51,28 +43,33 @@ import { defineComponent, ref, onMounted } from "vue";
 import SubmitedLab from "@/components/UI/SubmitedLab.vue";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import PdfContent from "@/components/UI/PdfContent.vue";
-import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { Department } from "@/models/department.type";
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from "@/composables/showAlert.composable";
-import {useAxiosInstance} from '@/composables/useInstance.composable';
-import {InfoController} from '@/config';
+import { useAxiosInstance } from '@/composables/useInstance.composable';
+import { InfoController } from '@/config';
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { ApiResult } from '@/models/DTO/ApiResult';
 import { GenericSubmittedLabsResponse, SubmittedLab } from '@/models/BACKEND-MODELS/GenericSubmittedLabsResponse';
-import { DaysOfWeekEnum } from '@/enums/DaysOfWeekEnum';
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
+import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue'
+import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 export default defineComponent({
   components: {
     SubmitedLab,
     BaseDialog,
     PdfContent,
-    BaseAlert
+    BaseAlert,
+    BaseResultEmpty,
+    BaseSpinner
   },
   emits: ["closeMobileView"],
   setup(_, context) {
     const isError = false;
-    const {alertTitle,typeOfAlert,showAlert,closeAlert,openAlert} = useAlert();
+    const showLabsNotFound = ref(false);
+    const showSpinner = ref(false);
+    const showEmptyResultTitle =ref("");
+    const showEmptyResultDescription =ref("");
+    const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert } = useAlert();
     // const sLabs = ref([
     //   {
     //     labId: "1601",
@@ -119,20 +116,20 @@ export default defineComponent({
     // ]);
     const sLabs = ref<Array<SubmittedLab>>(new Array<SubmittedLab>());
     const personAffiliation = ref<PersonAffiliation>(PersonAffiliation.STUDENT);
-    const {setBackendInstanceAuth} = useAxiosInstance();
+    const { setBackendInstanceAuth } = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
       return;
     };
     onMounted(async () => {
       context.emit("closeMobileView", true);
-      if(showAlert.value === true){
+      if (showAlert.value === true) {
         setTimeout(() => {
-            openAlert(alertTitle.value);
-        },1000)
+          openAlert(alertTitle.value);
+        }, 1000)
         setTimeout(() => {
-            closeAlert();
-        },1500)
+          closeAlert();
+        }, 1500)
       }
       await populateSubmittedLabs();
       return;
@@ -145,25 +142,33 @@ export default defineComponent({
       callToGeneratePdf.value = true;
     };
 
-    const populateSubmittedLabs = async ():Promise<void> => {
+    const populateSubmittedLabs = async (): Promise<void> => {
+      showSpinner.value = true;
       const apiGetInfos = await useAxios(
-        InfoController+"get-submitted-labs-info",
+        InfoController + "get-submitted-labs-info",
         {
-          method:'GET'
+          method: 'GET'
         },
         setBackendInstanceAuth()
       );
-      if(apiGetInfos.isFinished)
-      {
-        const getInfoData:ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
-        if(getInfoData.Status === false || !getInfoData.Status){
+      if (apiGetInfos.isFinished) {
+        const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
+        if (getInfoData.Status === false || !getInfoData.Status) {
+          showSpinner.value = false;
+          showEmptyResultTitle.value="Δεν βρέθηκαν δηλωμένα εργαστήρια";
+          showEmptyResultDescription.value="Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
           return;
         }
-        if(!getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs){
+        if (!getInfoData.Data || getInfoData.Data.Count === 0 || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
+          showLabsNotFound.value = true;
+          showEmptyResultTitle.value="Δεν βρέθηκαν δηλωμένα εργαστήρια";
+          showEmptyResultDescription.value="Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+          showSpinner.value = false;
           return;
         }
         sLabs.value = getInfoData.Data.SubmittedLabs;
         personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
+        showSpinner.value = false;
         console.log(sLabs.value);
         console.log(personAffiliation.value);
       }
@@ -178,7 +183,11 @@ export default defineComponent({
       alertTitle,
       typeOfAlert,
       showAlert,
-      personAffiliation
+      personAffiliation,
+      showLabsNotFound,
+      showSpinner,
+      showEmptyResultTitle,
+      showEmptyResultDescription
     };
   },
 });
@@ -212,6 +221,7 @@ export default defineComponent({
   margin: 0.5rem auto;
   background-color: #aacaf3;
 }
+
 .pdf-button {
   display: flex;
   flex-direction: row;
@@ -220,14 +230,16 @@ export default defineComponent({
   height: fit-content;
   margin: 1rem 1rem;
   width: 100%;
-  min-width:320px;
+  min-width: 320px;
   color: white;
 }
+
 :deep(.v-btn.v-btn--density-default) {
   border-radius: 1rem;
   font-size: 1rem;
   height: 2.5rem;
 }
+
 @media (min-width: 769px) {
   .parent-card {
     margin-top: 1rem;
@@ -249,6 +261,7 @@ export default defineComponent({
     background-color: #aacaf3;
     /* min-width: 769px; */
   }
+
   .pdf-button {
     display: flex;
     flex-direction: row;
@@ -258,6 +271,7 @@ export default defineComponent({
     margin: 1rem 1rem;
     width: 100%;
   }
+
   :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
     font-size: 1rem;
@@ -287,6 +301,7 @@ export default defineComponent({
     background-color: #aacaf3;
     /* min-width: 769px; */
   }
+
   .pdf-button {
     display: flex;
     flex-direction: row;
@@ -296,6 +311,7 @@ export default defineComponent({
     margin: 1rem 1rem;
     width: 100%;
   }
+
   :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
     font-size: 1rem;
