@@ -98,10 +98,10 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
-export interface TimeObject{
-      hours: number,
-      minutes: number,
-      seconds: number
+export interface TimeObject {
+  hours: number,
+  minutes: number,
+  seconds: number
 }
 export default defineComponent({
   components: {
@@ -328,7 +328,7 @@ export default defineComponent({
         },
       };
     });
-    const v$ = useVuelidate(rules, formState);
+    const v$ = useVuelidate(rules,formState);
 
     const errorOfLabId = computed(() => {
       if (v$.value.labId.$error) {
@@ -399,7 +399,7 @@ export default defineComponent({
       }
       return true;
     };
-    function toTimeString(timeObject:TimeObject): string {
+    function toTimeString(timeObject: TimeObject): string {
       let result: string = "";
       if (timeObject.hours < 10) {
         result = `0${timeObject.hours}:`;
@@ -465,7 +465,9 @@ export default defineComponent({
       for (const department of formState.departments) {
         createCourseRequest.Labs!.push({
           DaysOfWeekEnums: department.day,
+          // @ts-ignore
           From: toTimeString(department.fromTime),
+          // @ts-ignore
           To: toTimeString(department.toTime),
           LabName: department.deptId,
           ProfId: department.selectedTeacher!.Guid!,
