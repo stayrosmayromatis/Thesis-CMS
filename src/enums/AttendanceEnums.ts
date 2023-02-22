@@ -1,5 +1,5 @@
 export enum AttendanceEnum {
    ΥΠ = 1,
-   ΥΠ_ΠΡ=2,
-   ΠΡ = 3
+   ΠΡ = 2,
+   ΥΠ_ΠΡ=3
 };
