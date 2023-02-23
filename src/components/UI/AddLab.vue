@@ -133,6 +133,7 @@ export default defineComponent({
     const somethingWentWrongModal = ref(false);
     const successFullSubmision = ref(false);
     onBeforeRouteLeave(async () => {
+      closeAlert();
       if (successFullSubmision.value === true)
         return true;
       if (anythingIsPopulated.value === true) {
