@@ -37,9 +37,7 @@
               <div class="percent49-5">
                 <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
                   :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
-                  v-model="formState.attendance"
-                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"
-                  ></v-select>
+                  v-model="formState.attendance" no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
               </div>
             </div>
             <v-divider inset></v-divider>
@@ -81,7 +79,7 @@ import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composabl
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { reactive, Ref, ref, onMounted } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
-import LabForm from "./LabForm.vue";
+import LabForm from '@/components/UI/LabForm.vue';
 import { Department } from "@/models/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
 import { Lab } from "@/models/lab.type";
@@ -100,6 +98,7 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
+import { CourseController } from "@/config";
 export interface TimeObject {
   hours: number,
   minutes: number,
@@ -328,7 +327,7 @@ export default defineComponent({
         },
       };
     });
-    const v$ = useVuelidate(rules,formState);
+    const v$ = useVuelidate(rules, formState);
 
     const errorOfLabId = computed(() => {
       if (v$.value.labId.$error) {
@@ -366,25 +365,24 @@ export default defineComponent({
       return false;
     });
     const validateEachDepartment = (dept: Department): boolean => {
-      if (!dept.deptId || dept.deptId===" "
+      if (!dept.deptId || dept.deptId === " "
         // dept.deptId === "" || dept.deptId === " " || dept.deptId === null
-        ) {
+      ) {
         dept.errorOnDeptId = true;
         return false;
       }
 
       if (!dept.fromTime) {
-          dept.errorOnFromTime = true;
-          return false;
+        dept.errorOnFromTime = true;
+        return false;
       }
 
-      if ( !dept.toTime) {
+      if (!dept.toTime) {
         dept.errorOnToTime = true;
         return false;
       }
       // @ts-ignore
-      if(dept.fromTime.hours > dept.toTime.hours ||( dept.fromTime.hours == dept.toTime.hours && dept.fromTime.minutes >= dept.toTime.minutes))
-      {
+      if (dept.fromTime.hours > dept.toTime.hours || (dept.fromTime.hours == dept.toTime.hours && dept.fromTime.minutes >= dept.toTime.minutes)) {
         dept.errorOnToTime = true;
         dept.errorOnFromTime = true;
         return false;
@@ -427,7 +425,7 @@ export default defineComponent({
         setTypeOfAlert("error");
         return;
       }
-      let allDeptsAreCorrect = true;
+      let allDeptsAreCorrect: boolean | undefined = true;
       if (!formState.departments || formState.departments.length == 0) {
         console.log("There are errors");
         openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
@@ -465,9 +463,10 @@ export default defineComponent({
         CourseAttentance: formState.attendance!.value!,
         Labs: Array<LaboratoryRequest>(),
       };
-      if (!createCourseRequest)
+      if (!createCourseRequest) {
+        somethingWentWrongModal.value = true;
         return;
-
+      }
       for (const department of formState.departments) {
         createCourseRequest.Labs!.push({
           DaysOfWeekEnums: department.day,
@@ -481,7 +480,7 @@ export default defineComponent({
 
         });
       }
-      const createCourseApiRequest = await useAxios('/course/create-course',
+      const createCourseApiRequest = await useAxios(CourseController + 'create-course',
         {
           method: 'POST',
           data: createCourseRequest
@@ -502,10 +501,6 @@ export default defineComponent({
           router.replace({ name: 'labList' })
         }, 1500);
       }
-
-      // if (showAlert.value === true) {
-      //   closeAlert();
-      // }
     };
     const anythingIsPopulated = computed(() => {
       if (
