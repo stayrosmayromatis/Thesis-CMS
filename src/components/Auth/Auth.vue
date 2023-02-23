@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <auth-in-progress></auth-in-progress>
+</template>
 <script lang="ts">
 import { defineComponent } from "vue";
 import { onMounted } from "vue";
@@ -9,49 +11,47 @@ import { key } from "@/store/index";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
-import { Student} from '@/models/BACKEND-MODELS/Student';
+import { Student } from '@/models/BACKEND-MODELS/Student';
 import { Staff } from '@/models/BACKEND-MODELS/Staff';
 import { AccessTokenObject } from '@/models/accessTokenObject.type';
 import { ApiResult } from '@/models/DTO/ApiResult';
-import { BaseUserAuthStateResponse } from '@/models/BACKEND-MODELS/BaseUserAuthStateResponse';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
-import { StoreSth } from "@/store/actions";
-import { useAlert } from "@/composables/showAlert.composable";
-import {useAuth} from '@/composables/useAuth.composable';
+import { useAuth } from '@/composables/useAuth.composable';
+import AuthInProgress from "@/components/Base/AuthInProgress.vue"
 export default defineComponent({
+  components: {
+    AuthInProgress
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const store = useStore(key);
     const {
-        setCustomInstance,
-        setBackendInstanceUnAuth,
-        setBackendInstanceAuth,
-      } = useAxiosInstance();
-    const {openAlert,setTypeOfAlert,}=useAlert();
-    const {MakeInfoCall,DetermineIfAuth} = useAuth();
+      setCustomInstance,
+      setBackendInstanceUnAuth,
+    } = useAxiosInstance();
+    const { MakeInfoCall, DetermineIfAuth } = useAuth();
     onMounted(async () => {
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
 
       if (hasQueryParams) {
         if (queryParamsLength === 1) {
-          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
+          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
           return;
         }
         if (queryParamsLength === 2) {
           const makeAccessCallResponse = await makeAccessTokenCall();
-          if(makeAccessCallResponse.Status === false || makeAccessCallResponse.Error || !makeAccessCallResponse.Data )
+          if (makeAccessCallResponse.Status === false || makeAccessCallResponse.Error || !makeAccessCallResponse.Data)
             return;
           const makeProfileCallResponse = await makeProfileCall(makeAccessCallResponse.Data);
-          if(makeProfileCallResponse.Status === false || makeProfileCallResponse.Error || !makeProfileCallResponse.Data )
+          if (makeProfileCallResponse.Status === false || makeProfileCallResponse.Error || !makeProfileCallResponse.Data)
             return;
           const signInResponse = await makeSignInCall(makeProfileCallResponse.Data);
-          if(signInResponse.Status === false || signInResponse.Error || !signInResponse.Data )
+          if (signInResponse.Status === false || signInResponse.Error || !signInResponse.Data)
             return;
           const makeInfoCallResponse = await MakeInfoCall();
-          if(!makeInfoCallResponse || makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data )
-          {
+          if (!makeInfoCallResponse || makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data) {
             setErrorPushToHome(
               makeInfoCallResponse.Error,
               makeInfoCallResponse.Description
@@ -59,15 +59,14 @@ export default defineComponent({
             return;
           }
           const determineIfAuthResponse = await DetermineIfAuth(makeInfoCallResponse.Data);
-          if(!determineIfAuthResponse || determineIfAuthResponse.Status === false || determineIfAuthResponse.Error || !determineIfAuthResponse.Data )
-          {
+          if (!determineIfAuthResponse || determineIfAuthResponse.Status === false || determineIfAuthResponse.Error || !determineIfAuthResponse.Data) {
             setErrorPushToHome(
               determineIfAuthResponse.Error,
               determineIfAuthResponse.Description
             );
             return;
           }
-          router.replace({name:'submittedLabs'});
+          router.replace({ name: 'submittedLabs' });
           return;
         }
       }
@@ -79,16 +78,16 @@ export default defineComponent({
 
     const setErrorPushToHome = (title: string | undefined, description?: string | undefined): void => {
       const { setError } = useErrorFunctions();
-      setError(title ??  "Σφάλμα Αυθεντικοποίησης", description ?? "Η διαδίκασία δεν ολοκληρώθηκε");
+      setError(title ?? "Σφάλμα Αυθεντικοποίησης", description ?? "Η διαδίκασία δεν ολοκληρώθηκε");
       store.dispatch("setAuthState", false);
       router.replace({ name: "welcome" });
       return;
     };
-    const makeAccessTokenCall =async ():Promise<InternalDataTransfter<string>> => {
+    const makeAccessTokenCall = async (): Promise<InternalDataTransfter<string>> => {
       if (!route.query.code) {
-            setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-            return {Status : false,Data:null,Error:"error"};
-          }
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
+        return { Status: false, Data: null, Error: "error" };
+      }
       const params = new URLSearchParams();
       params.append("client_id", import.meta.env.VITE_CLIENT_ID);
       params.append("client_secret", import.meta.env.VITE_CLIENT_SECRET);
@@ -106,16 +105,16 @@ export default defineComponent({
         },
         setCustomInstance("https://login.iee.ihu.gr")
       );
-      if (access_token_object.isFinished.value && (access_token_object.error.value ||!access_token_object.data.value)) {
-            setErrorPushToHome("Σφάλμα Αυθεντικοποίησης","Η διαδίκασία δεν ολοκληρώθηκε");
-             return {Status : false,Data:null,Error:"error"};
+      if (access_token_object.isFinished.value && (access_token_object.error.value || !access_token_object.data.value)) {
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
+        return { Status: false, Data: null, Error: "error" };
       }
-       return {Status : true,Data:access_token_object.data.value!.access_token};
+      return { Status: true, Data: access_token_object.data.value!.access_token };
 
     };
-    const makeProfileCall = async (accessToken:string):Promise<InternalDataTransfter<Staff|Student>> => {
-      if(!accessToken )
-           return {Status : false,Data:null,Error:"error"};
+    const makeProfileCall = async (accessToken: string): Promise<InternalDataTransfter<Staff | Student>> => {
+      if (!accessToken)
+        return { Status: false, Data: null, Error: "error" };
 
       const profileObject = await useAxios<any>(
         "/profile",
@@ -132,7 +131,7 @@ export default defineComponent({
       if (profileObject.isFinished.value &&
         (profileObject.error.value || !profileObject.data.value)) {
         setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
-          return {Status : false,Data:null,Error:"error"};
+        return { Status: false, Data: null, Error: "error" };
       }
 
       let objectToPush: Staff | Student | null = null;
@@ -170,37 +169,35 @@ export default defineComponent({
         };
       } else {
         setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
-        return {Status : false,Data:null,Error:"error"};
+        return { Status: false, Data: null, Error: "error" };
       }
       if (!objectToPush) {
-            setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
-            return {Status : false,Data:null,Error:"error"};
+        setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+        return { Status: false, Data: null, Error: "error" };
       }
-      return {Status : true,Data:objectToPush};
+      return { Status: true, Data: objectToPush };
     };
-    const makeSignInCall = async (object:Student | Staff):Promise<InternalDataTransfter<boolean>>=>
-    {
-      if(!object)
-        return {Status : false,Data:null,Error:"error"};
+    const makeSignInCall = async (object: Student | Staff): Promise<InternalDataTransfter<boolean>> => {
+      if (!object)
+        return { Status: false, Data: null, Error: "error" };
       const sign_in_response = await useAxios(
-          "/authclient/sign-in",
-          {
-            method: "POST",
-            data: object,
-          },
-          setBackendInstanceUnAuth()
-        );
-        if (sign_in_response.isFinished.value &&(!sign_in_response.data.value ||sign_in_response.error.value))
+        "/authclient/sign-in",
         {
-          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
-          return {Status : false,Data:null,Error:"error"};
-        }
-        const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
-        if (sign_in_response_data.Status === false ||!sign_in_response_data.Status || !sign_in_response_data.Data) {
-          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
-          return {Status : false,Data:null,Error:"error"};
-        }
-        return {Status:true,Data:true};
+          method: "POST",
+          data: object,
+        },
+        setBackendInstanceUnAuth()
+      );
+      if (sign_in_response.isFinished.value && (!sign_in_response.data.value || sign_in_response.error.value)) {
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+        return { Status: false, Data: null, Error: "error" };
+      }
+      const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
+      if (sign_in_response_data.Status === false || !sign_in_response_data.Status || !sign_in_response_data.Data) {
+        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+        return { Status: false, Data: null, Error: "error" };
+      }
+      return { Status: true, Data: true };
     };
   },
 });

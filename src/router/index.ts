@@ -58,7 +58,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/poutsa",
     name : 'poutsa',
-    component : import('@/components/Base/BaseSpinner.vue'),
+    component : import('@/components/Base/AuthInProgress.vue'),
     props : true,
     meta : {requiresAuth :false}
   }
