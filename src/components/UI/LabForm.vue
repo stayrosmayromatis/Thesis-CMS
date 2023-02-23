@@ -54,7 +54,7 @@
         v-model="department.day"
       ></v-select>
       <div class="teacher-select-box">
-        <teacher-select :is_valid="isValid" @emit-selected-teacher="populateFormWithSelectedTeacher" :seeded_professors="seeded_professors_reactive"></teacher-select>
+        <teacher-select :error_on_selected_teacher="department.errorOnSelectedTeacher" @emit-selected-teacher="populateFormWithSelectedTeacher" :seeded_professors="seeded_professors_reactive"></teacher-select>
       </div>
     </div>
     <div class="mobile-actions">
@@ -91,22 +91,16 @@ export default defineComponent({
     const days = daysOfWeek;
     const { department,seeded_professors } = toRefs(props);
     //SeededProfessors for autocomplete
-    const isValid = ref(false);
-    const seeded_professors_reactive = seeded_professors;
+    //const seeded_professors_reactive = seeded_professors;
     const populateFormWithSelectedTeacher = (teacher:BaseUser | undefined) => {
-      if(!teacher || teacher == undefined)
+      if(!teacher)
       {
         department.value.selectedTeacher = undefined;
         department.value.errorOnSelectedTeacher = true;
-        isValid.value = false;
+        return;
       }
-      else
-      {
-        department.value.selectedTeacher = teacher;
-        department.value.errorOnSelectedTeacher = false;
-        isValid.value = true;
-
-      }
+      department.value.selectedTeacher = teacher;
+      department.value.errorOnSelectedTeacher = false;
       console.log(department.value);
       return;
     };
@@ -138,16 +132,24 @@ export default defineComponent({
     const changeNumberOfStudents = (value: number) => {
       if (value && value > 0) department.value.numberOfStudents = value;
     };
+    const clearErrors = () => {
+      if(department.value.errorOnFromTime === true){
+        department.value.errorOnFromTime = false;
+      }
+      if(department.value.errorOnToTime === true){
+        department.value.errorOnToTime = false
+      }
+    };
     return {
+      clearErrors,
       days,
       deleteByDeptId,
       isInputEmpty,
       isFromTimeEmpty,
       isToTimeEmpty,
       changeNumberOfStudents,
-      seeded_professors_reactive,
+      seeded_professors_reactive : seeded_professors,
       populateFormWithSelectedTeacher,
-      isValid
     };
   },
 });

@@ -1,18 +1,28 @@
 <template>
   <div class="card">
-    <v-card elevation="5" class="card-item" :class="{'gray-out' : IsAssistant}">
+    <v-card elevation="5" class="card-item" :class="{ 'gray-out': IsAssistant }">
       <div class="spacer">
+        <div class="lab-code">
+          {{ LabCode }}
+        </div>
         <v-card-title>
-          {{ LabName }}
+          {{ LabTitle }}
         </v-card-title>
         <v-card-text>
-          {{ LabDescription }}
+          <div class="times-separator">
+            <div>
+              {{ LabDescription }}
+            </div>
+            <div>
+              {{ LabTimes }}
+            </div>
+          </div>
         </v-card-text>
         <div class="chip-group">
-          <v-chip outlined="true" class="card-chip-semester" :class="{'gray-out-card-chip-semester' : IsAssistant}">{{
+          <v-chip outlined="true" class="card-chip-semester" :class="{ 'gray-out-card-chip-semester': IsAssistant }">{{
             Semester
           }}</v-chip>
-          <v-chip outlined="true"  :class="{'gray-out-card-chip-attendance' : IsAssistant}" class="card-chip" >{{
+          <v-chip outlined="true" :class="{ 'gray-out-card-chip-attendance': IsAssistant }" class="card-chip">{{
             lab.AttendanceString
           }}</v-chip>
           <!-- <v-btn class="delete-button" variant="tonal">
@@ -23,7 +33,8 @@
             <div>
               <v-tooltip :text="DeletionText" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn :class="{'not-visible-buttons' : IsAssistant}" v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
+                  <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="delete-button"
+                    icon="mdi-trash-can" size="x-small"></v-btn>
                 </template>
               </v-tooltip>
             </div>
@@ -32,7 +43,8 @@
             <div v-if="IsStaffOrAdmin">
               <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn :class="{'not-visible-buttons' : IsAssistant}" v-bind="props" class="edit-button" icon="mdi-pencil" size="x-small"></v-btn>
+                  <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="edit-button"
+                    icon="mdi-pencil" size="x-small"></v-btn>
                 </template>
               </v-tooltip>
             </div>
@@ -66,11 +78,17 @@ export default defineComponent({
   },
   setup(props) {
     const { lab, personAffiliation } = toRefs(props);
-    const LabName = computed(() => {
-      return `(${lab.value.CourseCode.trim()}) ${lab.value.CourseName.trim()}`;
+    const LabCode = computed(() => {
+      return `(${lab.value.CourseCode.trim()})`;
+    });
+    const LabTitle = computed(() => {
+      return `${lab.value.CourseName.trim()}`;
     });
     const LabDescription = computed(() => {
-      return `${lab.value.LabName.trim()} / ${lab.value.DayString.trim()} (${lab.value.From.trim()} - ${lab.value.To.trim()})`;
+      return `${lab.value.LabName.trim()} / ${lab.value.DayString.trim()}`;
+    });
+    const LabTimes = computed(() => {
+      return `(${lab.value.From.trim()} - ${lab.value.To.trim()})`;
     });
     const Semester = computed(() => {
       switch (lab.value.Semester) {
@@ -117,11 +135,11 @@ export default defineComponent({
       return "Διαγραφή δηλωτέου";
     });
     const IsAssistant = computed(() => {
-      if(!lab.value || lab.value.IsAssistantProfessor === false || !lab.value.IsAssistantProfessor)
+      if (!lab.value || lab.value.IsAssistantProfessor === false || !lab.value.IsAssistantProfessor)
         return false;
       return true;
     });
-    return { LabName, LabDescription, Semester, IsStaffOrAdmin,DeletionText,IsAssistant };
+    return { LabCode, LabDescription, Semester, IsStaffOrAdmin, DeletionText, IsAssistant, LabTitle, LabTimes };
   },
 });
 </script>
@@ -275,20 +293,45 @@ export default defineComponent({
 .gray-out {
   background-color: #f1eeee;
 }
-.gray-out-card-chip-semester{
+
+.gray-out-card-chip-semester {
   background: #d1d3d8 !important;
   border: 1px solid #273864 !important;
   color: #273864 !important;
 }
-.gray-out-card-chip-attendance{
+
+.gray-out-card-chip-attendance {
   background: #f9f9f9 !important;
   border: 1px solid #125e12 !important;
   color: #125e12 !important;
 }
 
-.not-visible-buttons{
+.not-visible-buttons {
   visibility: hidden;
 }
+
+.lab-code {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 1.25rem;
+  hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  text-overflow: ellipsis;
+  letter-spacing: 0.0125em;
+  overflow: hidden;
+  text-transform: none;
+  white-space: inherit;
+  word-break: break-all;
+  text-align: center;
+  word-wrap: break-word;
+}
+
 @media (min-width: 769px) {
   .card {
     margin-bottom: 1.5rem;
@@ -326,11 +369,11 @@ export default defineComponent({
     padding: 0.5rem 1rem;
     text-overflow: ellipsis;
     text-transform: none;
-    white-space: nowrap;
-    word-break: normal;
-    word-wrap: break-word;
+    white-space: initial;
+    word-break: break-word;
+    word-wrap: unset;
     width: 45%;
-    text-align: inherit;
+    text-align: center;
   }
 
   :deep(.v-card-text) {
@@ -345,6 +388,12 @@ export default defineComponent({
     flex-direction: row;
     justify-content: center;
     flex: 1 0;
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: initial;
+    word-break: break-word;
+    text-align: center;
+    word-wrap: unset;
   }
 
   .card-chip {
@@ -450,6 +499,16 @@ export default defineComponent({
     align-items: center;
     width: fit-content;
     flex: 1 0;
+  }
+
+  .times-separator {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+
   }
 }
 </style>

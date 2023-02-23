@@ -13,26 +13,26 @@
       <div
         class="u-expanded-width-md u-expanded-width-sm u-expanded-width-xl u-expanded-width-xs u-layout-grid u-list u-list-1">
         <div class="u-repeater u-repeater-1">
-          <div class="u-container-style u-custom-item u-list-item u-repeater-item">
+          <!-- <div class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-1">
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-1">
                 {{ 'Όνομα: ' + firstName }}
               </p>
             </div>
-          </div>
+          </div> -->
           <div class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-2">
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-2">
-                {{ 'Επώνυμο: ' + lastName }}
+                {{ 'Ονοματεπώνυμο: ' + `${firstName} ${lastName}`}}
               </p>
             </div>
           </div>
           <div class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-3">
               <p
-                class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
+              class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
                 {{ 'Περίοδος Δηλώσεων: [[SEMESTER]]' }}
               </p>
             </div>

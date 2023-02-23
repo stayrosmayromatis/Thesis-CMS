@@ -4,6 +4,7 @@
     :scrollable="false"
     :close-on-back="false"
     :contained="false"
+    persistent
     width="100%"
     max-width="40rem"
     min-width="320px"
@@ -13,8 +14,9 @@
       <v-btn
         class="button-dimensions-adjustment"
         :class="{
-          'teacher-button-success': isValid === true && selectedTeacher,
-          'teacher-button-failure': !isValid || !selectedTeacher,
+          'teacher-button-success': error_on_selected_teacher === false,
+          'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
+          'teacher-button-failure': error_on_selected_teacher === true,
         }"
         v-bind="props"
       >
@@ -82,7 +84,7 @@
         </div>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="red-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="red-darken-1" variant="text" @click="closeModal">
             Κλεισιμο
           </v-btn>
           <v-btn
@@ -119,10 +121,12 @@ export default defineComponent({
       required: false,
       default: Array<BaseUser>(),
     },
-    is_valid: {
+    error_on_selected_teacher :{
       type: Boolean,
       required: false,
-    },
+      default:false,
+    }
+
   },
   emits: ["emit-selected-teacher"],
   setup(props, context) {
@@ -141,9 +145,8 @@ export default defineComponent({
     const newName = ref<string>("");
     const newSurname = ref<string>("");
     
-    const { seeded_professors, is_valid } = toRefs(props);
+    const { seeded_professors,error_on_selected_teacher} = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
-    const isValid = is_valid;
     
     const selectedTeacher = ref<BaseUser>();
     const cantFindTeacherFlag = ref(false);
@@ -185,7 +188,8 @@ export default defineComponent({
         }
       } else {
         if (!validateAutoComplete()) {
-          context.emit("emit-selected-teacher", undefined);
+          selectedTeacher.value = undefined;
+          context.emit("emit-selected-teacher", selectedTeacher.value);
         } else {
           context.emit("emit-selected-teacher", selectedTeacher.value);
         }
@@ -226,7 +230,7 @@ export default defineComponent({
       }
     };
     const lastNameProp = computed(() => {
-      if (!isValid || !selectedTeacher.value) return "Καθηγητες";
+      if (!error_on_selected_teacher || !selectedTeacher.value) return "Καθηγητες";
       const splitted = selectedTeacher.value?.displayNameEl.split(" ");
       if (!splitted || splitted.length == 0) return "Καθηγητες";
       return splitted[splitted.length - 1];
@@ -235,6 +239,11 @@ export default defineComponent({
       const pattern = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
       const numberpattern = /\d/;
       return Boolean(str.match(numberpattern) || str.match(pattern));
+    }
+    function closeModal(){
+      selectedTeacher.value = undefined;
+      context.emit("emit-selected-teacher", selectedTeacher.value );
+      dialog.value = false;
     }
 
     return {
@@ -245,7 +254,6 @@ export default defineComponent({
       errorMessage,
       validateAutoComplete,
       configSelectedTeacher,
-      isValid,
       cantFindTeacherFlag,
       errorMessageName,
       errorMessageSurname,
@@ -256,6 +264,7 @@ export default defineComponent({
       validateName,
       validateSurname,
       lastNameProp,
+      closeModal
     };
   },
 });
@@ -271,11 +280,14 @@ export default defineComponent({
   background-color: #4caf50 !important;
 }
 
-.teacher-button-failure {
+.teacher-button-idle {
   color: white !important;
   background-color: #156ed3 !important;
 }
-
+.teacher-button-failure{
+  color: white !important;
+  background-color: #ff4545 !important;
+}
 .cant-find-teacher {
   display: flex;
   justify-content: space-between;

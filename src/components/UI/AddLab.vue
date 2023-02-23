@@ -37,14 +37,16 @@
               <div class="percent49-5">
                 <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
                   :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
-                  v-model="formState.attendance"></v-select>
+                  v-model="formState.attendance"
+                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"
+                  ></v-select>
               </div>
             </div>
             <v-divider inset></v-divider>
             <div class="label-centerer">
               <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
             </div>
-            <div class="info-centerer">
+            <div class="info-centerer" v-if="departments.length">
               <base-alert :alert-type-prop="'info'" :show="true"
                 :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
             </div>
@@ -62,7 +64,7 @@
             <lab-form v-for="department in departments" :key="department.Guid" :department="department"
               :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup"
               @global-error="validateEachDepartment"></lab-form>
-            <div class="submit-button">
+            <div class="submit-button" v-if="departments.length">
               <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ</v-btn>
             </div>
           </v-container>
@@ -172,11 +174,8 @@ export default defineComponent({
     };
     let deptIncremental = 1;
     const show = true;
-    const departments = ref(Array<Department>());
-    const displayedSemester = ref<Array<DisplayedSemster>>(new Array<DisplayedSemster>());
-    // const displayedSemester: Ref<Array<DisplayedSemster>> = ref(
-    //   displayedLabs()
-    // );
+    const departments = ref(new Array<Department>());
+    const displayedSemester = ref(new Array<DisplayedSemster>());
     const clickOnChip = (value: LabSemesterEnum) => {
       const selectedLab = displayedSemester.value.find(
         (lab) => lab.value == value
@@ -366,35 +365,33 @@ export default defineComponent({
       return false;
     });
     const validateEachDepartment = (dept: Department): boolean => {
-      if (dept.deptId === "" || dept.deptId === " " || dept.deptId === null) {
+      if (!dept.deptId || dept.deptId===" "
+        // dept.deptId === "" || dept.deptId === " " || dept.deptId === null
+        ) {
         dept.errorOnDeptId = true;
+        return false;
       }
 
-      if (
-        dept.fromTime === "" ||
-        dept.fromTime === " " ||
-        dept.fromTime === null
-      ) {
-        dept.errorOnFromTime = true;
+      if (!dept.fromTime) {
+          dept.errorOnFromTime = true;
+          return false;
       }
 
-      if (dept.toTime === "" || dept.toTime === " " || dept.toTime === null) {
+      if ( !dept.toTime) {
         dept.errorOnToTime = true;
+        return false;
       }
-      if (
-        dept.selectedTeacher === null ||
-        dept.selectedTeacher === undefined ||
-        !dept.selectedTeacher
-      ) {
+      // @ts-ignore
+      if(dept.fromTime.hours > dept.toTime.hours ||( dept.fromTime.hours == dept.toTime.hours && dept.fromTime.minutes >= dept.toTime.minutes))
+      {
+        dept.errorOnToTime = true;
+        dept.errorOnFromTime = true;
+        return false;
+      }
+
+      if (!dept.selectedTeacher) {
         dept.errorOnSelectedTeacher = true;
-      }
-      if (
-        dept.errorOnDeptId === true ||
-        dept.errorOnFromTime === true ||
-        dept.errorOnToTime === true ||
-        dept.errorOnSelectedTeacher === true
-      ) {
-        console.log("There are errors");
+        dept.selectedTeacher = undefined;
         return false;
       }
       return true;
@@ -436,7 +433,15 @@ export default defineComponent({
         setTypeOfAlert("error");
         return;
       }
-      for (let dept of formState.departments) {
+      // for (let dept of formState.departments) {
+      //   if (validateEachDepartment(dept) === false) {
+      //     allDeptsAreCorrect = false;
+      //   }
+      //   if (!isNumber(dept.numberOfStudents)) {
+      //     dept.numberOfStudents = <number>dept.numberOfStudents;
+      //   }
+      // }
+      for (let dept of departments.value) {
         if (validateEachDepartment(dept) === false) {
           allDeptsAreCorrect = false;
         }

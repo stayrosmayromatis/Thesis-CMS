@@ -1,5 +1,7 @@
 <template>
   <v-container class="sth-container" @click="emitMobileViewClose">
+    <v-card elevation="5" class="parent-label">ΑΝΑΖΗΤΗΣΗ ΕΡΓΑΣΤΗΡΙΩΝ</v-card>
+
     <v-select
       :items="availableSemesters"
       label="Επιλέξτε ενα ή παραπάνω εξάμηνo"
@@ -13,6 +15,7 @@
       open-on-clear
       clearable
       multiple
+      no-data-text="Ολα τα διαθέσιμα εργαστήρια έχουν επιλεχθεί"
       @update:model-value="logSelectedLabs"
     >
     </v-select>
@@ -264,6 +267,22 @@ export default defineComponent({
   user-select: none;
   margin-inline-start: auto;
 }
+.parent-label {
+  margin-bottom:1rem ;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 2rem;
+  text-transform: uppercase;
+  min-width: 320px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: #aacaf3;
+  padding: 1.2rem;
+}
+
 @media (min-width: 480px) {
   .chip-separator {
     display: flex;
@@ -372,6 +391,21 @@ export default defineComponent({
     user-select: none;
     margin-inline-start: auto;
   }
+  .parent-label {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 3rem;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    background-color: #aacaf3;
+    /* min-width: 769px; */
+  }
 }
 
 @media (min-width: 1025px) {
@@ -418,6 +452,21 @@ export default defineComponent({
     margin-top: -4px;
     user-select: none;
     margin-inline-start: auto;
+  }
+  .parent-label {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 3rem;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    background-color: #aacaf3;
+    /* min-width: 769px; */
   }
 }
 </style>
