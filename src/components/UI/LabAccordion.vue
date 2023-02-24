@@ -57,6 +57,34 @@
                 </v-chip>
               </div>
               <div class="chip-separator__right-chip">
+                <div v-if="lab.CanSubmit === false">
+                  <v-tooltip
+                    :text="'Δεν επιτρέπεται να δηλωθεί'"
+                    location="bottom"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-chip
+                        variant="text"
+                        density="default"
+                        style="width: fit-content"
+                        :rounded="20"
+                        v-bind="props"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="35"
+                          height="35"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="#ff4646"
+                            d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m0 2c-1.9 0-3.6.6-4.9 1.7l11.2 11.2c1-1.4 1.7-3.1 1.7-4.9c0-4.4-3.6-8-8-8m4.9 14.3L5.7 7.1C4.6 8.4 4 10.1 4 12c0 4.4 3.6 8 8 8c1.9 0 3.6-.6 4.9-1.7Z"
+                          />
+                        </svg>
+                      </v-chip>
+                    </template>
+                  </v-tooltip>
+                </div>
                 <v-chip class="chip-attendance" size="large">
                   <div class="large-font">{{ lab.CourseAttendanceString }}</div>
                 </v-chip>
@@ -147,6 +175,7 @@ export default defineComponent({
           !personalised_response_data.Data
         ) {
           // do something!
+          personalisedCourses.value = [];
           resultEmptyTitle.value = "Κάτι πήγε στραβά";
           resutlEmptyDesc.value =
             "Δοκιμάστε να καθαρίσετε τα επιλεγμένα φίλτρα απο την μπάρα ώστε να ξεκινήσει εκ νέου η διαδικάσια αναζήτησης";
@@ -158,6 +187,7 @@ export default defineComponent({
           !personalised_response_data.Data.PersonalisedCourses
         ) {
           // do something about it!
+          personalisedCourses.value = [];
           resultEmptyTitle.value = "Κανένα Αποτέλεσμα";
           resutlEmptyDesc.value =
             "Επιλέξτε Εξάμηνο είτε Συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης";
@@ -253,11 +283,12 @@ export default defineComponent({
   justify-content: flex-start;
 }
 .chip-separator__right-chip {
-  width: 5rem;
+  width: fit-content;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  gap: 0.5rem;
 }
 .chip-attendance {
   background: #f3f3f3;
