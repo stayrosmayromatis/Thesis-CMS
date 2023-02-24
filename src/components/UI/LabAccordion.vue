@@ -41,10 +41,14 @@
           <v-expansion-panel-title>
             <div class="chip-separator">
               <div class="chip-separator__left-chip">
-                <v-chip class="chip-bg" size="large" style="height: fit-content;" >
-                  <div class="lab-chip__details" >
+                <v-chip
+                  class="chip-bg"
+                  size="large"
+                  style="height: fit-content"
+                >
+                  <div class="lab-chip__details">
                     <div class="lab-course__code">
-                      {{ lab.CourseCode+" "}}
+                      {{ lab.CourseCode + " " }}
                     </div>
                     <div class="aligner">
                       {{ lab.CourseName }}
@@ -189,37 +193,37 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.aligner{
+.aligner {
   text-align: center;
-    text-overflow: ellipsis;
-    text-transform: none;
-    white-space: pre-line;
-    word-break: break-word;
-    word-wrap: normal;
-    font-size: 1rem;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    letter-spacing: 0.0125em;
-    /* min-width: 0; */
-    /* overflow-wrap: normal; */
-    /* overflow: hidden; */
-    font-weight: 500;
-    width: fit-content;
-    /* padding: 0.6rem 0.5rem; */
-    padding-bottom: 0.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: pre-line;
+  word-break: break-word;
+  word-wrap: normal;
+  font-size: 1rem;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  letter-spacing: 0.0125em;
+  /* min-width: 0; */
+  /* overflow-wrap: normal; */
+  /* overflow: hidden; */
+  font-weight: 500;
+  width: fit-content;
+  /* padding: 0.6rem 0.5rem; */
+  padding-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
-.lab-course__code{
+.lab-course__code {
   font-weight: 500;
   padding-top: 0.5rem;
-    font-size: 1rem;
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    align-items:center;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
-.lab-chip__details{
+.lab-chip__details {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -362,23 +366,23 @@ export default defineComponent({
     padding: 0.5rem 0.5rem;
     min-width: 8rem;
     max-width: 8rem;
-}
-.lab-course__code{
-  font-weight: 500;
+  }
+  .lab-course__code {
+    font-weight: 500;
     font-size: 1rem;
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    align-items:center;
-    padding:0;
-}
-  .lab-chip__details{
-  display: flex;
-  padding:0;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+  }
+  .lab-chip__details {
+    display: flex;
+    padding: 0;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
   .chip-separator {
     display: flex;
     flex-direction: row;
@@ -431,17 +435,17 @@ export default defineComponent({
     max-width: 100%;
     min-width: 320px;
   }
-  .lab-course__code{
-  font-weight: 500;
+  .lab-course__code {
+    font-weight: 500;
     font-size: 1rem;
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    padding:0;
-    align-items:center;
-}
-.aligner{
-  text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0;
+    align-items: center;
+  }
+  .aligner {
+    text-align: center;
     text-overflow: ellipsis;
     text-transform: none;
     white-space: nowrap;
@@ -458,7 +462,7 @@ export default defineComponent({
     padding: 0.5rem 0.5rem;
     min-width: min-content;
     max-width: max-content;
-}
+  }
   .classOne {
     display: flex;
     flex-direction: row;
@@ -538,15 +542,15 @@ export default defineComponent({
   :deep(.v-container) {
     max-width: 100%;
   }
-  .lab-course__code{
-  font-weight: 500;
+  .lab-course__code {
+    font-weight: 500;
     font-size: 1rem;
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    align-items:center;
-    padding:0;
-}
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+  }
   .chip-separator {
     display: flex;
     flex-direction: row;
