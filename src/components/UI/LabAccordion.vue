@@ -131,7 +131,18 @@
                   }"
                   size="large"
                 >
-                  <div class="large-font">{{ lab.CourseAttendanceString }}</div>
+                  <div>{{ lab.CourseAttendanceString }}</div>
+                </v-chip>
+                <v-chip
+                  class="chip-semester"
+                  :class="{
+                    'gray-out-card-chip-semester': lab.CanSubmit === false,
+                  }"
+                  size="large"
+                >
+                  <div>
+                    {{ semesterReformer(lab.Semester) }}
+                  </div>
                 </v-chip>
               </div>
             </div>
@@ -141,14 +152,23 @@
           <div class="classOne">
             <p>{{ lab.ShortDescription }}</p>
             <div class="lab-details_if_submitted">
-              <p style="font-weight: 400; font-size: 1rem" v-if=" lab.CanSubmit === true && lab.HasAlreadySubmitted === true && lab.LabInfo">
+              <p
+                style="font-weight: 400; font-size: 1rem"
+                v-if="
+                  lab.CanSubmit === true &&
+                  lab.HasAlreadySubmitted === true &&
+                  lab.LabInfo
+                "
+              >
                 {{
-                  `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName}`
+                  `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})`
                 }}
               </p>
               <v-btn
                 v-if="
-                  lab.CanSubmit === true && lab.HasAlreadySubmitted === false && !lab.LabInfo
+                  lab.CanSubmit === true &&
+                  lab.HasAlreadySubmitted === false &&
+                  !lab.LabInfo
                 "
                 color="#a3cef1"
                 elevation="4"
@@ -295,6 +315,38 @@ export default defineComponent({
       context.emit("closeMobileView", true);
       return;
     };
+
+    const semesterReformer = (semester: LabSemesterEnum) => {
+      if (!semester) return "N/A";
+      switch (semester) {
+        case LabSemesterEnum.A_XEIM:
+          return "Α ";
+        case LabSemesterEnum.B_EAR:
+          return "Β ";
+        case LabSemesterEnum.C_XEIM:
+          return "Γ ";
+        case LabSemesterEnum.D_EAR:
+          return "Δ ";
+        case LabSemesterEnum.E_XEIM:
+          return "E ";
+        case LabSemesterEnum.ST_EAR:
+          return "ΣΤ ";
+        case LabSemesterEnum.Z_XEIM:
+          return "Ζ ";
+        case LabSemesterEnum.H_EAR:
+          return "Η ";
+        case LabSemesterEnum.TH_XEIM:
+          return "Θ ";
+        case LabSemesterEnum.I_EAR:
+          return "Ι ";
+        case LabSemesterEnum.K_XEIM:
+          return "Κ ";
+        case LabSemesterEnum.L_EAR:
+          return "Λ ";
+        default:
+          return "N/A";
+      }
+    };
     onMounted(() => {
       GetDisplayedLabs();
       availableSemesters.value = DisplayedLabs.value;
@@ -310,6 +362,7 @@ export default defineComponent({
       requestLabs,
       isLoading,
       emitMobileViewClose,
+      semesterReformer,
     };
   },
 });
@@ -388,6 +441,18 @@ export default defineComponent({
   /* border: 1px solid black; */
   border: 1px solid #00c900;
   color: #00c900;
+  word-wrap: break-word;
+  width: inherit;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.chip-semester {
+  background: #f3f3f3;
+  /* border: 1px solid black; */
+  border: 1px solid #0136e6;
+  color: #0136e6;
   word-wrap: break-word;
   width: inherit;
   display: flex;
@@ -479,7 +544,12 @@ export default defineComponent({
   border: 1px solid #273864 !important;
   color: #273864 !important;
 }
-.gray-out-card-chip-attendance {
+.gray-out-card-chip-semester {
+  background: #f9f9f9 !important;
+  border: 1px solid #303c64 !important;
+  color: #303c64 !important;
+}
+.gray-out-card-chip-attendance{
   background: #f9f9f9 !important;
   border: 1px solid #125e12 !important;
   color: #125e12 !important;
@@ -491,14 +561,14 @@ export default defineComponent({
   justify-content: flex-end;
   align-items: center;
 }
-.lab-details_if_submitted > p{
+.lab-details_if_submitted > p {
   font-weight: 400;
-    font-size: 1rem;
-    width: fit-content;
-    align-items: center;
-    text-align: center;
-    white-space: break-spaces;
-    word-break: inherit;
+  font-size: 1rem;
+  width: fit-content;
+  align-items: center;
+  text-align: center;
+  white-space: break-spaces;
+  word-break: inherit;
 }
 @media (min-width: 480px) {
   .aligner {
@@ -565,6 +635,17 @@ export default defineComponent({
     background: #f3f3f3;
     border: 1px solid #00c900;
     color: #00c900;
+    word-wrap: break-word;
+    width: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  .chip-semester {
+    background: #f3f3f3;
+    border: 1px solid #0136e6;
+    color: #0136e6;
     word-wrap: break-word;
     width: inherit;
     display: flex;
@@ -692,6 +773,17 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+  .chip-semester {
+    background: #f3f3f3;
+    border: 1px solid #0136e6;
+    color: #0136e6;
+    word-wrap: break-word;
+    width: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
   :deep(.v-expansion-panel-title__icon) {
     display: inline-flex;
     margin-right: 0;
@@ -759,6 +851,17 @@ export default defineComponent({
     background: #f3f3f3;
     border: 1px solid #00c900;
     color: #00c900;
+    word-wrap: break-word;
+    width: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  .chip-semester {
+    background: #f3f3f3;
+    border: 1px solid #0136e6;
+    color: #0136e6;
     word-wrap: break-word;
     width: inherit;
     display: flex;
