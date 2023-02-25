@@ -36,13 +36,21 @@
       <v-expansion-panel
         v-for="lab in personalisedCourses"
         :key="lab.CourseGUID"
+        :readonly="lab.CanSubmit === false"
       >
+        <!-- :disabled="lab.CanSubmit === false" -->
         <div>
-          <v-expansion-panel-title>
+          <v-expansion-panel-title
+            expand-icon="mdi-plus"
+            collapse-icon="mdi-minus"
+          >
             <div class="chip-separator">
               <div class="chip-separator__left-chip">
                 <v-chip
                   class="chip-bg"
+                  :class="{
+                    'gray-out-card-chip-lab__details': lab.CanSubmit === false,
+                  }"
                   size="large"
                   style="height: fit-content"
                 >
@@ -85,7 +93,44 @@
                     </template>
                   </v-tooltip>
                 </div>
-                <v-chip class="chip-attendance" size="large">
+                <div
+                  v-if="
+                    lab.CanSubmit === true && lab.HasAlreadySubmitted === true
+                  "
+                >
+                  <v-tooltip
+                    :text="'Εχετε ηδη μια θέση στο εργαστήριο'"
+                    location="bottom"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-chip
+                        variant="text"
+                        density="default"
+                        style="width: fit-content"
+                        v-bind="props"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="35"
+                          height="35"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="#00c900"
+                            d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7Z"
+                          />
+                        </svg>
+                      </v-chip>
+                    </template>
+                  </v-tooltip>
+                </div>
+                <v-chip
+                  class="chip-attendance"
+                  :class="{
+                    'gray-out-card-chip-attendance': lab.CanSubmit === false,
+                  }"
+                  size="large"
+                >
                   <div class="large-font">{{ lab.CourseAttendanceString }}</div>
                 </v-chip>
               </div>
@@ -95,9 +140,49 @@
         <v-expansion-panel-text>
           <div class="classOne">
             <p>{{ lab.ShortDescription }}</p>
-            <v-btn v-if="lab.CanSubmit === true" color="#a3cef1" elevation="4"
-              >Δηλωσε το</v-btn
-            >
+            <div class="lab-details_if_submitted">
+              <p style="font-weight: 400; font-size: 1rem" v-if=" lab.CanSubmit === true && lab.HasAlreadySubmitted === true && lab.LabInfo">
+                {{
+                  `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName}`
+                }}
+              </p>
+              <v-btn
+                v-if="
+                  lab.CanSubmit === true && lab.HasAlreadySubmitted === false && !lab.LabInfo
+                "
+                color="#a3cef1"
+                elevation="4"
+                >Δηλωσε το</v-btn
+              >
+              <v-tooltip
+                :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
+                :location="'bottom'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-chip
+                    v-if="
+                      lab.CanSubmit === true && lab.HasAlreadySubmitted === true
+                    "
+                    variant="text"
+                    density="default"
+                    style="width: fit-content"
+                    v-bind="props"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="35"
+                      height="35"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="#00c900"
+                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z"
+                      />
+                    </svg>
+                  </v-chip>
+                </template>
+              </v-tooltip>
+            </div>
           </div>
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -133,6 +218,14 @@ export interface PersonalisedCourseBySemester {
   CourseAttendance: AttendanceEnum;
   CourseAttendanceString: string;
   CanSubmit: boolean;
+  HasAlreadySubmitted: boolean;
+  LabInfo: SubmittedLabInfo;
+}
+export interface SubmittedLabInfo {
+  LabName: string;
+  Daystring: string;
+  FromTimeString: string;
+  ToTimeString: string;
 }
 export default defineComponent({
   emits: ["closeMobileView"],
@@ -303,13 +396,13 @@ export default defineComponent({
   align-items: center;
 }
 .classOne {
-  min-width: 320px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
   margin: 0.5rem 0.5rem;
+  width: 100%;
 }
 
 .classOne > p {
@@ -317,6 +410,9 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+  white-space: pre-line;
+  word-break: break-word;
 }
 
 .classOne > button {
@@ -377,6 +473,32 @@ export default defineComponent({
 }
 :deep(.parent) {
   margin: 0;
+}
+.gray-out-card-chip-lab__details {
+  background: #d1d3d8 !important;
+  border: 1px solid #273864 !important;
+  color: #273864 !important;
+}
+.gray-out-card-chip-attendance {
+  background: #f9f9f9 !important;
+  border: 1px solid #125e12 !important;
+  color: #125e12 !important;
+}
+.lab-details_if_submitted {
+  display: flex;
+  flex: 1 0;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+.lab-details_if_submitted > p{
+  font-weight: 400;
+    font-size: 1rem;
+    width: fit-content;
+    align-items: center;
+    text-align: center;
+    white-space: break-spaces;
+    word-break: inherit;
 }
 @media (min-width: 480px) {
   .aligner {
@@ -457,6 +579,32 @@ export default defineComponent({
     margin-top: -4px;
     user-select: none;
     margin-inline-start: auto;
+  }
+  .classOne {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0.5rem;
+    width: 100%;
+  }
+
+  .classOne > p {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    white-space: pre-line;
+    word-break: break-word;
+  }
+
+  .classOne > button {
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 @media (min-width: 769px) {
