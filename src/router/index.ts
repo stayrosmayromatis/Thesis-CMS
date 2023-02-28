@@ -13,7 +13,6 @@ const routes: Array<RouteRecordRaw> = [
     path : "/",
     name : 'welcome',
     component : WelcomePage,
-    props : false,
     meta:{requiresAuth :false}
   },
   {
@@ -25,7 +24,6 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/auth",
     name : 'auth',
-    props:false,
     component : () => import("@/components/Auth/Auth.vue"),
     meta : {requiresAuth :false}
   },
@@ -38,28 +36,31 @@ const routes: Array<RouteRecordRaw> = [
     path : "/lab-list",
     name : 'labList',
     component : LabAccordion,
-    props : true,
     meta : {requiresAuth :true}
   },
   {
     path : "/submitted-labs",
     name : 'submittedLabs',
     component : SubmittedLabList,
-    props : true,
     meta : {requiresAuth :true}
   },
   {
     path : "/add-lab",
     name : 'addlab',
     component : AddLab,
-    props : true,
     meta : {requiresAuth :true,requiresIsTeacher : true}
+  },
+  {
+    path : "/enroll-in-department/:course_guid",
+    name : 'enroll',
+    component : import('@/components/UI/DepartmentCardsList.vue'),
+    props : true,
+    meta : {requiresAuth :true,requiresIsTeacher : false}
   },
   {
     path : "/poutsa",
     name : 'poutsa',
-    component : import('@/components/UI/DepartmentCard.vue'),
-    props : true,
+    component : import('@/components/UI/DepartmentCardsList.vue'),
     meta : {requiresAuth :false}
   }
 ];

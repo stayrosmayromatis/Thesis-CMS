@@ -170,6 +170,7 @@
                   lab.HasAlreadySubmitted === false &&
                   !lab.LabInfo
                 "
+                @click="pushToEnroll(lab.CourseGUID)"
                 color="#a3cef1"
                 elevation="4"
                 >Δηλωσε το</v-btn
@@ -223,6 +224,7 @@ import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import BaseResultEmpty from "@/components/Base/BaseResultEmpty.vue";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
+import { useRouter } from "vue-router";
 export interface PersonalisedCoursesBySemester {
   PersonalisedCourses: Array<PersonalisedCourseBySemester>;
   Count: number;
@@ -254,6 +256,7 @@ export default defineComponent({
     BaseSpinner,
   },
   setup(_, context) {
+    const router = useRouter();
     const { DisplayedLabs, GetDisplayedLabs } = useDisplayedLabs();
     const availableSemesters = ref(new Array<DisplayedSemster>());
     const selectedSemesters = ref(new Array<DisplayedSemster>());
@@ -315,7 +318,6 @@ export default defineComponent({
       context.emit("closeMobileView", true);
       return;
     };
-
     const semesterReformer = (semester: LabSemesterEnum) => {
       if (!semester) return "N/A";
       switch (semester) {
@@ -347,6 +349,16 @@ export default defineComponent({
           return "N/A";
       }
     };
+    const pushToEnroll = (guid: string) => {
+      if (!guid) return;
+      router.push({
+        name: "enroll",
+        params: {
+          course_guid: guid,
+        },
+      });
+      return;
+    };
     onMounted(() => {
       GetDisplayedLabs();
       availableSemesters.value = DisplayedLabs.value;
@@ -363,6 +375,7 @@ export default defineComponent({
       isLoading,
       emitMobileViewClose,
       semesterReformer,
+      pushToEnroll,
     };
   },
 });
@@ -549,7 +562,7 @@ export default defineComponent({
   border: 1px solid #303c64 !important;
   color: #303c64 !important;
 }
-.gray-out-card-chip-attendance{
+.gray-out-card-chip-attendance {
   background: #f9f9f9 !important;
   border: 1px solid #125e12 !important;
   color: #125e12 !important;
