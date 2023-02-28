@@ -58,7 +58,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/poutsa",
     name : 'poutsa',
-    component : import('@/components/Base/AuthInProgress.vue'),
+    component : import('@/components/UI/DepartmentCard.vue'),
     props : true,
     meta : {requiresAuth :false}
   }
