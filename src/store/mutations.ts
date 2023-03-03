@@ -20,6 +20,11 @@ const setIsStudentState = (state: State, payload:StoreSth) => {
   state.IsStudent = payload.authState;
   state.IsStaffType = payload.eduPersonAffiliation;
 };
+const setIsAdminState = (state: State, payload:StoreSth) => {
+  state.IsAuth = true;
+  state.IsStudent = payload.authState;
+  state.IsStaffType = payload.eduPersonAffiliation;
+};
 const setUserDataDetails = (state:State,payload:UserDataDetails) =>
 {
   state.UserDataDetails = payload;
@@ -33,4 +38,4 @@ const addSeededProfessors = (state:State , payload : BaseUser) => {
   arrayOfSeeded.push(payload);
   setSeededProfessors(state,arrayOfSeeded);
 }
-export default {addSeededProfessors, setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors };
+export default {addSeededProfessors, setIsAdminState,setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors };

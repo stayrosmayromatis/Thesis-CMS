@@ -99,7 +99,7 @@
                   "
                 >
                   <v-tooltip
-                    :text="'Εχετε ηδη μια θέση στο εργαστήριο'"
+                    :text="'Εχετε ηδη μια θέση σε εργαστηριακό τμήμα'"
                     location="bottom"
                   >
                     <template v-slot:activator="{ props }">

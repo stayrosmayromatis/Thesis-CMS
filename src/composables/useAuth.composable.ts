@@ -48,8 +48,8 @@ export function useAuth() {
       return null;
     }
   };
-  const IsTeacher = async ():Promise<boolean> => await IsAuthenticated() === true && GetTypeStaff() === TypeStaff.STAFF;
-  const IsStudent = async ():Promise<boolean> => await IsAuthenticated() === true &&  GetTypeStaff() === TypeStaff.STUDENT;
+  const IsTeacher = async ():Promise<boolean> => await IsAuthenticated() === true && (GetTypeStaff() === TypeStaff.STAFF || GetTypeStaff() == TypeStaff.ADMIN) ;
+  const IsStudent = async ():Promise<boolean> => await IsAuthenticated() === true && (GetTypeStaff() === TypeStaff.STUDENT || GetTypeStaff() === TypeStaff.ADMIN)   ;
 
   const GetUserDataDetails = (): UserDataDetails | null => {
     try {
@@ -110,6 +110,17 @@ export function useAuth() {
     else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT)
     {
       store.dispatch('setIsStudentState',payload);
+      store.dispatch('setUserDataDetails', response.UserDataDetails);
+      if(byInternalUse === false)
+      {
+        openAlert('Επιτυχής Σύνδεση');
+        setTypeOfAlert('success');
+      }
+      return {Status:true,Data:true};
+    }
+    else if(response.UserDataDetails.EduPersonAffiliation === TypeStaff.ADMIN)
+    {
+      store.dispatch('setIsAdminState',payload);
       store.dispatch('setUserDataDetails', response.UserDataDetails);
       if(byInternalUse === false)
       {

@@ -32,6 +32,17 @@ const setIsStudentState = (context: any, payload: StoreSth) => {
     return;
   context.commit("setIsStudentState", payload);
 };
+const setIsAdminState = (context: any, payload: StoreSth) => {
+  if (
+    !payload ||
+    payload.authState === null ||
+    payload.authState === undefined ||
+    !payload.eduPersonAffiliation ||
+    payload.eduPersonAffiliation !== TypeStaff.ADMIN
+  )
+    return;
+  context.commit("setIsAdminState", payload);
+};
 
 const setUserDataDetails = (context: any, payload: UserDataDetails) => {
   if (!payload) return;
@@ -54,5 +65,6 @@ export default {
   setIsStudentState,
   setUserDataDetails,
   setSeededProfessors,
-  addSeededProfessors
+  addSeededProfessors,
+  setIsAdminState
 };
