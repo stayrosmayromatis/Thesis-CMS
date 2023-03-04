@@ -10,6 +10,7 @@ export interface GenericSubmittedLabsResponse {
 }
 
 export interface SubmittedLab {
+  LabGUID:string;
   CourseGUID : string;
   LabName: string;
   CourseCode: string;

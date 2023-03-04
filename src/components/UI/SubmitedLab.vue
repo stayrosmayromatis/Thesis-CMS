@@ -88,13 +88,15 @@ import { SubmittedLab } from "@/models/BACKEND-MODELS/GenericSubmittedLabsRespon
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 import { useAxios } from "@vueuse/integrations/useAxios";
-import { InfoController } from "@/config";
+import { InfoController, CourseController } from "@/config";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "../../models/DTO/ApiResult";
 import { InfoAggregateObjectResponse } from "@/models/BACKEND-MODELS/InfoAggregateObjectResponse";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { confirm } from "@/composables/dialog.composable";
+import { useAlert } from "@/composables/showAlert.composable";
+import { InternalDataTransfter } from '../../models/DTO/InternalDataTransfer';
 export default defineComponent({
   props: {
     title: String,
@@ -113,12 +115,21 @@ export default defineComponent({
   components: {
     BaseDialog,
   },
-  setup(props) {
+  emits: ["force-refetch"],
+  setup(props, context) {
     const { lab, personAffiliation } = toRefs(props);
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
     const { setBackendInstanceAuth } = useAxiosInstance();
+    const {
+      closeAlert,
+      openAlert,
+      setTypeOfAlert,
+      showAlert,
+      alertTitle,
+      typeOfAlert,
+    } = useAlert();
     const LabCode = computed(() => {
       return `(${lab.value.CourseCode.trim()})`;
     });
@@ -188,78 +199,113 @@ export default defineComponent({
         return false;
       return true;
     });
-    const CheckDelete = async (): Promise<void> => {
-      //call to an endpoint depending on the courseGUID it detects if someone has a submittion or
-      //and inform him about deleting it
-      //if he is a teacher and wants to delete that course check if there is any student submittion with that
-      //Guid and infom him
-      const api_response = await useAxios(
-        InfoController + `deletion-informant/${lab.value.CourseGUID}`,
+    const CheckDelete = async (): Promise<void> =>
+    {
+        const makeInformationCallResponse = await MakeTheInformationCall();
+        if(!makeInformationCallResponse.Status)
         {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
+          setTimeout(() => {
+            closeAlert();
+          },1500);
+          showConfirmDeletionModal.value = false;
+          return;
+        }
+        if (await confirm()){
+          const makeConfirmDeleteCallResponse = await MakeTheConfirmDeleteCall();
+          showConfirmDeletionModal.value = false;
+          if(!makeConfirmDeleteCallResponse.Status)
+          {
+            setTypeOfAlert('error');
+            openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
+            setTimeout(() => {
+              closeAlert();
+            },1500);
+            return;
+          }
+          context.emit("force-refetch");
+          return;
+        }
+        showConfirmDeletionModal.value = false;
+        return;
+    }
+    const MakeTheInformationCall = async ():Promise<InternalDataTransfter<boolean>> => {
+      const api_response = await useAxios(InfoController +`deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`,{ method: "GET" },setBackendInstanceAuth());
       if (api_response.isFinished) {
-        const api_response_dta: ApiResult<InfoAggregateObjectResponse> = api_response.data.value;
-        console.log(api_response_dta);
-        if (api_response_dta.Status === true && api_response_dta.Data) {
-          if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF) {
+        const api_response_dta: ApiResult<InfoAggregateObjectResponse> =api_response.data.value;
+        if (api_response_dta.Status === true && api_response_dta.Data)
+        {
+          if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF)
+          {
             if (
+              (api_response_dta.Data.FoundRegistration === false ||
+                !api_response_dta.Data.FoundRegistration) &&
+              (api_response_dta.Data.CountOfStudentsSubmited === 0 ||
+                !api_response_dta.Data.CountOfStudentsSubmited)
+            ) {
+              showConfirmDeletionModal.value = true;
+              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
+                                                      Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
+                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+              return {Data : true ,Status :true};
+            } else if (
               api_response_dta.Data.FoundRegistration === true &&
               api_response_dta.Data.CountOfStudentsSubmited > 0
             ) {
               //Found dilwseis what do you want to do?
               showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στα εργαστηριακά τμήματα του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
-              Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> όλων των τμημάτων.
+              confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
+              Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
               Αυτο συνεπάγεται και στην <span style="color:#ff4545;">διαγραφή όλων των υπάρχοντων δηλώσεων των φοιτητών μέχρι αυτή τη στιγμή</span>.
-              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>;
-              Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη</span> `;
+              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+              return {Data : true ,Status :true};
             }
             else if (
-              api_response_dta.Data.FoundRegistration === true &&
-              !api_response_dta.Data.CountOfStudentsSubmited || api_response_dta.Data.CountOfStudentsSubmited === 0
+              (api_response_dta.Data.FoundRegistration === true &&
+                !api_response_dta.Data.CountOfStudentsSubmited) ||
+              api_response_dta.Data.CountOfStudentsSubmited === 0
             ) {
               //Dilwseis not found though do you wanna continue?
               showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στα εργαστηριακά τμήματα του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
-                                                      Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> όλων των συνδεδεμένων τμημάτων.
-                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>;
-                                                      Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη</span> `;
+              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
+                                                      Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
+                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+              return {Data : true ,Status :true};
             }
-            else
-            {
+            else {
               showConfirmDeletionModal.value = false;
-                return;
+              return {Data : null,Status :false ,Error:"Error"};
             }
-          }
-          else if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STUDENT)
+          } if (api_response_dta.Data.PersonAffiliation &&api_response_dta.Data.PersonAffiliation === TypeStaff.STUDENT)
           {
-            if(api_response_dta.Data.FoundRegistration === true){
-              showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Είστε σίγουροι οτι θέλετε να απεγγραφείτε απο το εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName} </span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseCode} ${api_response_dta.Data.CourseName}</span>.
-              Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη</span>.`;
-            }
-            else
-            {
+            if (
+              api_response_dta.Data.FoundRegistration === false ||
+              !api_response_dta.Data.FoundRegistration
+            ) {
               showConfirmDeletionModal.value = false;
-              return;
+              return {Data : null,Status :false ,Error:"Error"};
             }
-          }
-          else
-          {
-            showConfirmDeletionModal.value = false;
-            return;
-          }
-          if (await confirm()) {
-            console.log("confirmed");
+            showConfirmDeletionModal.value = true;
+            confirmDeletionInnerDescription.value = `Είστε σίγουροι οτι θέλετε να απεγγραφείτε απο το εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName} </span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseCode} ${api_response_dta.Data.CourseName}</span>.
+            Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη</span>.`;
+            return {Data : true ,Status :true};
           }
         }
-        showConfirmDeletionModal.value = false;
-        return;
       }
+      showConfirmDeletionModal.value = false;
+      return {Data : null,Status :false ,Error:"Error"};
     };
+    const MakeTheConfirmDeleteCall = async ():Promise<InternalDataTransfter<boolean>> =>
+    {
+      const api_response = await useAxios(CourseController +`confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`,{method: "POST",},setBackendInstanceAuth());
+      if (api_response.isFinished)
+      {
+        const api_data_response: ApiResult<boolean> =api_response.data.value;
+        return {Data: api_data_response.Data,Status : api_data_response.Status}
+      }
+      return {Data : null,Status :false ,Error:"Error"};
+    }
     return {
       confirmDeletionInnerDescription,
       confirmDeletionInnerTitle,

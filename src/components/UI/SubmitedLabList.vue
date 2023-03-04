@@ -17,7 +17,7 @@
       <base-spinner :show="showSpinner"></base-spinner>
 
       <div v-if="!showLabsNotFound">
-        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab"></submited-lab>
+        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
         <div class="pdf-button">
           <v-btn color="#ff5454" @click="pushToPdf">
             <svg style="margin-right: 0.3rem;" fill="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
@@ -68,7 +68,7 @@ export default defineComponent({
     const showSpinner = ref(false);
     const showEmptyResultTitle =ref("");
     const showEmptyResultDescription =ref("");
-    const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert } = useAlert();
+    const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert,setTypeOfAlert } = useAlert();
     // const sLabs = ref([
     //   {
     //     labId: "1601",
@@ -141,7 +141,7 @@ export default defineComponent({
       callToGeneratePdf.value = true;
     };
 
-    const populateSubmittedLabs = async (): Promise<void> => {
+    const populateSubmittedLabs = async (byInternalCall = false): Promise<void> => {
       showSpinner.value = true;
       const apiGetInfos = await useAxios(
         InfoController + "get-submitted-labs-info",
@@ -168,6 +168,16 @@ export default defineComponent({
         sLabs.value = getInfoData.Data.SubmittedLabs;
         personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
         showSpinner.value = false;
+        if(byInternalCall === true){
+          if(showAlert.value === true){
+            closeAlert();
+          }
+          setTypeOfAlert('success');
+          openAlert("Επιτυχία διαγραφής ");
+                setTimeout(() => {
+                  closeAlert();
+                },1500);
+        }
         console.log(sLabs.value);
         console.log(personAffiliation.value);
       }
@@ -186,7 +196,8 @@ export default defineComponent({
       showLabsNotFound,
       showSpinner,
       showEmptyResultTitle,
-      showEmptyResultDescription
+      showEmptyResultDescription,
+      populateSubmittedLabs
     };
   },
 });
