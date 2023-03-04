@@ -5,7 +5,8 @@
       <v-card>
         <v-card-title>
           <slot name="title">
-            <p>{{ innerTitle }}</p>
+            <p v-html="innerTitle"></p>
+            <!-- {{ innerTitle }} -->
           </slot>
         </v-card-title>
 
