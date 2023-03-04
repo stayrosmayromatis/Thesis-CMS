@@ -1,13 +1,13 @@
 <template>
   <div @click="emitMobileViewClose">
-    <base-dialog v-if="isError">
+    <!-- <base-dialog v-if="isError">
       <template #title>
         <h1>Http Error</h1>
       </template>
       <template #description>
         <p>An error over the api has occured.Please try later</p>
       </template>
-    </base-dialog>
+    </base-dialog> -->
     <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle">
     </base-alert>
     <div class="parent-card">
@@ -40,7 +40,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import SubmitedLab from "@/components/UI/SubmitedLab.vue";
-import BaseDialog from "@/components/Base/BaseDialog.vue";
+//import BaseDialog from "@/components/Base/BaseDialog.vue";
 import PdfContent from "@/components/UI/PdfContent.vue";
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from "@/composables/showAlert.composable";
@@ -55,7 +55,7 @@ import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 export default defineComponent({
   components: {
     SubmitedLab,
-    BaseDialog,
+  //  BaseDialog,
     PdfContent,
     BaseAlert,
     BaseResultEmpty,
@@ -63,58 +63,14 @@ export default defineComponent({
   },
   emits: ["closeMobileView"],
   setup(_, context) {
-    const isError = false;
+    //const isError = false;
     const showLabsNotFound = ref(false);
     const showSpinner = ref(false);
     const showEmptyResultTitle =ref("");
     const showEmptyResultDescription =ref("");
     const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert,setTypeOfAlert } = useAlert();
-    // const sLabs = ref([
-    //   {
-    //     labId: "1601",
-    //     title: "Οργάνωση και αρχιτεκτονική",
-    //     semester: LabSemesterEnum.A_XEIM,
-    //     description: "Πληροφορίες Εργαστηρίου",
-    //     departments: Array<Department>(),
-    //   },
-    //   {
-    //     labId: "1602",
-    //     title: "Δικτυα και αρχιτεκτονική",
-    //     semester: LabSemesterEnum.B_EAR,
-    //     description: "Πληροφορίες Εργαστηρίου",
-    //     departments: Array<Department>(),
-    //   },
-    //   {
-    //     labId: "1603",
-    //     title: "Δομημένος Προγραμματισμός",
-    //     semester: LabSemesterEnum.C_XEIM,
-    //     description: "Πληροφορίες Εργαστηρίου",
-    //     departments: Array<Department>(),
-    //   },
-    //   {
-    //     labId: "1601",
-    //     title: "Οργάνωση και αρχιτεκτονική",
-    //     semester: LabSemesterEnum.A_XEIM,
-    //     description: "Πληροφορίες Εργαστηρίου",
-    //     departments: Array<Department>(),
-    //   },
-    //   {
-    //     labId: "1602",
-    //     title: "Δικτυα και αρχιτεκτονική",
-    //     semester: LabSemesterEnum.B_EAR,
-    //     description: "Πληροφορίες Εργαστηρίου",
-    //     departments: Array<Department>(),
-    //   },
-    //   {
-    //     labId: "1603",
-    //     title: "Δομημένος Προγραμματισμός",
-    //     semester: LabSemesterEnum.C_XEIM,
-    //     description: "Πληροφορίες Εργαστηρίου",
-    //     departments: Array<Department>(),
-    //   },
-    // ]);
-    const sLabs = ref<Array<SubmittedLab>>(new Array<SubmittedLab>());
-    const personAffiliation = ref<PersonAffiliation>(PersonAffiliation.STUDENT);
+    const sLabs = ref(new Array<SubmittedLab>());
+    const personAffiliation = ref(PersonAffiliation.STUDENT);
     const { setBackendInstanceAuth } = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
@@ -174,9 +130,9 @@ export default defineComponent({
           }
           setTypeOfAlert('success');
           openAlert("Επιτυχία διαγραφής ");
-                setTimeout(() => {
-                  closeAlert();
-                },1500);
+          setTimeout(() => {
+            closeAlert();
+          },1500);
         }
         console.log(sLabs.value);
         console.log(personAffiliation.value);
@@ -184,7 +140,7 @@ export default defineComponent({
     }
     return {
       sLabs,
-      isError,
+      //isError,
       emitMobileViewClose,
       pushToPdf: invokeGeneratePdf,
       pdfCreationCompleted,

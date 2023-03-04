@@ -41,10 +41,6 @@
             class="card-chip"
             >{{ lab.AttendanceString }}</v-chip
           >
-          <!-- <v-btn class="delete-button" variant="tonal">
-                    <v-icon icon="mdi-cancel"></v-icon>
-                    Διαγραφη
-                  </v-btn> -->
           <div class="media-button-group">
             <div>
               <v-tooltip :text="DeletionText" location="bottom">
@@ -90,13 +86,13 @@ import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { InfoController, CourseController } from "@/config";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
-import { ApiResult } from "../../models/DTO/ApiResult";
+import { ApiResult } from "@/models/DTO/ApiResult";
 import { InfoAggregateObjectResponse } from "@/models/BACKEND-MODELS/InfoAggregateObjectResponse";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { confirm } from "@/composables/dialog.composable";
 import { useAlert } from "@/composables/showAlert.composable";
-import { InternalDataTransfter } from '../../models/DTO/InternalDataTransfer';
+import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 export default defineComponent({
   props: {
     title: String,
@@ -238,21 +234,16 @@ export default defineComponent({
         {
           if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF)
           {
-            if (
-              (api_response_dta.Data.FoundRegistration === false ||
-                !api_response_dta.Data.FoundRegistration) &&
-              (api_response_dta.Data.CountOfStudentsSubmited === 0 ||
-                !api_response_dta.Data.CountOfStudentsSubmited)
-            ) {
+            if ((api_response_dta.Data.FoundRegistration === false ||!api_response_dta.Data.FoundRegistration) &&
+                (api_response_dta.Data.CountOfStudentsSubmited === 0 ||!api_response_dta.Data.CountOfStudentsSubmited))
+                {
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
               return {Data : true ,Status :true};
-            } else if (
-              api_response_dta.Data.FoundRegistration === true &&
-              api_response_dta.Data.CountOfStudentsSubmited > 0
-            ) {
+            } else if (api_response_dta.Data.FoundRegistration === true &&api_response_dta.Data.CountOfStudentsSubmited > 0)
+            {
               //Found dilwseis what do you want to do?
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
@@ -261,11 +252,8 @@ export default defineComponent({
               Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
               return {Data : true ,Status :true};
             }
-            else if (
-              (api_response_dta.Data.FoundRegistration === true &&
-                !api_response_dta.Data.CountOfStudentsSubmited) ||
-              api_response_dta.Data.CountOfStudentsSubmited === 0
-            ) {
+            else if ((api_response_dta.Data.FoundRegistration === true &&!api_response_dta.Data.CountOfStudentsSubmited) ||api_response_dta.Data.CountOfStudentsSubmited === 0)
+             {
               //Dilwseis not found though do you wanna continue?
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
@@ -279,10 +267,8 @@ export default defineComponent({
             }
           } if (api_response_dta.Data.PersonAffiliation &&api_response_dta.Data.PersonAffiliation === TypeStaff.STUDENT)
           {
-            if (
-              api_response_dta.Data.FoundRegistration === false ||
-              !api_response_dta.Data.FoundRegistration
-            ) {
+            if (api_response_dta.Data.FoundRegistration === false ||!api_response_dta.Data.FoundRegistration)
+            {
               showConfirmDeletionModal.value = false;
               return {Data : null,Status :false ,Error:"Error"};
             }
