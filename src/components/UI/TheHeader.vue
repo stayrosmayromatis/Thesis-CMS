@@ -31,7 +31,8 @@
         </svg>
         <!-- IHU LOGO SVG END -->
       </div>
-      <router-link to="/">{{ title }}</router-link>
+      <!-- <router-link  to!>{{ title }}</router-link> -->
+      <span class="span__header">{{ title }}</span>
     </div>
     <div class="mobile-logo">
       <div class="burger-button" @click="closeHamburgerFn()">
@@ -303,11 +304,7 @@ ul {
   height: 100%;
 }
 
-/* .main-nav a {
-  text-transform: uppercase;
-} */
-
-a {
+a ,.span__header {
   text-decoration: none;
   display: inline-block;
   position: relative;

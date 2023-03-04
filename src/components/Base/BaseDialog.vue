@@ -1,66 +1,82 @@
 <template>
   <teleport to="body">
-    <v-dialog v-model="modal" attach="body" width="100%" max-width="50rem">
+    <div @click="closeDialog(false)">
+    <v-dialog v-model="modal" attach="body" width="100%" max-width="50rem" @click="closeDialog(false)">
       <v-card>
         <v-card-title>
           <slot name="title">
-            {{ innerTitle }}
+            <p>{{ innerTitle }}</p>
           </slot>
         </v-card-title>
 
         <v-card-text>
           <slot name="description">
-            {{ innerDescription }}
+            <p v-html="innerDescription"></p>
           </slot>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <div v-if="routeChangeAuthorizer" >
-            <v-btn variant="text" color="red-darken-1" text @click="closeDialog(false)">ΑΚΥΡΩΣΗ</v-btn>
-            <v-btn variant="text" color="blue-darken-1" text @click="closeDialog">ΟΚ</v-btn>
+          <div v-if="routeChangeAuthorizer">
+            <v-btn
+              variant="text"
+              color="red-darken-1"
+              text
+              @click="closeDialog(false)"
+              >ΑΚΥΡΩΣΗ</v-btn
+            >
+            <v-btn
+              variant="text"
+              color="blue-darken-1"
+              text
+              @click="closeDialog"
+              >ΟΚ</v-btn
+            >
           </div>
           <div v-else>
-          <v-btn variant="flat" color="red darken-1" text @click="closeModal">ΟΚ</v-btn>
-        </div>
+            <v-btn variant="flat" color="red darken-1" text @click="closeModal"
+              >ΟΚ</v-btn
+            >
+          </div>
         </v-card-actions>
       </v-card>
     </v-dialog>
+  </div>
   </teleport>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import {closeDialog} from 'vue3-promise-dialog';
+import { closeDialog } from "vue3-promise-dialog";
 export default defineComponent({
   props: {
     innerTitle: {
       required: false,
       type: String,
-      default: 'The has been an error'
+      default: "The has been an error",
     },
     innerDescription: {
       required: false,
       type: String,
-      default: 'The has been an error'
+      default: "The has been an error",
     },
-    routeChangeAuthorizer:{
-      type:Boolean,
-      required:false,
-      default:false
-    }
+    routeChangeAuthorizer: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
-  emits:['close-modal'],
-  setup(_,context) {
+  emits: ["close-modal"],
+  setup(_, context) {
     const modal = ref(true);
     const closeModal = (): void => {
       modal.value = false;
-      context.emit('close-modal');
+      context.emit("close-modal");
     };
     function returnValue() {
       return true;
     }
-    return { modal, closeModal,closeDialog,returnValue };
+    return { modal, closeModal, closeDialog, returnValue };
   },
 });
 </script>
@@ -78,11 +94,14 @@ export default defineComponent({
   word-break: break-word;
   white-space: pre-line;
   text-align: center;
+  color: #ad2e00;
 }
 
 :deep(.v-card-text) {
   font-weight: 500;
-  text-transform: capitalize;
+  word-wrap: break-word;
+  white-space: pre-line;
+  text-align: center;
 }
 
 :deep(.v-dialog.v-overlay__content) {
@@ -122,7 +141,9 @@ export default defineComponent({
     width: inherit;
   }
 
-  :deep(.v-card.v-theme--light.v-card--density-default.v-card--variant-elevated) {
+  :deep(
+      .v-card.v-theme--light.v-card--density-default.v-card--variant-elevated
+    ) {
     border-radius: 20px;
     margin: 0 1rem;
   }

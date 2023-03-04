@@ -10,6 +10,7 @@ export interface GenericSubmittedLabsResponse {
 }
 
 export interface SubmittedLab {
+  CourseGUID : string;
   LabName: string;
   CourseCode: string;
   CourseName: string;
@@ -22,5 +23,5 @@ export interface SubmittedLab {
   AttendanceString:string,
   Semester: LabSemesterEnum,
   SemesterString:string,
-  IsAssistantProfessor?:boolean 
+  IsAssistantProfessor?:boolean
 }
