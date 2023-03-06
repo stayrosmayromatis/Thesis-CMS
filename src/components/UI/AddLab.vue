@@ -9,7 +9,7 @@
       :title="validationAlertTitle"></base-alert>
     <base-dialog v-if="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
       inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"></base-dialog>
-    <base-dialog v-if="somethingWentWrongModal" :route-change-authorizer="false" inner-title="FATAL ERROR"
+    <base-dialog v-if="somethingWentWrongModal" :route-change-authorizer="false" inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
       inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"></base-dialog>
     <div class="parent-card-form">
       <v-card elevation="5">
@@ -99,6 +99,7 @@ import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
 import { CourseController } from "@/config";
+import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 export interface TimeObject {
   hours: number,
   minutes: number,
@@ -432,14 +433,7 @@ export default defineComponent({
         setTypeOfAlert("error");
         return;
       }
-      // for (let dept of formState.departments) {
-      //   if (validateEachDepartment(dept) === false) {
-      //     allDeptsAreCorrect = false;
-      //   }
-      //   if (!isNumber(dept.numberOfStudents)) {
-      //     dept.numberOfStudents = <number>dept.numberOfStudents;
-      //   }
-      // }
+      
       for (let dept of departments.value) {
         if (validateEachDepartment(dept) === false) {
           allDeptsAreCorrect = false;
@@ -480,27 +474,28 @@ export default defineComponent({
 
         });
       }
-      const createCourseApiRequest = await useAxios(CourseController + 'create-course',
-        {
-          method: 'POST',
-          data: createCourseRequest
-        },
-        setBackendInstanceAuth()
-      );
-      if (createCourseApiRequest.isFinished) {
-        const createCourseApiResponse: ApiResult<CreateCourseResponse> = createCourseApiRequest.data.value;
-        if (createCourseApiResponse.Status === false || !createCourseApiResponse.Status) {
-          somethingWentWrongModal.value = true;
-          return;
-        }
-        openAlert("Επιτυχής καταχώρηση εργαστηρίου");
+
+      const makeCreateCourseApiResponse = await MakeCreateCourseRequest(createCourseRequest);
+      if(!makeCreateCourseApiResponse.Status || !makeCreateCourseApiResponse.Data)
+      {
+        somethingWentWrongModal.value = true;
+        openAlert("Αποτυχία καταχώρησης εργαστηρίου");
+        setTypeOfAlert("error");
+        setTimeout(() => {
+          closeAlert();
+          somethingWentWrongModal.value = false;
+        }, 1500);
+        return;
+      }
+      openAlert("Επιτυχής καταχώρηση εργαστηρίου");
         setTypeOfAlert("success");
         setTimeout(() => {
           closeAlert();
+          somethingWentWrongModal.value = false;
           successFullSubmision.value = true;
           router.replace({ name: 'labList' })
         }, 1500);
-      }
+      return;
     };
     const anythingIsPopulated = computed(() => {
       if (
@@ -514,7 +509,25 @@ export default defineComponent({
       return false;
     });
 
-
+    const MakeCreateCourseRequest = async (createCourseRequest : CreateCourseRequest):Promise<InternalDataTransfter<boolean>> => {
+      if(!createCourseRequest)
+        return {Status : false,Data:false,Error:"Request object null"};
+      const createCourseApiRequest = await useAxios(CourseController + 'create-course',
+        {
+          method: 'POST',
+          data: createCourseRequest
+        },
+        setBackendInstanceAuth()
+      );
+      if (createCourseApiRequest.isFinished) {
+        const createCourseApiResponse: ApiResult<CreateCourseResponse> = createCourseApiRequest.data.value;
+        if (createCourseApiResponse.Status === false || !createCourseApiResponse.Status || !createCourseApiResponse.Data) {
+          return {Status : false,Data:false,Error:"Request call returned false"};
+        }
+        return {Status : true,Data:true};
+      }
+      return {Status : false,Data:false,Error:"Request call never finished"};
+    }
 
     return {
       emitMobileViewClose,
