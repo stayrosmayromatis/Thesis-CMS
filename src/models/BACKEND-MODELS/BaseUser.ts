@@ -8,4 +8,7 @@ export interface BaseUser {
   titleEn: string;
   titleEl: string;
   Guid? :string;
+  dm?:string;
+  admin?:boolean;
+  am:string;
 }
