@@ -67,6 +67,7 @@
                     class="edit-button"
                     icon="mdi-pencil"
                     size="x-small"
+                    @click="redirectToEditComponent"
                   ></v-btn>
                 </template>
               </v-tooltip>
@@ -93,6 +94,7 @@ import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { confirm } from "@/composables/dialog.composable";
 import { useAlert } from "@/composables/showAlert.composable";
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
+import { useRouter } from "vue-router";
 export default defineComponent({
   props: {
     title: String,
@@ -100,6 +102,11 @@ export default defineComponent({
     lab: {
       type: Object as PropType<SubmittedLab>,
       required: true,
+      default: null,
+    },
+    course_guid:{
+      type: String,
+      required: false,
       default: null,
     },
     personAffiliation: {
@@ -113,11 +120,12 @@ export default defineComponent({
   },
   emits: ["force-refetch"],
   setup(props, context) {
-    const { lab, personAffiliation } = toRefs(props);
+    const { lab, personAffiliation,course_guid } = toRefs(props);
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
     const { setBackendInstanceAuth } = useAxiosInstance();
+    const router = useRouter();
     const {
       closeAlert,
       openAlert,
@@ -292,6 +300,14 @@ export default defineComponent({
       }
       return {Data : null,Status :false ,Error:"Error"};
     }
+    
+    const redirectToEditComponent = () => {
+      if(!course_guid.value)
+        return;
+      router.push({name : 'addlab',query:{
+        editId : course_guid.value.trim().toString()
+      }});
+    }
     return {
       confirmDeletionInnerDescription,
       confirmDeletionInnerTitle,
@@ -305,6 +321,7 @@ export default defineComponent({
       LabTimes,
       CheckDelete,
       showConfirmDeletionModal,
+      redirectToEditComponent
     };
   },
 });

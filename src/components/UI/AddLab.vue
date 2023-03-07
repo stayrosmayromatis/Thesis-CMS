@@ -18,7 +18,7 @@
             <div :class="{ 'error-color': v$.semester.$error }">
               <v-chip-group>
                 <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
-                  v-for="semester in displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
+                  v-for="semester of displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
               </v-chip-group>
             </div>
             <v-divider inset></v-divider>
@@ -61,6 +61,7 @@
             </div>
             <lab-form v-for="department in departments" :key="department.Guid" :department="department"
               :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup"
+              :is_by_edit="isCallByEdit"
               @global-error="validateEachDepartment"></lab-form>
             <div class="submit-button" v-if="departments.length">
               <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ</v-btn>
@@ -89,7 +90,7 @@ import BaseAlert from "@/components/Base/BaseAlert.vue";
 import { useProfessor } from "@/composables/useProfessors.composable";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { useAlert } from "@/composables/showAlert.composable";
-import { onBeforeRouteLeave, useRouter } from "vue-router";
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import { confirm } from '@/composables/dialog.composable';
 import { v4 as uuidv4 } from 'uuid';
@@ -100,6 +101,7 @@ import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
 import { CourseController } from "@/config";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
+import { InfoUpdateCourseResponse } from "@/models/BACKEND-MODELS/InfoUpdateCourseResponse";
 export interface TimeObject {
   hours: number,
   minutes: number,
@@ -125,13 +127,15 @@ export default defineComponent({
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
     const router = useRouter();
+    const route= useRoute();
     const validationAlertShow = showAlert;
     const validationAlertType = typeOfAlert;
     const validationAlertTitle = alertTitle;
-    const seededProfessors = ref<Array<BaseUser>>(new Array<BaseUser>());
+    const seededProfessors = ref(new Array<BaseUser>());
     const showRouteLeaveModal = ref(false);
     const somethingWentWrongModal = ref(false);
     const successFullSubmision = ref(false);
+    const isCallByEdit = ref(false);
     onBeforeRouteLeave(async () => {
       closeAlert();
       if (successFullSubmision.value === true)
@@ -152,15 +156,29 @@ export default defineComponent({
       }
     });
     onMounted(async () => {
+      const hasQueryParams = Object.keys(route.query);
+      const queryParamsLength = hasQueryParams.length;
+      //DisplayedSemester
+      GetDisplayedLabs();
+      displayedSemester.value = DisplayedLabs.value;
+      //DisplayedSemester
+      if(hasQueryParams && hasQueryParams.includes("editId") && queryParamsLength == 1){
+        //make the call to the api
+        const courseInfoEditIDT= await MakeGetCourseInfoForEditCall(Object.values(route.query)[0]!.toString());
+        if(!courseInfoEditIDT.Status || !courseInfoEditIDT.Data)
+        {
+          router.replace({ name : 'submittedLabs'});
+          return;
+        }
+        PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
+        isCallByEdit.value = true;
+      }
       if (showAlert.value === true) {
         setTimeout(() => {
           closeAlert();
         }, 1000);
       }
-      //DisplayedSemester
-      GetDisplayedLabs();
-      displayedSemester.value = DisplayedLabs.value;
-      //DisplayedSemester
+     
 
       //SeedProfessorsSegment
       await GetSeededProfessors();
@@ -528,7 +546,47 @@ export default defineComponent({
       }
       return {Status : false,Data:false,Error:"Request call never finished"};
     }
-
+    const MakeGetCourseInfoForEditCall = async (courseGuid:string):Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
+      if(!courseGuid)
+        return {Status : false,Data:null,Error:"Request object null"};
+      const getCourseInfoForEditApiRequest = await useAxios(CourseController + 'get-course-info-for-edit/'+courseGuid,
+      {
+        method: 'GET',
+      },
+        setBackendInstanceAuth()
+      );
+      if(getCourseInfoForEditApiRequest.isFinished)
+      {
+        const getCourseInfoForEditApiResponse : ApiResult<InfoUpdateCourseResponse> = getCourseInfoForEditApiRequest.data.value;
+          if (getCourseInfoForEditApiResponse.Status === false || !getCourseInfoForEditApiResponse.Status || !getCourseInfoForEditApiResponse.Data) {
+            return {Status : false,Data:null,Error:"Request call returned false"};
+          }
+          return {Status : true,Data:getCourseInfoForEditApiResponse.Data};
+      }
+      return {Status : false,Data:null,Error:"Request call never finished"};
+    };
+    const PopulateTheFormObjectInEditMode = (data:InfoUpdateCourseResponse) => {
+      if(!data)
+        return;
+        formState.labId = data.CourseCode,
+        formState.labTitle = data.CourseName,
+        formState.attendance = 
+        {
+          title : data.CourseAttendanceString,
+          value : data.CourseAttendance,
+        };
+        displayedSemester.value.find((val) => {
+          if(val.value === data.Semester)
+          {
+            val.isActive = true;
+          }
+        });
+        formState.semester = data.Semester;
+        formState.description = data.ShortDescription;
+        formState.semester = data.Semester;
+      formState.departments = data.Labs;
+      return;
+    };
     return {
       emitMobileViewClose,
       buttonDisablity,
@@ -553,7 +611,8 @@ export default defineComponent({
       validationAlertTitle,
       showRouteLeaveModal,
       toTimeString,
-      somethingWentWrongModal
+      somethingWentWrongModal,
+      isCallByEdit
     };
   },
 });

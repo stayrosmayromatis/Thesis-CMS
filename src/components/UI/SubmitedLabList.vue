@@ -17,7 +17,7 @@
       <base-spinner :show="showSpinner"></base-spinner>
 
       <div v-if="!showLabsNotFound">
-        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
+        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab" :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
         <div class="pdf-button">
           <v-btn color="#ff5454" @click="pushToPdf">
             <svg style="margin-right: 0.3rem;" fill="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25"

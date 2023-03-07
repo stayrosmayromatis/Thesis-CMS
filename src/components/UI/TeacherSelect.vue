@@ -103,6 +103,7 @@
 import {
   computed,
   defineComponent,
+  onMounted,
   PropType,
   ref,
   toRefs,
@@ -125,6 +126,16 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default:false,
+    },
+    selected_teacher_by_edit_flag:{
+      type: Boolean,
+      required: true,
+      default:false,
+    },
+    selected_teacher_by_edit_value:{
+      type: Object as PropType<BaseUser>,
+      required: true,
+      default:null,
     }
 
   },
@@ -145,12 +156,19 @@ export default defineComponent({
     const newName = ref<string>("");
     const newSurname = ref<string>("");
     
-    const { seeded_professors,error_on_selected_teacher} = toRefs(props);
+    const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value} = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
     
     const selectedTeacher = ref<BaseUser>();
     const cantFindTeacherFlag = ref(false);
-    
+    onMounted(() => {
+      console.dir(seeded_professors);
+      if(selected_teacher_by_edit_flag.value === true && selected_teacher_by_edit_value.value){
+        selectedTeacher.value = selected_teacher_by_edit_value.value;
+        context.emit("emit-selected-teacher", selected_teacher_by_edit_value.value);
+        return;
+      }
+    });
     const validateAutoComplete = () => {
       if (!selectedTeacher.value) {
         errorMessage.value = "Επιλέξτε καθηγητή παρακαλώ";
@@ -230,9 +248,13 @@ export default defineComponent({
       }
     };
     const lastNameProp = computed(() => {
-      if (!error_on_selected_teacher || !selectedTeacher.value) return "Καθηγητες";
+      console.log(selectedTeacher.value);
+      if (!error_on_selected_teacher || !selectedTeacher.value) 
+        return "Καθηγητες";
       const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-      if (!splitted || splitted.length == 0) return "Καθηγητες";
+      //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
+      if (!splitted || splitted.length == 0) 
+        return "Καθηγητες";
       return splitted[splitted.length - 1];
     });
     const containsNumbers = (str: string) => {
