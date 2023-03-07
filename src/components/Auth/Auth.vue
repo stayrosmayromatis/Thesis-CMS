@@ -149,6 +149,9 @@ export default defineComponent({
             profileObject.data.value.eduPersonalEntitlement,
           eduPersonalEntitlementEl:
             profileObject.data.value["eduPersonalEntitlement;lang-el"],
+            dm:undefined,
+          admin:undefined,
+          am:undefined,
         };
       } else if (
         profileObject.data.value["eduPersonAffiliation"] === "student"
@@ -166,6 +169,8 @@ export default defineComponent({
           regsem: profileObject.data.value.regsem,
           regyear: profileObject.data.value.regyear,
           semester: profileObject.data.value.sem,
+          dm:undefined,
+          admin:undefined,
         };
       } else {
         setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");

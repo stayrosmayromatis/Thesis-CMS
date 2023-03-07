@@ -10,5 +10,5 @@ export interface BaseUser {
   Guid? :string;
   dm?:string;
   admin?:boolean;
-  am:string;
+  am?:string;
 }
