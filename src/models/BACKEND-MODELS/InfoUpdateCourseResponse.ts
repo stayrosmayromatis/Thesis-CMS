@@ -1,8 +1,6 @@
-import { DaysOfWeekEnum } from '@/enums/DaysOfWeekEnum';
 import { AttendanceEnum } from "@/enums/AttendanceEnums"
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum"
-import { TimeObject } from '@/components/UI/AddLab.vue';
-import { Department } from '../department.type';
+import { Department } from '@/models/department.type';
 
 export interface InfoUpdateCourseResponse
 {

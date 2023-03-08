@@ -14,9 +14,9 @@
       <div class="slider-grow">
         <base-slider
           @update:model-value="changeNumberOfStudents"
-          :min-value="10"
-          :max-value="50"
-          :starting-value="department.numberOfStudents"
+          :min-value="minValue"
+          :max-value="maxValue"
+          :starting-value="startingValue"
         ></base-slider>
       </div>
     </div>
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,PropType,ref,toRefs } from "vue";
+import { defineComponent,onMounted,PropType,ref,toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
@@ -94,10 +94,14 @@ export default defineComponent({
   emits: ["deleteByDeptId"],
   setup(props, context) {
     const days = daysOfWeek;
-    const { department,seeded_professors } = toRefs(props);
-
-    //SeededProfessors for autocomplete
-    //const seeded_professors_reactive = seeded_professors;
+    const { department,seeded_professors,is_by_edit } = toRefs(props);
+    const minValue = ref<number>(10);
+    const maxValue = ref<number>(50);
+    const startingValue = ref<number>(30);
+    onMounted(() => {
+      startingValue.value = is_by_edit.value === true && department ? department.value.numberOfStudents : 30;
+      minValue.value = is_by_edit.value === true && department ? department.value.numberOfStudents : 10;
+    })
     const populateFormWithSelectedTeacher = (teacher:BaseUser | undefined) => {
       if(!teacher)
       {
@@ -136,7 +140,7 @@ export default defineComponent({
         : (department.value.errorOnToTime = false);
     };
     const changeNumberOfStudents = (value: number) => {
-      if (value && value > 0) department.value.numberOfStudents = value;
+      department.value.numberOfStudents = value ? value : 30;
     };
     const clearErrors = () => {
       if(department.value.errorOnFromTime === true){
@@ -156,6 +160,9 @@ export default defineComponent({
       changeNumberOfStudents,
       seeded_professors_reactive : seeded_professors,
       populateFormWithSelectedTeacher,
+      minValue,
+      maxValue,
+      startingValue
     };
   },
 });

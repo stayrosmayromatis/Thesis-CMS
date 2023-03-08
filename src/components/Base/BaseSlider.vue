@@ -1,6 +1,8 @@
 <template>
     <v-app>
-        <v-slider @update:model-value="changeNumberValue" direction="horizontal" :model-value="numberValue" :min="minValue" :max="maxValue"
+        <v-slider @update:model-value="changeNumberValue" direction="horizontal" 
+        :model-value="numberValue" 
+        :min="minValue" :max="maxValue"
             :show-ticks="showTicks" hide-details :step="1" thumb-label="always">
             <template v-slot:thumb-label="{ modelValue }">
                 {{ `${modelValue} άτομα` }}
@@ -16,7 +18,7 @@ export default defineComponent({
         minValue: {
             type: Number,
             required: true,
-            default: 0
+            default: 10
         },
         maxValue: {
             type: Number,
@@ -29,9 +31,9 @@ export default defineComponent({
             default: false
         },
         startingValue: {
-            type: Number,
+            type:Number,
             required: true,
-            default: 10
+            default: 30
         }
 
     },
@@ -42,7 +44,7 @@ export default defineComponent({
         const changeNumberValue = (value:number) => {
             if(value && value > 0){
                 numberValue.value=value;
-                context.emit('update:model-value',value)
+                context.emit('update:model-value',numberValue.value)
             }
         }
         return {numberValue,changeNumberValue}

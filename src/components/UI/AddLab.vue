@@ -60,11 +60,10 @@
               </v-btn>
             </div>
             <lab-form v-for="department in departments" :key="department.Guid" :department="department"
-              :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup"
-              :is_by_edit="isCallByEdit"
+              :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
               @global-error="validateEachDepartment"></lab-form>
             <div class="submit-button" v-if="departments.length">
-              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">ΚΑΤΑΧΩΡΗΣΗ</v-btn>
+              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">{{isCallByEdit === true ? 'ΕΝΗΜΕΡΩΣΗ' : 'ΚΑΤΑΧΩΡΗΣΗ'}}</v-btn>
             </div>
           </v-container>
         </v-form>
@@ -102,11 +101,9 @@ import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseRespon
 import { CourseController } from "@/config";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { InfoUpdateCourseResponse } from "@/models/BACKEND-MODELS/InfoUpdateCourseResponse";
-export interface TimeObject {
-  hours: number,
-  minutes: number,
-  seconds: number
-}
+import { TimeObject } from "@/models/BACKEND-MODELS/TimeObject";
+import { useTimeObjectExtensions } from "@/composables/useTimeObjectExtensions.composable";
+
 export default defineComponent({
   components: {
     LabForm,
@@ -126,8 +123,9 @@ export default defineComponent({
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
+    const {toTimeString} = useTimeObjectExtensions();
     const router = useRouter();
-    const route= useRoute();
+    const route = useRoute();
     const validationAlertShow = showAlert;
     const validationAlertType = typeOfAlert;
     const validationAlertTitle = alertTitle;
@@ -162,12 +160,11 @@ export default defineComponent({
       GetDisplayedLabs();
       displayedSemester.value = DisplayedLabs.value;
       //DisplayedSemester
-      if(hasQueryParams && hasQueryParams.includes("editId") && queryParamsLength == 1){
+      if (hasQueryParams && hasQueryParams.includes("editId") && queryParamsLength == 1) {
         //make the call to the api
-        const courseInfoEditIDT= await MakeGetCourseInfoForEditCall(Object.values(route.query)[0]!.toString());
-        if(!courseInfoEditIDT.Status || !courseInfoEditIDT.Data)
-        {
-          router.replace({ name : 'submittedLabs'});
+        const courseInfoEditIDT = await MakeGetCourseInfoForEditCall(Object.values(route.query)[0]!.toString());
+        if (!courseInfoEditIDT.Status || !courseInfoEditIDT.Data) {
+          router.replace({ name: 'submittedLabs' });
           return;
         }
         PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
@@ -178,7 +175,7 @@ export default defineComponent({
           closeAlert();
         }, 1000);
       }
-     
+
 
       //SeedProfessorsSegment
       await GetSeededProfessors();
@@ -385,7 +382,6 @@ export default defineComponent({
     });
     const validateEachDepartment = (dept: Department): boolean => {
       if (!dept.deptId || dept.deptId === " "
-        // dept.deptId === "" || dept.deptId === " " || dept.deptId === null
       ) {
         dept.errorOnDeptId = true;
         return false;
@@ -414,28 +410,7 @@ export default defineComponent({
       }
       return true;
     };
-    function toTimeString(timeObject: TimeObject): string {
-      let result: string = "";
-      if (timeObject.hours < 10) {
-        result = `0${timeObject.hours}:`;
-      }
-      else {
-        result = `${timeObject.hours}:`;
-      }
-      if (timeObject.minutes < 10) {
-        result += `0${timeObject.minutes}:`
-      }
-      else {
-        result += `${timeObject.minutes}:`
-      }
-      if (timeObject.seconds < 10) {
-        result += `0${timeObject.seconds}`
-      }
-      else {
-        result += `${timeObject.seconds}`
-      }
-      return result;
-    }
+    
     const submitForm = async () => {
       v$.value.$validate();
       if (v$.value.$error) {
@@ -451,7 +426,7 @@ export default defineComponent({
         setTypeOfAlert("error");
         return;
       }
-      
+
       for (let dept of departments.value) {
         if (validateEachDepartment(dept) === false) {
           allDeptsAreCorrect = false;
@@ -494,8 +469,7 @@ export default defineComponent({
       }
 
       const makeCreateCourseApiResponse = await MakeCreateCourseRequest(createCourseRequest);
-      if(!makeCreateCourseApiResponse.Status || !makeCreateCourseApiResponse.Data)
-      {
+      if (!makeCreateCourseApiResponse.Status || !makeCreateCourseApiResponse.Data) {
         somethingWentWrongModal.value = true;
         openAlert("Αποτυχία καταχώρησης εργαστηρίου");
         setTypeOfAlert("error");
@@ -506,13 +480,13 @@ export default defineComponent({
         return;
       }
       openAlert("Επιτυχής καταχώρηση εργαστηρίου");
-        setTypeOfAlert("success");
-        setTimeout(() => {
-          closeAlert();
-          somethingWentWrongModal.value = false;
-          successFullSubmision.value = true;
-          router.replace({ name: 'labList' })
-        }, 1500);
+      setTypeOfAlert("success");
+      setTimeout(() => {
+        closeAlert();
+        somethingWentWrongModal.value = false;
+        successFullSubmision.value = true;
+        router.replace({ name: 'labList' })
+      }, 1500);
       return;
     };
     const anythingIsPopulated = computed(() => {
@@ -527,9 +501,9 @@ export default defineComponent({
       return false;
     });
 
-    const MakeCreateCourseRequest = async (createCourseRequest : CreateCourseRequest):Promise<InternalDataTransfter<boolean>> => {
-      if(!createCourseRequest)
-        return {Status : false,Data:false,Error:"Request object null"};
+    const MakeCreateCourseRequest = async (createCourseRequest: CreateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
+      if (!createCourseRequest)
+        return { Status: false, Data: false, Error: "Request object null" };
       const createCourseApiRequest = await useAxios(CourseController + 'create-course',
         {
           method: 'POST',
@@ -540,52 +514,49 @@ export default defineComponent({
       if (createCourseApiRequest.isFinished) {
         const createCourseApiResponse: ApiResult<CreateCourseResponse> = createCourseApiRequest.data.value;
         if (createCourseApiResponse.Status === false || !createCourseApiResponse.Status || !createCourseApiResponse.Data) {
-          return {Status : false,Data:false,Error:"Request call returned false"};
+          return { Status: false, Data: false, Error: "Request call returned false" };
         }
-        return {Status : true,Data:true};
+        return { Status: true, Data: true };
       }
-      return {Status : false,Data:false,Error:"Request call never finished"};
+      return { Status: false, Data: false, Error: "Request call never finished" };
     }
-    const MakeGetCourseInfoForEditCall = async (courseGuid:string):Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
-      if(!courseGuid)
-        return {Status : false,Data:null,Error:"Request object null"};
-      const getCourseInfoForEditApiRequest = await useAxios(CourseController + 'get-course-info-for-edit/'+courseGuid,
-      {
-        method: 'GET',
-      },
+    const MakeGetCourseInfoForEditCall = async (courseGuid: string): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
+      if (!courseGuid)
+        return { Status: false, Data: null, Error: "Request object null" };
+      const getCourseInfoForEditApiRequest = await useAxios(CourseController + 'get-course-info-for-edit/' + courseGuid,
+        {
+          method: 'GET',
+        },
         setBackendInstanceAuth()
       );
-      if(getCourseInfoForEditApiRequest.isFinished)
-      {
-        const getCourseInfoForEditApiResponse : ApiResult<InfoUpdateCourseResponse> = getCourseInfoForEditApiRequest.data.value;
-          if (getCourseInfoForEditApiResponse.Status === false || !getCourseInfoForEditApiResponse.Status || !getCourseInfoForEditApiResponse.Data) {
-            return {Status : false,Data:null,Error:"Request call returned false"};
-          }
-          return {Status : true,Data:getCourseInfoForEditApiResponse.Data};
+      if (getCourseInfoForEditApiRequest.isFinished) {
+        const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> = getCourseInfoForEditApiRequest.data.value;
+        if (getCourseInfoForEditApiResponse.Status === false || !getCourseInfoForEditApiResponse.Status || !getCourseInfoForEditApiResponse.Data) {
+          return { Status: false, Data: null, Error: "Request call returned false" };
+        }
+        return { Status: true, Data: getCourseInfoForEditApiResponse.Data };
       }
-      return {Status : false,Data:null,Error:"Request call never finished"};
+      return { Status: false, Data: null, Error: "Request call never finished" };
     };
-    const PopulateTheFormObjectInEditMode = (data:InfoUpdateCourseResponse) => {
-      if(!data)
+    const PopulateTheFormObjectInEditMode = (data: InfoUpdateCourseResponse) => {
+      if (!data)
         return;
-        formState.labId = data.CourseCode,
+      formState.labId = data.CourseCode,
         formState.labTitle = data.CourseName,
-        formState.attendance = 
+        formState.attendance =
         {
-          title : data.CourseAttendanceString,
-          value : data.CourseAttendance,
+          title: data.CourseAttendanceString,
+          value: data.CourseAttendance,
         };
-        displayedSemester.value.find((val) => {
-          if(val.value === data.Semester)
-          {
-            val.isActive = true;
-          }
-        });
-        formState.semester = data.Semester;
-        formState.description = data.ShortDescription;
-        formState.semester = data.Semester;
+      displayedSemester.value.find((val) => {
+        if (val.value === data.Semester) {
+          val.isActive = true;
+        }
+      });
+      formState.semester = data.Semester;
+      formState.description = data.ShortDescription;
+      formState.semester = data.Semester;
       formState.departments = data.Labs;
-      return;
     };
     return {
       emitMobileViewClose,
