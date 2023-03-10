@@ -216,7 +216,8 @@ export default defineComponent({
           showConfirmDeletionModal.value = false;
           return;
         }
-        if (await confirm()){
+        if (await confirm())
+        {
           const makeConfirmDeleteCallResponse = await MakeTheConfirmDeleteCall();
           showConfirmDeletionModal.value = false;
           if(!makeConfirmDeleteCallResponse.Status)
@@ -236,7 +237,8 @@ export default defineComponent({
     }
     const MakeTheInformationCall = async ():Promise<InternalDataTransfter<boolean>> => {
       const api_response = await useAxios(InfoController +`deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`,{ method: "GET" },setBackendInstanceAuth());
-      if (api_response.isFinished) {
+      if (api_response.isFinished) 
+      {
         const api_response_dta: ApiResult<InfoAggregateObjectResponse> =api_response.data.value;
         if (api_response_dta.Status === true && api_response_dta.Data)
         {
