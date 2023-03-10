@@ -5,12 +5,23 @@
         <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
       </v-card>
     </div>
-    <base-alert :alert-type-prop="validationAlertType" :show="validationAlertShow"
-      :title="validationAlertTitle"></base-alert>
-    <base-dialog v-if="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"></base-dialog>
-    <base-dialog v-if="somethingWentWrongModal" :route-change-authorizer="false" inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
-      inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"></base-dialog>
+    <base-alert
+      :alert-type-prop="validationAlertType"
+      :show="validationAlertShow"
+      :title="validationAlertTitle"
+    ></base-alert>
+    <base-dialog
+      v-if="showRouteLeaveModal"
+      :route-change-authorizer="true"
+      inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
+      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"
+    ></base-dialog>
+    <base-dialog
+      v-if="somethingWentWrongModal"
+      :route-change-authorizer="false"
+      inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
+      inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
+    ></base-dialog>
     <base-dialog
       v-if="showConfirmDeletionModal"
       :route-change-authorizer="true"
@@ -18,14 +29,19 @@
       :inner-description="confirmDeletionInnerDescription"
     ></base-dialog>
 
-      <div class="parent-card-form">
+    <div class="parent-card-form">
       <v-card elevation="5">
         <v-form @submit.prevent="submitForm">
           <v-container>
             <div :class="{ 'error-color': v$.semester.$error }">
               <v-chip-group>
-                <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
-                  v-for="semester of displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
+                <v-chip
+                  :class="{ 'active-chip': semester.isActive }"
+                  @click="clickOnChip(semester.value)"
+                  v-for="semester of displayedSemester"
+                  :key="semester.title"
+                  >{{ semester.title }}</v-chip
+                >
               </v-chip-group>
             </div>
             <v-divider inset></v-divider>
@@ -33,18 +49,36 @@
               <label for="year">Βασικά Στοιχεία</label>
             </div>
             <div class="form-first">
-              <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
-                label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
-              <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
-                label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
+              <v-text-field
+                :class="{ 'error-color': v$.labId.$error }"
+                :error-messages="errorOfLabId"
+                label="Κωδικός Εργαστηρίου"
+                v-model.trim="formState.labId"
+              ></v-text-field>
+              <v-text-field
+                :class="{ 'error-color': v$.labTitle.$error }"
+                :error-messages="errorOfLabTitle"
+                label="Τίτλος Εργαστηρίου"
+                v-model.trim="formState.labTitle"
+              ></v-text-field>
             </div>
             <div class="form-first">
-              <v-text-field :class="{ 'error-color': v$.description.$error }" :error-messages="errorOfDescription"
-                label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
+              <v-text-field
+                :class="{ 'error-color': v$.description.$error }"
+                :error-messages="errorOfDescription"
+                label="Περιγραφή Εργαστηρίου"
+                v-model.trim="formState.description"
+              ></v-text-field>
               <div class="percent49-5">
-                <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
-                  :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
-                  v-model="formState.attendance" no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
+                <v-select
+                  :class="{ 'error-color': v$.labTitle.$error }"
+                  :items="displayedAttendaceValues"
+                  :error-messages="errorOfAttendance"
+                  label="Παρακολούθηση"
+                  density="default"
+                  v-model="formState.attendance"
+                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"
+                ></v-select>
               </div>
             </div>
             <v-divider inset></v-divider>
@@ -52,25 +86,52 @@
               <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
             </div>
             <div class="info-centerer" v-if="departments.length">
-              <base-alert :alert-type-prop="'info'" :show="true"
-                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
+              <base-alert
+                :alert-type-prop="'info'"
+                :show="true"
+                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"
+              ></base-alert>
             </div>
             <div class="form-control-add-btn">
-              <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
-                  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <v-btn
+                type="button"
+                @click="addFormGroup"
+                elevation="4"
+                color="green"
+                ><svg
+                  width="30"
+                  height="30"
+                  clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  stroke-linejoin="round"
+                  stroke-miterlimit="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                    fill-rule="nonzero" />
+                    fill-rule="nonzero"
+                  />
                 </svg>
                 ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
               </v-btn>
             </div>
-            <lab-form v-for="department in departments" :key="department.Guid" :department="department"
-              :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
-              @global-error="validateEachDepartment"></lab-form>
+            <lab-form
+              v-for="department in departments"
+              :key="department.Guid"
+              :department="department"
+              :seeded_professors="seededProfessors"
+              @deleteByDeptId="removeFormGroup"
+              :is_by_edit="isCallByEdit"
+              @global-error="validateEachDepartment"
+            ></lab-form>
             <div class="submit-button" v-if="departments.length">
-              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">{{isCallByEdit === true ? 'ΕΝΗΜΕΡΩΣΗ' : 'ΚΑΤΑΧΩΡΗΣΗ'}}</v-btn>
+              <v-btn
+                id="submit-btn"
+                :disabled="buttonDisablity"
+                type="submit"
+                >{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" : "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn
+              >
             </div>
           </v-container>
         </v-form>
@@ -86,7 +147,7 @@ import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composabl
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { reactive, Ref, ref, onMounted } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
-import LabForm from '@/components/UI/LabForm.vue';
+import LabForm from "@/components/UI/LabForm.vue";
 import { Department } from "@/models/department.type";
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
 import { Lab } from "@/models/lab.type";
@@ -98,9 +159,11 @@ import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { useAlert } from "@/composables/showAlert.composable";
 import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
-import { confirm } from '@/composables/dialog.composable';
-import { v4 as uuidv4 } from 'uuid';
-import { CreateCourseRequest, LaboratoryRequest } from "@/models/BACKEND-MODELS/CreateCourseRequest";
+import { v4 as uuidv4 } from "uuid";
+import {
+  CreateCourseRequest,
+  LaboratoryRequest,
+} from "@/models/BACKEND-MODELS/CreateCourseRequest";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
@@ -110,15 +173,18 @@ import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { InfoUpdateCourseResponse } from "@/models/BACKEND-MODELS/InfoUpdateCourseResponse";
 import { TimeObject } from "@/models/BACKEND-MODELS/TimeObject";
 import { useTimeObjectExtensions } from "@/composables/useTimeObjectExtensions.composable";
-import { InfoAggregateObjectResponse } from '@/models/BACKEND-MODELS/InfoAggregateObjectResponse';
-import { TypeStaff } from '@/enums/StaffTypeEnum';
+import { InfoAggregateObjectResponse } from "@/models/BACKEND-MODELS/InfoAggregateObjectResponse";
+import { TypeStaff } from "@/enums/StaffTypeEnum";
 import { confirm } from "@/composables/dialog.composable";
-import { UpdateCourseRequest, UpdateLaboratories } from '../../models/BACKEND-MODELS/UpdateCourseRequest';
+import {
+  UpdateCourseRequest,
+  UpdateLaboratories,
+} from "../../models/BACKEND-MODELS/UpdateCourseRequest";
 export default defineComponent({
   components: {
     LabForm,
     BaseAlert,
-    BaseDialog
+    BaseDialog,
   },
   emits: ["closeMobileView"],
   setup(_, context) {
@@ -133,7 +199,7 @@ export default defineComponent({
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
-    const {toTimeString} = useTimeObjectExtensions();
+    const { toTimeString } = useTimeObjectExtensions();
     const router = useRouter();
     const route = useRoute();
     const validationAlertShow = showAlert;
@@ -150,20 +216,17 @@ export default defineComponent({
 
     onBeforeRouteLeave(async () => {
       closeAlert();
-      if (successFullSubmision.value === true)
-        return true;
+      if (successFullSubmision.value === true) return true;
       if (anythingIsPopulated.value === true) {
         showRouteLeaveModal.value = true;
         if (await confirm()) {
           showRouteLeaveModal.value = false;
           return true;
-        }
-        else {
+        } else {
           showRouteLeaveModal.value = false;
           return false;
         }
-      }
-      else {
+      } else {
         return true;
       }
     });
@@ -174,11 +237,17 @@ export default defineComponent({
       GetDisplayedLabs();
       displayedSemester.value = DisplayedLabs.value;
       //DisplayedSemester
-      if (hasQueryParams && hasQueryParams.includes("editId") && queryParamsLength == 1) {
+      if (
+        hasQueryParams &&
+        hasQueryParams.includes("editId") &&
+        queryParamsLength == 1
+      ) {
         //make the call to the api
-        const courseInfoEditIDT = await MakeGetCourseInfoForEditCall(Object.values(route.query)[0]!.toString());
+        const courseInfoEditIDT = await MakeGetCourseInfoForEditCall(
+          Object.values(route.query)[0]!.toString()
+        );
         if (!courseInfoEditIDT.Status || !courseInfoEditIDT.Data) {
-          router.replace({ name: 'submittedLabs' });
+          router.replace({ name: "submittedLabs" });
           return;
         }
         PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
@@ -189,7 +258,6 @@ export default defineComponent({
           closeAlert();
         }, 1000);
       }
-
 
       //SeedProfessorsSegment
       await GetSeededProfessors();
@@ -242,42 +310,43 @@ export default defineComponent({
         numberOfStudents: 30,
       });
     };
-    const removeFormGroup = async (deptGuid: string):Promise<void> => {
-      if (!deptGuid)
-      {
+    const removeFormGroup = async (deptGuid: string): Promise<void> => {
+      if (!deptGuid) {
         return;
       }
-      if(isCallByEdit && isCallByEdit.value === true)
-      {
+      if (isCallByEdit && isCallByEdit.value === true) {
         const courseGuid = Object.values(route.query)[0]!.toString();
         const labGuid = deptGuid;
-        const makeTheDeleteInfoCallIDT  = await MakeTheDeleteInformationCall(labGuid,courseGuid);
-        if(!makeTheDeleteInfoCallIDT.Status)
-        {
-          if(showAlert.value === true)
-          {
+        const makeTheDeleteInfoCallIDT = await MakeTheDeleteInformationCall(
+          labGuid,
+          courseGuid
+        );
+        if (!makeTheDeleteInfoCallIDT.Status) {
+          if (showAlert.value === true) {
             closeAlert();
           }
-          setTypeOfAlert('error');
+          setTypeOfAlert("error");
           openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
           setTimeout(() => {
             closeAlert();
-          },1500);
+          }, 1500);
           showConfirmDeletionModal.value = false;
           return;
         }
-        if (await confirm())
-        {
-          const makeTheDeleteApiCall = await MakeTheDeleteApiCall(labGuid,courseGuid);
+        if (await confirm()) {
+          const makeTheDeleteApiCall = await MakeTheDeleteApiCall(
+            labGuid,
+            courseGuid
+          );
           showConfirmDeletionModal.value = false;
-        }
-        else
-        {
+        } else {
           showConfirmDeletionModal.value = false;
           return;
         }
       }
-      departments.value = departments.value.filter((val) => val.Guid !== deptGuid);
+      departments.value = departments.value.filter(
+        (val) => val.Guid !== deptGuid
+      );
     };
     //Just the initial values
     const displayedAttendaceValues = Array(
@@ -316,10 +385,10 @@ export default defineComponent({
     const mustBeANumberOrDash = (value: string) => {
       const pattern = /^[0-9]{4}\-[0-9]{4}$/;
       if (value.match(pattern)) {
-        return true
+        return true;
       }
       return false;
-    }
+    };
     const rules = computed(() => {
       return {
         labId: {
@@ -335,7 +404,10 @@ export default defineComponent({
             "Ελάχιστο όριο 9 χαρακτήρες",
             minLength(9)
           ),
-          MustBeANumber: helpers.withMessage("Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες", mustBeANumberOrDash)
+          MustBeANumber: helpers.withMessage(
+            "Ο κωδικός πρέπει να περιέχει μόνο αριθμούς και πάυλες",
+            mustBeANumberOrDash
+          ),
         },
         labTitle: {
           Required: helpers.withMessage(
@@ -426,8 +498,7 @@ export default defineComponent({
       return false;
     });
     const validateEachDepartment = (dept: Department): boolean => {
-      if (!dept.deptId || dept.deptId === " "
-      ) {
+      if (!dept.deptId || dept.deptId === " ") {
         dept.errorOnDeptId = true;
         return false;
       }
@@ -442,7 +513,11 @@ export default defineComponent({
         return false;
       }
       // @ts-ignore
-      if (dept.fromTime.hours > dept.toTime.hours || (dept.fromTime.hours == dept.toTime.hours && dept.fromTime.minutes >= dept.toTime.minutes)) {
+      if (
+        dept.fromTime.hours > dept.toTime.hours ||
+        (dept.fromTime.hours == dept.toTime.hours &&
+          dept.fromTime.minutes >= dept.toTime.minutes)
+      ) {
         dept.errorOnToTime = true;
         dept.errorOnFromTime = true;
         return false;
@@ -487,34 +562,34 @@ export default defineComponent({
         return;
       }
 
-      let requestToBeMade : CreateCourseRequest | UpdateCourseRequest | undefined= undefined;
-      if(isCallByEdit.value === true)
-      {
-        requestToBeMade ={
-          CourseId : Object.values(route.query)[0]!.toString(),
+      let requestToBeMade:
+        | CreateCourseRequest
+        | UpdateCourseRequest
+        | undefined = undefined;
+      if (isCallByEdit.value === true) {
+        requestToBeMade = {
+          CourseId: Object.values(route.query)[0]!.toString(),
           CourseCode: formState.labId,
           CourseName: formState.labTitle,
           Semester: formState.semester!,
           ShortDescription: formState.description!,
           CourseAttentance: formState.attendance!.value!,
           Labs: new Array<UpdateLaboratories>(),
-        }
+        };
         for (const department of formState.departments) {
           requestToBeMade.Labs!.push({
-            LabId : department.Guid,
-          DaysOfWeek: department.day,
-          // @ts-ignore
-          From: toTimeString(department.fromTime),
-          // @ts-ignore
-          To: toTimeString(department.toTime),
-          LabName: department.deptId,
-          ProfId: department.selectedTeacher!.Guid!,
-          Seats: department.numberOfStudents,
-        });
-      }
-      }
-      else
-      {
+            LabId: department.Guid,
+            DaysOfWeek: department.day,
+            // @ts-ignore
+            From: toTimeString(department.fromTime),
+            // @ts-ignore
+            To: toTimeString(department.toTime),
+            LabName: department.deptId,
+            ProfId: department.selectedTeacher!.Guid!,
+            Seats: department.numberOfStudents,
+          });
+        }
+      } else {
         requestToBeMade = {
           CourseCode: formState.labId,
           CourseName: formState.labTitle,
@@ -522,9 +597,9 @@ export default defineComponent({
           ShortDescription: formState.description!,
           CourseAttentance: formState.attendance!.value!,
           Labs: new Array<LaboratoryRequest>(),
-        }
+        };
         for (const department of formState.departments) {
-            requestToBeMade.Labs!.push({
+          requestToBeMade.Labs!.push({
             DaysOfWeekEnums: department.day,
             // @ts-ignore
             From: toTimeString(department.fromTime),
@@ -537,28 +612,25 @@ export default defineComponent({
         }
       }
 
-
-      // const createCourseRequest: CreateCourseRequest =
-      // {
-      //   CourseCode: formState.labId,
-      //   CourseName: formState.labTitle,
-      //   Semester: formState.semester!,
-      //   ShortDescription: formState.description!,
-      //   CourseAttentance: formState.attendance!.value!,
-      //   Labs: Array<LaboratoryRequest>(),
-      // };
       if (!requestToBeMade || !requestToBeMade.Labs) {
         somethingWentWrongModal.value = true;
         return;
       }
 
-
-      let makeCreateCourseApiResponse =isCallByEdit.value === true ?  await MakeCreateCourseRequest(requestToBeMade as CreateCourseRequest) : await MakeUpdateCourseRequest(requestToBeMade as UpdateCourseRequest);
-      if(showAlert.value === true)
-          closeAlert();
-      if (!makeCreateCourseApiResponse.Status || !makeCreateCourseApiResponse.Data) {
+      let makeCreateCourseApiResponse = !isCallByEdit.value
+        ? await MakeCreateCourseRequest(requestToBeMade as CreateCourseRequest)
+        : await MakeUpdateCourseRequest(requestToBeMade as UpdateCourseRequest);
+      if (showAlert.value === true) closeAlert();
+      if (
+        !makeCreateCourseApiResponse.Status ||
+        !makeCreateCourseApiResponse.Data
+      ) {
         somethingWentWrongModal.value = true;
-        openAlert(`Αποτυχία ${isCallByEdit.value === true ? "ενημέρωσης": "καταχώρησης"} εργαστηρίου`);
+        openAlert(
+          `Αποτυχία ${
+            isCallByEdit.value === true ? "ενημέρωσης" : "καταχώρησης"
+          } εργαστηρίου`
+        );
         setTypeOfAlert("error");
         setTimeout(() => {
           closeAlert();
@@ -566,13 +638,22 @@ export default defineComponent({
         }, 1500);
         return;
       }
-      openAlert(`Επιτυχής  ${isCallByEdit.value === true ? "ενημέρωση": "καταχώρηση"} εργαστηρίου`);
       setTypeOfAlert("success");
+      openAlert(
+        `Επιτυχής  ${
+          isCallByEdit.value === true ? "ενημέρωση" : "καταχώρηση"
+        } εργαστηρίου`
+      );
+      // await closeAlert(1500);
+      // somethingWentWrongModal.value = false;
+      // successFullSubmision.value = true;
+      // router.replace({ name: 'labList' })
+
       setTimeout(() => {
         closeAlert();
         somethingWentWrongModal.value = false;
         successFullSubmision.value = true;
-        router.replace({ name: 'labList' })
+        router.replace({ name: "labList" });
       }, 1500);
       return;
     };
@@ -588,73 +669,120 @@ export default defineComponent({
       return false;
     });
 
-    const MakeCreateCourseRequest = async (createCourseRequest: CreateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
+    const MakeCreateCourseRequest = async (
+      createCourseRequest: CreateCourseRequest
+    ): Promise<InternalDataTransfter<boolean>> => {
       if (!createCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      const createCourseApiRequest = await useAxios(CourseController + 'create-course',
+      const createCourseApiRequest = await useAxios(
+        CourseController + "create-course",
         {
-          method: 'POST',
-          data: createCourseRequest
+          method: "POST",
+          data: createCourseRequest,
         },
         setBackendInstanceAuth()
       );
       if (createCourseApiRequest.isFinished) {
-        const createCourseApiResponse: ApiResult<CreateCourseResponse> = createCourseApiRequest.data.value;
-        if (createCourseApiResponse.Status === false || !createCourseApiResponse.Status || !createCourseApiResponse.Data) {
-          return { Status: false, Data: false, Error: "Request call returned false" };
+        const createCourseApiResponse: ApiResult<CreateCourseResponse> =
+          createCourseApiRequest.data.value;
+        if (
+          createCourseApiResponse.Status === false ||
+          !createCourseApiResponse.Status ||
+          !createCourseApiResponse.Data
+        ) {
+          return {
+            Status: false,
+            Data: false,
+            Error: "Request call returned false",
+          };
         }
         return { Status: true, Data: true };
       }
-      return { Status: false, Data: false, Error: "Request call never finished" };
+      return {
+        Status: false,
+        Data: false,
+        Error: "Request call never finished",
+      };
     };
-    const MakeUpdateCourseRequest = async(updateCourseRequest: UpdateCourseRequest) : Promise<InternalDataTransfter<boolean>> => {
+    const MakeUpdateCourseRequest = async (
+      updateCourseRequest: UpdateCourseRequest
+    ): Promise<InternalDataTransfter<boolean>> => {
       if (!updateCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      const updateCourseApiRequest = await useAxios(CourseController + 'update-course',
-      {
-        method: 'POST',
-        data: updateCourseRequest
-      },
-      setBackendInstanceAuth()
+      const updateCourseApiRequest = await useAxios(
+        CourseController + "update-course",
+        {
+          method: "POST",
+          data: updateCourseRequest,
+        },
+        setBackendInstanceAuth()
       );
-      if(updateCourseApiRequest.isFinished)
-      {
-        const updateCourseApiResponse:ApiResult<CreateCourseResponse> = updateCourseApiRequest.data.value;
-          if (updateCourseApiResponse.Status === false || !updateCourseApiResponse.Status || !updateCourseApiResponse.Data) {
-            return { Status: false, Data: false, Error: "Request call returned false" };
+      if (updateCourseApiRequest.isFinished) {
+        const updateCourseApiResponse: ApiResult<CreateCourseResponse> =
+          updateCourseApiRequest.data.value;
+        if (
+          updateCourseApiResponse.Status === false ||
+          !updateCourseApiResponse.Status ||
+          !updateCourseApiResponse.Data
+        ) {
+          return {
+            Status: false,
+            Data: false,
+            Error: "Request call returned false",
+          };
         }
         return { Status: true, Data: true };
       }
-      return { Status: false, Data: false, Error: "Request call never finished" };
+      return {
+        Status: false,
+        Data: false,
+        Error: "Request call never finished",
+      };
     };
-    const MakeGetCourseInfoForEditCall = async (courseGuid: string): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
+    const MakeGetCourseInfoForEditCall = async (
+      courseGuid: string
+    ): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
       if (!courseGuid)
         return { Status: false, Data: null, Error: "Request object null" };
-      const getCourseInfoForEditApiRequest = await useAxios(CourseController + 'get-course-info-for-edit/' + courseGuid,
+      const getCourseInfoForEditApiRequest = await useAxios(
+        CourseController + "get-course-info-for-edit/" + courseGuid,
         {
-          method: 'GET',
+          method: "GET",
         },
         setBackendInstanceAuth()
       );
       if (getCourseInfoForEditApiRequest.isFinished) {
-        const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> = getCourseInfoForEditApiRequest.data.value;
-        if (getCourseInfoForEditApiResponse.Status === false || !getCourseInfoForEditApiResponse.Status || !getCourseInfoForEditApiResponse.Data) {
-          return { Status: false, Data: null, Error: "Request call returned false" };
+        const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> =
+          getCourseInfoForEditApiRequest.data.value;
+        if (
+          getCourseInfoForEditApiResponse.Status === false ||
+          !getCourseInfoForEditApiResponse.Status ||
+          !getCourseInfoForEditApiResponse.Data
+        ) {
+          return {
+            Status: false,
+            Data: null,
+            Error: "Request call returned false",
+          };
         }
         return { Status: true, Data: getCourseInfoForEditApiResponse.Data };
       }
-      return { Status: false, Data: null, Error: "Request call never finished" };
+      return {
+        Status: false,
+        Data: null,
+        Error: "Request call never finished",
+      };
     };
-    const PopulateTheFormObjectInEditMode = (data: InfoUpdateCourseResponse) => {
-      if (!data)
-        return;
-      formState.labId = data.CourseCode,
-        formState.labTitle = data.CourseName,
-        formState.attendance =
-        {
+    const PopulateTheFormObjectInEditMode = (
+      data: InfoUpdateCourseResponse
+    ) => {
+      if (!data) return;
+      (formState.labId = data.CourseCode),
+        (formState.labTitle = data.CourseName),
+        (formState.attendance = {
           title: data.CourseAttendanceString,
           value: data.CourseAttendance,
-        };
+        });
       displayedSemester.value.find((val) => {
         if (val.value === data.Semester) {
           val.isActive = true;
@@ -665,65 +793,96 @@ export default defineComponent({
       formState.semester = data.Semester;
       formState.departments = data.Labs;
     };
-    const MakeTheDeleteInformationCall = async (labGuid:string,courseGuid:string):Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(InfoController +`deletion-informant/${courseGuid}/${labGuid}`,{ method: "GET" },setBackendInstanceAuth());
-      if (api_response.isFinished)
-      {
-        const api_response_dta: ApiResult<InfoAggregateObjectResponse> =api_response.data.value;
-        if (api_response_dta.Status === true && api_response_dta.Data)
-        {
-          if (api_response_dta.Data.PersonAffiliation && (api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF || api_response_dta.Data.PersonAffiliation === TypeStaff.ADMIN))
-          {
-            if ((api_response_dta.Data.FoundRegistration === false ||!api_response_dta.Data.FoundRegistration) &&
-                (api_response_dta.Data.CountOfStudentsSubmited === 0 ||!api_response_dta.Data.CountOfStudentsSubmited))
-                {
+    const MakeTheDeleteInformationCall = async (
+      labGuid: string,
+      courseGuid: string
+    ): Promise<InternalDataTransfter<boolean>> => {
+      const api_response = await useAxios(
+        InfoController + `deletion-informant/${courseGuid}/${labGuid}`,
+        { method: "GET" },
+        setBackendInstanceAuth()
+      );
+      if (api_response.isFinished) {
+        const api_response_dta: ApiResult<InfoAggregateObjectResponse> =
+          api_response.data.value;
+        if (api_response_dta.Status === true && api_response_dta.Data) {
+          if (
+            api_response_dta.Data.PersonAffiliation &&
+            (api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF ||
+              api_response_dta.Data.PersonAffiliation === TypeStaff.ADMIN)
+          ) {
+            if (
+              (api_response_dta.Data.FoundRegistration === false ||
+                !api_response_dta.Data.FoundRegistration) &&
+              (api_response_dta.Data.CountOfStudentsSubmited === 0 ||
+                !api_response_dta.Data.CountOfStudentsSubmited)
+            ) {
               showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName ?? ""}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""}</span>.
+              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${
+                api_response_dta.Data.LabName ?? ""
+              }</span> του μαθήματος <span style="color:green;">${
+                api_response_dta.Data.CourseName ?? ""
+              }</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return {Data : true ,Status :true};
-            } else if (api_response_dta.Data.FoundRegistration === true &&api_response_dta.Data.CountOfStudentsSubmited > 0)
-            {
+              return { Data: true, Status: true };
+            } else if (
+              api_response_dta.Data.FoundRegistration === true &&
+              api_response_dta.Data.CountOfStudentsSubmited > 0
+            ) {
               //Found dilwseis what do you want to do?
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
               Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
               Αυτο συνεπάγεται και στην <span style="color:#ff4545;">διαγραφή όλων των υπάρχοντων δηλώσεων των φοιτητών μέχρι αυτή τη στιγμή</span>.
               Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return {Data : true ,Status :true};
-            }
-            else if ((api_response_dta.Data.FoundRegistration === true &&!api_response_dta.Data.CountOfStudentsSubmited) ||api_response_dta.Data.CountOfStudentsSubmited === 0)
-             {
+              return { Data: true, Status: true };
+            } else if (
+              (api_response_dta.Data.FoundRegistration === true &&
+                !api_response_dta.Data.CountOfStudentsSubmited) ||
+              api_response_dta.Data.CountOfStudentsSubmited === 0
+            ) {
               //Dilwseis not found though do you wanna continue?
               showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName ?? ""}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""}</span>.
+              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${
+                api_response_dta.Data.LabName ?? ""
+              }</span> του μαθήματος <span style="color:green;">${
+                api_response_dta.Data.CourseName ?? ""
+              }</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return {Data : true ,Status :true};
-            }
-            else {
+              return { Data: true, Status: true };
+            } else {
               showConfirmDeletionModal.value = false;
-              return {Data : null,Status :false ,Error:"Error"};
+              return { Data: null, Status: false, Error: "Error" };
             }
-          }
-          else{
-            return {Data : null,Status :false ,Error:"FatalError"};
+          } else {
+            return { Data: null, Status: false, Error: "FatalError" };
           }
         }
       }
       showConfirmDeletionModal.value = false;
-      return {Data : null,Status :false ,Error:"Error"};
+      return { Data: null, Status: false, Error: "Error" };
     };
-    const MakeTheDeleteApiCall = async (labGuid:string,courseGuid:string):Promise<InternalDataTransfter<boolean>> =>
-    {
-      const api_response = await useAxios(CourseController +`confirm-delete-submitted-course/${labGuid}/${courseGuid}`,{method: "POST",},setBackendInstanceAuth());
-      if (api_response.isFinished)
-      {
-        const api_data_response: ApiResult<boolean> =api_response.data.value;
-        return {Data: api_data_response.Data,Status : api_data_response.Status}
+    const MakeTheDeleteApiCall = async (
+      labGuid: string,
+      courseGuid: string
+    ): Promise<InternalDataTransfter<boolean>> => {
+      const api_response = await useAxios(
+        CourseController +
+          `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
+        { method: "POST" },
+        setBackendInstanceAuth()
+      );
+      if (api_response.isFinished) {
+        const api_data_response: ApiResult<boolean> = api_response.data.value;
+        return {
+          Data: api_data_response.Data,
+          Status: api_data_response.Status,
+        };
       }
-      return {Data : null,Status :false ,Error:"Error"};
-    }
+      return { Data: null, Status: false, Error: "Error" };
+    };
     return {
       emitMobileViewClose,
       buttonDisablity,
@@ -752,7 +911,7 @@ export default defineComponent({
       isCallByEdit,
       showConfirmDeletionModal,
       confirmDeletionInnerTitle,
-      confirmDeletionInnerDescription
+      confirmDeletionInnerDescription,
     };
   },
 });
