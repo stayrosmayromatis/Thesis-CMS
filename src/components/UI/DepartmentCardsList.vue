@@ -171,7 +171,7 @@ export default defineComponent({
       );
       if(getDepartmentsByCourseCallRequest.isFinished)
       {
-        const 
+        const getDepartmentsByCourseCallResponse:ApiResult<>
       }
       return {Status:false,Data:false,Error:"Request didn't finish"};
     }
