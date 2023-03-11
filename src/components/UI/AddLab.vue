@@ -6,9 +6,9 @@
       </v-card>
     </div>
     <base-alert
-      :alert-type-prop="validationAlertType"
-      :show="validationAlertShow"
-      :title="validationAlertTitle"
+      :alert-type-prop="typeOfAlert"
+      :show="showAlert"
+      :title="alertTitle"
     ></base-alert>
     <base-dialog
       v-if="showRouteLeaveModal"
@@ -179,7 +179,7 @@ import { confirm } from "@/composables/dialog.composable";
 import {
   UpdateCourseRequest,
   UpdateLaboratories,
-} from "../../models/BACKEND-MODELS/UpdateCourseRequest";
+} from "@/models/BACKEND-MODELS/UpdateCourseRequest";
 export default defineComponent({
   components: {
     LabForm,
@@ -199,12 +199,9 @@ export default defineComponent({
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
-    const { toTimeString } = useTimeObjectExtensions();
+    const { toTimeString,scrollToTop } = useTimeObjectExtensions();
     const router = useRouter();
     const route = useRoute();
-    const validationAlertShow = showAlert;
-    const validationAlertType = typeOfAlert;
-    const validationAlertTitle = alertTitle;
     const seededProfessors = ref(new Array<BaseUser>());
     const showRouteLeaveModal = ref(false);
     const somethingWentWrongModal = ref(false);
@@ -213,7 +210,6 @@ export default defineComponent({
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
-
     onBeforeRouteLeave(async () => {
       closeAlert();
       if (successFullSubmision.value === true) return true;
@@ -253,11 +249,8 @@ export default defineComponent({
         PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
         isCallByEdit.value = true;
       }
-      if (showAlert.value === true) {
-        setTimeout(() => {
-          closeAlert();
-        }, 1000);
-      }
+
+      closeAlert(1000);
 
       //SeedProfessorsSegment
       await GetSeededProfessors();
@@ -271,7 +264,6 @@ export default defineComponent({
       return;
     };
     let deptIncremental = 1;
-    const show = true;
     const departments = ref(new Array<Department>());
     const displayedSemester = ref(new Array<DisplayedSemster>());
     const clickOnChip = (value: LabSemesterEnum) => {
@@ -322,14 +314,10 @@ export default defineComponent({
           courseGuid
         );
         if (!makeTheDeleteInfoCallIDT.Status) {
-          if (showAlert.value === true) {
-            closeAlert();
-          }
           setTypeOfAlert("error");
           openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
-          setTimeout(() => {
-            closeAlert();
-          }, 1500);
+          closeAlert(1500);
+          await delay(1500);
           showConfirmDeletionModal.value = false;
           return;
         }
@@ -533,17 +521,21 @@ export default defineComponent({
 
     const submitForm = async () => {
       v$.value.$validate();
+      let allDeptsAreCorrect: boolean | undefined = true;
       if (v$.value.$error) {
         console.log(v$.value.$errors);
-        openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
         setTypeOfAlert("error");
+        openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
+        scrollToTop();
+        closeAlert(1500);
         return;
       }
-      let allDeptsAreCorrect: boolean | undefined = true;
       if (!formState.departments || formState.departments.length == 0) {
         console.log("There are errors");
-        openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
         setTypeOfAlert("error");
+        openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
+        scrollToTop();
+        closeAlert(1500);
         return;
       }
 
@@ -557,8 +549,10 @@ export default defineComponent({
       }
 
       if (!allDeptsAreCorrect) {
-        openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
         setTypeOfAlert("error");
+        openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
+        scrollToTop();
+        closeAlert(1500);
         return;
       }
 
@@ -620,22 +614,23 @@ export default defineComponent({
       let makeCreateCourseApiResponse = !isCallByEdit.value
         ? await MakeCreateCourseRequest(requestToBeMade as CreateCourseRequest)
         : await MakeUpdateCourseRequest(requestToBeMade as UpdateCourseRequest);
-      if (showAlert.value === true) closeAlert();
+      closeAlert();
       if (
         !makeCreateCourseApiResponse.Status ||
         !makeCreateCourseApiResponse.Data
       ) {
         somethingWentWrongModal.value = true;
+        setTypeOfAlert("error");
         openAlert(
           `Αποτυχία ${
             isCallByEdit.value === true ? "ενημέρωσης" : "καταχώρησης"
           } εργαστηρίου`
-        );
-        setTypeOfAlert("error");
-        setTimeout(() => {
-          closeAlert();
-          somethingWentWrongModal.value = false;
-        }, 1500);
+          );
+
+        scrollToTop();
+        closeAlert(1500);
+        await delay(1500);
+        somethingWentWrongModal.value = false;
         return;
       }
       setTypeOfAlert("success");
@@ -643,18 +638,13 @@ export default defineComponent({
         `Επιτυχής  ${
           isCallByEdit.value === true ? "ενημέρωση" : "καταχώρηση"
         } εργαστηρίου`
-      );
-      // await closeAlert(1500);
-      // somethingWentWrongModal.value = false;
-      // successFullSubmision.value = true;
-      // router.replace({ name: 'labList' })
-
-      setTimeout(() => {
-        closeAlert();
-        somethingWentWrongModal.value = false;
-        successFullSubmision.value = true;
-        router.replace({ name: "labList" });
-      }, 1500);
+        );
+      scrollToTop();
+      closeAlert(1500);
+      await delay(1500);
+      somethingWentWrongModal.value = false;
+      successFullSubmision.value = true;
+      router.replace({ name: 'labList' })
       return;
     };
     const anythingIsPopulated = computed(() => {
@@ -883,6 +873,10 @@ export default defineComponent({
       }
       return { Data: null, Status: false, Error: "Error" };
     };
+    const delay = async (time: number) => {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    };
+
     return {
       emitMobileViewClose,
       buttonDisablity,
@@ -899,12 +893,11 @@ export default defineComponent({
       errorOfDescription,
       errorOfAttendance,
       validateEachDepartment,
-      show,
       displayedAttendaceValues,
       seededProfessors,
-      validationAlertShow,
-      validationAlertType,
-      validationAlertTitle,
+      showAlert,
+      typeOfAlert,
+      alertTitle,
       showRouteLeaveModal,
       toTimeString,
       somethingWentWrongModal,

@@ -44,6 +44,7 @@
               @update:model-value="validateAutoComplete"
               :open-on-clear="false"
               :error-messages="errorMessage"
+              no-data-text="Δεν βρέθηκαν καθηγητές. Παρακαλώ κάντε ανανέωση το παράθυρο."
             ></v-autocomplete>
           </div>
         </v-card-text>

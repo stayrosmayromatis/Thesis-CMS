@@ -23,7 +23,14 @@ export function useTimeObjectExtensions()
           result += `${timeObject.seconds}`
         }
         return result;
-      }
-    return {toTimeString}
-    
+    }
+    function scrollToTop(){
+      window.scrollTo({
+        top:0,
+        left:0,
+        behavior:"smooth"
+      });
+    }
+    return {toTimeString,scrollToTop}
+
 }

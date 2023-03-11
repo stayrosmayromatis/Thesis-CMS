@@ -107,7 +107,7 @@ export default defineComponent({
 body {
   box-sizing: border-box;
   background-color: #f4f4ff;
- 
+
 }
 html{
   overflow-y: auto !important;
