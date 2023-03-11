@@ -1,32 +1,44 @@
 <template>
   <div class="parent-card">
+    <base-alert
+    :show="showAlert"
+    :alert-type-prop="typeOfAlert"
+    :title="alertTitle"
+    ></base-alert>
     <v-card elevation="5" class="parent-label">
       <label> Επιλογη Τμηματος: </label>
       <label class="label__lab-title">
-        1601-2244 Δικτυα Υπολογιστων και Αρχιτεκτονικης Οργανωσης
+        {{CourseInfo}}
       </label>
     </v-card>
     <div class="cards-overview">
       <department-card
-        v-for="item in arrayfordisplay"
-        :key="item.timestring"
-        :department_name="item.department_name"
-        :available_seats="item.available_seats"
-        :duration="item.duration"
-        :max_seats="item.max_seats"
-        :timestring="item.timestring"
+        v-for="lab of resultArray"
+        :key="lab.LabId"
+        :department_name="lab.LabName"
+        :available_seats="lab.AvailableSeats"
+        :duration="lab.Duration"
+        :max_seats="lab.MaxSeats"
+        :timestring="`${lab.FromString} - ${lab.ToString}`"
+        :course_id="courseGuid"
+        :ladb_id="lab.LabId"
+        :completeness_percent="lab.CompletenessPercent"
       ></department-card>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs, onMounted } from 'vue';
+import { defineComponent, toRefs, onMounted, ref, computed } from 'vue';
 import DepartmentCard from "@/components/UI/DepartmentCard.vue";
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CourseController } from "@/config";
+import { CourseDepartment, CourseDepartmentsResponse } from '@/models/BACKEND-MODELS/CourseDepartmentsResponse';
+import { useRouter } from 'vue-router';
+import BaseAlert from '@/components/Base/BaseAlert.vue';
+import { useAlert } from '@/composables/showAlert.composable';
 export default defineComponent({
   props: {
     course_guid:{
@@ -36,127 +48,31 @@ export default defineComponent({
   },
   components: {
     DepartmentCard,
+    BaseAlert
   },
   setup(props) {
     const {course_guid} = toRefs(props);
-    onMounted(() => {
+    const {setBackendInstanceAuth} = useAxiosInstance();
+    const {openAlert,closeAlert,setTypeOfAlert,typeOfAlert, alertTitle,showAlert} = useAlert();
+    const courseGuid = ref<string>();
+    const coursCode = ref("");
+    const courseName = ref("");
+    const router = useRouter();
+    const resultArray = ref(new Array<CourseDepartment>() );
+    onMounted(async () => {
       //Make the api call to fetch all labs according to that course_guid
-    });
-    const arrayfordisplay = [
+      closeAlert(1500);
+      const makeGetDepartmentsByCourseCallResponseIDT = await MakeGetDepartmentsByCourseCall(course_guid.value);
+      if(!makeGetDepartmentsByCourseCallResponseIDT.Status || !makeGetDepartmentsByCourseCallResponseIDT.Data)
       {
-        duration: 2,
-        max_seats: 50,
-        available_seats: 30,
-        department_name: "T1",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 25,
-        available_seats: 10,
-        department_name: "T2",
-        timestring: "10:30-12:30",
-      },
-      {
-        duration: 2,
-        max_seats: 30,
-        available_seats: 0,
-        department_name: "T3",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 10,
-        available_seats: 2,
-        department_name: "T4",
-        timestring: "14:30-16:30",
-      },
-      {
-        duration: 2,
-        max_seats: 50,
-        available_seats: 30,
-        department_name: "T1",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 25,
-        available_seats: 10,
-        department_name: "T2",
-        timestring: "10:30-12:30",
-      },
-      {
-        duration: 2,
-        max_seats: 30,
-        available_seats: 0,
-        department_name: "T3",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 10,
-        available_seats: 2,
-        department_name: "T4",
-        timestring: "14:30-16:30",
-      },
-      {
-        duration: 2,
-        max_seats: 50,
-        available_seats: 30,
-        department_name: "T1",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 25,
-        available_seats: 10,
-        department_name: "T2",
-        timestring: "10:30-12:30",
-      },
-      {
-        duration: 2,
-        max_seats: 30,
-        available_seats: 0,
-        department_name: "T3",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 10,
-        available_seats: 2,
-        department_name: "T4",
-        timestring: "14:30-16:30",
-      },
-      {
-        duration: 2,
-        max_seats: 50,
-        available_seats: 30,
-        department_name: "T1",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 25,
-        available_seats: 10,
-        department_name: "T2",
-        timestring: "10:30-12:30",
-      },
-      {
-        duration: 2,
-        max_seats: 30,
-        available_seats: 0,
-        department_name: "T3",
-        timestring: "09:30-11:30",
-      },
-      {
-        duration: 2,
-        max_seats: 10,
-        available_seats: 2,
-        department_name: "T4",
-        timestring: "14:30-16:30",
-      },
-    ];
+        setTypeOfAlert("error");
+        openAlert("Αποτυχία συστήματος επαναλάβετε την διαδικασία");
 
+        await delay(1500);
+        router.replace({name:'labList'});
+      }
+
+    });
     async function MakeGetDepartmentsByCourseCall(course_guid : string) : Promise<InternalDataTransfter<boolean>>
     {
       if(!course_guid)
@@ -171,11 +87,29 @@ export default defineComponent({
       );
       if(getDepartmentsByCourseCallRequest.isFinished)
       {
-        const getDepartmentsByCourseCallResponse:ApiResult<>
+        const getDepartmentsByCourseCallResponse:ApiResult<CourseDepartmentsResponse> = getDepartmentsByCourseCallRequest.data.value;
+        if(!getDepartmentsByCourseCallResponse || !getDepartmentsByCourseCallResponse.Status || !getDepartmentsByCourseCallResponse.Data)
+        {
+          return {Status:false,Data:false,Error:getDepartmentsByCourseCallResponse.Error};
+        }
+        //console.log(getDepartmentsByCourseCallResponse.Data);
+        resultArray.value = getDepartmentsByCourseCallResponse.Data.CourseDepartments;
+        courseGuid.value =getDepartmentsByCourseCallResponse.Data.CourseId;
+        coursCode.value = getDepartmentsByCourseCallResponse.Data.CourseCode;
+        courseName.value = getDepartmentsByCourseCallResponse.Data.CourseName;
+        return {Status:true,Data:true};
       }
       return {Status:false,Data:false,Error:"Request didn't finish"};
-    }
-    return { arrayfordisplay,course_guid };
+    };
+    const CourseInfo = computed(() => {
+      if(coursCode.value && courseName.value)
+        return `${coursCode.value} ${courseName.value}`;
+      return "SHOULDN'T BE SEEING THIS";
+    });
+    const delay = async (time: number) => {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    };
+    return { resultArray,courseGuid,CourseInfo,alertTitle,showAlert,typeOfAlert };
   },
 });
 </script>

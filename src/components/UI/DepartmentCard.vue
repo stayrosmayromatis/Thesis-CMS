@@ -3,7 +3,7 @@
     <v-card
       elevation="10"
       class="parent-card-container__border-radius"
-      :disabled="Percentage === 100"
+      :disabled="completeness_percent === 100"
     >
       <div class="parent-card__department-title">
         <v-card-title> {{department_name}} </v-card-title>
@@ -36,28 +36,28 @@
             </div>
             <div class="label__department-completeness">
               <label style="font-weight: 500;">Πληρότητα Τμήματος: </label>
-              <label style="font-weight: 500;">{{`${Percentage}%`}}</label>
+              <label style="font-weight: 500;">{{`${completeness_percent}%`}}</label>
             </div>
           </div>
           <div class="progress-bar">
             <v-progress-linear
-              :model-value="Percentage"
+              :model-value="completeness_percent"
               :class="{
-                'progress-bar__80-100' : Percentage >= 80,
-                'progress-bar__60-80' : Percentage >= 60 && Percentage < 80,
-                'progress-bar__40-60' : Percentage >= 40 && Percentage < 60,
-                'progress-bar__20-40' : Percentage >= 20 && Percentage < 40,
-                'progress-bar__0-20' : Percentage >= 0 && Percentage < 20,
+                'progress-bar__80-100' : completeness_percent >= 80,
+                'progress-bar__60-80' : completeness_percent >= 60 && completeness_percent < 80,
+                'progress-bar__40-60' : completeness_percent >= 40 && completeness_percent < 60,
+                'progress-bar__20-40' : completeness_percent >= 20 && completeness_percent < 40,
+                'progress-bar__0-20' : completeness_percent >= 0 && completeness_percent < 20,
               }"
               height="15px"
-              :striped="Percentage < 100 ? true : false"
+              :striped="completeness_percent < 100 ? true : false"
               rounded="5rem"
               :rounded-bar="true"
               :tag="'div'"
             ></v-progress-linear>
           </div>
           <div class="enroll-button">
-            <v-btn @click="enroll()" variant="outlined" :class="{'button__border-color' : Percentage < 100,'button__border-color__full' : Percentage === 100}" :rounded="true">
+            <v-btn @click="enroll()" variant="outlined" :class="{'button__border-color' : completeness_percent < 100,'button__border-color__full' : completeness_percent === 100}" :rounded="true">
               <div class="enroll-button__inside">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +70,7 @@
                     d="M1848 896q42 0 78 15t64 42t42 63t16 78q0 39-15 76t-43 65l-717 719l-377 94l94-377l717-718q28-28 65-42t76-15zm51 249q21-21 21-51q0-31-20-50t-52-20q-14 0-27 4t-23 15l-692 694l-34 135l135-34l692-693zM640 896H512V768h128v128zm896 0H768V768h768v128zM512 1152h128v128H512v-128zm128-640H512V384h128v128zm896 0H768V384h768v128zM384 1664h443l-32 128H256V0h1536v743q-67 10-128 44V128H384v1536zm384-512h514l-128 128H768v-128z"
                   />
                 </svg>
-                <label :class="{'label__fill-color' : Percentage < 100,'label__fill-color__full' : Percentage === 100}">{{ ButtonText }}</label>
+                <label :class="{'label__fill-color' : completeness_percent < 100,'label__fill-color__full' : completeness_percent === 100}">{{ ButtonText }}</label>
               </div>
             </v-btn>
           </div>
@@ -108,25 +108,33 @@ export default defineComponent({
       type: String,
       required: false,
       default:'09:30-11:30'
+    },
+    course_id:{
+      type: String,
+      required: true,
+      default: undefined
+    },
+    ladb_id:{
+      type: String,
+      required: true,
+      default: undefined
+    },
+    completeness_percent:{
+      type: Number,
+      required: true,
+      default: 0
     }
   },
   setup(props) {
-    const {available_seats,duration,max_seats,department_name,timestring } = toRefs(props);
+    const {available_seats,duration,max_seats,department_name,timestring,ladb_id,course_id,completeness_percent } = toRefs(props);
     const ButtonText = computed(() => {
-      if (Percentage.value === 100) return "ΠΛΗΡΕΣ";
-      if (!Percentage.value || Percentage.value < 100) return "ΕΓΓΡΑΦΗ";
-    });
-    const Percentage = computed(():number => {
-      if(!available_seats.value || !max_seats.value)
-        return 100;
-      if(max_seats.value < available_seats.value)
-        return 100;
-      return (  (max_seats.value - available_seats.value)/ max_seats.value ) * 100;
+      if (completeness_percent.value >= 100) return "ΠΛΗΡΕΣ";
+      if (!completeness_percent.value || completeness_percent.value < 100) return "ΕΓΓΡΑΦΗ";
     });
     const enroll = () => {
       //do something!
     };
-    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,Percentage,enroll};
+    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,enroll};
   },
 });
 </script>
