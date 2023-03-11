@@ -217,7 +217,6 @@ import { defineComponent, ref, onMounted } from "vue";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
 import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
-import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import { CourseController } from "@/config";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
@@ -225,30 +224,10 @@ import { ApiResult } from "@/models/DTO/ApiResult";
 import BaseResultEmpty from "@/components/Base/BaseResultEmpty.vue";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import { useRouter } from "vue-router";
-export interface PersonalisedCoursesBySemester {
-  PersonalisedCourses: Array<PersonalisedCourseBySemester>;
-  Count: number;
-}
-export interface PersonalisedCourseBySemester {
-  CourseGUID: string;
-  CourseName: string;
-  CourseCode: string;
-  Semester: LabSemesterEnum;
-  SemesterString: string;
-  ShortDescription: string;
-  CourseChip: Array<string>;
-  CourseAttendance: AttendanceEnum;
-  CourseAttendanceString: string;
-  CanSubmit: boolean;
-  HasAlreadySubmitted: boolean;
-  LabInfo: SubmittedLabInfo;
-}
-export interface SubmittedLabInfo {
-  LabName: string;
-  Daystring: string;
-  FromTimeString: string;
-  ToTimeString: string;
-}
+import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } from "@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse";
+
+
+
 export default defineComponent({
   emits: ["closeMobileView"],
   components: {
@@ -280,7 +259,7 @@ export default defineComponent({
       );
       if (personalised_api_response.isFinished) {
         isLoading.value = false;
-        const personalised_response_data: ApiResult<PersonalisedCoursesBySemester> =
+        const personalised_response_data: ApiResult<PersonalisedCoursesBySemesterResponse> =
           personalised_api_response.data.value;
         console.log(personalised_response_data);
 

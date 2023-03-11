@@ -81,7 +81,11 @@
 </template>
 
 <script lang="ts">
+import { useAxiosInstance } from "@/composables/useInstance.composable";
+import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
+import { useAxios } from "@vueuse/integrations/useAxios";
 import { defineComponent, computed, toRefs } from "vue";
+import { useRouter } from 'vue-router';
 export default defineComponent({
   props: {
     duration: {
@@ -127,13 +131,29 @@ export default defineComponent({
   },
   setup(props) {
     const {available_seats,duration,max_seats,department_name,timestring,ladb_id,course_id,completeness_percent } = toRefs(props);
+    const {setBackendInstanceAuth} = useAxiosInstance();
+    const router = useRouter();
     const ButtonText = computed(() => {
       if (completeness_percent.value >= 100) return "ΠΛΗΡΕΣ";
       if (!completeness_percent.value || completeness_percent.value < 100) return "ΕΓΓΡΑΦΗ";
     });
     const enroll = () => {
-      //do something!
+      //make the final registration call with courseId and labId and upon response redirect to the dilwseis
+      router.replace({name:"submittedLabs"});
     };
+    // async function MakeTheFinalRegisterCall(courseGuid:string,labGuid:string):Promise<InternalDataTransfter<boolean>>{
+    //   if(!courseGuid || !labGuid)
+    //     return {Status:false,Data:false,Error:"The parameters are null"};
+    //   const finalRegisterCallApiRequest  = await useAxios(
+    //     //the controller
+    //     "Courses/final-sth",
+    //   {
+    //       method:"POST"
+    //     },
+    //     setBackendInstanceAuth()
+    //   );
+    //   //AND CONTINUE ON FROM HERE!
+    // }
     return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,enroll};
   },
 });

@@ -92,7 +92,6 @@ export default defineComponent({
         {
           return {Status:false,Data:false,Error:getDepartmentsByCourseCallResponse.Error};
         }
-        //console.log(getDepartmentsByCourseCallResponse.Data);
         resultArray.value = getDepartmentsByCourseCallResponse.Data.CourseDepartments;
         courseGuid.value =getDepartmentsByCourseCallResponse.Data.CourseId;
         coursCode.value = getDepartmentsByCourseCallResponse.Data.CourseCode;
@@ -104,7 +103,7 @@ export default defineComponent({
     const CourseInfo = computed(() => {
       if(coursCode.value && courseName.value)
         return `${coursCode.value} ${courseName.value}`;
-      return "SHOULDN'T BE SEEING THIS";
+      return "ΣΥΝΕΒΗ ΣΦΑΛΜΑ ΘΑ ΜΕΤΑΦΕΡΘΕΙΤΕ ΣΤΗΝ ΑΡΧΙΚΗ ΣΕ ΠΟΛΥ ΛΙΓΟ.";
     });
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));

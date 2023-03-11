@@ -3,16 +3,12 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { store }from '@/store/index';
 import { login_redirect_url } from '@/config';
 import {useAuth} from '@/composables/useAuth.composable'
-const LabAccordion= () => import('@/components/UI/LabAccordion.vue');
-const SubmittedLabList = () => import('@/components/UI/SubmitedLabList.vue');
-const AddLab = () => import('@/components/UI/AddLab.vue');
-const WelcomePage = () => import('@/components/UI/WelcomePage.vue');
 const {SetNotAuthenticated} = useAuth();
 const routes: Array<RouteRecordRaw> = [
   {
     path : "/",
     name : 'welcome',
-    component : WelcomePage,
+    component : import('@/components/UI/WelcomePage.vue'),
     meta:{requiresAuth :false}
   },
   {
@@ -35,19 +31,19 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/lab-list",
     name : 'labList',
-    component : LabAccordion,
+    component : () => import('@/components/UI/LabAccordion.vue'),
     meta : {requiresAuth :true}
   },
   {
     path : "/submitted-labs",
     name : 'submittedLabs',
-    component : SubmittedLabList,
+    component : () => import('@/components/UI/SubmitedLabList.vue'),
     meta : {requiresAuth :true}
   },
   {
     path : "/add-lab",
     name : 'addlab',
-    component : AddLab,
+    component :  import('@/components/UI/AddLab.vue'),
     meta : {requiresAuth :true,requiresIsTeacher : true}
   },
   {
