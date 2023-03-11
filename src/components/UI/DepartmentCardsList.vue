@@ -22,6 +22,11 @@
 <script lang="ts">
 import { defineComponent, toRefs, onMounted } from 'vue';
 import DepartmentCard from "@/components/UI/DepartmentCard.vue";
+import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
+import { useAxios } from "@vueuse/integrations/useAxios";
+import { useAxiosInstance } from "@/composables/useInstance.composable";
+import { ApiResult } from "@/models/DTO/ApiResult";
+import { CourseController } from "@/config";
 export default defineComponent({
   props: {
     course_guid:{
@@ -151,6 +156,25 @@ export default defineComponent({
         timestring: "14:30-16:30",
       },
     ];
+
+    async function MakeGetDepartmentsByCourseCall(course_guid : string) : Promise<InternalDataTransfter<boolean>>
+    {
+      if(!course_guid)
+        return {Status:false,Data:false,Error:"Guid null"};
+
+      const getDepartmentsByCourseCallRequest = await useAxios(
+        CourseController+`get-departments-by-course/${course_guid}`,
+        {
+          method: "GET",
+        },
+        setBackendInstanceAuth()
+      );
+      if(getDepartmentsByCourseCallRequest.isFinished)
+      {
+        const 
+      }
+      return {Status:false,Data:false,Error:"Request didn't finish"};
+    }
     return { arrayfordisplay,course_guid };
   },
 });
