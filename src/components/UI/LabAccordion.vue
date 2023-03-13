@@ -93,11 +93,7 @@
                     </template>
                   </v-tooltip>
                 </div>
-                <div
-                  v-if="
-                    lab.CanSubmit === true && lab.HasAlreadySubmitted === true
-                  "
-                >
+                <div v-if="lab.CanSubmit === true && lab.HasAlreadySubmitted === true">
                   <v-tooltip
                     :text="'Εχετε ηδη μια θέση σε εργαστηριακό τμήμα'"
                     location="bottom"
@@ -246,7 +242,7 @@ export default defineComponent({
     );
     const isLoading = ref(false);
     const { setBackendInstanceAuth } = useAxiosInstance();
-    const requestLabs = async () => {
+    const RequestLabs = async () => {
       const requestArray = selectedSemesters.value.map((item) => item.value);
       isLoading.value = true;
       const personalised_api_response = await useAxios(
@@ -288,8 +284,7 @@ export default defineComponent({
             "Επιλέξτε Εξάμηνο είτε Συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης";
           return;
         }
-        personalisedCourses.value =
-          personalised_response_data.Data.PersonalisedCourses;
+        personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
       }
       isLoading.value = false;
     };
@@ -350,7 +345,7 @@ export default defineComponent({
       selectedSemesters,
       resultEmptyTitle,
       resutlEmptyDesc,
-      requestLabs,
+      requestLabs : RequestLabs,
       isLoading,
       emitMobileViewClose,
       semesterReformer,
