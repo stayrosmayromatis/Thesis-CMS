@@ -501,10 +501,7 @@ export default defineComponent({
         return false;
       }
       // @ts-ignore
-      if (
-        dept.fromTime.hours > dept.toTime.hours ||
-        (dept.fromTime.hours == dept.toTime.hours &&
-          dept.fromTime.minutes >= dept.toTime.minutes)
+      if (dept.fromTime.hours > dept.toTime.hours || (dept.fromTime.hours == dept.toTime.hours && dept.fromTime.minutes >= dept.toTime.minutes)
       ) {
         dept.errorOnToTime = true;
         dept.errorOnFromTime = true;
