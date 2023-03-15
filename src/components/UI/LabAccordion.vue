@@ -36,9 +36,9 @@
       <v-expansion-panel
         v-for="lab in personalisedCourses"
         :key="lab.CourseGUID"
-        :readonly="lab.CanSubmit === false"
-      >
-        <!-- :disabled="lab.CanSubmit === false" -->
+        :readonly="isReadOnly(userType,lab)"
+        >
+        <!-- :readonly="lab.CanSubmit === false" -->
         <div>
           <v-expansion-panel-title
             expand-icon="mdi-plus"
@@ -49,7 +49,7 @@
                 <v-chip
                   class="chip-bg"
                   :class="{
-                    'gray-out-card-chip-lab__details': lab.CanSubmit === false,
+                    'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
                   }"
                   size="large"
                   style="height: fit-content"
@@ -221,6 +221,7 @@ import BaseResultEmpty from "@/components/Base/BaseResultEmpty.vue";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import { useRouter } from "vue-router";
 import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } from "@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse";
+import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 
 
 
@@ -241,6 +242,7 @@ export default defineComponent({
       "Το φίλτρο επιλογής είναι κενό. Επιλέξτε εξάμηνο είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης"
     );
     const isLoading = ref(false);
+    const userType = ref<PersonAffiliation>();
     const { setBackendInstanceAuth } = useAxiosInstance();
     const RequestLabs = async () => {
       const requestArray = selectedSemesters.value.map((item) => item.value);
@@ -285,6 +287,7 @@ export default defineComponent({
           return;
         }
         personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
+        userType.value = personalised_response_data.Data.UserType ?? -1;
       }
       isLoading.value = false;
     };
@@ -339,7 +342,16 @@ export default defineComponent({
       context.emit("closeMobileView", true);
       return;
     });
+    function isReadOnly(userType? :PersonAffiliation ,lab?:PersonalisedCourseBySemester):boolean{
+      if(!userType || !lab)
+        return true;
+      if(userType === PersonAffiliation.ADMIN) return false;
+      if(userType === PersonAffiliation.STAFF )return false;
+      if(userType === PersonAffiliation.STUDENT && lab.CanSubmit === false)  return true;
+      return false;
+    }
     return {
+      userType,
       personalisedCourses,
       availableSemesters,
       selectedSemesters,
@@ -350,6 +362,7 @@ export default defineComponent({
       emitMobileViewClose,
       semesterReformer,
       pushToEnroll,
+      isReadOnly,
     };
   },
 });
