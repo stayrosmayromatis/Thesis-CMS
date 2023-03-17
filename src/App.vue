@@ -87,6 +87,7 @@ export default defineComponent({
     //   },
     // setBackendInstanceAuth());
     });
+
     const closeInstantly = ref(false);
 
     const closeMobileViewInstantly = async () => {

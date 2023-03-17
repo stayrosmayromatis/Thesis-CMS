@@ -1,8 +1,10 @@
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
+import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 
 export interface CourseDepartmentsResponse {
   CourseId :string;
+  UserType:PersonAffiliation ;
   CourseCode: string;
   CourseName: string;
   Semester?: LabSemesterEnum;

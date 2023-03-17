@@ -57,22 +57,29 @@
             ></v-progress-linear>
           </div>
           <div class="enroll-button">
-            <v-btn @click="enroll()" variant="outlined" :class="{'button__border-color' : completeness_percent < 100,'button__border-color__full' : completeness_percent === 100}" :rounded="true">
-              <div class="enroll-button__inside">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 2048 2048"
-                >
-                  <path
-                    fill="black"
-                    d="M1848 896q42 0 78 15t64 42t42 63t16 78q0 39-15 76t-43 65l-717 719l-377 94l94-377l717-718q28-28 65-42t76-15zm51 249q21-21 21-51q0-31-20-50t-52-20q-14 0-27 4t-23 15l-692 694l-34 135l135-34l692-693zM640 896H512V768h128v128zm896 0H768V768h768v128zM512 1152h128v128H512v-128zm128-640H512V384h128v128zm896 0H768V384h768v128zM384 1664h443l-32 128H256V0h1536v743q-67 10-128 44V128H384v1536zm384-512h514l-128 128H768v-128z"
-                  />
-                </svg>
-                <label :class="{'label__fill-color' : completeness_percent < 100,'label__fill-color__full' : completeness_percent === 100}">{{ ButtonText }}</label>
-              </div>
-            </v-btn>
+            <v-tooltip
+              :text="ToolTipText"
+              location="bottom"
+            >
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" @click="enroll()" variant="outlined" :class="{'button__border-color' : completeness_percent < 100,'button__border-color__full' : completeness_percent === 100}" :rounded="true">
+                <div class="enroll-button__inside">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 2048 2048"
+                  >
+                    <path
+                      fill="black"
+                      d="M1848 896q42 0 78 15t64 42t42 63t16 78q0 39-15 76t-43 65l-717 719l-377 94l94-377l717-718q28-28 65-42t76-15zm51 249q21-21 21-51q0-31-20-50t-52-20q-14 0-27 4t-23 15l-692 694l-34 135l135-34l692-693zM640 896H512V768h128v128zm896 0H768V768h768v128zM512 1152h128v128H512v-128zm128-640H512V384h128v128zm896 0H768V384h768v128zM384 1664h443l-32 128H256V0h1536v743q-67 10-128 44V128H384v1536zm384-512h514l-128 128H768v-128z"
+                    />
+                  </svg>
+                  <label :class="{'label__fill-color' : completeness_percent < 100,'label__fill-color__full' : completeness_percent === 100}">{{ ButtonText }}</label>
+                </div>
+              </v-btn>
+          </template>
+          </v-tooltip>
           </div>
         </v-card-text>
       </div>
@@ -127,15 +134,54 @@ export default defineComponent({
       type: Number,
       required: true,
       default: 0
+    },
+    user_type:{
+      type: Number,
+      required: true,
+      default: 2
     }
   },
   setup(props) {
-    const {available_seats,duration,max_seats,department_name,timestring,ladb_id,course_id,completeness_percent } = toRefs(props);
+    const {available_seats,duration,max_seats,department_name,timestring,ladb_id,course_id,completeness_percent ,user_type} = toRefs(props);
     const {setBackendInstanceAuth} = useAxiosInstance();
     const router = useRouter();
     const ButtonText = computed(() => {
-      if (completeness_percent.value >= 100) return "ΠΛΗΡΕΣ";
-      if (!completeness_percent.value || completeness_percent.value < 100) return "ΕΓΓΡΑΦΗ";
+      if (completeness_percent.value >= 100)
+      {
+        return "ΠΛΗΡΕΣ";
+      }
+      if (!completeness_percent.value || completeness_percent.value < 100)
+      {
+        if(user_type.value === 2)
+        {
+          return "ΕΓΓΡΑΦΗ";
+        }
+        else{
+          return "ΔΙΑΘΕΣΙΜΟ";
+        }
+      }
+    });
+    const ToolTipText = computed(() => {
+
+      if (completeness_percent.value >= 100)
+      {
+        if(user_type.value === 2)
+        {
+          return "ΜΗ ΔΙΑΘΕΣΙΜΟ ΓΙΑ ΔΗΛΩΣΗ";
+        }else{
+          return "ΤΟ ΤΜΗΜΑ ΕΦΤΑΣΕ ΣΤΗ ΠΛΗΡΟΤΗΤΑ ΤΟΥ. ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΟ";
+        }
+      }
+      if (!completeness_percent.value || completeness_percent.value < 100)
+      {
+        if(user_type.value === 2)
+        {
+          return "ΕΠΙΚΥΡΩΣΤΕ ΤΗΝ ΔΗΛΩΣΗ ΤΟΥ ΤΜΗΜΑΤΟΣ";
+        }
+        else{
+          return "ΠΑΡΑΚΟΛΟΥΣΗ ΠΟΡΕΙΑΣ";
+        }
+      }
     });
     const enroll = () => {
       //make the final registration call with courseId and labId and upon response redirect to the dilwseis
@@ -154,7 +200,7 @@ export default defineComponent({
     //   );
     //   //AND CONTINUE ON FROM HERE!
     // }
-    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,enroll};
+    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,enroll,ToolTipText};
   },
 });
 </script>

@@ -6,7 +6,7 @@
     :title="alertTitle"
     ></base-alert>
     <v-card elevation="5" class="parent-label">
-      <label> Επιλογη Τμηματος: </label>
+      <label> {{TitleText}} </label>
       <label class="label__lab-title">
         {{CourseInfo}}
       </label>
@@ -23,6 +23,7 @@
         :course_id="courseGuid"
         :ladb_id="lab.LabId"
         :completeness_percent="lab.CompletenessPercent"
+        :user_type="userType"
       ></department-card>
     </div>
   </div>
@@ -39,6 +40,7 @@ import { CourseDepartment, CourseDepartmentsResponse } from '@/models/BACKEND-MO
 import { useRouter } from 'vue-router';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from '@/composables/showAlert.composable';
+import { PersonAffiliation } from '../../enums/PersonAffiliationEnum';
 export default defineComponent({
   props: {
     course_guid:{
@@ -57,6 +59,7 @@ export default defineComponent({
     const courseGuid = ref<string>();
     const coursCode = ref("");
     const courseName = ref("");
+    const userType = ref<PersonAffiliation>();
     const router = useRouter();
     const resultArray = ref(new Array<CourseDepartment>() );
     onMounted(async () => {
@@ -67,7 +70,6 @@ export default defineComponent({
       {
         setTypeOfAlert("error");
         openAlert("Αποτυχία συστήματος επαναλάβετε την διαδικασία");
-
         await delay(1500);
         router.replace({name:'labList'});
       }
@@ -96,6 +98,7 @@ export default defineComponent({
         courseGuid.value =getDepartmentsByCourseCallResponse.Data.CourseId;
         coursCode.value = getDepartmentsByCourseCallResponse.Data.CourseCode;
         courseName.value = getDepartmentsByCourseCallResponse.Data.CourseName;
+        userType.value = getDepartmentsByCourseCallResponse.Data.UserType;
         return {Status:true,Data:true};
       }
       return {Status:false,Data:false,Error:"Request didn't finish"};
@@ -108,7 +111,20 @@ export default defineComponent({
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
-    return { resultArray,courseGuid,CourseInfo,alertTitle,showAlert,typeOfAlert };
+    const TitleText= computed(() => {
+      if(!userType.value)
+      {
+        return "ΣΥΝΕΒΗ ΣΦΑΛΜΑ ΘΑ ΜΕΤΑΦΕΡΘΕΙΤΕ ΣΤΗΝ ΑΡΧΙΚΗ ΣΕ ΠΟΛΥ ΛΙΓΟ.";
+      }
+      if(userType.value === 2)
+      {
+        return "Επιλογη Τμηματος:" ;
+      }
+      else{
+        return "ΠΑΡΑΚΟΛΟΥΘΗΣΗ ΠΟΡΕΙΑΣ ΔΗΛΩΣΕΩΝ ΤΩΝ ΤΜΗΜΑΤΩΝ ΤΟΥ ΜΑΘΗΜΑΤΟΣ:";
+      }
+    });
+    return { resultArray,courseGuid,CourseInfo,alertTitle,showAlert,typeOfAlert,userType,TitleText };
   },
 });
 </script>

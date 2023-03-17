@@ -36,9 +36,8 @@
       <v-expansion-panel
         v-for="lab in personalisedCourses"
         :key="lab.CourseGUID"
-        :readonly="isReadOnly(userType,lab)"
+        :readonly="isReadOnly(lab)"
         >
-        <!-- :readonly="lab.CanSubmit === false" -->
         <div>
           <v-expansion-panel-title
             expand-icon="mdi-plus"
@@ -65,7 +64,8 @@
                 </v-chip>
               </div>
               <div class="chip-separator__right-chip">
-                <div v-if="lab.CanSubmit === false">
+                <!-- OLD IMPLEMENTATION -->
+                <!-- <div v-if="(userType === 2 && lab.CanSubmit === false) ">
                   <v-tooltip
                     :text="'Δεν επιτρέπεται να δηλωθεί'"
                     location="bottom"
@@ -93,7 +93,7 @@
                     </template>
                   </v-tooltip>
                 </div>
-                <div v-if="lab.CanSubmit === true && lab.HasAlreadySubmitted === true">
+                <div v-if="(userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
                   <v-tooltip
                     :text="'Εχετε ηδη μια θέση σε εργαστηριακό τμήμα'"
                     location="bottom"
@@ -119,11 +119,60 @@
                       </v-chip>
                     </template>
                   </v-tooltip>
-                </div>
+                </div> -->
+                 <!-- OLD IMPLEMENTATION -->
+                <!-- NEW DIV REFACTOR -->
+                 <div id="pame ligo edw eimai" style="visibility: none;">
+                  <v-tooltip
+                    :text="toolTipText(lab)"
+                    location="bottom"
+                    v-if="(userType === 2 && lab.CanSubmit === false) || (userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-chip
+                        variant="text"
+                        density="default"
+                        style="width: fit-content"
+                        v-bind="props"
+                        :rounded="20"
+
+                      >
+                      <!-- rounder 20 if can submit === false -->
+                      <div v-if="(userType === 2 && lab.CanSubmit === false)">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="35"
+                          height="35"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fill="#ff4646"
+                            d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m0 2c-1.9 0-3.6.6-4.9 1.7l11.2 11.2c1-1.4 1.7-3.1 1.7-4.9c0-4.4-3.6-8-8-8m4.9 14.3L5.7 7.1C4.6 8.4 4 10.1 4 12c0 4.4 3.6 8 8 8c1.9 0 3.6-.6 4.9-1.7Z"
+                          />
+                        </svg>
+                      </div>
+                      <div v-else-if="(userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="35"
+                          height="35"
+                          viewBox="0 0 24 24"
+                        >
+                        <path
+                        fill="#00c900"
+                        d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7Z"
+                        />
+                      </svg>
+                      </div>
+                      </v-chip>
+                    </template>
+                  </v-tooltip>
+                 </div>
+                <!-- NEW DIV REFACTOR -->
                 <v-chip
                   class="chip-attendance"
                   :class="{
-                    'gray-out-card-chip-attendance': lab.CanSubmit === false,
+                    'gray-out-card-chip-attendance':(userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
                   }"
                   size="large"
                 >
@@ -132,7 +181,7 @@
                 <v-chip
                   class="chip-semester"
                   :class="{
-                    'gray-out-card-chip-semester': lab.CanSubmit === false,
+                    'gray-out-card-chip-semester':(userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
                   }"
                   size="large"
                 >
@@ -149,11 +198,13 @@
             <p>{{ lab.ShortDescription }}</p>
             <div class="lab-details_if_submitted">
               <p
-                style="font-weight: 400; font-size: 1rem"
                 v-if="
+                (
+                  userType === 2 &&
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === true &&
                   lab.LabInfo
+                )
                 "
               >
                 {{
@@ -162,24 +213,24 @@
               </p>
               <v-btn
                 v-if="
+                (userType === 2 &&
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === false &&
-                  !lab.LabInfo
+                  !lab.LabInfo)||(userType === 1)
                 "
-                @click="pushToEnroll(lab.CourseGUID)"
+                @click="pushToHandle(lab.CourseGUID)"
                 color="#a3cef1"
                 elevation="4"
-                >Δηλωσε το</v-btn
+                >{{ userType === 2 ? 'Δηλωσε το' : userType === 1 ? 'Πορεια Δηλωσης': 'Επιλογη'}}</v-btn
               >
               <v-tooltip
                 :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
                 :location="'bottom'"
+                v-if="(userType === 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)"
               >
                 <template v-slot:activator="{ props }">
                   <v-chip
-                    v-if="
-                      lab.CanSubmit === true && lab.HasAlreadySubmitted === true
-                    "
+
                     variant="text"
                     density="default"
                     style="width: fit-content"
@@ -287,7 +338,7 @@ export default defineComponent({
           return;
         }
         personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
-        userType.value = personalised_response_data.Data.UserType ?? -1;
+        userType.value = personalised_response_data.Data.UserType ?? undefined;
       }
       isLoading.value = false;
     };
@@ -326,7 +377,7 @@ export default defineComponent({
           return "N/A";
       }
     };
-    const pushToEnroll = (guid: string) => {
+    const pushToHandle = (guid: string) => {
       if (!guid) return;
       router.push({
         name: "enroll",
@@ -342,14 +393,35 @@ export default defineComponent({
       context.emit("closeMobileView", true);
       return;
     });
-    function isReadOnly(userType? :PersonAffiliation ,lab?:PersonalisedCourseBySemester):boolean{
-      if(!userType || !lab)
+    function isReadOnly(lab?:PersonalisedCourseBySemester):boolean{
+      if(!userType.value || !lab)
         return true;
-      if(userType === PersonAffiliation.ADMIN) return false;
-      if(userType === PersonAffiliation.STAFF )return false;
-      if(userType === PersonAffiliation.STUDENT && lab.CanSubmit === false)  return true;
+      if(userType.value === PersonAffiliation.ADMIN) return false;
+      if(userType.value === PersonAffiliation.STAFF )return false;
+      if(userType.value === PersonAffiliation.STUDENT && lab.CanSubmit === false)  return true;
       return false;
     }
+    const toolTipText =(lab:PersonalisedCourseBySemester) => {
+      if(!userType.value)
+        return "";
+      else if(userType.value === 2){
+        if(lab.CanSubmit === false)
+        {
+          return "Δεν επιτρέπεται να δηλωθεί";
+        }
+        else
+        {
+          if(lab.HasAlreadySubmitted === true)
+          {
+            return 'Εχετε ηδη μια θέση σε εργαστηριακό τμήμα'
+          }
+          return "";
+        }
+      }
+      else{
+        return "";
+      }
+    };
     return {
       userType,
       personalisedCourses,
@@ -361,8 +433,9 @@ export default defineComponent({
       isLoading,
       emitMobileViewClose,
       semesterReformer,
-      pushToEnroll,
+      pushToHandle,
       isReadOnly,
+      toolTipText
     };
   },
 });
