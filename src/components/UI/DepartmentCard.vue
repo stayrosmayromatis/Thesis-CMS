@@ -62,7 +62,7 @@
               location="bottom"
             >
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" @click="enroll()" variant="outlined" :class="{'button__border-color' : completeness_percent < 100,'button__border-color__full' : completeness_percent === 100}" :rounded="true">
+              <v-btn v-bind="props" @click="handActionByUserType()" variant="outlined" :class="{'button__border-color' : completeness_percent < 100,'button__border-color__full' : completeness_percent === 100}" :rounded="true">
                 <div class="enroll-button__inside">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -88,6 +88,7 @@
 </template>
 
 <script lang="ts">
+import { useAlert } from "@/composables/showAlert.composable";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { useAxios } from "@vueuse/integrations/useAxios";
@@ -144,6 +145,7 @@ export default defineComponent({
   setup(props) {
     const {available_seats,duration,max_seats,department_name,timestring,ladb_id,course_id,completeness_percent ,user_type} = toRefs(props);
     const {setBackendInstanceAuth} = useAxiosInstance();
+    const {setTypeOfAlert,openAlert,closeAlert}= useAlert();
     const router = useRouter();
     const ButtonText = computed(() => {
       if (completeness_percent.value >= 100)
@@ -183,10 +185,42 @@ export default defineComponent({
         }
       }
     });
-    const enroll = () => {
-      //make the final registration call with courseId and labId and upon response redirect to the dilwseis
-      router.replace({name:"submittedLabs"});
-    };
+    const handActionByUserType = async () => {
+      if(!user_type.value)
+      {
+        setTypeOfAlert("error");
+        openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
+        closeAlert(1500);
+        await delay(1500);
+        return;
+      }
+      if(user_type.value === 2 )
+      {
+        //make the final registration call with courseId and labId and upon response redirect to the dilwseis
+        //if()
+        router.replace({name:"submittedLabs"});
+        return;
+      }
+      if(user_type.value === 1 || user_type.value === 12)
+      {
+        if(!course_id.value)
+        {
+          setTypeOfAlert("error");
+          openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
+          closeAlert(1500);
+          await delay(1500);
+        }
+        router.push({name : 'addlab',query:{
+          editId : course_id.value!.trim().toString()
+        }});
+        return;
+      }
+      setTypeOfAlert("error");
+      openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
+      closeAlert(1500);
+      await delay(1500);
+      return;
+  };
     // async function MakeTheFinalRegisterCall(courseGuid:string,labGuid:string):Promise<InternalDataTransfter<boolean>>{
     //   if(!courseGuid || !labGuid)
     //     return {Status:false,Data:false,Error:"The parameters are null"};
@@ -200,7 +234,10 @@ export default defineComponent({
     //   );
     //   //AND CONTINUE ON FROM HERE!
     // }
-    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,enroll,ToolTipText};
+    const delay = async (time: number) => {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    };
+    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,handActionByUserType,ToolTipText};
   },
 });
 </script>

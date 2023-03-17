@@ -150,6 +150,7 @@ export default defineComponent({
   padding: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  text-align: center;
 }
 .label__lab-title {
   text-align: center;

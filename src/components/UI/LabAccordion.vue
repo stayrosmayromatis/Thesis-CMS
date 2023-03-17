@@ -1,7 +1,6 @@
 <template>
   <v-container class="sth-container" @click="emitMobileViewClose">
     <v-card elevation="5" class="parent-label">ΑΝΑΖΗΤΗΣΗ ΕΡΓΑΣΤΗΡΙΩΝ</v-card>
-
     <v-select
       :items="availableSemesters"
       label="Επιλέξτε ενα ή παραπάνω εξάμηνo"
@@ -17,7 +16,7 @@
       multiple
       return-object
       v-model="selectedSemesters"
-      no-data-text="Ολα τα διαθέσιμα εργαστήρια έχουν επιλεχθεί"
+      no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
       @update:model-value="requestLabs"
     >
     </v-select>
