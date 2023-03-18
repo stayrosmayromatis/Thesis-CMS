@@ -11,9 +11,8 @@ import { CreateProfRequest } from "@/components/UI/TeacherSelect.vue";
 import { Ref, ref} from "vue";
 
 interface AllProf {
-  BaseUser: BaseUserResponse;
-  Courses?: Array<any>;
-  Periods?: Array<any>;
+  Professors: Array<BaseUserResponse>;
+  Count : number
 }
 interface BaseUserResponse {
   Id: string;
@@ -35,29 +34,31 @@ export function useProfessor() {
       setBackendInstanceAuth()
     );
     if (api_response.isFinished) {
-      const api_res_data: ApiResult<Array<AllProf>> = api_response.data.value;
+      const api_res_data: ApiResult<AllProf> = api_response.data.value;
       if (
         !api_res_data ||
-        api_res_data.Status === false ||
         !api_res_data.Status ||
-        !api_res_data.Data
+        !api_res_data.Data ||
+        !api_res_data.Data.Professors||
+        !api_res_data.Data.Count
       ) {
         setError("Error fetching Teachers", "Try Again");
         return;
       }
       let arrayOfBaseUsers = new Array<Partial<BaseUser>>();
-      const iterable: Array<AllProf> = api_response.data.value.Data;
+      const iterable = api_res_data.Data.Professors;
+
       for (const baseUser of iterable) {
         const obj: Partial<BaseUser> = {
-          Guid: baseUser.BaseUser.Id,
-          id: baseUser.BaseUser.FourDigitId,
-          displayNameEn: baseUser.BaseUser.DisplayNameEn,
-          displayNameEl: baseUser.BaseUser.DisplayNameEl,
-          eduPersonAffiliation: baseUser.BaseUser.EduPersonAffiliation,
+          Guid: baseUser.Id,
+          id: baseUser.FourDigitId,
+          displayNameEn: baseUser.DisplayNameEn,
+          displayNameEl: baseUser.DisplayNameEl,
+          eduPersonAffiliation: baseUser.EduPersonAffiliation,
         };
         arrayOfBaseUsers.push(obj);
       }
-      if (!arrayOfBaseUsers || arrayOfBaseUsers.length === 0) {
+      if (!arrayOfBaseUsers || !arrayOfBaseUsers.length) {
         setError("Error fetching Teachers", "Try Again");
         return;
       }

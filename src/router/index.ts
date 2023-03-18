@@ -57,7 +57,7 @@ const routes: Array<RouteRecordRaw> = [
     path : "/poutsa",
     name : 'poutsa',
     component : () => import('@/components/UI/Admin/AdminPanelMenu.vue'),
-    meta : {requiresAuth :false}
+    meta : {requiresAuth :true}
   }
 ];
 

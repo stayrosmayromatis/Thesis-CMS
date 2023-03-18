@@ -42,20 +42,23 @@
         ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΔΙΑΧΕΙΡΙΣΤΗ
       </v-btn>
     </div>
-    <teacher-select :seeded_professors="seededProfessors"></teacher-select>
+    <teacher-select :seeded_professors="seededProfessors" ></teacher-select>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent ,onMounted} from "vue";
+import { defineComponent, onMounted, ref } from 'vue';
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
 import { useProfessor } from "@/composables/useProfessors.composable";
+import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
+import { useAlert } from '@/composables/showAlert.composable';
 export default defineComponent({
   components:{
     TeacherSelect
   },
-  setup(props, ctx) {
+  setup(props, context) {
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
+    const {closeAlert} = useAlert();
     const seededProfessors = ref(new Array<BaseUser>());
     onMounted(async ()=>{
       closeAlert(1000);
