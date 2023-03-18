@@ -16,7 +16,6 @@ interface AllProf {
 }
 interface BaseUserResponse {
   Id: string;
-  FourDigitId: string;
   EduPersonAffiliation: TypeStaff;
   DisplayNameEl: string;
   DisplayNameEn: string;
@@ -51,7 +50,7 @@ export function useProfessor() {
       for (const baseUser of iterable) {
         const obj: Partial<BaseUser> = {
           Guid: baseUser.Id,
-          id: baseUser.FourDigitId,
+          //id: undefined,
           displayNameEn: baseUser.DisplayNameEn,
           displayNameEl: baseUser.DisplayNameEl,
           eduPersonAffiliation: baseUser.EduPersonAffiliation,
@@ -96,7 +95,7 @@ export function useProfessor() {
       }
       const obj: BaseUser = {
         Guid: api_res_data.Data.Id,
-        id: api_res_data.Data.FourDigitId,
+        id: "",
         displayNameEn: api_res_data.Data.DisplayNameEn,
         displayNameEl: api_res_data.Data.DisplayNameEl,
         eduPersonAffiliation: api_res_data.Data.EduPersonAffiliation,
