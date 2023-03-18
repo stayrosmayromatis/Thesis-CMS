@@ -49,14 +49,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/enroll-in-department/:course_guid",
     name : 'enroll',
-    component : import('@/components/UI/DepartmentCardsList.vue'),
+    component : () => import('@/components/UI/DepartmentCardsList.vue'),
     props : true,
     meta : {requiresAuth :true,requiresIsTeacher : false}
   },
   {
     path : "/poutsa",
     name : 'poutsa',
-    component : import('@/components/UI/DepartmentCardsList.vue'),
+    component : () => import('@/components/UI/Admin/AdminPanelMenu.vue'),
     meta : {requiresAuth :false}
   }
 ];
