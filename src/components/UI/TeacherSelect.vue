@@ -11,7 +11,7 @@
     attach="body"
   >
     <template v-slot:activator="{ props }">
-      <v-btn
+      <v-btn v-if="!by_admin_option"
         class="button-dimensions-adjustment"
         :class="{
           'teacher-button-success': error_on_selected_teacher === false,
@@ -20,6 +20,32 @@
         }"
         v-bind="props"
       >
+        {{ lastNameProp }}
+      </v-btn>
+      <v-btn v-else
+        class="button-dimensions-adjustment__admin"
+        :class="{
+          'teacher-button-success': error_on_selected_teacher === false,
+          'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
+          'teacher-button-failure': error_on_selected_teacher === true,
+        }"
+        v-bind="props"
+      ><svg
+          width="25"
+          height="25"
+          clip-rule="evenodd"
+          fill-rule="evenodd"
+          stroke-linejoin="round"
+          stroke-miterlimit="2"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          style="margin-right: 0.5rem;"
+        >
+          <path
+            d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+            fill-rule="nonzero"
+          />
+        </svg>
         {{ lastNameProp }}
       </v-btn>
     </template>
@@ -130,15 +156,19 @@ export default defineComponent({
     },
     selected_teacher_by_edit_flag:{
       type: Boolean,
-      required: true,
+      required: false,
       default:false,
     },
     selected_teacher_by_edit_value:{
       type: Object as PropType<BaseUser>,
-      required: true,
-      default:null,
+      required: false,
+      default:undefined,
+    },
+    by_admin_option:{
+      type: Boolean,
+      required: false,
+      default:false,
     }
-
   },
   emits: ["emit-selected-teacher"],
   setup(props, context) {
@@ -157,7 +187,7 @@ export default defineComponent({
     const newName = ref<string>("");
     const newSurname = ref<string>("");
     
-    const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value} = toRefs(props);
+    const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value,by_admin_option} = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
     
     const selectedTeacher = ref<BaseUser>();
@@ -250,12 +280,22 @@ export default defineComponent({
     };
     const lastNameProp = computed(() => {
       console.log(selectedTeacher.value);
-      if (!error_on_selected_teacher || !selectedTeacher.value) 
-        return "Καθηγητες";
-      const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-      //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
-      if (!splitted || splitted.length == 0) 
-        return "Καθηγητες";
+      if(by_admin_option.value === false)
+      {
+        if (!error_on_selected_teacher || !selectedTeacher.value) 
+          return "Καθηγητες";
+        const splitted = selectedTeacher.value?.displayNameEl.split(" ");
+        //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
+        if (!splitted || splitted.length == 0) 
+          return "Καθηγητες";
+      }
+      else{
+        if (!error_on_selected_teacher || !selectedTeacher.value) 
+          return "Προσθηκη νεου διαχειριστη";
+        const splitted = selectedTeacher.value?.displayNameEl.split(" ");
+        if (!splitted || splitted.length == 0) 
+          return "Προσθηκη νέου διαχειριστη";
+      }
       return splitted[splitted.length - 1];
     });
     const containsNumbers = (str: string) => {
@@ -383,6 +423,14 @@ export default defineComponent({
 .button-dimensions-adjustment {
   width: 11rem;
   height: 3rem;
+}
+.button-dimensions-adjustment__admin{
+  width: fit-content;
+  height: 2.2rem;
+  padding: 0 1rem;
+  text-transform: uppercase;
+  hyphens: auto;
+  letter-spacing: 1px;
 }
 
 @media (min-width: 769px) {

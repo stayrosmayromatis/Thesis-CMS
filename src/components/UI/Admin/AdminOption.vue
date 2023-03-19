@@ -22,7 +22,7 @@
       </div>
     </v-card>
     <div class="add-new__admin--container">
-      <v-btn type="button" elevation="4" color="green"
+      <!-- <v-btn type="button" elevation="4" color="green"
         ><svg
           width="25"
           height="25"
@@ -40,9 +40,9 @@
           />
         </svg>
         ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΔΙΑΧΕΙΡΙΣΤΗ
-      </v-btn>
+      </v-btn> -->
+      <teacher-select :seeded_professors="seededProfessors" :by_admin_option="true"></teacher-select>
     </div>
-    <teacher-select :seeded_professors="seededProfessors" ></teacher-select>
   </div>
 </template>
 
