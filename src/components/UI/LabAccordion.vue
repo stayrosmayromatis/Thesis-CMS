@@ -121,7 +121,7 @@
                 </div> -->
                  <!-- OLD IMPLEMENTATION -->
                 <!-- NEW DIV REFACTOR -->
-                 <div id="pame ligo edw eimai" style="visibility: none;">
+                 <div style="visibility: hidden;">
                   <v-tooltip
                     :text="toolTipText(lab)"
                     location="bottom"

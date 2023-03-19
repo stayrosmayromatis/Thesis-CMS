@@ -4,6 +4,12 @@
     :alert-type-prop="typeOfAlert"
     :title="alertTitle"
   ></base-alert>
+  <base-dialog
+    v-if="showConfirmDeletionModal"
+    :route-change-authorizer="true"
+    :inner-title="confirmDeletionInnerTitle"
+    :inner-description="confirmDeletionInnerDescription"
+  ></base-dialog>
   <div class="parent">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner">
@@ -30,25 +36,6 @@
         </div>
       </v-card>
       <div class="add-new__admin--container">
-        <!-- <v-btn type="button" elevation="4" color="green"
-          ><svg
-            width="25"
-            height="25"
-            clip-rule="evenodd"
-            fill-rule="evenodd"
-            stroke-linejoin="round"
-            stroke-miterlimit="2"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            style="margin-right: 0.5rem;"
-          >
-            <path
-              d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-              fill-rule="nonzero"
-            />
-          </svg>
-          ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΔΙΑΧΕΙΡΙΣΤΗ
-        </v-btn> -->
         <teacher-select :seeded_professors="seededProfessors" :by_admin_option="true"
                         @emit-selected-teacher="setStateToAdmin"></teacher-select>
       </div>
@@ -71,12 +58,14 @@ import {ApiResult} from "@/models/DTO/ApiResult";
 import {BaseUserResponse} from "@/models/BACKEND-MODELS/BaseUserResponse";
 import BaseAlert from "@/components/Base/BaseAlert.vue";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
-
+import BaseDialog from "@/components/Base/BaseDialog.vue";
+import { confirm } from "@/composables/dialog.composable";
 export default defineComponent({
   components: {
     TeacherSelect,
     BaseAlert,
-    BaseSpinner
+    BaseSpinner,
+    BaseDialog
   },
   setup(props, context) {
     const {GetSeededProfessors, SeedProfessorsArray} = useProfessor();
@@ -85,6 +74,9 @@ export default defineComponent({
     const seededProfessors = ref(new Array<BaseUser>());
     const arrayOfAdmins = ref(new Array<BaseUserResponse>());
     const showLoadingSpinner = ref(false);
+    const showConfirmDeletionModal = ref(false);
+    const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
+    const confirmDeletionInnerDescription = ref("");
     onMounted(async () => {
       context.emit("closeMobileView", true);
       closeAlert(1000);
@@ -108,10 +100,18 @@ export default defineComponent({
         await delay(1500);
         return;
       }
-      const payloadToSetAdminState: Partial<BaseUser> = {
-        Guid: selectedTeacher.Id,
+      showConfirmDeletionModal.value = true;
+      confirmDeletionInnerDescription.value =`Είστε σίγουρος οτι θέλετε να <span style="color:#ff4545;">διαγράψετε</span> τις διαχειριστηκές ιδιότητες
+                                              του χρήστη <span style="color: green;">${selectedTeacher.DisplayNameEl}</span>;`;
+      if(await confirm())
+      {
+        showConfirmDeletionModal.value = false;
+        const payloadToSetAdminState: Partial<BaseUser> = {
+          Guid: selectedTeacher.Id,
+        }
+        return await setStateToAdmin(payloadToSetAdminState as BaseUser, true);
       }
-      return await setStateToAdmin(payloadToSetAdminState as BaseUser, true);
+      showConfirmDeletionModal.value = false;
     }
     const setStateToAdmin = async (selectedTeacher?: BaseUser, removeAdmin: boolean = false): Promise<void> => {
       if (!selectedTeacher || !selectedTeacher.Guid)
@@ -186,7 +186,10 @@ export default defineComponent({
       showAlert,
       alertTitle,
       showLoadingSpinner,
-      setStateToAdminInterceptor
+      setStateToAdminInterceptor,
+      showConfirmDeletionModal,
+      confirmDeletionInnerTitle,
+      confirmDeletionInnerDescription
     };
   },
 });
@@ -197,6 +200,9 @@ export default defineComponent({
   min-width: 320px;
   padding: 0;
   margin: 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
 }
 
 .admin-label {

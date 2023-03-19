@@ -10,9 +10,6 @@ import { ref} from "vue";
 import {AllProf} from "@/models/BACKEND-MODELS/AllProf";
 import {BaseUserResponse} from "@/models/BACKEND-MODELS/BaseUserResponse";
 
-
-
-
 const SeedProfessorsArray = ref<Array<BaseUser>>(new Array<BaseUser>());
 export function useProfessor() {
   const GetSeededProfessors = async () => {
