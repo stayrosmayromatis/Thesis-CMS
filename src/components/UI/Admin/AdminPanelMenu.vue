@@ -66,7 +66,7 @@ export default defineComponent({
     }),
     BaseSpinner
   },
-  setup(props, context) {
+  setup(_, __) {
     const loadingTest = ref(true);
     onMounted(() => {
       setTimeout(() => {
@@ -82,7 +82,7 @@ export default defineComponent({
       },
       {
         id: uuidv4().toString(),
-        name: "Περιοδος Δηλωσεων",
+        name: "Διαχειριση Περιοδου",
         value: 2,
         component: "ExportOption",
       },
@@ -122,12 +122,11 @@ export default defineComponent({
   align-items: center;
   flex: 1 2 80px;
   font-size: 0.8rem;
-  padding: 0px;
+  padding: 0;
   min-width: 80px !important;
   color: rgb(10, 54, 157);
   caret-color: rgb(10, 54, 157);
   text-align: center;
-  font-size: 0.8rem;
 }
 @media (min-width: 769px) {
   .parent {
@@ -140,7 +139,7 @@ export default defineComponent({
     align-items: center;
     flex: 1 0 auto;
     font-size: 1rem;
-    padding: 0px;
+    padding: 0;
     min-width: fit-content;
     color: rgb(10, 54, 157);
     caret-color: rgb(10, 54, 157);

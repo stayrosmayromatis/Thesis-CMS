@@ -283,13 +283,13 @@ export default defineComponent({
       console.log(selectedTeacher.value);
       if (!error_on_selected_teacher || !selectedTeacher.value)
       {
-        return by_admin_option.value === false ? "Καθηγητες" : "Προσθηκη νεου διαχειριστη";
+        return by_admin_option.value === false ? "Καθηγητες" : "Νεος Διαχειριστης";
       }
       const splitted = selectedTeacher.value?.displayNameEl.split(" ");
       //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
       if (!splitted || splitted.length == 0)
       {
-        return by_admin_option.value === false ? "Καθηγητες" : "Προσθηκη νεου διαχειριστη";
+        return by_admin_option.value === false ? "Καθηγητες" : "Νεος Διαχειριστης";
       }
       return splitted[splitted.length - 1];
     });
