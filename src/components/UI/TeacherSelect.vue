@@ -181,15 +181,15 @@ export default defineComponent({
 
     const errorMessageSurname = ref<string>("");
     const errorOnSurname = ref<boolean>(false);
-    
+
     const dialog = ref<boolean>(false);
-    
+
     const newName = ref<string>("");
     const newSurname = ref<string>("");
-    
+
     const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value,by_admin_option} = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
-    
+
     const selectedTeacher = ref<BaseUser>();
     const cantFindTeacherFlag = ref(false);
     onMounted(() => {
@@ -230,7 +230,8 @@ export default defineComponent({
           newName.value = "";
           newSurname.value = "";
           cantFindTeacherFlag.value = false;
-          (errorMessage.value = ""), (error.value = false);
+          errorMessage.value = "";
+          error.value = false;
         } else {
           context.emit("emit-selected-teacher", undefined);
           dialog.value = false;
@@ -280,21 +281,15 @@ export default defineComponent({
     };
     const lastNameProp = computed(() => {
       console.log(selectedTeacher.value);
-      if(by_admin_option.value === false)
+      if (!error_on_selected_teacher || !selectedTeacher.value)
       {
-        if (!error_on_selected_teacher || !selectedTeacher.value) 
-          return "Καθηγητες";
-        const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-        //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
-        if (!splitted || splitted.length == 0) 
-          return "Καθηγητες";
+        return by_admin_option.value === false ? "Καθηγητες" : "Προσθηκη νεου διαχειριστη";
       }
-      else{
-        if (!error_on_selected_teacher || !selectedTeacher.value) 
-          return "Προσθηκη νεου διαχειριστη";
-        const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-        if (!splitted || splitted.length == 0) 
-          return "Προσθηκη νέου διαχειριστη";
+      const splitted = selectedTeacher.value?.displayNameEl.split(" ");
+      //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
+      if (!splitted || splitted.length == 0)
+      {
+        return by_admin_option.value === false ? "Καθηγητες" : "Προσθηκη νεου διαχειριστη";
       }
       return splitted[splitted.length - 1];
     });

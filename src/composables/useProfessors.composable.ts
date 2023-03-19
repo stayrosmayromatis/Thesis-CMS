@@ -1,25 +1,18 @@
-import { InternalDataTransfter } from './../models/DTO/InternalDataTransfer';
-import { TypeStaff } from "@/enums/StaffTypeEnum";
+import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAxios } from "@vueuse/integrations/useAxios";
-
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { useErrorFunctions } from "@/composables/throwError.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { store } from "@/store/index";
 import { CreateProfRequest } from "@/components/UI/TeacherSelect.vue";
-import { Ref, ref} from "vue";
+import { ref} from "vue";
+import {AllProf} from "@/models/BACKEND-MODELS/AllProf";
+import {BaseUserResponse} from "@/models/BACKEND-MODELS/BaseUserResponse";
 
-interface AllProf {
-  Professors: Array<BaseUserResponse>;
-  Count : number
-}
-interface BaseUserResponse {
-  Id: string;
-  EduPersonAffiliation: TypeStaff;
-  DisplayNameEl: string;
-  DisplayNameEn: string;
-}
+
+
+
 const SeedProfessorsArray = ref<Array<BaseUser>>(new Array<BaseUser>());
 export function useProfessor() {
   const GetSeededProfessors = async () => {
@@ -85,9 +78,7 @@ export function useProfessor() {
     if (api_response.isFinished) {
       const api_res_data: ApiResult<BaseUserResponse> = api_response.data.value;
       if (
-        !api_res_data ||
-        api_res_data.Status === false ||
-        !api_res_data.Status ||
+        !api_res_data || !api_res_data.Status || !api_res_data.Status ||
         !api_res_data.Data
       ) {
         setError("Error fetching Teachers", "Try Again");
