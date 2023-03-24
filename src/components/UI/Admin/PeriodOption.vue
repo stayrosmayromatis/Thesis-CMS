@@ -4,54 +4,29 @@
   <div v-if="!showLoadingSpinner" class="options-parent">
     <v-card elevation="3" class="admin-label">{{ `Τρεχων Περιοδος` }}</v-card>
     <div v-if="!currentlyActiveSsds.length">
-      <base-result-empty :show="!currentlyActiveSsds.length"
-                         :title="'Δεν βρέθηκαν περίοδοι'"
-                         :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο παρακάτω'"
-      ></base-result-empty>
+      <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκαν περίοδοι'"
+        :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο παρακάτω'"></base-result-empty>
     </div>
     <div v-if="currentlyActiveSsds.length">
       <!--      <v-card elevation="3" class="admin-label">Διαχειριστες εφαρμογης</v-card>-->
-      <v-card
-        elevation="5"
-        class="single-option_card"
-        v-for="active of currentlyActiveSsds"
-        :key="active.Id"
-      >
+      <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.Id">
         <div class="single-option_card--item">
           <span>{{ SemesterStringConverter(active) }}</span>
           <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                class="delete-button"
-                icon="mdi-trash-can"
-                size="x-small"
-              ></v-btn>
+              <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
             </template>
           </v-tooltip>
         </div>
       </v-card>
     </div>
     <div v-if="!newPeriodContext" class="add-new__period-container--button">
-      <v-btn color="green"
-             elevation="4"
-             type="button"
-             @click="generateNewPeriod"
-      >
-        <svg
-          width="30"
-          height="30"
-          clip-rule="evenodd"
-          fill-rule="evenodd"
-          stroke-linejoin="round"
-          stroke-miterlimit="2"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+      <v-btn color="green" elevation="4" type="button" @click="generateNewPeriod">
+        <svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
             d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-            fill-rule="nonzero"
-          />
+            fill-rule="nonzero" />
         </svg>
         Προσθηκη νεας περιοδου
       </v-btn>
@@ -62,35 +37,49 @@
       <div class="dates--container">
         <div class="from-date--container">
           <label for="">Ημερομηνία έναρξης περιόδου:</label>
-          <date-picker
-            :class="{ 'error-border': errorOnFromTime }"
-            disable-time-range-validation
-            v-model="fromTime"
-            placeholder="Απο"
-            required
+          <date-picker :class="{ 'error-border': errorOnFromTime }" 
+          disable-time-range-validation 
+          v-model="fromTime"
+            :start-date="new Date()" 
+            prevent-min-max-navigation 
+            :min-date="new Date()" placeholder="Απο" required
+            show-now-button
+            position="center"
+            select-text="Επιλογή" 
+            cancel-text="Κλείσιμο"
+            now-button-label="Τώρα"
+            :is-24="true"
+            :day-names="dayNames"
+            :offset="20"
+            close-on-scroll 
             @update:model-value="isFromTimeEmpty"
-
-          ></date-picker>
+            :year-range="yearRange"
+            ></date-picker>
         </div>
         <div class="to-date--container">
           <label for="">Ημερομηνία λήξης περιόδου:</label>
-          <date-picker
-            :class="{ 'error-border': errorOnToTime }"
-            disable-time-range-validation
-            v-model="toTime"
+          <date-picker :class="{ 'error-border': errorOnToTime }" 
+          disable-time-range-validation 
+          v-model="toTime"
+            close-on-scroll 
+            prevent-min-max-navigation 
             placeholder="Εως"
             required
-            @update:model-value="isToTimeEmpty"
-          ></date-picker>
+            show-now-button
+            :is-24="true"
+            position="center"
+            select-text="Επιλογή" 
+            cancel-text="Κλείσιμο"
+            now-button-label="Τώρα"
+            :day-names="dayNames"
+            :offset="20"
+            :year-range="yearRange"
+            @update:model-value="isToTimeEmpty"></date-picker>
         </div>
       </div>
       <div class="calculate-new-period__container">
-        <v-btn color="#156ed3"
-               class="calculate-new-period__button"
-               elevation="4"
-               type="button"
-               @click="generateNewPeriod"
-        >
+        <v-btn :disabled="!fromTime || !toTime" color="#156ed3" class="calculate-new-period__button" elevation="4"
+          type="button" @click="calculatePriorities">
           Υπολογισμος Προτεραιοτητων
         </v-btn>
       </div>
@@ -99,106 +88,44 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue';
-import {useAlert} from '@/composables/showAlert.composable';
-import {useAxiosInstance} from '@/composables/useInstance.composable';
-import {AdminController} from '@/config';
-import {useAxios} from '@vueuse/integrations/useAxios';
-import {InternalDataTransfter} from '@/models/DTO/InternalDataTransfer';
-import {ApiResult} from '@/models/DTO/ApiResult';
-import {SemesterSubmitionDateResponse} from '@/models/BACKEND-MODELS/SemesterSubmitionDateResponse';
-import {SemesterSubmitionDateOverviewResponse} from "@/models/BACKEND-MODELS/SemesterSubmitionDateOverviewResponse";
-import {PeriodicityEnum} from "@/enums/PeriodicityEnum";
-import DatePicker from "@vuepic/vue-datepicker";
-import {computedEager} from "@vueuse/core";
+import { useAlert } from '@/composables/showAlert.composable';
+import { useAxiosInstance } from '@/composables/useInstance.composable';
+import { AdminController } from '@/config';
+import { useAxios } from '@vueuse/integrations/useAxios';
+import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
+import { ApiResult } from '@/models/DTO/ApiResult';
+import { SemesterSubmitionDateResponse } from '@/models/BACKEND-MODELS/SemesterSubmitionDateResponse';
+import { SemesterSubmitionDateOverviewResponse } from "@/models/BACKEND-MODELS/SemesterSubmitionDateOverviewResponse";
+import { PeriodicityEnum } from "@/enums/PeriodicityEnum";
+import { computedEager } from "@vueuse/core";
+import { add } from 'date-fns';
 
 export default defineComponent({
   components:
-    {
-      DatePicker,
-      BaseSpinner,
-      BaseDialog,
-      BaseAlert,
-      BaseResultEmpty
-    },
+  {
+    BaseSpinner,
+    BaseDialog,
+    BaseAlert,
+    BaseResultEmpty
+  },
   emits: ['closeMobileView'],
   setup(props, context) {
     const showLoadingSpinner = ref(false);
-    const {showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert} = useAlert();
-    const {setBackendInstanceAuth} = useAxiosInstance();
+    const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
+    const { setBackendInstanceAuth } = useAxiosInstance();
     const currentlyActiveSsds = ref(new Array<SemesterSubmitionDateResponse>());
     const newPeriodContext = ref<SemesterSubmitionDateResponse>();
-    const fromTime = ref();
-    const toTime = ref();
-    const errorOnFromTime =ref(false);
-    const errorOnToTime =ref(false);
-    const isFromTimeEmpty = computedEager(()=>{
-      if(!fromTime.value){
-        errorOnFromTime.value = true;
-        return;
-      }
-      errorOnFromTime.value = false;
-      return;
-    });
-    const isToTimeEmpty = computedEager(()=>{
-      if(!toTime.value){
-        errorOnToTime.value = true;
-        return;
-      }
-      errorOnToTime.value = false;
-      return;
-    });
-    const FetchCurrentlyActiveSsd = async (): Promise<InternalDataTransfter<boolean>> => {
-      const currentlyActiveSsdCall = await useAxios(
-        AdminController + "fetch-currently-active-ssd",
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (currentlyActiveSsdCall.isFinished) {
-        const currentlyActiveSsdResponse: ApiResult<SemesterSubmitionDateOverviewResponse> = currentlyActiveSsdCall.data.value;
-        if (!currentlyActiveSsdResponse || !currentlyActiveSsdResponse.Status || !currentlyActiveSsdResponse.Data) {
-          return {Status: false, Data: false, Error: "API Error"};
-        }
-        console.log(currentlyActiveSsdResponse.Data);
-        currentlyActiveSsds.value = currentlyActiveSsdResponse.Data.SemesterSubmitionDates;
-        return {Status: true, Data: true};
-      }
-      return {Status: false, Data: false, Error: "Request didn't finish"};
-    }
-    const GenerateTheNewPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      const generateNewPeriodContext = await useAxios(
-        AdminController + "generate-new-period",
-        {
-          method: "POST",
-        },
-        setBackendInstanceAuth()
-      );
-      if (generateNewPeriodContext.isFinished) {
-        const newGeneratedPeriodContext: ApiResult<SemesterSubmitionDateResponse> = generateNewPeriodContext.data.value;
-        if (!newGeneratedPeriodContext || !newGeneratedPeriodContext.Status || !newGeneratedPeriodContext.Data) {
-          return {Status: false, Data: false, Error: "API Call Error"};
-        }
-        newPeriodContext.value = newGeneratedPeriodContext.Data;
-        return {Status: true, Data: true}
-      }
-      return {Status: false, Data: false, Error: "Request didn't finish"};
-    }
-    const generateNewPeriod = async () => {
-      const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
-      if (!generateTheNewPeriodCallIDT.Status) {
-        closeAlert(1000);
-        setTypeOfAlert('error');
-        openAlert("Αποτυχία δημιουργίας νέας περιόδου");
-        await delay(1500);
-        closeAlert(1000);
-      }
-    }
+    const fromTime = ref(new Date());
+    const toTime = ref<Date>();
+    const errorOnFromTime = ref(false);
+    const errorOnToTime = ref(false);
+    const dayNames = ['Δε','Τρ','Τε','Πε','Πα','Σα','Κυ']
+    const yearRange:Array<number> =[new Date().getFullYear(),new Date().getFullYear()+1];
     onMounted(async () => {
       context.emit("closeMobileView", true);
       closeAlert(1000);
@@ -214,6 +141,100 @@ export default defineComponent({
         return;
       }
     });
+    const isFromTimeEmpty = () => {
+      if (!fromTime.value) {
+        errorOnFromTime.value = true;
+        return;
+      }
+      errorOnFromTime.value = false;
+      return;
+    };
+    const isToTimeEmpty = () => {
+      if (!toTime.value) {
+        errorOnToTime.value = true;
+        return;
+      }
+      errorOnToTime.value = false;
+      return;
+    };
+    const FetchCurrentlyActiveSsd = async (): Promise<InternalDataTransfter<boolean>> => {
+      const currentlyActiveSsdCall = await useAxios(
+        AdminController + "fetch-currently-active-ssd",
+        {
+          method: "GET",
+        },
+        setBackendInstanceAuth()
+      );
+      if (currentlyActiveSsdCall.isFinished) {
+        const currentlyActiveSsdResponse: ApiResult<SemesterSubmitionDateOverviewResponse> = currentlyActiveSsdCall.data.value;
+        if (!currentlyActiveSsdResponse || !currentlyActiveSsdResponse.Status || !currentlyActiveSsdResponse.Data) {
+          return { Status: false, Data: false, Error: "API Error" };
+        }
+        console.log(currentlyActiveSsdResponse.Data);
+        currentlyActiveSsds.value = currentlyActiveSsdResponse.Data.SemesterSubmitionDates;
+        return { Status: true, Data: true };
+      }
+      return { Status: false, Data: false, Error: "Request didn't finish" };
+    };
+    const GenerateTheNewPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
+      const generateNewPeriodContext = await useAxios(
+        AdminController + "generate-new-period",
+        {
+          method: "POST",
+        },
+        setBackendInstanceAuth()
+      );
+      if (generateNewPeriodContext.isFinished) {
+        const newGeneratedPeriodContext: ApiResult<SemesterSubmitionDateResponse> = generateNewPeriodContext.data.value;
+        if (!newGeneratedPeriodContext || !newGeneratedPeriodContext.Status || !newGeneratedPeriodContext.Data) {
+          return { Status: false, Data: false, Error: "API Call Error" };
+        }
+        newPeriodContext.value = newGeneratedPeriodContext.Data;
+        return { Status: true, Data: true }
+      }
+      return { Status: false, Data: false, Error: "Request didn't finish" };
+    };
+    const CalculateThePrioritiesCall = async (): Promise<InternalDataTransfter<boolean>> => {
+      if (!fromTime.value || !toTime.value)
+        return { Status: false, Data: false, Error: "Invalid Payload" };
+      const payload = {
+        From: fromTime.value,
+        To: toTime.value
+      }
+      const calculateThePrioritiesCall = await useAxios(
+        AdminController + "calculate-new-ssd-by-date",
+        {
+          method: "POST",
+          data: payload
+        },
+        setBackendInstanceAuth()
+      );
+      if (calculateThePrioritiesCall.isFinished) {
+        const calculateThePrioritiesCallResponse: ApiResult<any> = calculateThePrioritiesCall.data.value;
+        console.log(calculateThePrioritiesCallResponse.Data);
+      }
+      return { Status: false, Data: false, Error: "Request didn't finish" };
+    }
+    const generateNewPeriod = async () => {
+      const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
+      if (!generateTheNewPeriodCallIDT.Status) {
+        closeAlert(1000);
+        setTypeOfAlert('error');
+        openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+        await delay(1500);
+        closeAlert(1000);
+      }
+    }
+    const calculatePriorities = async () => {
+      //make the calculate call
+      console.dir(toTime.value);
+      console.log(typeof (toTime.value));
+      console.dir(fromTime.value);
+      const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
+      if (!calculatePrioritiesIDT.Status) {
+        return;
+      }
+    };
     const SemesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
       if (!ssd)
         return '';
@@ -231,6 +252,8 @@ export default defineComponent({
     return {
       showLoadingSpinner,
       showAlert,
+      yearRange,
+      dayNames,
       alertTitle,
       typeOfAlert,
       currentlyActiveSsds,
@@ -242,7 +265,8 @@ export default defineComponent({
       errorOnFromTime,
       errorOnToTime,
       isFromTimeEmpty,
-      isToTimeEmpty
+      isToTimeEmpty,
+      calculatePriorities
     }
   }
 
@@ -298,7 +322,7 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-.single-option_card--item > span {
+.single-option_card--item>span {
   color: red;
   word-wrap: break-word;
   word-break: break-word;
@@ -351,7 +375,8 @@ export default defineComponent({
   margin: 1rem 1rem;
 }
 
-.dates--container > .from-date--container, .dates--container > .to-date--container {
+.dates--container>.from-date--container,
+.dates--container>.to-date--container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -360,21 +385,25 @@ export default defineComponent({
   text-align: center;
   gap: 0.5rem;
 }
-.calculate-new-period__container{
+
+.calculate-new-period__container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
 }
-.calculate-new-period__button{
+
+.calculate-new-period__button {
   background: #0a369d;
   color: white;
 }
+
 .error-border {
   border: 1px solid #ff4545;
   border-radius: 5px;
 }
+
 @media (min-width: 769px) {
   .admin-label {
     height: 3rem;
@@ -391,7 +420,8 @@ export default defineComponent({
     width: 100%;
   }
 
-  .dates--container > .from-date--container, .dates--container > .to-date--container {
+  .dates--container>.from-date--container,
+  .dates--container>.to-date--container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -402,6 +432,5 @@ export default defineComponent({
   }
 }
 
-@media (min-width: 1025px) {
-}
+@media (min-width: 1025px) {}
 </style>
