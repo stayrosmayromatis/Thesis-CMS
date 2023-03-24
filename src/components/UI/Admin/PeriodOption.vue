@@ -1,5 +1,7 @@
 <template>
   <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+  <v-card elevation="3" class="admin-label">{{ `Τρεχουμενη περιοδος` }}</v-card>
+  <base-result-empty :show="true"></base-result-empty>
   <!-- <base-dialog v-if="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
     :inner-description="confirmDeletionInnerDescription"></base-dialog> -->
   <div class="parent">
@@ -26,6 +28,7 @@ import { defineComponent, onMounted, ref ,computed} from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
+import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { AdminController } from '@/config';
@@ -33,13 +36,14 @@ import { useAxios } from '@vueuse/integrations/useAxios';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { ApiResult } from '@/models/DTO/ApiResult';
 import { ActivityStatus } from '@/enums/ActivityStatusEnum';
-import { InitialPeriodCalculationResponse } from '@/models/BACKEND-MODELS/InitalPeriodCalculationResponse';
+import { SemesterSubmitionDateResponse } from '@/models/BACKEND-MODELS/SemesterSubmitionDateResponse';
 export default defineComponent({
   components:
   {
     BaseSpinner,
     BaseDialog,
-    BaseAlert
+    BaseAlert,
+    BaseResultEmpty
   },
   emits:['closeMobileView'],
   setup(props, context) {
@@ -67,7 +71,7 @@ export default defineComponent({
         setBackendInstanceAuth()
       );
       if(getInitialPeriodCalculationApiCall.isFinished){
-        var getInitialPeriodCalculationApiResponse : ApiResult<InitialPeriodCalculationResponse> = getInitialPeriodCalculationApiCall.data.value;
+        var getInitialPeriodCalculationApiResponse : ApiResult<SemesterSubmitionDateResponse> = getInitialPeriodCalculationApiCall.data.value;
           if(!getInitialPeriodCalculationApiResponse || !getInitialPeriodCalculationApiResponse.Status || !getInitialPeriodCalculationApiResponse.Data)
           {
             return {Status: false, Data: false, Error: "API Error"};
