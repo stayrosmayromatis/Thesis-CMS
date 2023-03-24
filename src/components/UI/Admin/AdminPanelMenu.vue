@@ -4,33 +4,22 @@
       <div>
         <v-tabs v-model="tab" bg-color="#dae3f7">
           <div class="tab-override">
-            <v-tab
-              v-for="cmp of component_loader"
-              :key="cmp.id"
-              :value="cmp.component"
-              :slider-color="'#0a369d'"
-              :stacked="true"
-              :loading="loadingTest"
-              :color="'#0a369d'"
-              ripple
-              elevation="2"
-              class="tab-item_override"
-              @click="sthComp"
-              >{{ cmp.name }}</v-tab
-            >
+            <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
+              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
+              @click="sthComp">{{ cmp.name }}</v-tab>
           </div>
         </v-tabs>
       </div>
+      <!-- <keep-alive> -->
       <suspense>
         <template #default>
-          <keep-alive>
-          <component :is="tab" />
-          </keep-alive>
+          <component :is="tab"  />
         </template>
         <template #fallback>
           <base-spinner :show="true"></base-spinner>
         </template>
       </suspense>
+      <!-- </keep-alive> -->
     </v-card>
   </div>
 </template>
@@ -44,31 +33,37 @@ import {
 } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
+const AdminOption = defineAsyncComponent({
+  loader: () => import("@/components/UI/Admin/AdminOption.vue"),
+  loadingComponent: BaseSpinner,
+  delay: 10,
+  suspensible: true
+});
+const ExportOption = defineAsyncComponent({
+  loader: () => import("@/components/UI/Admin/ExportOption.vue"),
+  loadingComponent: BaseSpinner,
+  delay: 10,
+  suspensible: true
+});
+const PeriodOption = defineAsyncComponent({
+  loader: () => import("@/components/UI/Admin/PeriodOption.vue"),
+  loadingComponent: BaseSpinner,
+  delay: 10,
+  suspensible: true
+});
+
 export default defineComponent({
   components: {
-    AdminOption: defineAsyncComponent({
-      loader: () => import("@/components/UI/Admin/AdminOption.vue"),
-      loadingComponent: BaseSpinner,
-      delay: 200,
-      suspensible:false
-    }),
-    ExportOption: defineAsyncComponent({
-      loader: () => import("@/components/UI/Admin/ExportOption.vue"),
-      loadingComponent: BaseSpinner,
-      delay: 200,
-      suspensible:false
-    }),
-    PeriodOption: defineAsyncComponent({
-      loader: () => import("@/components/UI/Admin/PeriodOption.vue"),
-      loadingComponent: BaseSpinner,
-      delay: 200,
-       suspensible:false
-    }),
+    AdminOption,
+    ExportOption,
+    PeriodOption,
     BaseSpinner
   },
-  setup(_, __) {
+  emits:['closeMobileView'],
+  setup(_, context) {
     const loadingTest = ref(true);
     onMounted(() => {
+      context.emit("closeMobileView", true);
       setTimeout(() => {
         loadingTest.value = false;
       }, 2000);
@@ -84,13 +79,13 @@ export default defineComponent({
         id: uuidv4().toString(),
         name: "Διαχειριση Περιοδου",
         value: 2,
-        component: "ExportOption",
+        component: "PeriodOption",
       },
       {
         id: uuidv4().toString(),
         name: "Εξαγωγη Δηλωσεων",
         value: 3,
-        component: "PeriodOption",
+        component: "ExportOption",
       },
     ];
     const tab = ref();
@@ -107,6 +102,7 @@ export default defineComponent({
   margin: 1rem 0;
   min-width: 320px;
 }
+
 .tab-override {
   word-wrap: break-word;
   word-break: break-word;
@@ -115,6 +111,7 @@ export default defineComponent({
   align-items: center;
   flex: 1 0 auto;
 }
+
 .tab-item_override {
   display: flex;
   flex-direction: row;
@@ -128,10 +125,12 @@ export default defineComponent({
   caret-color: rgb(10, 54, 157);
   text-align: center;
 }
+
 @media (min-width: 769px) {
   .parent {
     margin: 1rem 1rem;
   }
+
   .tab-item_override {
     display: flex;
     flex-direction: row;
@@ -146,6 +145,7 @@ export default defineComponent({
     text-align: center;
   }
 }
+
 @media (min-width: 1025px) {
   .parent {
     margin: 2rem 1rem;

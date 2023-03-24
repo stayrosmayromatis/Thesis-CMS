@@ -67,6 +67,7 @@ export default defineComponent({
     BaseSpinner,
     BaseDialog
   },
+  emits:['closeMobileView'],
   setup(props, context) {
     const {GetSeededProfessors, SeedProfessorsArray} = useProfessor();
     const {setBackendInstanceAuth} = useAxiosInstance();
