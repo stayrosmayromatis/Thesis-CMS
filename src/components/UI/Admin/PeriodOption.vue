@@ -37,44 +37,19 @@
       <div class="dates--container">
         <div class="from-date--container">
           <label for="">Ημερομηνία έναρξης περιόδου:</label>
-          <date-picker :class="{ 'error-border': errorOnFromTime }" 
-          disable-time-range-validation 
-          v-model="fromTime"
-            :start-date="new Date()" 
-            prevent-min-max-navigation 
-            :min-date="new Date()" placeholder="Απο" required
-            show-now-button
-            position="center"
-            select-text="Επιλογή" 
-            cancel-text="Κλείσιμο"
-            now-button-label="Τώρα"
-            :is-24="true"
-            :day-names="dayNames"
-            :offset="20"
-            close-on-scroll 
-            @update:model-value="isFromTimeEmpty"
-            :year-range="yearRange"
-            ></date-picker>
+          <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
+            :start-date="new Date()" :min-date="new Date()" placeholder="Από" prevent-min-max-navigation show-now-button
+            position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :is-24="true"
+            :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
+            :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
         </div>
         <div class="to-date--container">
           <label for="">Ημερομηνία λήξης περιόδου:</label>
-          <date-picker :class="{ 'error-border': errorOnToTime }" 
-          disable-time-range-validation 
-          v-model="toTime"
-            close-on-scroll 
-            prevent-min-max-navigation 
-            placeholder="Εως"
-            required
-            show-now-button
-            :is-24="true"
-            position="center"
-            select-text="Επιλογή" 
-            cancel-text="Κλείσιμο"
-            now-button-label="Τώρα"
-            :day-names="dayNames"
-            :offset="20"
-            :year-range="yearRange"
-            @update:model-value="isToTimeEmpty"></date-picker>
+          <date-picker :class="{ 'error-border': errorOnToTime }" disable-time-range-validation v-model="toTime"
+            placeholder="Έως" show-now-button :is-24="true" prevent-min-max-navigation :min-date="new Date()"
+            position="center" cancel-text="Άκυρο" now-button-label="Τώρα" :day-names="dayNames" :offset="20"
+            :month-change-on-arrows="true" :month-change-on-scroll="'inverse'" :year-range="yearRange"
+            :format="dateFormater" @update:model-value="isToTimeEmpty"></date-picker>
         </div>
       </div>
       <div class="calculate-new-period__container">
@@ -82,6 +57,36 @@
           type="button" @click="calculatePriorities">
           Υπολογισμος Προτεραιοτητων
         </v-btn>
+      </div>
+    </div>
+    <div v-if="calculatedPriorites">
+      <v-card elevation="3" class="admin-label">{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}
+      </v-card>
+      <div class="calculated_priorities--container">
+        <div class="calculated_priorities--container_highest">
+          <label for="">Ημερομηνία έναρξης: </label>
+          <label for="">{{ calculatedPriorites.From.Formatted }}</label>
+          <label for="">Ημερομηνία λήξης: </label>
+          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+        </div>
+        <div class="calculated_priorities--container_highest">
+          <label for="">Μέγιστη Προτεραιοτητα Απο: </label>
+          <label for="">{{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
+          <label for="">Έως:</label>
+          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+        </div>
+        <div class="calculated_priorities--container_moderate">
+          <label for="">Μέτρια Προτεραιοτητα Απο: </label>
+          <label for="">{{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
+          <label for="">Έως:</label>
+          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+        </div>
+        <div class="calculated_priorities--container_lowest">
+          <label for="">Χαμηλότερη Προτεραιοτητα Απο: </label>
+          <label for="">{{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
+          <label for="">Έως:</label>
+          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+        </div>
       </div>
     </div>
   </div>
@@ -102,8 +107,8 @@ import { ApiResult } from '@/models/DTO/ApiResult';
 import { SemesterSubmitionDateResponse } from '@/models/BACKEND-MODELS/SemesterSubmitionDateResponse';
 import { SemesterSubmitionDateOverviewResponse } from "@/models/BACKEND-MODELS/SemesterSubmitionDateOverviewResponse";
 import { PeriodicityEnum } from "@/enums/PeriodicityEnum";
-import { computedEager } from "@vueuse/core";
-import { add } from 'date-fns';
+import { GeneratedPrioritiesResponse } from '@/models/BACKEND-MODELS/GeneratedPrioritiesResponse';
+import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
 
 export default defineComponent({
   components:
@@ -118,14 +123,16 @@ export default defineComponent({
     const showLoadingSpinner = ref(false);
     const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { setBackendInstanceAuth } = useAxiosInstance();
+    const { toTimeString } = useTimeObjectExtensions();
     const currentlyActiveSsds = ref(new Array<SemesterSubmitionDateResponse>());
     const newPeriodContext = ref<SemesterSubmitionDateResponse>();
     const fromTime = ref(new Date());
     const toTime = ref<Date>();
     const errorOnFromTime = ref(false);
     const errorOnToTime = ref(false);
-    const dayNames = ['Δε','Τρ','Τε','Πε','Πα','Σα','Κυ']
-    const yearRange:Array<number> =[new Date().getFullYear(),new Date().getFullYear()+1];
+    const dayNames = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ']
+    const yearRange: Array<number> = [new Date().getFullYear(), new Date().getFullYear() + 1];
+    const calculatedPriorites = ref<GeneratedPrioritiesResponse>();
     onMounted(async () => {
       context.emit("closeMobileView", true);
       closeAlert(1000);
@@ -210,8 +217,16 @@ export default defineComponent({
         setBackendInstanceAuth()
       );
       if (calculateThePrioritiesCall.isFinished) {
-        const calculateThePrioritiesCallResponse: ApiResult<any> = calculateThePrioritiesCall.data.value;
+        const calculateThePrioritiesCallResponse: ApiResult<GeneratedPrioritiesResponse> = calculateThePrioritiesCall.data.value;
+        if (!calculateThePrioritiesCallResponse.Status || !calculateThePrioritiesCallResponse.Data) {
+          return { Status: false, Data: false, Error: calculateThePrioritiesCallResponse.Error };
+        }
         console.log(calculateThePrioritiesCallResponse.Data);
+        calculatedPriorites.value = calculateThePrioritiesCallResponse.Data
+        console.log(typeof (calculateThePrioritiesCallResponse.Data.From));
+
+
+        return { Status: true, Data: true };
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
     }
@@ -232,7 +247,11 @@ export default defineComponent({
       console.dir(fromTime.value);
       const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
       if (!calculatePrioritiesIDT.Status) {
-        return;
+        closeAlert(1000);
+        setTypeOfAlert('error');
+        openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+        await delay(1500);
+        closeAlert(1000);
       }
     };
     const SemesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
@@ -249,9 +268,23 @@ export default defineComponent({
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
+    const dateFormater = (date: Date) => {
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const timeString = toTimeString({
+        hours: hours,
+        minutes: minutes,
+        seconds: 0
+      });
+      return `${day}-${month}-${year} , ${timeString}`;
+    }
     return {
       showLoadingSpinner,
       showAlert,
+      dateFormater,
       yearRange,
       dayNames,
       alertTitle,
@@ -266,7 +299,8 @@ export default defineComponent({
       errorOnToTime,
       isFromTimeEmpty,
       isToTimeEmpty,
-      calculatePriorities
+      calculatePriorities,
+      calculatedPriorites
     }
   }
 
@@ -392,6 +426,22 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+.calculated_priorities--container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.calculated_priorities--container_lowest,
+.calculated_priorities--container_highest,
+.calculated_priorities--container_moderate {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .calculate-new-period__button {

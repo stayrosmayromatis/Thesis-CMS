@@ -2,59 +2,32 @@
   <div class="form-control-add-field">
     <div class="mobile-form-control">
       <div class="div-input-placeholder">
-        <input
-          :class="{ 'error-border': department.errorOnDeptId }"
-          @input="isInputEmpty"
-          class="input-placeholder"
-          type="text"
-          placeholder="(π.χ. Τ1)"
-          v-model="department.deptId"
-        />
+        <input :class="{ 'error-border': department.errorOnDeptId }" @input="isInputEmpty" class="input-placeholder"
+          type="text" placeholder="(π.χ. Τ1)" v-model="department.deptId" />
       </div>
       <div class="slider-grow">
-        <base-slider
-          @update:model-value="changeNumberOfStudents"
-          :min-value="minValue"
-          :max-value="maxValue"
-          :starting-value="startingValue"
-        ></base-slider>
+        <base-slider @update:model-value="changeNumberOfStudents" :min-value="minValue" :max-value="maxValue"
+          :starting-value="startingValue"></base-slider>
       </div>
     </div>
 
     <div class="mobile-date-picker">
-      <date-picker
-        :class="{ 'error-border': department.errorOnFromTime }"
-        v-model="department.fromTime"
-        time-picker
-        disable-time-range-validation
-        placeholder="Απο"
-        @update:model-value="isFromTimeEmpty"
-        required
-      >
+      <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
+        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" :is-24="true"
+        show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
       </date-picker>
-      <date-picker
-        :class="{ 'error-border': department.errorOnToTime }"
-        v-model="department.toTime"
-        time-picker
-        disable-time-range-validation
-        placeholder="Εως"
-        @update:model-value="isToTimeEmpty"
-      >
+      <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
+        disable-time-range-validation placeholder="Έως" @update:model-value="isToTimeEmpty" :is-24="true" show-now-button
+        position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
       </date-picker>
-      <v-select
-        class="v-input_max-width"
-        :items="days"
-        variant="solo"
-        label="Ημέρα"
-        hide-details
-        density="comfortable"
-        persistent-hint
-        direction="horizontal"
-        single-line
-        v-model="department.day"
-      ></v-select>
+      <v-select class="v-input_max-width" :items="days" variant="solo" label="Ημέρα" hide-details density="comfortable"
+        persistent-hint direction="horizontal" single-line v-model="department.day"></v-select>
       <div class="teacher-select-box">
-        <teacher-select :selected_teacher_by_edit_flag="is_by_edit" :selected_teacher_by_edit_value=" is_by_edit ? department.selectedTeacher : undefined" :error_on_selected_teacher="department.errorOnSelectedTeacher" @emit-selected-teacher="populateFormWithSelectedTeacher" :seeded_professors="seeded_professors_reactive"></teacher-select>
+        <teacher-select :selected_teacher_by_edit_flag="is_by_edit"
+          :selected_teacher_by_edit_value="is_by_edit ? department.selectedTeacher : undefined"
+          :error_on_selected_teacher="department.errorOnSelectedTeacher"
+          @emit-selected-teacher="populateFormWithSelectedTeacher"
+          :seeded_professors="seeded_professors_reactive"></teacher-select>
       </div>
     </div>
     <div class="mobile-actions">
@@ -66,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,onMounted,PropType,ref,toRefs } from "vue";
+import { defineComponent, onMounted, PropType, ref, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
@@ -77,15 +50,15 @@ export default defineComponent({
       type: Object as PropType<Department>,
       required: true,
     },
-    seeded_professors : {
-      type : Object as PropType<Array<BaseUser>>,
-        required : false,
-        default : Array<BaseUser>()
+    seeded_professors: {
+      type: Object as PropType<Array<BaseUser>>,
+      required: false,
+      default: Array<BaseUser>()
     },
-    is_by_edit:{
-      type : Boolean,
-      required : true,
-      default : false
+    is_by_edit: {
+      type: Boolean,
+      required: true,
+      default: false
     }
   },
   components: {
@@ -94,7 +67,7 @@ export default defineComponent({
   emits: ["deleteByDeptId"],
   setup(props, context) {
     const days = daysOfWeek;
-    const { department,seeded_professors,is_by_edit } = toRefs(props);
+    const { department, seeded_professors, is_by_edit } = toRefs(props);
     const minValue = ref<number>(10);
     const maxValue = ref<number>(50);
     const startingValue = ref<number>(30);
@@ -102,9 +75,8 @@ export default defineComponent({
       startingValue.value = is_by_edit.value === true && department ? department.value.numberOfStudents : 30;
       minValue.value = is_by_edit.value === true && department ? department.value.numberOfStudents : 10;
     })
-    const populateFormWithSelectedTeacher = (teacher:BaseUser | undefined) => {
-      if(!teacher)
-      {
+    const populateFormWithSelectedTeacher = (teacher: BaseUser | undefined) => {
+      if (!teacher) {
         department.value.selectedTeacher = undefined;
         department.value.errorOnSelectedTeacher = true;
         return;
@@ -120,22 +92,22 @@ export default defineComponent({
     };
     const isInputEmpty = () => {
       department.value.deptId === "" ||
-      department.value.deptId === " " ||
-      department.value.deptId === null
+        department.value.deptId === " " ||
+        department.value.deptId === null
         ? (department.value.errorOnDeptId = true)
         : (department.value.errorOnDeptId = false);
     };
     const isFromTimeEmpty = () => {
       department.value.fromTime === "" ||
-      department.value.fromTime === " " ||
-      department.value.fromTime === null
+        department.value.fromTime === " " ||
+        department.value.fromTime === null
         ? (department.value.errorOnFromTime = true)
         : (department.value.errorOnFromTime = false);
     };
     const isToTimeEmpty = () => {
       department.value.toTime === "" ||
-      department.value.toTime === " " ||
-      department.value.toTime === null
+        department.value.toTime === " " ||
+        department.value.toTime === null
         ? (department.value.errorOnToTime = true)
         : (department.value.errorOnToTime = false);
     };
@@ -143,10 +115,10 @@ export default defineComponent({
       department.value.numberOfStudents = value ? value : 30;
     };
     const clearErrors = () => {
-      if(department.value.errorOnFromTime === true){
+      if (department.value.errorOnFromTime === true) {
         department.value.errorOnFromTime = false;
       }
-      if(department.value.errorOnToTime === true){
+      if (department.value.errorOnToTime === true) {
         department.value.errorOnToTime = false
       }
     };
@@ -158,7 +130,7 @@ export default defineComponent({
       isFromTimeEmpty,
       isToTimeEmpty,
       changeNumberOfStudents,
-      seeded_professors_reactive : seeded_professors,
+      seeded_professors_reactive: seeded_professors,
       populateFormWithSelectedTeacher,
       minValue,
       maxValue,
@@ -177,6 +149,7 @@ export default defineComponent({
   width: 100%;
   margin: 0.3rem;
 }
+
 .slider-grow {
   margin: 0 1rem;
   padding: 0 1.6rem;
@@ -235,13 +208,11 @@ export default defineComponent({
   min-width: 320px;
 }
 
-.mobile-date-picker > * {
+.mobile-date-picker>* {
   width: 100%;
 }
 
-:deep(
-    .dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg
-  ) {
+:deep(.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg) {
   height: 3rem;
 }
 
