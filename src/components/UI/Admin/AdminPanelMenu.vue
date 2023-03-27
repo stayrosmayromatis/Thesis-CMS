@@ -10,16 +10,16 @@
           </div>
         </v-tabs>
       </div>
-      <!-- <keep-alive> -->
       <suspense>
         <template #default>
-          <component :is="tab"  />
+          <keep-alive>
+            <component :is="tab" />
+          </keep-alive>
         </template>
         <template #fallback>
           <base-spinner :show="true"></base-spinner>
         </template>
       </suspense>
-      <!-- </keep-alive> -->
     </v-card>
   </div>
 </template>
@@ -59,7 +59,7 @@ export default defineComponent({
     PeriodOption,
     BaseSpinner
   },
-  emits:['closeMobileView'],
+  emits: ['closeMobileView'],
   setup(_, context) {
     const loadingTest = ref(true);
     onMounted(() => {

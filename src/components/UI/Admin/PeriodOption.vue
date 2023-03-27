@@ -64,28 +64,28 @@
       </v-card>
       <div class="calculated_priorities--container">
         <div class="calculated_priorities--container_highest">
-          <label for="">Ημερομηνία έναρξης: </label>
-          <label for="">{{ calculatedPriorites.From.Formatted }}</label>
-          <label for="">Ημερομηνία λήξης: </label>
-          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+          <label>Ημερομηνία έναρξης: </label>
+          <label>{{ calculatedPriorites.From.Formatted }}</label>
+          <label>Ημερομηνία λήξης: </label>
+          <label>{{ calculatedPriorites.To.Formatted }}</label>
         </div>
         <div class="calculated_priorities--container_highest">
-          <label for="">Μέγιστη Προτεραιοτητα Απο: </label>
-          <label for="">{{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
-          <label for="">Έως:</label>
-          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+          <label>Μέγιστη Προτεραιοτητα Απο: </label>
+          <label>{{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
+          <label>Έως:</label>
+          <label>{{ calculatedPriorites.To.Formatted }}</label>
         </div>
         <div class="calculated_priorities--container_moderate">
-          <label for="">Μέτρια Προτεραιοτητα Απο: </label>
-          <label for="">{{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
-          <label for="">Έως:</label>
-          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+          <label>Μέτρια Προτεραιοτητα Απο: </label>
+          <label>{{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
+          <label>Έως:</label>
+          <label>{{ calculatedPriorites.To.Formatted }}</label>
         </div>
         <div class="calculated_priorities--container_lowest">
-          <label for="">Χαμηλότερη Προτεραιοτητα Απο: </label>
-          <label for="">{{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
-          <label for="">Έως:</label>
-          <label for="">{{ calculatedPriorites.To.Formatted }}</label>
+          <label>Χαμηλότερη Προτεραιοτητα Απο: </label>
+          <label>{{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
+          <label>Έως:</label>
+          <label>{{ calculatedPriorites.To.Formatted }}</label>
         </div>
       </div>
     </div>
@@ -269,14 +269,14 @@ export default defineComponent({
       return new Promise((resolve) => setTimeout(resolve, time));
     };
     const dateFormater = (date: Date) => {
-      const day = date.getDate();
-      const month = date.getMonth();
-      const year = date.getFullYear();
+      const day = date.getUTCDate();
+      const month = date.getMonth() + 1;
+      const year = date.getUTCFullYear();
       const hours = date.getHours();
       const minutes = date.getMinutes();
       const timeString = toTimeString({
-        hours: hours,
-        minutes: minutes,
+        hours,
+        minutes,
         seconds: 0
       });
       return `${day}-${month}-${year} , ${timeString}`;
