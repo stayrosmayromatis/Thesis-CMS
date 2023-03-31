@@ -38,17 +38,24 @@
         <div class="from-date--container">
           <label for="">Ημερομηνία έναρξης περιόδου:</label>
           <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
-            :start-date="new Date()" :min-date="new Date()" placeholder="Από" prevent-min-max-navigation show-now-button
+            :start-date="tomorrow" 
+            :min-date="tomorrow" 
+            placeholder="Από" prevent-min-max-navigation show-now-button
             position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :is-24="true"
+            :enable-time-picker="false"
             :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
+            no-today
             :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
         </div>
         <div class="to-date--container">
           <label for="">Ημερομηνία λήξης περιόδου:</label>
           <date-picker :class="{ 'error-border': errorOnToTime }" disable-time-range-validation v-model="toTime"
-            placeholder="Έως" show-now-button :is-24="true" prevent-min-max-navigation :min-date="new Date()"
+            placeholder="Έως" show-now-button :is-24="true" prevent-min-max-navigation 
+            :min-date="oneWeekAfterTomorrow"
             position="center" cancel-text="Άκυρο" now-button-label="Τώρα" :day-names="dayNames" :offset="20"
             :month-change-on-arrows="true" :month-change-on-scroll="'inverse'" :year-range="yearRange"
+            :enable-time-picker="false"
+            no-today
             :format="dateFormater" @update:model-value="isToTimeEmpty"></date-picker>
         </div>
       </div>
@@ -108,7 +115,6 @@ import { SemesterSubmitionDateResponse } from '@/models/BACKEND-MODELS/SemesterS
 import { SemesterSubmitionDateOverviewResponse } from "@/models/BACKEND-MODELS/SemesterSubmitionDateOverviewResponse";
 import { PeriodicityEnum } from "@/enums/PeriodicityEnum";
 import { GeneratedPrioritiesResponse } from '@/models/BACKEND-MODELS/GeneratedPrioritiesResponse';
-import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
 
 export default defineComponent({
   components:
@@ -123,17 +129,19 @@ export default defineComponent({
     const showLoadingSpinner = ref(false);
     const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { setBackendInstanceAuth } = useAxiosInstance();
-    const { toTimeString } = useTimeObjectExtensions();
     const currentlyActiveSsds = ref(new Array<SemesterSubmitionDateResponse>());
     const newPeriodContext = ref<SemesterSubmitionDateResponse>();
     const fromTime = ref(new Date());
     const toTime = ref<Date>();
     const errorOnFromTime = ref(false);
     const errorOnToTime = ref(false);
+    const tomorrow= new Date(new Date().setDate(new Date().getDate() + 1));
+    const oneWeekAfterTomorrow = new Date(new Date().setDate(tomorrow.getDate() + 7));
     const dayNames = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ']
     const yearRange: Array<number> = [new Date().getFullYear(), new Date().getFullYear() + 1];
     const calculatedPriorites = ref<GeneratedPrioritiesResponse>();
     onMounted(async () => {
+      fromTime.value = tomorrow;
       context.emit("closeMobileView", true);
       closeAlert(1000);
       showLoadingSpinner.value = true;
@@ -272,14 +280,7 @@ export default defineComponent({
       const day = date.getUTCDate();
       const month = date.getMonth() + 1;
       const year = date.getUTCFullYear();
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const timeString = toTimeString({
-        hours,
-        minutes,
-        seconds: 0
-      });
-      return `${day}-${month}-${year} , ${timeString}`;
+      return `${day}-${month}-${year}`;
     }
     return {
       showLoadingSpinner,
@@ -300,7 +301,9 @@ export default defineComponent({
       isFromTimeEmpty,
       isToTimeEmpty,
       calculatePriorities,
-      calculatedPriorites
+      calculatedPriorites,
+      tomorrow,
+      oneWeekAfterTomorrow
     }
   }
 
