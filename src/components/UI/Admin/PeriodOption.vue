@@ -34,67 +34,84 @@
     <div v-if="newPeriodContext" class="add-new__period-container--form">
       <v-card elevation="3" class="admin-label">{{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${SemesterStringConverter(newPeriodContext)}` }}
       </v-card>
-      <div class="dates--container">
-        <div class="from-date--container">
-          <label for="">Ημερομηνία έναρξης περιόδου:</label>
-          <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
-            :start-date="tomorrow" 
-            :min-date="tomorrow" 
-            placeholder="Από" prevent-min-max-navigation show-now-button
-            position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :is-24="true"
-            :enable-time-picker="false"
-            :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
-            no-today
-            :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
+      <v-card elevation="3" class="dates--card">
+        <div class="dates--container">
+          <div class="from-date--container">
+            <label for="">Ημερομηνία έναρξης περιόδου:</label>
+            <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
+              :start-date="tomorrow" :min-date="tomorrow" placeholder="Από" prevent-min-max-navigation show-now-button
+              position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :enable-time-picker="false"
+              :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
+              no-today :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
+          </div>
+          <div class="to-date--container">
+            <label for="">Ημερομηνία λήξης περιόδου:</label>
+            <date-picker :class="{ 'error-border': errorOnToTime }" disable-time-range-validation v-model="toTime"
+              placeholder="Έως" show-now-button prevent-min-max-navigation :min-date="oneWeekAfterTomorrow"
+              :start-date="oneWeekAfterTomorrow" position="center" cancel-text="Άκυρο" now-button-label="Τώρα"
+              :day-names="dayNames" :offset="20" :month-change-on-arrows="true" :month-change-on-scroll="'inverse'"
+              :year-range="yearRange" :enable-time-picker="false" no-today :format="dateFormater"
+              @update:model-value="isToTimeEmpty"></date-picker>
+          </div>
         </div>
-        <div class="to-date--container">
-          <label for="">Ημερομηνία λήξης περιόδου:</label>
-          <date-picker :class="{ 'error-border': errorOnToTime }" disable-time-range-validation v-model="toTime"
-            placeholder="Έως" show-now-button :is-24="true" prevent-min-max-navigation 
-            :min-date="oneWeekAfterTomorrow"
-            position="center" cancel-text="Άκυρο" now-button-label="Τώρα" :day-names="dayNames" :offset="20"
-            :month-change-on-arrows="true" :month-change-on-scroll="'inverse'" :year-range="yearRange"
-            :enable-time-picker="false"
-            no-today
-            :format="dateFormater" @update:model-value="isToTimeEmpty"></date-picker>
+        <div class="calculate-new-period__container">
+          <v-btn :disabled="!fromTime || !toTime" color="#156ed3" class="calculate-new-period__button" elevation="4"
+            type="button" @click="calculatePriorities">
+            Υπολογισμος Προτεραιοτητων
+          </v-btn>
         </div>
-      </div>
-      <div class="calculate-new-period__container">
-        <v-btn :disabled="!fromTime || !toTime" color="#156ed3" class="calculate-new-period__button" elevation="4"
-          type="button" @click="calculatePriorities">
-          Υπολογισμος Προτεραιοτητων
-        </v-btn>
-      </div>
+      </v-card>
     </div>
     <div v-if="calculatedPriorites">
       <v-card elevation="3" class="admin-label">{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}
       </v-card>
-      <div class="calculated_priorities--container">
-        <div class="calculated_priorities--container_highest">
-          <label>Ημερομηνία έναρξης: </label>
-          <label>{{ calculatedPriorites.From.Formatted }}</label>
-          <label>Ημερομηνία λήξης: </label>
-          <label>{{ calculatedPriorites.To.Formatted }}</label>
+      <v-card elevation="3" class="calculated_priorities--card">
+        <div class="calculated_priorities--container">
+          <div class="calculated_priorities--container_start-end">
+            <div class="calculated_priorities--container_start">
+              <label>Ημερομηνία έναρξης: </label>
+              <label>{{ calculatedPriorites.From.Formatted }}</label>
+            </div>
+            <div class="calculated_priorities--container_end">
+              <label>Ημερομηνία λήξης: </label>
+              <label>{{ calculatedPriorites.To.Formatted }}</label>
+            </div>
+          </div>
+          <div class="calculated_priorities--container_highest">
+            <label>Μέγιστη Προτεραιοτητα </label>
+            <div class="calculated_priorities--container_highest-outer">
+              <div class="calculated_priorities--container_highest-from">
+                <label>Απο: {{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
+              </div>
+              <div class="calculated_priorities--container_highest-to">
+                <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="calculated_priorities--container_moderate">
+            <label>Μέτρια Προτεραιοτητα </label>
+            <div class="calculated_priorities--container_moderate-outer">
+              <div class="calculated_priorities--container_moderate-from">
+                <label>Απο: {{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
+              </div>
+              <div class="calculated_priorities--container_moderate-to">
+                <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="calculated_priorities--container_lowest">
+            <label>Χαμηλότερη Προτεραιοτητα</label>
+            <div class="calculated_priorities--container_lowest-outer">
+              <div class="calculated_priorities--container_lowest-from">
+                <label>Απο: {{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
+              </div>
+              <div class="calculated_priorities--container_lowest-to">
+                <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="calculated_priorities--container_highest">
-          <label>Μέγιστη Προτεραιοτητα Απο: </label>
-          <label>{{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
-          <label>Έως:</label>
-          <label>{{ calculatedPriorites.To.Formatted }}</label>
-        </div>
-        <div class="calculated_priorities--container_moderate">
-          <label>Μέτρια Προτεραιοτητα Απο: </label>
-          <label>{{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
-          <label>Έως:</label>
-          <label>{{ calculatedPriorites.To.Formatted }}</label>
-        </div>
-        <div class="calculated_priorities--container_lowest">
-          <label>Χαμηλότερη Προτεραιοτητα Απο: </label>
-          <label>{{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
-          <label>Έως:</label>
-          <label>{{ calculatedPriorites.To.Formatted }}</label>
-        </div>
-      </div>
+      </v-card>
     </div>
   </div>
 </template>
@@ -135,13 +152,14 @@ export default defineComponent({
     const toTime = ref<Date>();
     const errorOnFromTime = ref(false);
     const errorOnToTime = ref(false);
-    const tomorrow= new Date(new Date().setDate(new Date().getDate() + 1));
-    const oneWeekAfterTomorrow = new Date(new Date().setDate(tomorrow.getDate() + 7));
+    let tomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
+    let oneWeekAfterTomorrow = new Date(new Date().setDate(tomorrow.getDate() + 7));
     const dayNames = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ']
     const yearRange: Array<number> = [new Date().getFullYear(), new Date().getFullYear() + 1];
     const calculatedPriorites = ref<GeneratedPrioritiesResponse>();
     onMounted(async () => {
       fromTime.value = tomorrow;
+      toTime.value = oneWeekAfterTomorrow;
       context.emit("closeMobileView", true);
       closeAlert(1000);
       showLoadingSpinner.value = true;
@@ -155,6 +173,9 @@ export default defineComponent({
         closeAlert(1000);
         return;
       }
+      console.log(tomorrow);
+      console.log(oneWeekAfterTomorrow);
+
     });
     const isFromTimeEmpty = () => {
       if (!fromTime.value) {
@@ -337,7 +358,7 @@ export default defineComponent({
   word-wrap: break-word;
   word-break: break-word;
   text-align: center;
-  padding: 1.2rem;
+  padding: 1.2rem 0;
   margin-bottom: 1rem;
 }
 
@@ -409,7 +430,7 @@ export default defineComponent({
   justify-content: flex-start;
   width: 100%;
   gap: 1rem;
-  margin: 1rem 1rem;
+  /* margin: 1rem 1rem; */
 }
 
 .dates--container>.from-date--container,
@@ -423,12 +444,22 @@ export default defineComponent({
   gap: 0.5rem;
 }
 
+.calculated_priorities--card {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem;
+}
+
 .calculate-new-period__container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
+  padding: 1rem 0;
 }
 
 .calculated_priorities--container {
@@ -437,19 +468,71 @@ export default defineComponent({
   width: 100%;
 }
 
-.calculated_priorities--container_lowest,
-.calculated_priorities--container_highest,
-.calculated_priorities--container_moderate {
+.calculated_priorities--container_start-end {
   display: flex;
   flex-direction: row;
   gap: 1rem;
   justify-content: center;
   align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.calculated_priorities--container_lowest,
+.calculated_priorities--container_highest,
+.calculated_priorities--container_moderate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0.5rem;
+  outline: 1px solid #dae3f7;
+  margin-bottom: 0.5rem;
+}
+
+.calculated_priorities--container_start,
+.calculated_priorities--container_end {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  outline: 1px solid #dae3f7;
+}
+
+.calculated_priorities--container_highest-outer,
+.calculated_priorities--container_moderate-outer,
+.calculated_priorities--container_lowest-outer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.calculated_priorities--container_highest-from,
+.calculated_priorities--container_highest-to {}
+
+.calculated_priorities--container_start>label,
+.calculated_priorities--container_end>label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  word-break: break-word;
+  white-space: pre-line;
 }
 
 .calculate-new-period__button {
   background: #0a369d;
   color: white;
+}
+
+.dates--card {
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+  padding: 1rem 1rem;
 }
 
 .error-border {
@@ -482,6 +565,13 @@ export default defineComponent({
     width: 100%;
     text-align: center;
     gap: 0.5rem;
+  }
+
+  .calculated_priorities--container_highest-outer,
+  .calculated_priorities--container_moderate-outer,
+  .calculated_priorities--container_lowest-outer {
+    flex-direction: row;
+    gap: 1rem;
   }
 }
 
