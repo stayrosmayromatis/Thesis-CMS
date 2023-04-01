@@ -8,8 +8,7 @@
         :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο παρακάτω'"></base-result-empty>
     </div>
     <div v-if="currentlyActiveSsds.length">
-      <!--      <v-card elevation="3" class="admin-label">Διαχειριστες εφαρμογης</v-card>-->
-      <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.Id">
+      <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
         <div class="single-option_card--item">
           <span>{{ SemesterStringConverter(active) }}</span>
           <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
@@ -111,6 +110,10 @@
             </div>
           </div>
         </div>
+        <v-btn color="green" class="calculate-new-period__button" elevation="4"
+            type="button" @click="initiateSubmissionPeriod">
+            επικυρωση περιοδου
+          </v-btn>
       </v-card>
     </div>
   </div>
@@ -132,6 +135,7 @@ import { SemesterSubmitionDateResponse } from '@/models/BACKEND-MODELS/SemesterS
 import { SemesterSubmitionDateOverviewResponse } from "@/models/BACKEND-MODELS/SemesterSubmitionDateOverviewResponse";
 import { PeriodicityEnum } from "@/enums/PeriodicityEnum";
 import { GeneratedPrioritiesResponse } from '@/models/BACKEND-MODELS/GeneratedPrioritiesResponse';
+import { SubmissionPeriodRequest } from '@/models/BACKEND-MODELS/SubmissionPeriodRequest';
 
 export default defineComponent({
   components:
@@ -173,9 +177,6 @@ export default defineComponent({
         closeAlert(1000);
         return;
       }
-      console.log(tomorrow);
-      console.log(oneWeekAfterTomorrow);
-
     });
     const isFromTimeEmpty = () => {
       if (!fromTime.value) {
@@ -183,7 +184,6 @@ export default defineComponent({
         return;
       }
       errorOnFromTime.value = false;
-      return;
     };
     const isToTimeEmpty = () => {
       if (!toTime.value) {
@@ -191,7 +191,6 @@ export default defineComponent({
         return;
       }
       errorOnToTime.value = false;
-      return;
     };
     const FetchCurrentlyActiveSsd = async (): Promise<InternalDataTransfter<boolean>> => {
       const currentlyActiveSsdCall = await useAxios(
@@ -206,7 +205,6 @@ export default defineComponent({
         if (!currentlyActiveSsdResponse || !currentlyActiveSsdResponse.Status || !currentlyActiveSsdResponse.Data) {
           return { Status: false, Data: false, Error: "API Error" };
         }
-        console.log(currentlyActiveSsdResponse.Data);
         currentlyActiveSsds.value = currentlyActiveSsdResponse.Data.SemesterSubmitionDates;
         return { Status: true, Data: true };
       }
@@ -226,6 +224,8 @@ export default defineComponent({
           return { Status: false, Data: false, Error: "API Call Error" };
         }
         newPeriodContext.value = newGeneratedPeriodContext.Data;
+        console.log("Paok");
+        console.log(newPeriodContext.value);
         return { Status: true, Data: true }
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
@@ -250,11 +250,7 @@ export default defineComponent({
         if (!calculateThePrioritiesCallResponse.Status || !calculateThePrioritiesCallResponse.Data) {
           return { Status: false, Data: false, Error: calculateThePrioritiesCallResponse.Error };
         }
-        console.log(calculateThePrioritiesCallResponse.Data);
         calculatedPriorites.value = calculateThePrioritiesCallResponse.Data
-        console.log(typeof (calculateThePrioritiesCallResponse.Data.From));
-
-
         return { Status: true, Data: true };
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
@@ -267,22 +263,75 @@ export default defineComponent({
         openAlert("Αποτυχία δημιουργίας νέας περιόδου");
         await delay(1500);
         closeAlert(1000);
+        return;
       }
+      closeAlert(1000);
+      setTypeOfAlert('success');
+      openAlert("Επιτυχία δημιουργίας νέας περιόδου");
+      await delay(1500);
+      closeAlert(1000);
     }
     const calculatePriorities = async () => {
-      //make the calculate call
-      console.dir(toTime.value);
-      console.log(typeof (toTime.value));
-      console.dir(fromTime.value);
       const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
       if (!calculatePrioritiesIDT.Status) {
         closeAlert(1000);
         setTypeOfAlert('error');
-        openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+        openAlert("Αποτυχία υπολογισμού προτεραιοτήτων");
         await delay(1500);
         closeAlert(1000);
+        return;
       }
+      closeAlert(1000);
+      setTypeOfAlert('success');
+      openAlert("Επιτυχία υπολογισμού προτεραιοτήτων");
+      await delay(1500);
+      closeAlert(1000);
     };
+
+    const initiateSubmissionPeriod = async ():Promise<void> => {
+      const initiateSubResponse = await InitiateSubmissionPeriodCall();
+      if(!initiateSubResponse.Status)
+      {
+        closeAlert(1000);
+        setTypeOfAlert('error');
+        openAlert("Αποτυχία εκκίνσης νέας περιόδου");
+        await delay(1500);
+        closeAlert(1000);
+        return;
+      }
+      closeAlert(1000);
+      setTypeOfAlert('success');
+      openAlert("Επιτυχία, η περίοδος ξεκινάει αυτοματοποιημένα");
+      await delay(1500);
+      closeAlert(50000);
+    }
+
+    const InitiateSubmissionPeriodCall = async():Promise<InternalDataTransfter<boolean>> =>{
+      if(!newPeriodContext.value?.SsdId || !fromTime.value || !toTime.value)
+        return {Status:false,Data:false,Error:"Invalid Payload"};
+      
+      const submissionPeriodRequest:SubmissionPeriodRequest = {
+        SsdId : newPeriodContext.value!.SsdId,
+        From : fromTime.value!,
+        To : toTime.value!
+      };
+      const initiateSubmissionsCall = await useAxios(
+      AdminController + "initiate-submission-period",
+      {
+        method: "POST",
+        data: submissionPeriodRequest
+      },
+      setBackendInstanceAuth()
+      );
+      if(initiateSubmissionsCall.isFinished)
+      {
+        const initiateSubmissionsResponse : ApiResult<boolean> = initiateSubmissionsCall.data.value;
+        if(!initiateSubmissionsResponse || !initiateSubmissionsResponse.Status)
+          return {Status:false,Data:false,Error:initiateSubmissionsResponse?.Error};
+        return {Status:true,Data:true};  
+      } 
+      return {Status:false,Data:false,Error:"Request didn't finish"};
+    }
     const SemesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
       if (!ssd)
         return '';
@@ -324,7 +373,8 @@ export default defineComponent({
       calculatePriorities,
       calculatedPriorites,
       tomorrow,
-      oneWeekAfterTomorrow
+      oneWeekAfterTomorrow,
+      initiateSubmissionPeriod
     }
   }
 
@@ -430,7 +480,6 @@ export default defineComponent({
   justify-content: flex-start;
   width: 100%;
   gap: 1rem;
-  /* margin: 1rem 1rem; */
 }
 
 .dates--container>.from-date--container,
@@ -447,7 +496,7 @@ export default defineComponent({
 .calculated_priorities--card {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 1rem 1rem;
@@ -488,6 +537,13 @@ export default defineComponent({
   padding: 0.5rem 0.5rem;
   outline: 1px solid #dae3f7;
   margin-bottom: 0.5rem;
+}
+.calculated_priorities--container_lowest > label,
+.calculated_priorities--container_highest > label,
+.calculated_priorities--container_moderate >label
+{
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 .calculated_priorities--container_start,
