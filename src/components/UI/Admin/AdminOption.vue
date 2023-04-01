@@ -5,7 +5,7 @@
     :title="alertTitle"
   ></base-alert>
   <base-dialog
-    v-if="showConfirmDeletionModal"
+    v-if="showConfirmDeletionModal === true"
     :route-change-authorizer="true"
     :inner-title="confirmDeletionInnerTitle"
     :inner-description="confirmDeletionInnerDescription"

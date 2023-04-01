@@ -1,126 +1,132 @@
 <template>
-  <base-spinner :show="showLoadingSpinner"></base-spinner>
-  <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-  <div v-if="!showLoadingSpinner" class="options-parent">
-    <v-card elevation="3" class="admin-label">{{ `Τρεχων Περιοδος` }}</v-card>
-    <div v-if="!currentlyActiveSsds.length">
-      <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκαν περίοδοι'"
-        :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο παρακάτω'"></base-result-empty>
+  <div>
+    <base-spinner :show="showLoadingSpinner"></base-spinner>
+    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+    <div>
+      <base-dialog v-if="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
+        routeChangeAuthorizer @close-modal="showBaseDialog = false"></base-dialog>
     </div>
-    <div v-if="currentlyActiveSsds.length">
-      <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
-        <div class="single-option_card--item">
-          <span>{{ SemesterStringConverter(active) }}</span>
-          <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
-            </template>
-          </v-tooltip>
-        </div>
-      </v-card>
-    </div>
-    <div v-if="!newPeriodContext" class="add-new__period-container--button">
-      <v-btn color="green" elevation="4" type="button" @click="generateNewPeriod">
-        <svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-            fill-rule="nonzero" />
-        </svg>
-        Προσθηκη νεας περιοδου
-      </v-btn>
-    </div>
-    <div v-if="newPeriodContext" class="add-new__period-container--form">
-      <v-card elevation="3" class="admin-label">{{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${SemesterStringConverter(newPeriodContext)}` }}
-      </v-card>
-      <v-card elevation="3" class="dates--card">
-        <div class="dates--container">
-          <div class="from-date--container">
-            <label for="">Ημερομηνία έναρξης περιόδου:</label>
-            <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
-              :start-date="tomorrow" :min-date="tomorrow" placeholder="Από" prevent-min-max-navigation show-now-button
-              position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :enable-time-picker="false"
-              :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
-              no-today :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
+    <div v-if="!showLoadingSpinner" class="options-parent">
+      <v-card elevation="3" class="admin-label">{{ `Τρεχων Περιοδος` }}</v-card>
+      <div v-if="!currentlyActiveSsds.length">
+        <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκαν περίοδοι'"
+          :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο παρακάτω'"></base-result-empty>
+      </div>
+      <div v-if="currentlyActiveSsds.length">
+        <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
+          <div class="single-option_card--item">
+            <span>{{ SemesterStringConverter(active) }}</span>
+            <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
+              </template>
+            </v-tooltip>
           </div>
-          <div class="to-date--container">
-            <label for="">Ημερομηνία λήξης περιόδου:</label>
-            <date-picker :class="{ 'error-border': errorOnToTime }" disable-time-range-validation v-model="toTime"
-              placeholder="Έως" show-now-button prevent-min-max-navigation :min-date="oneWeekAfterTomorrow"
-              :start-date="oneWeekAfterTomorrow" position="center" cancel-text="Άκυρο" now-button-label="Τώρα"
-              :day-names="dayNames" :offset="20" :month-change-on-arrows="true" :month-change-on-scroll="'inverse'"
-              :year-range="yearRange" :enable-time-picker="false" no-today :format="dateFormater"
-              @update:model-value="isToTimeEmpty"></date-picker>
-          </div>
-        </div>
-        <div class="calculate-new-period__container">
-          <v-btn :disabled="!fromTime || !toTime" color="#156ed3" class="calculate-new-period__button" elevation="4"
-            type="button" @click="calculatePriorities">
-            Υπολογισμος Προτεραιοτητων
-          </v-btn>
-        </div>
-      </v-card>
-    </div>
-    <div v-if="calculatedPriorites">
-      <v-card elevation="3" class="admin-label">{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}
-      </v-card>
-      <v-card elevation="3" class="calculated_priorities--card">
-        <div class="calculated_priorities--container">
-          <div class="calculated_priorities--container_start-end">
-            <div class="calculated_priorities--container_start">
-              <label>Ημερομηνία έναρξης: </label>
-              <label>{{ calculatedPriorites.From.Formatted }}</label>
+        </v-card>
+      </div>
+      <div v-if="!newPeriodContext" class="add-new__period-container--button">
+        <v-btn color="green" elevation="4" type="button" @click="generateNewPeriod">
+          <svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
+            stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+              fill-rule="nonzero" />
+          </svg>
+          Προσθηκη νεας περιοδου
+        </v-btn>
+      </div>
+      <div v-if="newPeriodContext" class="add-new__period-container--form">
+        <v-card elevation="3" class="admin-label">{{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${SemesterStringConverter(newPeriodContext)}` }}
+        </v-card>
+        <v-card elevation="3" class="dates--card">
+          <div class="dates--container">
+            <div class="from-date--container">
+              <label for="">Ημερομηνία έναρξης περιόδου:</label>
+              <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
+                :start-date="tomorrow" :min-date="tomorrow" placeholder="Από" prevent-min-max-navigation show-now-button
+                position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :enable-time-picker="false"
+                :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
+                no-today :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
             </div>
-            <div class="calculated_priorities--container_end">
-              <label>Ημερομηνία λήξης: </label>
-              <label>{{ calculatedPriorites.To.Formatted }}</label>
+            <div class="to-date--container">
+              <label for="">Ημερομηνία λήξης περιόδου:</label>
+              <date-picker :class="{ 'error-border': errorOnToTime }" disable-time-range-validation v-model="toTime"
+                placeholder="Έως" show-now-button prevent-min-max-navigation :min-date="oneWeekAfterTomorrow"
+                :start-date="oneWeekAfterTomorrow" position="center" cancel-text="Άκυρο" now-button-label="Τώρα"
+                :day-names="dayNames" :offset="20" :month-change-on-arrows="true" :month-change-on-scroll="'inverse'"
+                :year-range="yearRange" :enable-time-picker="false" no-today :format="dateFormater"
+                @update:model-value="isToTimeEmpty"></date-picker>
             </div>
           </div>
-          <div class="calculated_priorities--container_highest">
-            <label>Μέγιστη Προτεραιοτητα </label>
-            <div class="calculated_priorities--container_highest-outer">
-              <div class="calculated_priorities--container_highest-from">
-                <label>Απο: {{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
+          <div class="calculate-new-period__container">
+            <v-btn :disabled="!fromTime || !toTime" color="#156ed3" class="calculate-new-period__button" elevation="4"
+              type="button" @click="calculatePriorities">
+              Υπολογισμος Προτεραιοτητων
+            </v-btn>
+          </div>
+        </v-card>
+      </div>
+      <div v-if="calculatedPriorites">
+        <v-card elevation="3" class="admin-label">{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}
+        </v-card>
+        <v-card elevation="3" class="calculated_priorities--card">
+          <div class="calculated_priorities--container">
+            <div class="calculated_priorities--container_start-end">
+              <div class="calculated_priorities--container_start">
+                <label>Ημερομηνία έναρξης: </label>
+                <label>{{ calculatedPriorites.From.Formatted }}</label>
               </div>
-              <div class="calculated_priorities--container_highest-to">
-                <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+              <div class="calculated_priorities--container_end">
+                <label>Ημερομηνία λήξης: </label>
+                <label>{{ calculatedPriorites.To.Formatted }}</label>
+              </div>
+            </div>
+            <div class="calculated_priorities--container_highest">
+              <label>Μέγιστη Προτεραιοτητα </label>
+              <div class="calculated_priorities--container_highest-outer">
+                <div class="calculated_priorities--container_highest-from">
+                  <label>Απο: {{ calculatedPriorites.HighestPriorityDate.Formatted }}</label>
+                </div>
+                <div class="calculated_priorities--container_highest-to">
+                  <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+                </div>
+              </div>
+            </div>
+            <div class="calculated_priorities--container_moderate">
+              <label>Μέτρια Προτεραιοτητα </label>
+              <div class="calculated_priorities--container_moderate-outer">
+                <div class="calculated_priorities--container_moderate-from">
+                  <label>Απο: {{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
+                </div>
+                <div class="calculated_priorities--container_moderate-to">
+                  <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+                </div>
+              </div>
+            </div>
+            <div class="calculated_priorities--container_lowest">
+              <label>Χαμηλότερη Προτεραιοτητα</label>
+              <div class="calculated_priorities--container_lowest-outer">
+                <div class="calculated_priorities--container_lowest-from">
+                  <label>Απο: {{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
+                </div>
+                <div class="calculated_priorities--container_lowest-to">
+                  <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
+                </div>
               </div>
             </div>
           </div>
-          <div class="calculated_priorities--container_moderate">
-            <label>Μέτρια Προτεραιοτητα </label>
-            <div class="calculated_priorities--container_moderate-outer">
-              <div class="calculated_priorities--container_moderate-from">
-                <label>Απο: {{ calculatedPriorites.ModeratePriorityDate.Formatted }}</label>
-              </div>
-              <div class="calculated_priorities--container_moderate-to">
-                <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
-              </div>
-            </div>
-          </div>
-          <div class="calculated_priorities--container_lowest">
-            <label>Χαμηλότερη Προτεραιοτητα</label>
-            <div class="calculated_priorities--container_lowest-outer">
-              <div class="calculated_priorities--container_lowest-from">
-                <label>Απο: {{ calculatedPriorites.LowestPriorityDate.Formatted }}</label>
-              </div>
-              <div class="calculated_priorities--container_lowest-to">
-                <label>Έως: {{ calculatedPriorites.To.Formatted }}</label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <v-btn color="green" class="calculate-new-period__button" elevation="4"
-            type="button" @click="initiateSubmissionPeriod">
+          <v-btn color="green" class="calculate-new-period__button" elevation="4" type="button"
+            @click="initiateSubmissionPeriod">
             επικυρωση περιοδου
           </v-btn>
-      </v-card>
+        </v-card>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, toRefs } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
@@ -161,7 +167,11 @@ export default defineComponent({
     const dayNames = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ']
     const yearRange: Array<number> = [new Date().getFullYear(), new Date().getFullYear() + 1];
     const calculatedPriorites = ref<GeneratedPrioritiesResponse>();
+    const showBaseDialog = ref(false);
+    const baseDialogTitle = `ΠΡΟΕΙΔΟΠΟΙΗΣΗ`;
+    const baseDialogDescription = `EEEE ADERFE AKOUS`;
     onMounted(async () => {
+      console.log('base' + showBaseDialog.value);
       fromTime.value = tomorrow;
       toTime.value = oneWeekAfterTomorrow;
       context.emit("closeMobileView", true);
@@ -256,20 +266,26 @@ export default defineComponent({
       return { Status: false, Data: false, Error: "Request didn't finish" };
     }
     const generateNewPeriod = async () => {
-      const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
-      if (!generateTheNewPeriodCallIDT.Status) {
+      showBaseDialog.value = true;
+      if (await confirm("")) {
+        showBaseDialog.value = false;
+        const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
+        if (!generateTheNewPeriodCallIDT.Status) {
+          closeAlert(1000);
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+          await delay(1500);
+          closeAlert(1000);
+          return;
+        }
         closeAlert(1000);
-        setTypeOfAlert('error');
-        openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+        setTypeOfAlert('success');
+        openAlert("Επιτυχία δημιουργίας νέας περιόδου");
         await delay(1500);
         closeAlert(1000);
         return;
       }
-      closeAlert(1000);
-      setTypeOfAlert('success');
-      openAlert("Επιτυχία δημιουργίας νέας περιόδου");
-      await delay(1500);
-      closeAlert(1000);
+      showBaseDialog.value = false;
     }
     const calculatePriorities = async () => {
       const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
@@ -288,10 +304,9 @@ export default defineComponent({
       closeAlert(1000);
     };
 
-    const initiateSubmissionPeriod = async ():Promise<void> => {
+    const initiateSubmissionPeriod = async (): Promise<void> => {
       const initiateSubResponse = await InitiateSubmissionPeriodCall();
-      if(!initiateSubResponse.Status)
-      {
+      if (!initiateSubResponse.Status) {
         closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία εκκίνσης νέας περιόδου");
@@ -306,31 +321,30 @@ export default defineComponent({
       closeAlert(50000);
     }
 
-    const InitiateSubmissionPeriodCall = async():Promise<InternalDataTransfter<boolean>> =>{
-      if(!newPeriodContext.value?.SsdId || !fromTime.value || !toTime.value)
-        return {Status:false,Data:false,Error:"Invalid Payload"};
-      
-      const submissionPeriodRequest:SubmissionPeriodRequest = {
-        SsdId : newPeriodContext.value!.SsdId,
-        From : fromTime.value!,
-        To : toTime.value!
+    const InitiateSubmissionPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
+      if (!newPeriodContext.value?.SsdId || !fromTime.value || !toTime.value)
+        return { Status: false, Data: false, Error: "Invalid Payload" };
+
+      const submissionPeriodRequest: SubmissionPeriodRequest = {
+        SsdId: newPeriodContext.value!.SsdId,
+        From: fromTime.value!,
+        To: toTime.value!
       };
       const initiateSubmissionsCall = await useAxios(
-      AdminController + "initiate-submission-period",
-      {
-        method: "POST",
-        data: submissionPeriodRequest
-      },
-      setBackendInstanceAuth()
+        AdminController + "initiate-submission-period",
+        {
+          method: "POST",
+          data: submissionPeriodRequest
+        },
+        setBackendInstanceAuth()
       );
-      if(initiateSubmissionsCall.isFinished)
-      {
-        const initiateSubmissionsResponse : ApiResult<boolean> = initiateSubmissionsCall.data.value;
-        if(!initiateSubmissionsResponse || !initiateSubmissionsResponse.Status)
-          return {Status:false,Data:false,Error:initiateSubmissionsResponse?.Error};
-        return {Status:true,Data:true};  
-      } 
-      return {Status:false,Data:false,Error:"Request didn't finish"};
+      if (initiateSubmissionsCall.isFinished) {
+        const initiateSubmissionsResponse: ApiResult<boolean> = initiateSubmissionsCall.data.value;
+        if (!initiateSubmissionsResponse || !initiateSubmissionsResponse.Status)
+          return { Status: false, Data: false, Error: initiateSubmissionsResponse?.Error };
+        return { Status: true, Data: true };
+      }
+      return { Status: false, Data: false, Error: "Request didn't finish" };
     }
     const SemesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
       if (!ssd)
@@ -353,6 +367,9 @@ export default defineComponent({
       return `${day}-${month}-${year}`;
     }
     return {
+      showBaseDialog,
+      baseDialogTitle,
+      baseDialogDescription,
       showLoadingSpinner,
       showAlert,
       dateFormater,
@@ -538,10 +555,10 @@ export default defineComponent({
   outline: 1px solid #dae3f7;
   margin-bottom: 0.5rem;
 }
-.calculated_priorities--container_lowest > label,
-.calculated_priorities--container_highest > label,
-.calculated_priorities--container_moderate >label
-{
+
+.calculated_priorities--container_lowest>label,
+.calculated_priorities--container_highest>label,
+.calculated_priorities--container_moderate>label {
   font-size: 1.1rem;
   font-weight: 500;
 }
