@@ -11,22 +11,25 @@
       :title="alertTitle"
     ></base-alert>
     <base-dialog
-      v-if="showRouteLeaveModal"
+      :show="showRouteLeaveModal"
       :route-change-authorizer="true"
       inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
       inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"
+      @close-modal="showRouteLeaveModal = false"
     ></base-dialog>
     <base-dialog
-      v-if="somethingWentWrongModal"
+      :show="somethingWentWrongModal"
       :route-change-authorizer="false"
       inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
       inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
+      @close-modal="somethingWentWrongModal = false"
     ></base-dialog>
     <base-dialog
-      v-if="showConfirmDeletionModal"
+      :show="showConfirmDeletionModal"
       :route-change-authorizer="true"
       :inner-title="confirmDeletionInnerTitle"
       :inner-description="confirmDeletionInnerDescription"
+      @close-modal="showConfirmDeletionModal = false"
     ></base-dialog>
 
     <div class="parent-card-form">

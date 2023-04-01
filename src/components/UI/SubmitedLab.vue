@@ -1,10 +1,11 @@
 <template>
   <div class="card">
     <base-dialog
-      v-if="showConfirmDeletionModal"
+      :show="showConfirmDeletionModal"
       :route-change-authorizer="true"
       :inner-title="confirmDeletionInnerTitle"
       :inner-description="confirmDeletionInnerDescription"
+      @close-modal="showConfirmDeletionModal = false"
     ></base-dialog>
     <v-card
       elevation="5"

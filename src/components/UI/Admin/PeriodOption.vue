@@ -3,8 +3,8 @@
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div>
-      <base-dialog v-if="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
-        routeChangeAuthorizer @close-modal="showBaseDialog = false"></base-dialog>
+      <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
+        :routeChangeAuthorizer="true" @close-modal="showBaseDialog = false"></base-dialog>
     </div>
     <div v-if="!showLoadingSpinner" class="options-parent">
       <v-card elevation="3" class="admin-label">{{ `Τρεχων Περιοδος` }}</v-card>
@@ -43,10 +43,11 @@
             <div class="from-date--container">
               <label for="">Ημερομηνία έναρξης περιόδου:</label>
               <date-picker :class="{ 'error-border': errorOnFromTime }" v-model="fromTime" disable-time-range-validation
-                :start-date="tomorrow" :min-date="tomorrow" placeholder="Από" prevent-min-max-navigation show-now-button
-                position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα" :enable-time-picker="false"
-                :month-change-on-arrows="true" :day-names="dayNames" :offset="20" @update:model-value="isFromTimeEmpty"
-                no-today :month-change-on-scroll="'inverse'" :year-range="yearRange" :format="dateFormater"></date-picker>
+                @cleared="determine" @open="determine" :start-date="tomorrow" :min-date="tomorrow" placeholder="Από"
+                prevent-min-max-navigation show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο"
+                now-button-label="Τώρα" :enable-time-picker="false" :month-change-on-arrows="true" :day-names="dayNames"
+                :offset="20" @update:model-value="isFromTimeEmpty" no-today :month-change-on-scroll="'inverse'"
+                :year-range="yearRange" :format="dateFormater"></date-picker>
             </div>
             <div class="to-date--container">
               <label for="">Ημερομηνία λήξης περιόδου:</label>
@@ -54,8 +55,8 @@
                 placeholder="Έως" show-now-button prevent-min-max-navigation :min-date="oneWeekAfterTomorrow"
                 :start-date="oneWeekAfterTomorrow" position="center" cancel-text="Άκυρο" now-button-label="Τώρα"
                 :day-names="dayNames" :offset="20" :month-change-on-arrows="true" :month-change-on-scroll="'inverse'"
-                :year-range="yearRange" :enable-time-picker="false" no-today :format="dateFormater"
-                @update:model-value="isToTimeEmpty"></date-picker>
+                @cleared="determine" @open="determine" :year-range="yearRange" :enable-time-picker="false" no-today
+                :format="dateFormater" @update:model-value="isToTimeEmpty"></date-picker>
             </div>
           </div>
           <div class="calculate-new-period__container">
@@ -115,8 +116,8 @@
               </div>
             </div>
           </div>
-          <v-btn color="green" class="calculate-new-period__button" elevation="4" type="button"
-            @click="initiateSubmissionPeriod">
+          <v-btn :disabled="!fromTime || !toTime" color="green" class="calculate-new-period__button" elevation="4"
+            type="button" @click="initiateSubmissionPeriod">
             επικυρωση περιοδου
           </v-btn>
         </v-card>
@@ -126,7 +127,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, toRefs } from 'vue';
+import { computed, defineComponent, onMounted, ref, toRefs } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
@@ -142,7 +143,8 @@ import { SemesterSubmitionDateOverviewResponse } from "@/models/BACKEND-MODELS/S
 import { PeriodicityEnum } from "@/enums/PeriodicityEnum";
 import { GeneratedPrioritiesResponse } from '@/models/BACKEND-MODELS/GeneratedPrioritiesResponse';
 import { SubmissionPeriodRequest } from '@/models/BACKEND-MODELS/SubmissionPeriodRequest';
-
+import { confirm } from "@/composables/dialog.composable";
+import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
 export default defineComponent({
   components:
   {
@@ -156,6 +158,7 @@ export default defineComponent({
     const showLoadingSpinner = ref(false);
     const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { setBackendInstanceAuth } = useAxiosInstance();
+    const { scrollToTop } = useTimeObjectExtensions();
     const currentlyActiveSsds = ref(new Array<SemesterSubmitionDateResponse>());
     const newPeriodContext = ref<SemesterSubmitionDateResponse>();
     const fromTime = ref(new Date());
@@ -168,13 +171,12 @@ export default defineComponent({
     const yearRange: Array<number> = [new Date().getFullYear(), new Date().getFullYear() + 1];
     const calculatedPriorites = ref<GeneratedPrioritiesResponse>();
     const showBaseDialog = ref(false);
-    const baseDialogTitle = `ΠΡΟΕΙΔΟΠΟΙΗΣΗ`;
-    const baseDialogDescription = `EEEE ADERFE AKOUS`;
+    const baseDialogTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
+    const baseDialogDescription = ref("");
     onMounted(async () => {
-      console.log('base' + showBaseDialog.value);
+      context.emit("closeMobileView", true);
       fromTime.value = tomorrow;
       toTime.value = oneWeekAfterTomorrow;
-      context.emit("closeMobileView", true);
       closeAlert(1000);
       showLoadingSpinner.value = true;
       const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
@@ -183,6 +185,7 @@ export default defineComponent({
         closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία ανάκτησης περιόδων");
+        scrollToTop();
         await delay(1500);
         closeAlert(1000);
         return;
@@ -201,6 +204,11 @@ export default defineComponent({
         return;
       }
       errorOnToTime.value = false;
+    };
+    const determine = () => {
+      if (calculatedPriorites.value) {
+        calculatedPriorites.value = undefined;
+      }
     };
     const FetchCurrentlyActiveSsd = async (): Promise<InternalDataTransfter<boolean>> => {
       const currentlyActiveSsdCall = await useAxios(
@@ -267,13 +275,20 @@ export default defineComponent({
     }
     const generateNewPeriod = async () => {
       showBaseDialog.value = true;
-      if (await confirm("")) {
+      baseDialogDescription.value = `Με την επικύρσωη <span style="color:green;">προσθήκης Νέας Περιόδου </span>, 
+                                                      <span style="color:#ff4545;">διαγράφονται όλες οι προηγούμενες περίοδοι</span>,
+                                                      καθώς και οι <span style="color:#ff4545;">προηγούμενες δηλώσεις των φοιτητών</span>. 
+                                                      Η διαδικασία είναι <span style="color:#ff4545;">μη αναστρέψιμη</span>.
+                                                      Θέλετε να προσωρήσετε σε <span style="color:green;">έναρξη Νέας Περιόδου;</span>`;
+      if (await confirm()) {
         showBaseDialog.value = false;
+        console.log("empaaa");
         const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
         if (!generateTheNewPeriodCallIDT.Status) {
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+          scrollToTop();
           await delay(1500);
           closeAlert(1000);
           return;
@@ -281,6 +296,7 @@ export default defineComponent({
         closeAlert(1000);
         setTypeOfAlert('success');
         openAlert("Επιτυχία δημιουργίας νέας περιόδου");
+        scrollToTop();
         await delay(1500);
         closeAlert(1000);
         return;
@@ -293,6 +309,7 @@ export default defineComponent({
         closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία υπολογισμού προτεραιοτήτων");
+        scrollToTop();
         await delay(1500);
         closeAlert(1000);
         return;
@@ -300,25 +317,53 @@ export default defineComponent({
       closeAlert(1000);
       setTypeOfAlert('success');
       openAlert("Επιτυχία υπολογισμού προτεραιοτήτων");
+      scrollToTop();
       await delay(1500);
       closeAlert(1000);
     };
 
     const initiateSubmissionPeriod = async (): Promise<void> => {
-      const initiateSubResponse = await InitiateSubmissionPeriodCall();
-      if (!initiateSubResponse.Status) {
+      showBaseDialog.value = true;
+      baseDialogDescription.value = `Ειστε έτοιμοι να ξεκινήσετε την <span style="color:green;"> περίοδο </span>, 
+                                      Παρακαλώ <span style="color:green;">επαληθεύστε</span> τις επιλογές σας,
+                                      Έχετε την επιλογή της <span style="color:green;">διόρθωσης πριν την επικύρωση</span>.
+                                      Θέλετε να προσωρήσετε σε <span style="color:green;">επικύρωση της  Νέας Περιόδου;</span>`;
+      if (await confirm()) {
+        showBaseDialog.value = false;
+        const initiateSubResponse = await InitiateSubmissionPeriodCall();
+        if (!initiateSubResponse.Status) {
+          closeAlert(1000);
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία εκκίνσης νέας περιόδου");
+          scrollToTop();
+          await delay(1500);
+          closeAlert(1000);
+          return;
+        }
         closeAlert(1000);
-        setTypeOfAlert('error');
-        openAlert("Αποτυχία εκκίνσης νέας περιόδου");
+        setTypeOfAlert('success');
+        openAlert("Επιτυχία, η περίοδος ξεκινάει αυτοματοποιημένα");
+        scrollToTop();
         await delay(1500);
-        closeAlert(1000);
-        return;
+        closeAlert(50000);
+
+        showBaseDialog.value = false;
+        showLoadingSpinner.value = true;
+        const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
+        showLoadingSpinner.value = false;
+        if (!currentlyActiveSsdsIDT.Status) {
+          closeAlert(1000);
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία ανάκτησης περιόδων");
+          scrollToTop();
+          await delay(1500);
+          closeAlert(1000);
+          return;
+        }
+        newPeriodContext.value = undefined;
+        calculatedPriorites.value = undefined;
       }
-      closeAlert(1000);
-      setTypeOfAlert('success');
-      openAlert("Επιτυχία, η περίοδος ξεκινάει αυτοματοποιημένα");
-      await delay(1500);
-      closeAlert(50000);
+      showBaseDialog.value = false;
     }
 
     const InitiateSubmissionPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
@@ -391,7 +436,8 @@ export default defineComponent({
       calculatedPriorites,
       tomorrow,
       oneWeekAfterTomorrow,
-      initiateSubmissionPeriod
+      initiateSubmissionPeriod,
+      determine
     }
   }
 

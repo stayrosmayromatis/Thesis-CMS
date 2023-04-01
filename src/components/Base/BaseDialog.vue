@@ -1,7 +1,7 @@
 <template>
   <teleport to="body">
     <div @click="closeDialog(false)">
-    <v-dialog v-model="modal" attach="body" width="100%" max-width="50rem" @click="closeDialog(false)">
+    <v-dialog v-model="show" attach="body" width="100%" max-width="50rem" @click="closeDialog(false)">
       <v-card>
         <v-card-title>
           <slot name="title">
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, toRefs } from "vue";
 import { closeDialog } from "vue3-promise-dialog";
 export default defineComponent({
   props: {
@@ -66,18 +66,24 @@ export default defineComponent({
       required: false,
       default: false,
     },
+    show:{
+      type: Boolean,
+      required: false,
+      default: false,
+    }
   },
   emits: ["close-modal"],
-  setup(_, context) {
-    const modal = ref(true);
+  setup(props, context) {
+    //const modal = ref(true);
+    const {show} = toRefs(props);
     const closeModal = (): void => {
-      modal.value = false;
+      // modal.value = false;
       context.emit("close-modal");
     };
     function returnValue() {
       return true;
     }
-    return { modal, closeModal, closeDialog, returnValue };
+    return { show, closeModal, closeDialog, returnValue };
   },
 });
 </script>
