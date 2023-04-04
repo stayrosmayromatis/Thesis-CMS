@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="options-parent">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div>
       <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
         :routeChangeAuthorizer="true" @close-modal="showBaseDialog = false"></base-dialog>
     </div>
-    <div v-if="!showLoadingSpinner" class="options-parent">
+    <div v-if="!showLoadingSpinner">
       <v-card elevation="3" class="admin-label">{{ `Τρεχων Περιοδος` }}</v-card>
       <div v-if="!currentlyActiveSsds.length">
         <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκαν περίοδοι'"
@@ -16,16 +16,29 @@
         <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
           <div class="single-option_card--item">
             <span>{{ SemesterStringConverter(active) }}</span>
-            <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
-              <template v-slot:activator="{ props }">
-                <!-- <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn> -->
-                <v-btn v-bind="props" color="error" variant="outlined" class="delete-button" @click="deletePastSubmissions">
-                  Καταργηση
-                </v-btn>
-              </template>
-            </v-tooltip>
-          </div>
-          <div class="mobile-actions">
+            <!-- :class="{
+                    'gray-out-card-chip-semester':(userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
+                  }" -->
+            <div class="chip-separator">
+              <v-chip class="chip-activation" :class="{
+                'chip-is-active': active.Active === 2,
+                'chip-is-inactive': active.Active === 1,
+                'chip-is-up-to-activation': active.Active === 3
+              }" size="medium">
+                <div>
+                  {{ 'THIS IS A TEST' }}
+                </div>
+              </v-chip>
+              <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <!-- <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn> -->
+                  <v-btn v-bind="props" color="error" variant="elevated" class="delete-button"
+                    @click="deletePastSubmissions">
+                    Καταργηση
+                  </v-btn>
+                </template>
+              </v-tooltip>
+            </div>
           </div>
         </v-card>
       </div>
@@ -278,7 +291,7 @@ export default defineComponent({
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
     };
-    const DeletePastSubmissionCall = async ():Promise<InternalDataTransfter<boolean>> => {
+    const DeletePastSubmissionCall = async (): Promise<InternalDataTransfter<boolean>> => {
       const deletePastSubmissionsCall = await useAxios(
         AdminController + "delete-past-submission-periods",
         {
@@ -286,27 +299,25 @@ export default defineComponent({
         },
         setBackendInstanceAuth()
       );
-      if(deletePastSubmissionsCall.isFinished)
-      {
-        const deletePastSubmissionsResponse:ApiResult<boolean> = deletePastSubmissionsCall.data.value;
-        if(!deletePastSubmissionsResponse || !deletePastSubmissionsResponse.Status || !deletePastSubmissionsResponse.Data)
-          return {Status:false,Data:false,Error:deletePastSubmissionsResponse?.Error};    
-        return {Status:true,Data:true};    
+      if (deletePastSubmissionsCall.isFinished) {
+        const deletePastSubmissionsResponse: ApiResult<boolean> = deletePastSubmissionsCall.data.value;
+        if (!deletePastSubmissionsResponse || !deletePastSubmissionsResponse.Status || !deletePastSubmissionsResponse.Data)
+          return { Status: false, Data: false, Error: deletePastSubmissionsResponse?.Error };
+        return { Status: true, Data: true };
       }
-      return {Status:false,Data:false,Error:"Request not finished"};
+      return { Status: false, Data: false, Error: "Request not finished" };
     }
-    const deletePastSubmissions = async() =>{
+    const deletePastSubmissions = async () => {
       showBaseDialog.value = true;
       baseDialogDescription.value = `Με την <span style="color:#ff4545;">κατάργηση</span> της τρέχων περιόδου,
                                     <span style="color:#ff4545;">διαγράφονται όλες οι εγγραφές που συσχετίζονται</span>,
                                     όπως οι προτεραιότητες που είναι ενεργές καθώς και οι δηλώσεις των φοιτητών.
                                     Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">καταργήσετε</span> την τρέχων περίοδο;`;
-      if (await confirm()){
+      if (await confirm()) {
         showBaseDialog.value = false;
         showLoadingSpinner.value = true;
         const deletePastSubmissionsIDT = await DeletePastSubmissionCall();
-        if(!deletePastSubmissionsIDT.Status)
-        {
+        if (!deletePastSubmissionsIDT.Status) {
           showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
@@ -474,10 +485,10 @@ export default defineComponent({
       if (!ssd)
         return '';
       if (ssd.Semester.includes('EARINO') && ssd.Periodicity === PeriodicityEnum.EARINO) {
-        return ssd.Semester.replace('EARINO', 'ΕΑΡΙΝΟ');
+        return ssd.Semester.replace('EARINO', 'ΕΑΡΙΝΟ').replace('_',"-").replaceAll('_',' ');
       }
       if (ssd.Semester.includes('XEIMERINO') && ssd.Periodicity === PeriodicityEnum.XEIMERINO) {
-        return ssd.Semester.replace('XEIMERINO', 'ΧΕΙΜΕΡΙΝΟ');
+        return ssd.Semester.replace('XEIMERINO', 'ΧΕΙΜΕΡΙΝΟ').replace('_',"-").replaceAll('_',' ');
       }
       return "";
     }
@@ -532,7 +543,9 @@ export default defineComponent({
   margin: 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  width: inherit;
+  justify-content: flex-start;
+  align-items: inherit;
 }
 
 .admin-label {
@@ -568,27 +581,35 @@ export default defineComponent({
 .single-option_card--item {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 0.5rem 0.5rem;
 }
 
 .single-option_card--item>span {
-  color: red;
+  color: black;
   word-wrap: break-word;
   word-break: break-word;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   hyphens: auto;
   font-weight: 400;
+  padding: 0.5rem 0.5rem;
 }
 
 .delete-button {
-  background: #f7f7f7;
-  /* border: 1px solid #b00020; */
+  background: #c91616 !important;
   margin: 0 !important;
-  border-radius: 2rem !important;
-  height: 2rem !important;
+  height: 2.4rem !important;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 1rem 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
 }
 
 /* {
@@ -737,6 +758,49 @@ export default defineComponent({
   padding: 1rem 1rem;
 }
 
+.chip-activation {
+  background: #f9f9f9 !important;
+  border: 1px solid #0136e6;
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0.2rem 1rem;
+  text-align: center;
+  font-size: 1rem !important;
+  max-width: 50%;
+}
+
+.chip-is-active {
+  background: #f9f9f9 !important;
+  border: 1px solid #00c900 !important;
+  color: #00c900 !important;
+}
+
+.chip-is-up-to-activation {
+  background: #f9f9f9 !important;
+  border: 1px solid #0136e6 !important;
+  color: #0136e6 !important;
+}
+
+.chip-is-inactive {
+  background: #f9f9f9 !important;
+  border: 1px solid #ff4545 !important;
+  color: #ff4545 !important;
+}
+
+.chip-separator {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1 0 auto;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+}
+
 .error-border {
   border: 1px solid #ff4545;
   border-radius: 5px;
@@ -774,6 +838,37 @@ export default defineComponent({
   .calculated_priorities--container_lowest-outer {
     flex-direction: row;
     gap: 1rem;
+  }
+
+  .single-option_card--item {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chip-activation {
+    background: #f9f9f9 !important;
+    border: 1px solid #0136e6;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0.4rem 0.5rem;
+    text-align: center;
+    font-size: 1rem !important;
+  }
+
+  .chip-separator {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    flex: 1 0 auto;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
   }
 }
 

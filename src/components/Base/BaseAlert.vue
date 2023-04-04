@@ -1,13 +1,7 @@
 <template>
-  <div class="positioner">
+  <div class="outer-alert-container">
     <transition name="bounce">
-      <v-alert
-        v-if="showAlert"
-        :title="title"
-        closable
-        :type="alertType"
-        density="compact"
-      ></v-alert>
+      <v-alert v-if="showAlert" :title="title" closable :type="alertType" density="compact"></v-alert>
     </transition>
   </div>
 </template>
@@ -56,17 +50,31 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.positioner {
+.outer-alert-container {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.5rem;
   min-width: 320px;
+  margin: 0.5rem 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 :deep(.v-alert) {
+  border-radius: 1rem;
+  width: fit-content;
+  padding-left: 16px;
+  padding-right: 0;
+  margin-right: 1rem;
+  text-align: center;
+  white-space: pre-line;
+  display: flex;
+
+}
+
+/* :deep(.v-alert) {
   border-radius: 1rem;
   width: fit-content;
   padding-bottom: 2px;
@@ -74,12 +82,13 @@ export default defineComponent({
   padding-left: 16px;
   padding-right: 0;
   margin-right: 1rem;
-}
+} */
 
 :deep(.v-alert__close) {
   align-self: flex-start;
   margin-inline-start: 0;
 }
+
 :deep(.v-alert__prepend) {
   display: flex;
   align-items: center;
@@ -136,26 +145,11 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-  .positioner {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  .outer-alert-container {
     align-items: flex-end;
-    justify-content: center;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
   }
 }
 
 @media (min-width: 1025px) {
-  .positioner {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
-  }
 }
 </style>
