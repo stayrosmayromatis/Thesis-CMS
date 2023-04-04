@@ -18,9 +18,14 @@
             <span>{{ SemesterStringConverter(active) }}</span>
             <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
               <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn>
+                <!-- <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn> -->
+                <v-btn v-bind="props" color="error" variant="outlined" class="delete-button" @click="deletePastSubmissions">
+                  Καταργηση
+                </v-btn>
               </template>
             </v-tooltip>
+          </div>
+          <div class="mobile-actions">
           </div>
         </v-card>
       </div>
@@ -272,6 +277,66 @@ export default defineComponent({
         return { Status: true, Data: true };
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
+    };
+    const DeletePastSubmissionCall = async ():Promise<InternalDataTransfter<boolean>> => {
+      const deletePastSubmissionsCall = await useAxios(
+        AdminController + "delete-past-submission-periods",
+        {
+          method: "POST",
+        },
+        setBackendInstanceAuth()
+      );
+      if(deletePastSubmissionsCall.isFinished)
+      {
+        const deletePastSubmissionsResponse:ApiResult<boolean> = deletePastSubmissionsCall.data.value;
+        if(!deletePastSubmissionsResponse || !deletePastSubmissionsResponse.Status || !deletePastSubmissionsResponse.Data)
+          return {Status:false,Data:false,Error:deletePastSubmissionsResponse?.Error};    
+        return {Status:true,Data:true};    
+      }
+      return {Status:false,Data:false,Error:"Request not finished"};
+    }
+    const deletePastSubmissions = async() =>{
+      showBaseDialog.value = true;
+      baseDialogDescription.value = `Με την <span style="color:#ff4545;">κατάργηση</span> της τρέχων περιόδου,
+                                    <span style="color:#ff4545;">διαγράφονται όλες οι εγγραφές που συσχετίζονται</span>,
+                                    όπως οι προτεραιότητες που είναι ενεργές καθώς και οι δηλώσεις των φοιτητών.
+                                    Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">καταργήσετε</span> την τρέχων περίοδο;`;
+      if (await confirm()){
+        showBaseDialog.value = false;
+        showLoadingSpinner.value = true;
+        const deletePastSubmissionsIDT = await DeletePastSubmissionCall();
+        if(!deletePastSubmissionsIDT.Status)
+        {
+          showLoadingSpinner.value = false;
+          closeAlert(1000);
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία διαγραφής τρέχουσας περιόδου");
+          scrollToTop();
+          await delay(1500);
+          closeAlert(1000);
+          return;
+        }
+        const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
+        if (!currentlyActiveSsdsIDT.Status) {
+          showLoadingSpinner.value = false;
+          closeAlert(1000);
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία ανάκτησης περιόδων");
+          scrollToTop();
+          await delay(1500);
+          closeAlert(1000);
+          return;
+        }
+        showLoadingSpinner.value = false;
+        closeAlert(1000);
+        setTypeOfAlert('success');
+        openAlert("Επιτυχία διαγραφής παλαιάς τρέχουσας περιόδου");
+        scrollToTop();
+        await delay(1500);
+        closeAlert(1000);
+        return;
+      }
+      showBaseDialog.value = false;
     }
     const generateNewPeriod = async () => {
       showBaseDialog.value = true;
@@ -283,8 +348,10 @@ export default defineComponent({
       if (await confirm()) {
         showBaseDialog.value = false;
         console.log("empaaa");
+        showLoadingSpinner.value = true;
         const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
         if (!generateTheNewPeriodCallIDT.Status) {
+          showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία δημιουργίας νέας περιόδου");
@@ -293,6 +360,18 @@ export default defineComponent({
           closeAlert(1000);
           return;
         }
+        const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
+        if (!currentlyActiveSsdsIDT.Status) {
+          showLoadingSpinner.value = false;
+          closeAlert(1000);
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία ανάκτησης περιόδων");
+          scrollToTop();
+          await delay(1500);
+          closeAlert(1000);
+          return;
+        }
+        showLoadingSpinner.value = false;
         closeAlert(1000);
         setTypeOfAlert('success');
         openAlert("Επιτυχία δημιουργίας νέας περιόδου");
@@ -302,9 +381,11 @@ export default defineComponent({
         return;
       }
       showBaseDialog.value = false;
-    }
+    };
     const calculatePriorities = async () => {
+      showLoadingSpinner.value = true;
       const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
+      showLoadingSpinner.value = false;
       if (!calculatePrioritiesIDT.Status) {
         closeAlert(1000);
         setTypeOfAlert('error');
@@ -321,7 +402,6 @@ export default defineComponent({
       await delay(1500);
       closeAlert(1000);
     };
-
     const initiateSubmissionPeriod = async (): Promise<void> => {
       showBaseDialog.value = true;
       baseDialogDescription.value = `Ειστε έτοιμοι να ξεκινήσετε την <span style="color:green;"> περίοδο </span>, 
@@ -330,8 +410,10 @@ export default defineComponent({
                                       Θέλετε να προσωρήσετε σε <span style="color:green;">επικύρωση της  Νέας Περιόδου;</span>`;
       if (await confirm()) {
         showBaseDialog.value = false;
+        showLoadingSpinner.value = true;
         const initiateSubResponse = await InitiateSubmissionPeriodCall();
         if (!initiateSubResponse.Status) {
+          showBaseDialog.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία εκκίνσης νέας περιόδου");
@@ -340,18 +422,9 @@ export default defineComponent({
           closeAlert(1000);
           return;
         }
-        closeAlert(1000);
-        setTypeOfAlert('success');
-        openAlert("Επιτυχία, η περίοδος ξεκινάει αυτοματοποιημένα");
-        scrollToTop();
-        await delay(1500);
-        closeAlert(50000);
-
-        showBaseDialog.value = false;
-        showLoadingSpinner.value = true;
         const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
-        showLoadingSpinner.value = false;
         if (!currentlyActiveSsdsIDT.Status) {
+          showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία ανάκτησης περιόδων");
@@ -360,12 +433,18 @@ export default defineComponent({
           closeAlert(1000);
           return;
         }
+        showLoadingSpinner.value = false;
         newPeriodContext.value = undefined;
         calculatedPriorites.value = undefined;
+        closeAlert(1000);
+        setTypeOfAlert('success');
+        openAlert("Επιτυχία, η περίοδος ξεκινάει αυτοματοποιημένα");
+        scrollToTop();
+        await delay(1500);
+        closeAlert(1000);
       }
       showBaseDialog.value = false;
     }
-
     const InitiateSubmissionPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
       if (!newPeriodContext.value?.SsdId || !fromTime.value || !toTime.value)
         return { Status: false, Data: false, Error: "Invalid Payload" };
@@ -437,7 +516,8 @@ export default defineComponent({
       tomorrow,
       oneWeekAfterTomorrow,
       initiateSubmissionPeriod,
-      determine
+      determine,
+      deletePastSubmissions
     }
   }
 
@@ -504,20 +584,23 @@ export default defineComponent({
 }
 
 .delete-button {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  color: #f44336;
   background: #f7f7f7;
-  border: 1px solid #f44336;
+  /* border: 1px solid #b00020; */
   margin: 0 !important;
-  width: fit-content;
-  padding: 0.6em !important;
-  font-size: 0.8rem !important;
   border-radius: 2rem !important;
   height: 2rem !important;
 }
+
+/* {
+    width: 33%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 3rem;
+  } */
 
 .add-new__period-container--button {
   display: flex;
