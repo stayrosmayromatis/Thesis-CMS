@@ -15,19 +15,20 @@
       <div v-if="currentlyActiveSsds.length">
         <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
           <div class="single-option_card--item">
-            <span>{{ SemesterStringConverter(active) }}</span>
-            <!-- :class="{
-                    'gray-out-card-chip-semester':(userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
-                  }" -->
+            <div class="chip-separator__left-chip">
+              <v-chip class="chip-bg" size="large">
+                <span>{{ semesterStringConverter(active) }}</span>
+              </v-chip>
+            </div>
             <div class="chip-separator">
               <v-chip class="chip-activation" :class="{
                 'chip-is-active': active.Active === 2,
                 'chip-is-inactive': active.Active === 1,
                 'chip-is-up-to-activation': active.Active === 3
-              }" size="medium">
-                <div>
+              }" size="large">
+                <label>
                   {{ 'THIS IS A TEST' }}
-                </div>
+                </label>
               </v-chip>
               <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
                 <template v-slot:activator="{ props }">
@@ -42,19 +43,23 @@
           </div>
         </v-card>
       </div>
-      <div v-if="!newPeriodContext" class="add-new__period-container--button">
+      <div v-if="!newPeriodContext" class="add-new__period-container--button_container">
         <v-btn color="green" elevation="4" type="button" @click="generateNewPeriod">
-          <svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
-            stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-              fill-rule="nonzero" />
-          </svg>
-          Προσθηκη νεας περιοδου
+          <div class="add-new__period-container--button_item">
+            <svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
+              stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+                fill-rule="nonzero" />
+            </svg>
+            <label>
+              Προσθηκη νεας περιοδου
+            </label>
+          </div>
         </v-btn>
       </div>
       <div v-if="newPeriodContext" class="add-new__period-container--form">
-        <v-card elevation="3" class="admin-label">{{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${SemesterStringConverter(newPeriodContext)}` }}
+        <v-card elevation="3" class="admin-label">{{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${semesterStringConverter(newPeriodContext)}` }}
         </v-card>
         <v-card elevation="3" class="dates--card">
           <div class="dates--container">
@@ -339,6 +344,8 @@ export default defineComponent({
           return;
         }
         showLoadingSpinner.value = false;
+        newPeriodContext.value = undefined;
+        calculatedPriorites.value = undefined;
         closeAlert(1000);
         setTypeOfAlert('success');
         openAlert("Επιτυχία διαγραφής παλαιάς τρέχουσας περιόδου");
@@ -481,14 +488,14 @@ export default defineComponent({
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
     }
-    const SemesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
+    const semesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
       if (!ssd)
         return '';
       if (ssd.Semester.includes('EARINO') && ssd.Periodicity === PeriodicityEnum.EARINO) {
-        return ssd.Semester.replace('EARINO', 'ΕΑΡΙΝΟ').replace('_',"-").replaceAll('_',' ');
+        return ssd.Semester.replace('EARINO', 'ΕΑΡΙΝΟ').replace('_', "-").replaceAll('_', ' ');
       }
       if (ssd.Semester.includes('XEIMERINO') && ssd.Periodicity === PeriodicityEnum.XEIMERINO) {
-        return ssd.Semester.replace('XEIMERINO', 'ΧΕΙΜΕΡΙΝΟ').replace('_',"-").replaceAll('_',' ');
+        return ssd.Semester.replace('XEIMERINO', 'ΧΕΙΜΕΡΙΝΟ').replace('_', "-").replaceAll('_', ' ');
       }
       return "";
     }
@@ -514,7 +521,7 @@ export default defineComponent({
       typeOfAlert,
       currentlyActiveSsds,
       newPeriodContext,
-      SemesterStringConverter,
+      semesterStringConverter,
       generateNewPeriod,
       fromTime,
       toTime,
@@ -584,7 +591,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.5rem;
+  gap: 0.5rem;
 }
 
 .single-option_card--item>span {
@@ -612,24 +619,21 @@ export default defineComponent({
   border-radius: 16px;
 }
 
-/* {
-    width: 33%;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    height: 3rem;
-  } */
-
-.add-new__period-container--button {
+.add-new__period-container--button_container {
   display: flex;
   flex-direction: row;
   width: 100%;
   justify-content: center;
   align-items: center;
   margin: 1rem 0;
+}
+
+.add-new__period-container--button_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .add-new__period-container--form {
@@ -760,32 +764,19 @@ export default defineComponent({
 
 .chip-activation {
   background: #f9f9f9 !important;
-  border: 1px solid #0136e6;
-  width: 50%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0.2rem 1rem;
-  text-align: center;
-  font-size: 1rem !important;
-  max-width: 50%;
 }
 
 .chip-is-active {
-  background: #f9f9f9 !important;
   border: 1px solid #00c900 !important;
   color: #00c900 !important;
 }
 
 .chip-is-up-to-activation {
-  background: #f9f9f9 !important;
   border: 1px solid #0136e6 !important;
   color: #0136e6 !important;
 }
 
 .chip-is-inactive {
-  background: #f9f9f9 !important;
   border: 1px solid #ff4545 !important;
   color: #ff4545 !important;
 }
@@ -794,11 +785,31 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   width: 100%;
-  flex: 1 0 auto;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+}
 
+.chip-bg {
+  background: #f7f7f7;
+  border: 1px solid #1c4397;
+  color: #1c4397;
+  word-wrap: break-word;
+  gap: 0.5rem;
+  height: fit-content;
+  padding: 0.3rem 2rem;
+}
+
+.chip-bg>span {
+  font-size: 1.1rem;
+}
+
+.chip-separator__left-chip {
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .error-border {
@@ -846,29 +857,20 @@ export default defineComponent({
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: 0;
   }
 
   .chip-activation {
-    background: #f9f9f9 !important;
-    border: 1px solid #0136e6;
-    width: fit-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 0.4rem 0.5rem;
-    text-align: center;
-    font-size: 1rem !important;
+    padding: 1rem 2rem;
   }
 
   .chip-separator {
     display: flex;
     flex-direction: row;
     width: fit-content;
-    flex: 1 0 auto;
     justify-content: flex-end;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
   }
 }
 
