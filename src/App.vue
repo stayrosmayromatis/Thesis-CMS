@@ -90,7 +90,7 @@ export default defineComponent({
 
     const closeInstantly = ref(false);
 
-    const closeMobileViewInstantly = async () => {
+    const closeMobileViewInstantly = async (val:boolean) => {
       closeInstantly.value = true;
       await delay(1);
       closeInstantly.value = false;

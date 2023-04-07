@@ -343,7 +343,6 @@ export default defineComponent({
     };
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
-      return;
     };
     const semesterReformer = (semester: LabSemesterEnum) => {
       if (!semester) return "N/A";
@@ -387,10 +386,9 @@ export default defineComponent({
       return;
     };
     onMounted(() => {
+      emitMobileViewClose();
       GetDisplayedLabs();
       availableSemesters.value = DisplayedLabs.value;
-      context.emit("closeMobileView", true);
-      return;
     });
     function isReadOnly(lab?:PersonalisedCourseBySemester):boolean{
       if(!userType.value || !lab)

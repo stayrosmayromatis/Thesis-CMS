@@ -52,7 +52,8 @@ export default defineComponent({
         const errorTit = ref<string>();
         const {alertTitle,showAlert,openAlert,closeAlert} = useAlert();
         onMounted(() => {
-            const {clearError,errorDescription,errorTitle,isError,setError,} = useErrorFunctions();
+            emitMobileViewClose();
+            const {errorDescription,errorTitle,isError} = useErrorFunctions();
             error.value = isError.value;
             errorDesc.value=errorDescription.value;
             errorTit.value= errorTitle.value;
@@ -64,12 +65,9 @@ export default defineComponent({
                     closeAlert();
                 },1500)
             }
-            context.emit('closeMobileView', true);
-            return;
         });
         const emitMobileViewClose = (): void => {
             context.emit('closeMobileView', true);
-            return;
         }
         const clearError = () => {
             const {clearError} = useErrorFunctions();

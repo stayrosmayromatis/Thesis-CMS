@@ -1,5 +1,5 @@
 <template>
-  <div class="parent">
+  <div class="parent" @click="emitMobileViewClose">
     <v-card>
       <div>
         <v-tabs v-model="tab" bg-color="#dae3f7">
@@ -13,7 +13,7 @@
       <suspense>
         <template #default>
           <keep-alive>
-            <component :is="tab" />
+            <component @propagateCloseMobileView = "emitMobileViewClose" :is="tab" />
           </keep-alive>
         </template>
         <template #fallback>
@@ -63,7 +63,7 @@ export default defineComponent({
   setup(_, context) {
     const loadingTest = ref(true);
     onMounted(() => {
-      context.emit("closeMobileView", true);
+      emitMobileViewClose();
       setTimeout(() => {
         loadingTest.value = false;
       }, 2000);
@@ -92,7 +92,10 @@ export default defineComponent({
     const sthComp = () => {
       console.log(tab.value);
     };
-    return { tab, component_loader, loadingTest, sthComp };
+    const emitMobileViewClose = (): void => {
+      context.emit('closeMobileView', true);
+    }
+    return { emitMobileViewClose,tab, component_loader, loadingTest, sthComp };
   },
 });
 </script>

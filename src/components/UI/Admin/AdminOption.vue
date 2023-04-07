@@ -10,7 +10,7 @@
     :inner-title="confirmDeletionInnerTitle"
     :inner-description="confirmDeletionInnerDescription"
   ></base-dialog>
-  <div class="parent">
+  <div class="parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner">
       <v-card elevation="3" class="admin-label">Διαχειριστες εφαρμογης</v-card>
@@ -21,7 +21,9 @@
         :key="admin.Id"
       >
         <div class="single-admin_card--item">
-          <span>{{ admin.DisplayNameEl }}</span>
+          <v-chip class="chip-bg" size="large">
+            <span>{{ admin.DisplayNameEl }}</span>
+          </v-chip>
           <v-tooltip :text="'Διαγραφή διαχειριστή'" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
@@ -67,7 +69,7 @@ export default defineComponent({
     BaseSpinner,
     BaseDialog
   },
-  emits:['closeMobileView'],
+  emits:['propagateCloseMobileView'],
   setup(props, context) {
     const {GetSeededProfessors, SeedProfessorsArray} = useProfessor();
     const {setBackendInstanceAuth} = useAxiosInstance();
@@ -79,7 +81,7 @@ export default defineComponent({
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
     onMounted(async () => {
-      context.emit("closeMobileView", true);
+      emitMobileViewClose()
       closeAlert(1000);
       //SeedProfessorsSegment
       await GetSeededProfessors();
@@ -179,7 +181,11 @@ export default defineComponent({
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
+    const emitMobileViewClose = (): void => {
+            context.emit('propagateCloseMobileView', true);
+    };
     return {
+      emitMobileViewClose,
       arrayOfAdmins,
       seededProfessors,
       setStateToAdmin,
@@ -200,7 +206,7 @@ export default defineComponent({
 .parent {
   min-width: 320px;
   padding: 0;
-  margin: 1.5rem 1.5rem;
+  margin: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: end;
@@ -241,13 +247,22 @@ export default defineComponent({
 }
 
 .single-admin_card--item > span {
-  color: red;
+  color: #1c4397;
   word-wrap: break-word;
   word-break: break-word;
   text-align: center;
   font-size: 1.2rem;
   hyphens: auto;
   font-weight: 400;
+}
+.chip-bg {
+  background: #f7f7f7;
+  border: 1px solid #1c4397;
+  color: #1c4397;
+  word-wrap: break-word;
+  gap: 0.5rem;
+  height: fit-content;
+  padding: 0.3rem 2rem;
 }
 
 .delete-button {
@@ -277,8 +292,8 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .admin-label {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     height: 3rem;
     font-size: 1rem;
     background-color: #dae3f7;

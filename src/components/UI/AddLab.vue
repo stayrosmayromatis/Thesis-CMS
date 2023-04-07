@@ -230,6 +230,7 @@ export default defineComponent({
       }
     });
     onMounted(async () => {
+      emitMobileViewClose();
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
       //DisplayedSemester
@@ -252,19 +253,15 @@ export default defineComponent({
         PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
         isCallByEdit.value = true;
       }
-
       closeAlert(1000);
-
       //SeedProfessorsSegment
       await GetSeededProfessors();
       seededProfessors.value = SeedProfessorsArray.value;
-      context.emit("closeMobileView", true);
-      return;
+     
     });
     //SeedProfessorsSegment
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
-      return;
     };
     let deptIncremental = 1;
     const departments = ref(new Array<Department>());

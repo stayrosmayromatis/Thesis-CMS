@@ -74,10 +74,9 @@ export default defineComponent({
     const { setBackendInstanceAuth } = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
-      return;
     };
     onMounted(async () => {
-      context.emit("closeMobileView", true);
+      emitMobileViewClose();
       if (showAlert.value === true) {
         setTimeout(() => {
           openAlert(alertTitle.value);

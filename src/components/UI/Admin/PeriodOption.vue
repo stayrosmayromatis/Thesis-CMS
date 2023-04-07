@@ -1,5 +1,5 @@
 <template>
-  <div class="options-parent">
+  <div class="options-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div>
@@ -7,10 +7,11 @@
         :routeChangeAuthorizer="true" @close-modal="showBaseDialog = false"></base-dialog>
     </div>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="3" class="admin-label">{{ `Τρεχων Περιοδος` }}</v-card>
+      <v-card elevation="3" class="admin-label"><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
+        `Περιοδος` }}</label></v-card>
       <div v-if="!currentlyActiveSsds.length">
-        <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκαν περίοδοι'"
-          :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο παρακάτω'"></base-result-empty>
+        <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκε περίοδος'"
+          :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο πατώντας το παρακάτω κουμπί και ακολουθήστε τα βήματα.'"></base-result-empty>
       </div>
       <div v-if="currentlyActiveSsds.length">
         <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
@@ -43,7 +44,7 @@
           </div>
         </v-card>
       </div>
-      <div v-if="!newPeriodContext" class="add-new__period-container--button_container">
+      <div v-if="!newPeriodContext && !currentlyActiveSsds.length" class="add-new__period-container--button_container">
         <v-btn color="green" elevation="4" type="button" @click="generateNewPeriod">
           <div class="add-new__period-container--button_item">
             <svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
@@ -59,7 +60,10 @@
         </v-btn>
       </div>
       <div v-if="newPeriodContext" class="add-new__period-container--form">
-        <v-card elevation="3" class="admin-label">{{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${semesterStringConverter(newPeriodContext)}` }}
+        <v-card elevation="3" class="admin-label">
+          <label>
+            {{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${semesterStringConverter(newPeriodContext)}` }}
+          </label>
         </v-card>
         <v-card elevation="3" class="dates--card">
           <div class="dates--container">
@@ -91,7 +95,8 @@
         </v-card>
       </div>
       <div v-if="calculatedPriorites">
-        <v-card elevation="3" class="admin-label">{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}
+        <v-card elevation="3" class="admin-label">
+          <label>{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}</label>
         </v-card>
         <v-card elevation="3" class="calculated_priorities--card">
           <div class="calculated_priorities--container">
@@ -150,7 +155,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, toRefs } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
@@ -176,8 +181,8 @@ export default defineComponent({
     BaseAlert,
     BaseResultEmpty
   },
-  emits: ['closeMobileView'],
-  setup(props, context) {
+  emits: ['propagateCloseMobileView'],
+  setup(_, context) {
     const showLoadingSpinner = ref(false);
     const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { setBackendInstanceAuth } = useAxiosInstance();
@@ -197,7 +202,7 @@ export default defineComponent({
     const baseDialogTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const baseDialogDescription = ref("");
     onMounted(async () => {
-      context.emit("closeMobileView", true);
+      emitMobileViewClose();
       fromTime.value = tomorrow;
       toTime.value = oneWeekAfterTomorrow;
       closeAlert(1000);
@@ -207,12 +212,14 @@ export default defineComponent({
       if (!currentlyActiveSsdsIDT.Status) {
         closeAlert(1000);
         setTypeOfAlert('error');
-        openAlert("Αποτυχία ανάκτησης περιόδων");
+        openAlert("Αποτυχία ανάκτησης περιόδου");
         scrollToTop();
         await delay(1500);
         closeAlert(1000);
         return;
       }
+      newPeriodContext.value = undefined;
+      calculatedPriorites.value = undefined;
     });
     const isFromTimeEmpty = () => {
       if (!fromTime.value) {
@@ -326,7 +333,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
-          openAlert("Αποτυχία διαγραφής τρέχουσας περιόδου");
+          openAlert("Αποτυχία διαγραφής περιόδου");
           scrollToTop();
           await delay(1500);
           closeAlert(1000);
@@ -337,7 +344,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
-          openAlert("Αποτυχία ανάκτησης περιόδων");
+          openAlert("Αποτυχία ανάκτησης περιόδου");
           scrollToTop();
           await delay(1500);
           closeAlert(1000);
@@ -348,7 +355,7 @@ export default defineComponent({
         calculatedPriorites.value = undefined;
         closeAlert(1000);
         setTypeOfAlert('success');
-        openAlert("Επιτυχία διαγραφής παλαιάς τρέχουσας περιόδου");
+        openAlert("Επιτυχία διαγραφής περιόδου");
         scrollToTop();
         await delay(1500);
         closeAlert(1000);
@@ -372,7 +379,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
-          openAlert("Αποτυχία δημιουργίας νέας περιόδου");
+          openAlert("Αποτυχία δημιουργίας περιόδου");
           scrollToTop();
           await delay(1500);
           closeAlert(1000);
@@ -383,7 +390,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
-          openAlert("Αποτυχία ανάκτησης περιόδων");
+          openAlert("Αποτυχία ανάκτησης περιόδου");
           scrollToTop();
           await delay(1500);
           closeAlert(1000);
@@ -392,7 +399,7 @@ export default defineComponent({
         showLoadingSpinner.value = false;
         closeAlert(1000);
         setTypeOfAlert('success');
-        openAlert("Επιτυχία δημιουργίας νέας περιόδου");
+        openAlert("Επιτυχία δημιουργίας περιόδου");
         scrollToTop();
         await delay(1500);
         closeAlert(1000);
@@ -434,7 +441,7 @@ export default defineComponent({
           showBaseDialog.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
-          openAlert("Αποτυχία εκκίνσης νέας περιόδου");
+          openAlert("Αποτυχία εκκίνσης περιόδου");
           scrollToTop();
           await delay(1500);
           closeAlert(1000);
@@ -456,7 +463,7 @@ export default defineComponent({
         calculatedPriorites.value = undefined;
         closeAlert(1000);
         setTypeOfAlert('success');
-        openAlert("Επιτυχία, η περίοδος ξεκινάει αυτοματοποιημένα");
+        openAlert("Επιτυχία, αυτοποιημένη έναρξη");
         scrollToTop();
         await delay(1500);
         closeAlert(1000);
@@ -508,7 +515,11 @@ export default defineComponent({
       const year = date.getUTCFullYear();
       return `${day}-${month}-${year}`;
     }
+    const emitMobileViewClose = (): void => {
+      context.emit('propagateCloseMobileView', true);
+    }
     return {
+      emitMobileViewClose,
       showBaseDialog,
       baseDialogTitle,
       baseDialogDescription,
@@ -547,7 +558,7 @@ export default defineComponent({
 .options-parent {
   min-width: 320px;
   padding: 0;
-  margin: 1.5rem 1.5rem;
+  margin: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
   width: inherit;
@@ -560,19 +571,23 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1 0 auto;
   width: 100%;
   height: 2rem;
-  text-transform: uppercase;
   min-width: 320px;
-  font-size: 0.9rem;
-  font-weight: 450;
   background-color: #dae3f7;
-  word-wrap: break-word;
-  word-break: break-word;
-  text-align: center;
-  padding: 1.2rem 0;
+  padding: 1.5rem 0;
   margin-bottom: 1rem;
+}
+
+.admin-label>label {
+  word-wrap: break-word;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 450;
+  text-transform: uppercase;
+  white-space: pre-line;
+  word-break: break-word;
+
 }
 
 :deep(.parent) {
@@ -820,8 +835,6 @@ export default defineComponent({
 @media (min-width: 769px) {
   .admin-label {
     height: 3rem;
-    font-size: 1rem;
-    background-color: #dae3f7;
   }
 
   .dates--container {

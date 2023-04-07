@@ -31,8 +31,8 @@
         }"
         v-bind="props"
       ><svg
-          width="25"
-          height="25"
+          width="30"
+          height="30"
           clip-rule="evenodd"
           fill-rule="evenodd"
           stroke-linejoin="round"
@@ -420,12 +420,18 @@ export default defineComponent({
   height: 3rem;
 }
 .button-dimensions-adjustment__admin{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   width: fit-content;
   height: 2.2rem;
   padding: 0 1rem;
   text-transform: uppercase;
   hyphens: auto;
   letter-spacing: 1px;
+  gap: 0.5rem;
+
 }
 
 @media (min-width: 769px) {
