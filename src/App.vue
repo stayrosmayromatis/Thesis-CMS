@@ -1,7 +1,6 @@
 <template>
-  <the-header :closeInstantlyDirective="closeInstantly">
-  </the-header>
-  <router-view @closeMobileView="closeMobileViewInstantly"> </router-view>
+  <the-header :closeInstantlyDirective="closeInstantly"></the-header>
+  <router-view @closeMobileView="closeMobileViewInstantly"></router-view>
 </template>
 
 <script lang="ts">

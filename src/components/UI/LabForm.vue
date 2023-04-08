@@ -44,6 +44,8 @@ import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import TeacherSelect from "@/components/UI/TeacherSelect.vue";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
+import DatePicker  from '@vuepic/vue-datepicker';
+import BaseSlider from "@/components/Base/BaseSlider.vue";
 export default defineComponent({
   props: {
     department: {
@@ -63,6 +65,8 @@ export default defineComponent({
   },
   components: {
     TeacherSelect,
+    DatePicker,
+    BaseSlider
   },
   emits: ["deleteByDeptId"],
   setup(props, context) {

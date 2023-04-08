@@ -2,12 +2,10 @@
   <div class="options-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <div>
-      <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
-        :routeChangeAuthorizer="true" @close-modal="showBaseDialog = false"></base-dialog>
-    </div>
+    <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
+      :routeChangeAuthorizer="true" @close-modal="showBaseDialog = false"></base-dialog>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="3" class="admin-label"><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
+      <v-card elevation="3" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
         `Περιοδος` }}</label></v-card>
       <div v-if="!currentlyActiveSsds.length">
         <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκε περίοδος'"
@@ -60,7 +58,7 @@
         </v-btn>
       </div>
       <div v-if="newPeriodContext" class="add-new__period-container--form">
-        <v-card elevation="3" class="admin-label">
+        <v-card elevation="3" class="period-label ">
           <label>
             {{ `ΝΕΑ ΠΕΡΙΟΔΟΣ : ${semesterStringConverter(newPeriodContext)}` }}
           </label>
@@ -95,7 +93,7 @@
         </v-card>
       </div>
       <div v-if="calculatedPriorites">
-        <v-card elevation="3" class="admin-label">
+        <v-card elevation="3" class="period-label ">
           <label>{{ `Ημερομηνιακες Ομαδες Προτεραιοτητας` }}</label>
         </v-card>
         <v-card elevation="3" class="calculated_priorities--card">
@@ -155,7 +153,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
@@ -166,6 +164,7 @@ import { AdminController } from '@/config';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { ApiResult } from '@/models/DTO/ApiResult';
+import DatePicker from '@vuepic/vue-datepicker';
 import { SemesterSubmitionDateResponse } from '@/models/BACKEND-MODELS/SemesterSubmitionDateResponse';
 import { SemesterSubmitionDateOverviewResponse } from "@/models/BACKEND-MODELS/SemesterSubmitionDateOverviewResponse";
 import { PeriodicityEnum } from "@/enums/PeriodicityEnum";
@@ -180,7 +179,8 @@ export default defineComponent({
     BaseSpinner,
     BaseDialog,
     BaseAlert,
-    BaseResultEmpty
+    BaseResultEmpty,
+    DatePicker
   },
   emits: ['propagateCloseMobileView'],
   setup(_, context) {
@@ -543,7 +543,7 @@ export default defineComponent({
     }
     const emitMobileViewClose = (): void => {
       context.emit('propagateCloseMobileView', true);
-    }
+    };
     return {
       emitMobileViewClose,
       showBaseDialog,
@@ -593,7 +593,7 @@ export default defineComponent({
   align-items: inherit;
 }
 
-.admin-label {
+.period-label{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -606,7 +606,7 @@ export default defineComponent({
   margin-bottom: 1rem;
 }
 
-.admin-label>label {
+.period-label > label {
   word-wrap: break-word;
   text-align: center;
   font-size: 0.95rem;
@@ -614,7 +614,6 @@ export default defineComponent({
   text-transform: uppercase;
   white-space: pre-line;
   word-break: break-word;
-
 }
 
 :deep(.parent) {
@@ -860,7 +859,7 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-  .admin-label {
+  .period-label  {
     height: 3rem;
   }
 

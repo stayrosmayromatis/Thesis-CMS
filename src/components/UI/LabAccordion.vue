@@ -1,57 +1,24 @@
 <template>
   <v-container class="sth-container" @click="emitMobileViewClose">
     <v-card elevation="5" class="parent-label">ΑΝΑΖΗΤΗΣΗ ΕΡΓΑΣΤΗΡΙΩΝ</v-card>
-    <v-select
-      :items="availableSemesters"
-      label="Επιλέξτε ενα ή παραπάνω εξάμηνo"
-      hide-selected
-      chips
-      persistent-hint
-      density="comfortable"
-      validate-on="blur"
-      bg-color="#92B4F4"
-      closable-chips
-      :open-on-clear="false"
-      clearable
-      multiple
-      return-object
-      v-model="selectedSemesters"
-      no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
-      @update:model-value="requestLabs"
-    >
+    <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
+      density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable multiple
+      return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
+      @update:model-value="requestLabs">
     </v-select>
-    <div>
-      <base-spinner :show="isLoading"></base-spinner>
-    </div>
-    <div>
-      <base-result-empty
-        :show="personalisedCourses.length === 0"
-        :title="resultEmptyTitle"
-        :description="resutlEmptyDesc"
-      ></base-result-empty>
-    </div>
+    <base-spinner :show="isLoading"></base-spinner>
+    <base-result-empty :show="personalisedCourses.length === 0" :title="resultEmptyTitle"
+      :description="resutlEmptyDesc"></base-result-empty>
     <!-- <v-app> -->
     <v-expansion-panels v-if="personalisedCourses">
-      <v-expansion-panel
-        v-for="lab in personalisedCourses"
-        :key="lab.CourseGUID"
-        :readonly="isReadOnly(lab)"
-        >
+      <v-expansion-panel v-for="lab in personalisedCourses" :key="lab.CourseGUID" :readonly="isReadOnly(lab)">
         <div>
-          <v-expansion-panel-title
-            expand-icon="mdi-plus"
-            collapse-icon="mdi-minus"
-          >
+          <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
             <div class="chip-separator">
               <div class="chip-separator__left-chip">
-                <v-chip
-                  class="chip-bg"
-                  :class="{
-                    'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
-                  }"
-                  size="large"
-                  style="height: fit-content"
-                >
+                <v-chip class="chip-bg" :class="{
+                  'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                }" size="large" style="height: fit-content">
                   <div class="lab-chip__details">
                     <div class="lab-course__code">
                       {{ lab.CourseCode + " " }}
@@ -119,71 +86,38 @@
                     </template>
                   </v-tooltip>
                 </div> -->
-                 <!-- OLD IMPLEMENTATION -->
+                <!-- OLD IMPLEMENTATION -->
                 <!-- NEW DIV REFACTOR -->
-                 <div style="visibility: hidden;">
-                  <v-tooltip
-                    :text="toolTipText(lab)"
-                    location="bottom"
-                    v-if="(userType === 2 && lab.CanSubmit === false) || (userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)"
-                  >
+                <div style="visibility: hidden;">
+                  <v-tooltip :text="toolTipText(lab)" location="bottom"
+                    v-if="(userType === 2 && lab.CanSubmit === false) || (userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
                     <template v-slot:activator="{ props }">
-                      <v-chip
-                        variant="text"
-                        density="default"
-                        style="width: fit-content"
-                        v-bind="props"
-                        :rounded="20"
-
-                      >
-                      <!-- rounder 20 if can submit === false -->
-                      <div v-if="(userType === 2 && lab.CanSubmit === false)">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="35"
-                          height="35"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            fill="#ff4646"
-                            d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m0 2c-1.9 0-3.6.6-4.9 1.7l11.2 11.2c1-1.4 1.7-3.1 1.7-4.9c0-4.4-3.6-8-8-8m4.9 14.3L5.7 7.1C4.6 8.4 4 10.1 4 12c0 4.4 3.6 8 8 8c1.9 0 3.6-.6 4.9-1.7Z"
-                          />
-                        </svg>
-                      </div>
-                      <div v-else-if="(userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="35"
-                          height="35"
-                          viewBox="0 0 24 24"
-                        >
-                        <path
-                        fill="#00c900"
-                        d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7Z"
-                        />
-                      </svg>
-                      </div>
+                      <v-chip variant="text" density="default" style="width: fit-content" v-bind="props" :rounded="20">
+                        <!-- rounder 20 if can submit === false -->
+                        <div v-if="(userType === 2 && lab.CanSubmit === false)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                            <path fill="#ff4646"
+                              d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12S6.5 2 12 2m0 2c-1.9 0-3.6.6-4.9 1.7l11.2 11.2c1-1.4 1.7-3.1 1.7-4.9c0-4.4-3.6-8-8-8m4.9 14.3L5.7 7.1C4.6 8.4 4 10.1 4 12c0 4.4 3.6 8 8 8c1.9 0 3.6-.6 4.9-1.7Z" />
+                          </svg>
+                        </div>
+                        <div v-else-if="(userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                            <path fill="#00c900" d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7Z" />
+                          </svg>
+                        </div>
                       </v-chip>
                     </template>
                   </v-tooltip>
-                 </div>
+                </div>
                 <!-- NEW DIV REFACTOR -->
-                <v-chip
-                  class="chip-attendance"
-                  :class="{
-                    'gray-out-card-chip-attendance':(userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
-                  }"
-                  size="large"
-                >
+                <v-chip class="chip-attendance" :class="{
+                  'gray-out-card-chip-attendance': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                }" size="large">
                   <div>{{ lab.CourseAttendanceString }}</div>
                 </v-chip>
-                <v-chip
-                  class="chip-semester"
-                  :class="{
-                    'gray-out-card-chip-semester':(userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true) ,
-                  }"
-                  size="large"
-                >
+                <v-chip class="chip-semester" :class="{
+                  'gray-out-card-chip-semester': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                }" size="large">
                   <div>
                     {{ semesterReformer(lab.Semester) }}
                   </div>
@@ -196,55 +130,33 @@
           <div class="classOne">
             <p>{{ lab.ShortDescription }}</p>
             <div class="lab-details_if_submitted">
-              <p
-                v-if="
+              <p v-if="
                 (
                   userType === 2 &&
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === true &&
                   lab.LabInfo
                 )
-                "
-              >
+              ">
                 {{
-                  `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})`
+                  `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring}
+                                (${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})`
                 }}
               </p>
-              <v-btn
-                v-if="
+              <v-btn v-if="
                 (userType === 2 &&
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === false &&
-                  !lab.LabInfo)||(userType === 1)
-                "
-                @click="pushToHandle(lab.CourseGUID)"
-                color="#a3cef1"
-                elevation="4"
-                >{{ userType === 2 ? 'Δηλωσε το' : userType === 1 ? 'Πορεια Δηλωσης': 'Επιλογη'}}</v-btn
-              >
-              <v-tooltip
-                :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
-                :location="'bottom'"
-                v-if="(userType === 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)"
-              >
+                  !lab.LabInfo) || (userType === 1)
+              " @click="pushToHandle(lab.CourseGUID)" color="#a3cef1" elevation="4">{{ userType === 2 ? 'Δηλωσε το' :
+  userType === 1 ? 'Πορεια Δηλωσης' : 'Επιλογη' }}</v-btn>
+              <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`" :location="'bottom'"
+                v-if="(userType === 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
                 <template v-slot:activator="{ props }">
-                  <v-chip
-
-                    variant="text"
-                    density="default"
-                    style="width: fit-content"
-                    v-bind="props"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="35"
-                      height="35"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="#00c900"
-                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z"
-                      />
+                  <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                      <path fill="#00c900"
+                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z" />
                     </svg>
                   </v-chip>
                 </template>
@@ -390,32 +302,29 @@ export default defineComponent({
       GetDisplayedLabs();
       availableSemesters.value = DisplayedLabs.value;
     });
-    function isReadOnly(lab?:PersonalisedCourseBySemester):boolean{
-      if(!userType.value || !lab)
+    function isReadOnly(lab?: PersonalisedCourseBySemester): boolean {
+      if (!userType.value || !lab)
         return true;
-      if(userType.value === PersonAffiliation.ADMIN) return false;
-      if(userType.value === PersonAffiliation.STAFF )return false;
-      if(userType.value === PersonAffiliation.STUDENT && lab.CanSubmit === false)  return true;
+      if (userType.value === PersonAffiliation.ADMIN) return false;
+      if (userType.value === PersonAffiliation.STAFF) return false;
+      if (userType.value === PersonAffiliation.STUDENT && lab.CanSubmit === false) return true;
       return false;
     }
-    const toolTipText =(lab:PersonalisedCourseBySemester) => {
-      if(!userType.value)
+    const toolTipText = (lab: PersonalisedCourseBySemester) => {
+      if (!userType.value)
         return "";
-      else if(userType.value === 2){
-        if(lab.CanSubmit === false)
-        {
+      else if (userType.value === 2) {
+        if (lab.CanSubmit === false) {
           return "Δεν επιτρέπεται να δηλωθεί";
         }
-        else
-        {
-          if(lab.HasAlreadySubmitted === true)
-          {
+        else {
+          if (lab.HasAlreadySubmitted === true) {
             return 'Εχετε ηδη μια θέση σε εργαστηριακό τμήμα'
           }
           return "";
         }
       }
-      else{
+      else {
         return "";
       }
     };
@@ -426,7 +335,7 @@ export default defineComponent({
       selectedSemesters,
       resultEmptyTitle,
       resutlEmptyDesc,
-      requestLabs : RequestLabs,
+      requestLabs: RequestLabs,
       isLoading,
       emitMobileViewClose,
       semesterReformer,
@@ -460,6 +369,7 @@ export default defineComponent({
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+
 .lab-course__code {
   font-weight: 500;
   padding-top: 0.5rem;
@@ -469,6 +379,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
+
 .lab-chip__details {
   display: flex;
   flex-direction: column;
@@ -476,12 +387,14 @@ export default defineComponent({
   align-items: center;
   height: fit-content;
 }
+
 .chip-bg {
   background: #f7f7f7;
   border: 1px solid #1c4397;
   color: #1c4397;
   word-wrap: break-word;
 }
+
 .chip-separator {
   display: flex;
   flex-direction: column;
@@ -491,6 +404,7 @@ export default defineComponent({
   width: 100%;
   margin: 0;
 }
+
 .chip-separator__left-chip {
   width: fit-content;
   display: flex;
@@ -498,6 +412,7 @@ export default defineComponent({
   align-items: center;
   justify-content: flex-start;
 }
+
 .chip-separator__right-chip {
   width: fit-content;
   display: flex;
@@ -506,6 +421,7 @@ export default defineComponent({
   justify-content: flex-start;
   gap: 0.5rem;
 }
+
 .chip-attendance {
   background: #f3f3f3;
   /* border: 1px solid black; */
@@ -518,6 +434,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
+
 .chip-semester {
   background: #f3f3f3;
   /* border: 1px solid black; */
@@ -530,6 +447,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
+
 .classOne {
   display: flex;
   flex-direction: column;
@@ -540,7 +458,7 @@ export default defineComponent({
   width: 100%;
 }
 
-.classOne > p {
+.classOne>p {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -550,7 +468,7 @@ export default defineComponent({
   word-break: break-word;
 }
 
-.classOne > button {
+.classOne>button {
   width: fit-content;
   display: flex;
   justify-content: center;
@@ -574,15 +492,15 @@ export default defineComponent({
   min-width: 320px;
 }
 
-:deep(
-    .v-expansion-panel--active:not(:first-child),
-    .v-expansion-panel--active + .v-expansion-panel
-  ) {
+:deep(.v-expansion-panel--active:not(:first-child),
+  .v-expansion-panel--active + .v-expansion-panel) {
   margin-top: 0;
 }
+
 :deep(.v-container) {
   min-width: 320px;
 }
+
 :deep(.v-expansion-panel-title__icon) {
   display: inline-flex;
   margin-right: -1rem;
@@ -591,6 +509,7 @@ export default defineComponent({
   user-select: none;
   margin-inline-start: auto;
 }
+
 .parent-label {
   margin-bottom: 1rem;
   display: flex;
@@ -606,24 +525,29 @@ export default defineComponent({
   background-color: #aacaf3;
   padding: 1.2rem;
 }
+
 :deep(.parent) {
   margin: 0;
 }
+
 .gray-out-card-chip-lab__details {
   background: #d1d3d8 !important;
   border: 1px solid #273864 !important;
   color: #273864 !important;
 }
+
 .gray-out-card-chip-semester {
   background: #f9f9f9 !important;
   border: 1px solid #303c64 !important;
   color: #303c64 !important;
 }
+
 .gray-out-card-chip-attendance {
   background: #f9f9f9 !important;
   border: 1px solid #125e12 !important;
   color: #125e12 !important;
 }
+
 .lab-details_if_submitted {
   display: flex;
   flex: 1 0;
@@ -631,7 +555,8 @@ export default defineComponent({
   justify-content: flex-end;
   align-items: center;
 }
-.lab-details_if_submitted > p {
+
+.lab-details_if_submitted>p {
   font-weight: 400;
   font-size: 1rem;
   width: fit-content;
@@ -640,6 +565,7 @@ export default defineComponent({
   white-space: break-spaces;
   word-break: inherit;
 }
+
 @media (min-width: 480px) {
   .aligner {
     text-align: center;
@@ -660,6 +586,7 @@ export default defineComponent({
     min-width: 8rem;
     max-width: 8rem;
   }
+
   .lab-course__code {
     font-weight: 500;
     font-size: 1rem;
@@ -669,6 +596,7 @@ export default defineComponent({
     align-items: center;
     padding: 0;
   }
+
   .lab-chip__details {
     display: flex;
     padding: 0;
@@ -676,6 +604,7 @@ export default defineComponent({
     justify-content: flex-start;
     align-items: center;
   }
+
   .chip-separator {
     display: flex;
     flex-direction: row;
@@ -685,6 +614,7 @@ export default defineComponent({
     width: fit-content;
     flex: 1 0;
   }
+
   .chip-separator__left-chip {
     width: fit-content;
     display: flex;
@@ -693,6 +623,7 @@ export default defineComponent({
     justify-content: flex-start;
     flex: 1 0;
   }
+
   .chip-separator__right-chip {
     width: 5rem;
     display: flex;
@@ -701,6 +632,7 @@ export default defineComponent({
     justify-content: flex-end;
     flex: 1 0;
   }
+
   .chip-attendance {
     background: #f3f3f3;
     border: 1px solid #00c900;
@@ -712,6 +644,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   .chip-semester {
     background: #f3f3f3;
     border: 1px solid #0136e6;
@@ -723,6 +656,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   :deep(.v-expansion-panel-title__icon) {
     display: inline-flex;
     margin-right: 0;
@@ -731,6 +665,7 @@ export default defineComponent({
     user-select: none;
     margin-inline-start: auto;
   }
+
   .classOne {
     display: flex;
     flex-direction: row;
@@ -741,7 +676,7 @@ export default defineComponent({
     width: 100%;
   }
 
-  .classOne > p {
+  .classOne>p {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -751,13 +686,14 @@ export default defineComponent({
     word-break: break-word;
   }
 
-  .classOne > button {
+  .classOne>button {
     width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
+
 @media (min-width: 769px) {
   .sth-container {
     margin: 2rem 1rem;
@@ -765,6 +701,7 @@ export default defineComponent({
     max-width: 100%;
     min-width: 320px;
   }
+
   .lab-course__code {
     font-weight: 500;
     font-size: 1rem;
@@ -774,6 +711,7 @@ export default defineComponent({
     padding: 0;
     align-items: center;
   }
+
   .aligner {
     text-align: center;
     text-overflow: ellipsis;
@@ -793,6 +731,7 @@ export default defineComponent({
     min-width: min-content;
     max-width: max-content;
   }
+
   .classOne {
     display: flex;
     flex-direction: row;
@@ -801,12 +740,13 @@ export default defineComponent({
     margin: 0.5rem 0.5rem;
   }
 
-  .classOne > p {
+  .classOne>p {
     width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   .chip-separator {
     display: flex;
     flex-direction: row;
@@ -816,6 +756,7 @@ export default defineComponent({
     width: fit-content;
     flex: 1 0;
   }
+
   .chip-separator__left-chip {
     width: fit-content;
     display: flex;
@@ -824,6 +765,7 @@ export default defineComponent({
     justify-content: flex-start;
     flex: 1 0;
   }
+
   .chip-separator__right-chip {
     width: 5rem;
     display: flex;
@@ -832,6 +774,7 @@ export default defineComponent({
     justify-content: flex-end;
     flex: 2 0;
   }
+
   .chip-attendance {
     background: #f3f3f3;
     border: 1px solid #00c900;
@@ -843,6 +786,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   .chip-semester {
     background: #f3f3f3;
     border: 1px solid #0136e6;
@@ -854,6 +798,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   :deep(.v-expansion-panel-title__icon) {
     display: inline-flex;
     margin-right: 0;
@@ -862,6 +807,7 @@ export default defineComponent({
     user-select: none;
     margin-inline-start: auto;
   }
+
   .parent-label {
     margin-top: 2rem;
     margin-bottom: 2rem;
@@ -883,6 +829,7 @@ export default defineComponent({
   :deep(.v-container) {
     max-width: 100%;
   }
+
   .lab-course__code {
     font-weight: 500;
     font-size: 1rem;
@@ -892,6 +839,7 @@ export default defineComponent({
     align-items: center;
     padding: 0;
   }
+
   .chip-separator {
     display: flex;
     flex-direction: row;
@@ -901,6 +849,7 @@ export default defineComponent({
     width: fit-content;
     flex: 1 0;
   }
+
   .chip-separator__left-chip {
     width: fit-content;
     display: flex;
@@ -909,6 +858,7 @@ export default defineComponent({
     justify-content: flex-start;
     flex: 1 0;
   }
+
   .chip-separator__right-chip {
     width: 5rem;
     display: flex;
@@ -917,6 +867,7 @@ export default defineComponent({
     justify-content: flex-end;
     flex: 2 0;
   }
+
   .chip-attendance {
     background: #f3f3f3;
     border: 1px solid #00c900;
@@ -928,6 +879,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   .chip-semester {
     background: #f3f3f3;
     border: 1px solid #0136e6;
@@ -939,6 +891,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+
   :deep(.v-expansion-panel-title__icon) {
     display: inline-flex;
     margin-right: 0;
@@ -947,6 +900,7 @@ export default defineComponent({
     user-select: none;
     margin-inline-start: auto;
   }
+
   .parent-label {
     margin-top: 2rem;
     margin-bottom: 2rem;
