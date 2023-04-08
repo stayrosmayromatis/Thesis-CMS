@@ -1,6 +1,6 @@
 export enum ActivityStatus
 {
-    ACTIVE=1,
-    INACTIVE=2,
-    ARCHIVED=3
+    INACTIVE=1,
+    ACTIVE=2,
+    TO_BE_ACTIVATED=3
 }

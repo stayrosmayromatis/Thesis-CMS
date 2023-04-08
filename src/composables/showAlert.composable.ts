@@ -22,7 +22,6 @@ export function useAlert() {
         showAlert.value = false;
         alertTitle.value = "";
       }, byTimerInSeconds);
-      return;
     }
   };
 

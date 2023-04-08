@@ -23,12 +23,12 @@
             </div>
             <div class="chip-separator">
               <v-chip class="chip-activation" :class="{
-                'chip-is-active': active.Active === 2,
                 'chip-is-inactive': active.Active === 1,
+                'chip-is-active': active.Active === 2,
                 'chip-is-up-to-activation': active.Active === 3
               }" size="large">
                 <label>
-                  {{ 'THIS IS A TEST' }}
+                  {{ semesterLabelConverter(active.Active) }}
                 </label>
               </v-chip>
               <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
@@ -173,6 +173,7 @@ import { GeneratedPrioritiesResponse } from '@/models/BACKEND-MODELS/GeneratedPr
 import { SubmissionPeriodRequest } from '@/models/BACKEND-MODELS/SubmissionPeriodRequest';
 import { confirm } from "@/composables/dialog.composable";
 import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
+import { ActivityStatus } from '@/enums/ActivityStatusEnum';
 export default defineComponent({
   components:
   {
@@ -272,8 +273,6 @@ export default defineComponent({
           return { Status: false, Data: false, Error: "API Call Error" };
         }
         newPeriodContext.value = newGeneratedPeriodContext.Data;
-        console.log("Paok");
-        console.log(newPeriodContext.value);
         return { Status: true, Data: true }
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
@@ -331,6 +330,8 @@ export default defineComponent({
         const deletePastSubmissionsIDT = await DeletePastSubmissionCall();
         if (!deletePastSubmissionsIDT.Status) {
           showLoadingSpinner.value = false;
+          newPeriodContext.value = undefined;
+          calculatedPriorites.value = undefined;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία διαγραφής περιόδου");
@@ -342,6 +343,8 @@ export default defineComponent({
         const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
         if (!currentlyActiveSsdsIDT.Status) {
           showLoadingSpinner.value = false;
+          newPeriodContext.value = undefined;
+          calculatedPriorites.value = undefined;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία ανάκτησης περιόδου");
@@ -372,11 +375,12 @@ export default defineComponent({
                                                       Θέλετε να προσωρήσετε σε <span style="color:green;">έναρξη Νέας Περιόδου;</span>`;
       if (await confirm()) {
         showBaseDialog.value = false;
-        console.log("empaaa");
         showLoadingSpinner.value = true;
         const generateTheNewPeriodCallIDT = await GenerateTheNewPeriodCall();
         if (!generateTheNewPeriodCallIDT.Status) {
           showLoadingSpinner.value = false;
+          newPeriodContext.value = undefined;
+          calculatedPriorites.value = undefined;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία δημιουργίας περιόδου");
@@ -388,6 +392,8 @@ export default defineComponent({
         const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
         if (!currentlyActiveSsdsIDT.Status) {
           showLoadingSpinner.value = false;
+          newPeriodContext.value = undefined;
+          calculatedPriorites.value = undefined;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία ανάκτησης περιόδου");
@@ -412,6 +418,8 @@ export default defineComponent({
       const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
       showLoadingSpinner.value = false;
       if (!calculatePrioritiesIDT.Status) {
+        newPeriodContext.value = undefined;
+        calculatedPriorites.value = undefined;
         closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία υπολογισμού προτεραιοτήτων");
@@ -439,6 +447,8 @@ export default defineComponent({
         const initiateSubResponse = await InitiateSubmissionPeriodCall();
         if (!initiateSubResponse.Status) {
           showBaseDialog.value = false;
+          newPeriodContext.value = undefined;
+          calculatedPriorites.value = undefined;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία εκκίνσης περιόδου");
@@ -450,6 +460,8 @@ export default defineComponent({
         const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
         if (!currentlyActiveSsdsIDT.Status) {
           showLoadingSpinner.value = false;
+          newPeriodContext.value = undefined;
+          calculatedPriorites.value = undefined;
           closeAlert(1000);
           setTypeOfAlert('error');
           openAlert("Αποτυχία ανάκτησης περιόδων");
@@ -496,7 +508,7 @@ export default defineComponent({
       return { Status: false, Data: false, Error: "Request didn't finish" };
     }
     const semesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
-      if (!ssd)
+      if (!ssd || !ssd.Semester || !ssd.Periodicity)
         return '';
       if (ssd.Semester.includes('EARINO') && ssd.Periodicity === PeriodicityEnum.EARINO) {
         return ssd.Semester.replace('EARINO', 'ΕΑΡΙΝΟ').replace('_', "-").replaceAll('_', ' ');
@@ -506,6 +518,20 @@ export default defineComponent({
       }
       return "";
     }
+    const semesterLabelConverter = (active: ActivityStatus) => {
+      if (!active)
+        return "ΑΝΕΝΕΡΓΗ";
+      switch (active) {
+        case ActivityStatus.ACTIVE:
+          return "ΕΝΕΡΓΗ / ΑΝΟΙΚΤΗ";
+        case ActivityStatus.INACTIVE:
+          return "ΑΝΕΝΕΡΓΗ";
+        case ActivityStatus.TO_BE_ACTIVATED:
+          return "ΠΡΟΣ ΔΡΟΜΟΛΟΓΗΣΗ";
+        default:
+          return "ΑΝΕΝΕΡΓΗ";
+      }
+    };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
@@ -546,7 +572,8 @@ export default defineComponent({
       oneWeekAfterTomorrow,
       initiateSubmissionPeriod,
       determine,
-      deletePastSubmissions
+      deletePastSubmissions,
+      semesterLabelConverter
     }
   }
 
