@@ -4,27 +4,10 @@
       <div>
         <!-- ITS A WORK IN PROGRESS -->
         <v-tabs v-if="isTeacher" v-model="tab" bg-color="#dae3f7">
-          <div class="tab-override">
-            <v-tab v-if="isAdmin" :value="'AdminOption'" :slider-color="'#0a369d'"
-              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override">
-              {{'Διαχειριστες'}}
-            </v-tab>
-            <v-tab v-if="!isAdmin" :value="'PeriodOption'" :slider-color="'#0a369d'"
-              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override">
-              {{'Διαχειριση Περιοδου'}}
-            </v-tab>
-            <v-tab  v-if="isAdmin" :value="'ExportOption'" :slider-color="'#0a369d'"
-              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override">
-              {{'Εξαγωγη Δηλωσεων'}}
-            </v-tab>
-            
-              <!-- <v-tab v-if="isAdmin" :value="cmp.component" :slider-color="'#0a369d'"
+          <div class="tab-override">            
+            <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
               :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
-              @click="sthComp">{{ cmp.name }}</v-tab> -->
-            
-            <!-- <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
-              v-if="isAdmin" :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
-              @click="sthComp">{{ cmp.name }}</v-tab> -->
+              >{{ cmp.name }}</v-tab> 
           </div>
         </v-tabs>
       </div>
@@ -89,7 +72,7 @@ export default defineComponent({
       emitMobileViewClose();
       determineIsAdmin();
       determineIsTeacher();
-      console.log(isAdmin.value);
+      addTheAdminComponent();
       setTimeout(() => {
         loadingTest.value = false;
       }, 2000);
@@ -106,7 +89,6 @@ export default defineComponent({
       }
       isAdmin.value = true;
     };
-
     const determineIsTeacher =() => {
       const details = GetUserDataDetails();
       if(!details){
@@ -119,8 +101,23 @@ export default defineComponent({
       }
       isTeacher.value = false;
       return;
-    }
-    const component_loader = [
+    };
+    const addTheAdminComponent = () => {
+      if(isAdmin.value == true){
+        component_loader.push({
+          id: uuidv4().toString(),
+          name: "Διαχειριση Περιοδου",
+          value: 3,
+          component: "PeriodOption",  
+        });
+      }
+    };
+    const component_loader:Array<{
+      id: string,
+        name: string,
+        value: number,
+        component: string,
+    }> = [
       {
         id: uuidv4().toString(),
         name: "Διαχειριστες",
@@ -129,25 +126,16 @@ export default defineComponent({
       },
       {
         id: uuidv4().toString(),
-        name: "Διαχειριση Περιοδου",
-        value: 2,
-        component: "PeriodOption",
-      },
-      {
-        id: uuidv4().toString(),
         name: "Εξαγωγη Δηλωσεων",
-        value: 3,
+        value: 2,
         component: "ExportOption",
       },
     ];
     const tab = ref();
-    const sthComp = () => {
-      console.log(tab.value);
-    };
     const emitMobileViewClose = (): void => {
       context.emit('closeMobileView', true);
     }
-    return { emitMobileViewClose,tab, component_loader, loadingTest, sthComp ,isAdmin,isTeacher};
+    return { emitMobileViewClose,tab, component_loader, loadingTest ,isAdmin,isTeacher};
   },
 });
 </script>
