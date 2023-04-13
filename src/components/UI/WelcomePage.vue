@@ -37,7 +37,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 import { useErrorFunctions } from '@/composables/throwError.composable';
-import BaseDialog from '../Base/BaseDialog.vue';
+import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 export default defineComponent({

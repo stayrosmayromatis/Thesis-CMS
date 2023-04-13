@@ -1,8 +1,9 @@
 
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import { store }from '@/store/index';
 import { login_redirect_url } from '@/config';
 import {useAuth} from '@/composables/useAuth.composable'
+import { TypeStaff } from '@/enums/StaffTypeEnum';
 const {SetNotAuthenticated} = useAuth();
 const routes: Array<RouteRecordRaw> = [
   {
@@ -54,6 +55,14 @@ const routes: Array<RouteRecordRaw> = [
     meta : {requiresAuth :true,requiresIsTeacher : false}
   },
   {
+    path : "/administration",
+    name : 'admin',
+    component : () => import('@/components/UI/Admin/AdminPanelMenu.vue'),
+    props : true,
+    meta : {requiresAuth :true,requiresIsTeacher : true},
+    beforeEnter:[protectTeacherRoutes]
+  },
+  {
     path : "/poutsa",
     name : 'poutsa',
     component : () => import('@/components/UI/Admin/AdminPanelMenu.vue'),
@@ -68,7 +77,7 @@ const router = createRouter({
 
 router.beforeEach(async (to,_,next) => {
   const  {IsAuthenticated} = useAuth();
-  const isAuth = await IsAuthenticated(true);
+  const isAuth = await IsAuthenticated(true)
   const storeIsAuth = store.getters.IsAuth;
   if(to.meta.requiresAuth === false && storeIsAuth == false){
     isAuth === false ? next() : next(false);
@@ -95,4 +104,18 @@ router.beforeEach(async (to,_,next) => {
   return;
 });
 
+async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
+  const  {GetTypeStaff} = useAuth();
+  const typeStaff = GetTypeStaff();
+  if(to.meta.requiresIsTeacher === true && typeStaff && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
+    next();
+    return;
+  }
+  if(to.meta.requiresIsTeacher === false && typeStaff && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
+    next({name:'submittedLabs'});
+    return;
+  }
+  next({name:'submittedLabs'});
+  
+}
 export default router;

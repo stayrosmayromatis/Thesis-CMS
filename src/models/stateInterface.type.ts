@@ -5,7 +5,7 @@ export interface State{
     IsAuth:boolean;
     IsStudent:boolean;
     IsTeacher:boolean;
-    IsStaffType:TypeStaff | null;
-    UserDataDetails : UserDataDetails | null;
-    SeededProfessors : Array<BaseUser>;
+    IsStaffType?:TypeStaff ;
+    UserDataDetails? : UserDataDetails;
+    SeededProfessors? : Array<BaseUser>;
 }

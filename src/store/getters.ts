@@ -11,7 +11,7 @@ const IsStudent=(state: State) => {
 const IsTeacher=(state: State) => {
         return state.IsStudent;
     }
-const getStaffType=(state:State):TypeStaff | null=>{
+const getStaffType=(state:State):TypeStaff | undefined=>{
     return state.IsStaffType;
 }
 const getUserDataDetails = (state:State):UserDataDetails | null => {

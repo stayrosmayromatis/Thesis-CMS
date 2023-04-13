@@ -6,8 +6,8 @@ export const state =():State=>{
         IsAuth:false,
         IsStudent:false,
         IsTeacher:false,
-        IsStaffType:null,
-        UserDataDetails : null,
+        IsStaffType:undefined,
+        UserDataDetails : undefined,
         SeededProfessors : Array<BaseUser>()
     };
     return stateObj;

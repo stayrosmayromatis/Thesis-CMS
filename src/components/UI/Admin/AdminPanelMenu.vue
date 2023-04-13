@@ -2,11 +2,29 @@
   <div class="parent" @click="emitMobileViewClose">
     <v-card>
       <div>
-        <v-tabs v-model="tab" bg-color="#dae3f7">
+        <!-- ITS A WORK IN PROGRESS -->
+        <v-tabs v-if="isTeacher" v-model="tab" bg-color="#dae3f7">
           <div class="tab-override">
-            <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
+            <v-tab v-if="isAdmin" :value="'AdminOption'" :slider-color="'#0a369d'"
+              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override">
+              {{'Διαχειριστες'}}
+            </v-tab>
+            <v-tab v-if="!isAdmin" :value="'PeriodOption'" :slider-color="'#0a369d'"
+              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override">
+              {{'Διαχειριση Περιοδου'}}
+            </v-tab>
+            <v-tab  v-if="isAdmin" :value="'ExportOption'" :slider-color="'#0a369d'"
+              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override">
+              {{'Εξαγωγη Δηλωσεων'}}
+            </v-tab>
+            
+              <!-- <v-tab v-if="isAdmin" :value="cmp.component" :slider-color="'#0a369d'"
               :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
-              @click="sthComp">{{ cmp.name }}</v-tab>
+              @click="sthComp">{{ cmp.name }}</v-tab> -->
+            
+            <!-- <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
+              v-if="isAdmin" :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
+              @click="sthComp">{{ cmp.name }}</v-tab> -->
           </div>
         </v-tabs>
       </div>
@@ -33,6 +51,8 @@ import {
 } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
+import { useAuth } from "@/composables/useAuth.composable";
+import { TypeStaff } from "@/enums/StaffTypeEnum";
 const AdminOption = defineAsyncComponent({
   loader: () => import("@/components/UI/Admin/AdminOption.vue"),
   loadingComponent: BaseSpinner,
@@ -62,12 +82,44 @@ export default defineComponent({
   emits: ['closeMobileView'],
   setup(_, context) {
     const loadingTest = ref(true);
+    const isAdmin = ref(false);
+    const isTeacher = ref(false);
+    const { GetUserDataDetails } = useAuth();
     onMounted(() => {
       emitMobileViewClose();
+      determineIsAdmin();
+      determineIsTeacher();
+      console.log(isAdmin.value);
       setTimeout(() => {
         loadingTest.value = false;
       }, 2000);
     });
+    const determineIsAdmin = () => {
+      const details = GetUserDataDetails();
+      if(!details){
+        isAdmin.value = false;
+        return;
+      }
+      if(details?.Admin === false){
+        isAdmin.value = false;
+        return;
+      }
+      isAdmin.value = true;
+    };
+
+    const determineIsTeacher =() => {
+      const details = GetUserDataDetails();
+      if(!details){
+        isTeacher.value = false;
+        return;
+      }
+      if(details?.EduPersonAffiliation === TypeStaff.STAFF || details?.EduPersonAffiliation === TypeStaff.ADMIN){
+        isTeacher.value = true;
+        return;
+      }
+      isTeacher.value = false;
+      return;
+    }
     const component_loader = [
       {
         id: uuidv4().toString(),
@@ -95,7 +147,7 @@ export default defineComponent({
     const emitMobileViewClose = (): void => {
       context.emit('closeMobileView', true);
     }
-    return { emitMobileViewClose,tab, component_loader, loadingTest, sthComp };
+    return { emitMobileViewClose,tab, component_loader, loadingTest, sthComp ,isAdmin,isTeacher};
   },
 });
 </script>

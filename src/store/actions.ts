@@ -4,6 +4,9 @@ import { BaseUser } from "../models/BACKEND-MODELS/BaseUser";
 
 export interface StoreSth {
   authState: boolean;
+  isTeacher:boolean;
+  isStudent:boolean;
+  isAdmin : boolean;
   eduPersonAffiliation: TypeStaff;
 }
 const setAuthState = (context: any, authState: boolean) => {
@@ -13,8 +16,7 @@ const setAuthState = (context: any, authState: boolean) => {
 const setIsTeacherState = (context: any, payload: StoreSth) => {
   if (
     !payload ||
-    payload.authState === null ||
-    payload.authState === undefined ||
+    !payload.authState ||
     !payload.eduPersonAffiliation ||
     payload.eduPersonAffiliation !== TypeStaff.STAFF
   )
@@ -24,8 +26,7 @@ const setIsTeacherState = (context: any, payload: StoreSth) => {
 const setIsStudentState = (context: any, payload: StoreSth) => {
   if (
     !payload ||
-    payload.authState === null ||
-    payload.authState === undefined ||
+    !payload.authState ||
     !payload.eduPersonAffiliation ||
     payload.eduPersonAffiliation !== TypeStaff.STUDENT
   )
@@ -35,8 +36,7 @@ const setIsStudentState = (context: any, payload: StoreSth) => {
 const setIsAdminState = (context: any, payload: StoreSth) => {
   if (
     !payload ||
-    payload.authState === null ||
-    payload.authState === undefined ||
+    !payload.authState ||
     !payload.eduPersonAffiliation ||
     payload.eduPersonAffiliation !== TypeStaff.ADMIN
   )

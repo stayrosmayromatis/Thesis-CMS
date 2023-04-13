@@ -26,7 +26,7 @@
         </svg>
         <!-- IHU LOGO SVG END -->
       </div>
-      <!-- <router-link  to!>{{ title }}</router-link> -->
+      <!-- <router-link  to="">{{ title }}</router-link> -->
       <span class="span__header">{{ title }}</span>
     </div>
     <div class="mobile-logo">
@@ -84,6 +84,9 @@
           <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
             <router-link :to="{ name: 'addlab' }">Προσθήκη</router-link>
           </li>
+          <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
+            <router-link :to="{ name: 'admin' }">Διαχείριση</router-link>
+          </li>
           <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
             <router-link to="/">Επικοινωνία</router-link>
           </li>
@@ -101,7 +104,11 @@
               <path
                 d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm7.753 18.305c-.261-.586-.789-.991-1.871-1.241-2.293-.529-4.428-.993-3.393-2.945 3.145-5.942.833-9.119-2.489-9.119-3.388 0-5.644 3.299-2.489 9.119 1.066 1.964-1.148 2.427-3.393 2.945-1.084.25-1.608.658-1.867 1.246-1.405-1.723-2.251-3.919-2.251-6.31 0-5.514 4.486-10 10-10s10 4.486 10 10c0 2.389-.845 4.583-2.247 6.305z" />
             </svg>
-            <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link>
+            <!-- <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link> -->
+            <label style="text-transform: capitalize;text-decoration: none;
+    display: inline-block;
+    position: relative;
+    color: #0a369d;">{{ userName }}</label>
           </div>
           <div style="cursor: pointer" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
             <!-- ΑΠΟΣΥΝΔΕΣΗ -->
@@ -149,23 +156,30 @@ export default defineComponent({
     let title = "IHU SUBMISSIONS";
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher } = useAuth();
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher ,IsAuthenticated} = useAuth();
+
     const isLoggedIn = computed((): boolean => {
       return store.getters.IsAuth;
     });
     const userName = computed(() => {
-      return isLoggedIn.value === true ? GetUserDataDetails()?.DisplayNameEl ?? "User" : "";
+      if(!isLoggedIn.value)
+        return "You are not logged in";
+      const userDataDetails = GetUserDataDetails();
+      if(!userDataDetails ||!userDataDetails.DisplayNameEl)
+        return "User";
+      return userDataDetails.DisplayNameEl ?? "User";
     });
     const IsStaff = computed(() => {
       return isLoggedIn.value === true ? IsTeacher() : false;
     });
 
-    onMounted(() => {
+    onMounted(async () => {
       if (width.value < 769) {
         hamburgerClose.value = false;
         return;
       }
       hamburgerClose.value = true;
+      console.log(isLoggedIn.value);
     });
     // watch(closeInstantlyDirective, async () => {
     //   if (closeInstantlyDirective.value === true) {
@@ -199,7 +213,7 @@ export default defineComponent({
       }
       hamburgerClose.value = !hamburgerClose.value;
     };
-    const redirectToLogin = () => {
+    const redirectToLogin = async () => {
       router.replace({ name: "sign-in" });
     };
 
