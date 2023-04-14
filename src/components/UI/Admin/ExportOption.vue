@@ -4,7 +4,7 @@
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div v-if="!showLoadingSpinner">
       <v-card elevation="3" class="export-label"><label>{{ 'Εξαγωγη πορειας / καταστασης δηλωσεων' }}</label></v-card>
-      <div>
+      <div class="just-for-show">
         <v-expansion-panels>
           <v-expansion-panel v-for=" course of personalisedCourses" :key="course.CourseGUID">
             <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
@@ -12,19 +12,19 @@
                 <div class="export_left--chip">
                   <v-chip class="left_chip--bg" size="large">
                     <label>
-                      {{`${course.CourseCode} ${course.CourseName}`}}
+                      {{ `${course.CourseCode} ${course.CourseName}` }}
                     </label>
                   </v-chip>
                 </div>
                 <div class="export_right--chips">
                   <v-chip class="chip-attendance" size="large">
                     <label>
-                      {{course.CourseAttendanceString}}
+                      {{ course.CourseAttendanceString }}
                     </label>
                   </v-chip>
                   <v-chip class="chip-semester" size="large">
                     <label>
-                      {{semesterReformer(course.Semester)}}
+                      {{ semesterReformer(course.Semester) }}
                     </label>
                   </v-chip>
                 </div>
@@ -32,7 +32,35 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               <div class="export-panel-text-container">
-                ELA RE PETAMENE POY EISAI
+                <div class="file-input__container">
+                  <v-file-input v-model="files" placeholder="Upload your documents"
+                    label="Ανέβασμα αρχείου προς επιβεβαίωση (cross-reference)" :multiple="false" counter
+                    :counter-size-string="'Επιλέχθηκε αρχείο'" :accept="acceptableFileTypes" show-size
+                    :persistent-hint="true" :prepend-icon="''" density="comfortable"
+                    :variant="'solo'"
+                    :hint="'Μέγιστο μέγεθος αρχείου 20Kb'" :rules="validationRules" :error="errorOnFileInput"
+                    :error-messages="errorOnFileInputMessage" @click:clear="logIt" @update:model-value="logIt"
+                    validate-on="input" chips>
+                    <template v-slot:selection="{ fileNames }">
+                      <template v-for="fileName in fileNames" :key="fileName">
+                        <v-chip size="small" label color="primary" class="me-2">
+                          {{ fileName }}
+                        </v-chip>
+                      </template>
+                    </template>
+                  </v-file-input>
+                  <v-btn type="button" color="#a3cef1" elevation="4">
+                  <div class="export--button">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                      <path
+                        d="M7 13h10v1h-10v-1zm0 4h5v-1h-5v1zm15-17v14.386c0 2.391-6.648 9.614-9.811 9.614h-10.189v-24h20zm-2 13.543v-6.543h-16v15h7.362c4.156 0 2.638-6 2.638-6s6 1.65 6-2.457zm-13-2.543h10v-1h-10v1z" />
+                    </svg> -->
+                    <label>
+                      Ανεβασμα
+                    </label>
+                  </div>
+                </v-btn>
+                </div>
                 <v-btn type="button" color="#a3cef1" elevation="4">
                   <div class="export--button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -54,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
@@ -68,7 +96,6 @@ import { ApiResult } from '@/models/DTO/ApiResult';
 import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } from '@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse';
 import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
 import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
-
 export default defineComponent({
   components: {
     BaseDialog,
@@ -81,16 +108,50 @@ export default defineComponent({
     const showLoadingSpinner = ref(false);
     const personalisedCourses = ref(new Array<PersonalisedCourseBySemester>());
     const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
-    const {scrollToTop} = useTimeObjectExtensions();
+    const { scrollToTop } = useTimeObjectExtensions();
     const { setBackendInstanceAuth } = useAxiosInstance();
+    const files = ref(new Array<globalThis.File>());
+    const errorOnFileInput = ref(false);
+    const errorOnFileInputMessage = ref("");
+    const validationRules = [
+      (value: Array<globalThis.File>) => {
+        if (!value) {
+          errorOnFileInput.value = true;
+          errorOnFileInputMessage.value = "Δεν έχετε εισάγει αρχείο"
+          return false;
+        }
+        if (!value.length) {
+          errorOnFileInput.value = true;
+          errorOnFileInputMessage.value = "Δεν έχετε εισάγει αρχείο"
+          return false;
+        }
+        if (value[0].size > 21000) {
+          errorOnFileInput.value = true;
+          errorOnFileInputMessage.value = "Υπέρβαση επιτρεπόμενου ορίου των 20 kB"
+          return false;
+        }
+        console.dir(value);
+        return true;
+      }
+    ];
+    const acceptableFileTypes = [
+      "application/vnd.ms-excel",
+      "application/msexcel",
+      "application/x-msexcel",
+      "application/x-ms-excel",
+      "application/x-excel",
+      "application/x-dos_ms_excel",
+      "application/xls",
+      "application/x-xls",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ]
     onMounted(async () => {
       emitMobileViewClose();
       closeAlert(1000);
       showLoadingSpinner.value = true;
       const getMyCoursesIDT = await GetMyCoursesCall();
       showLoadingSpinner.value = false;
-      if(!getMyCoursesIDT.Status)
-      {
+      if (!getMyCoursesIDT.Status) {
         closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία ανάκτησης μαθημάτων");
@@ -99,15 +160,15 @@ export default defineComponent({
         closeAlert(1000);
         return;
       }
-        closeAlert(1000);
-        setTypeOfAlert('success');
-        openAlert("Επιτυχία ανάκτησης μαθημάτων");
-        scrollToTop();
-        await delay(1500);
-        closeAlert(1000);
+      closeAlert(1000);
+      setTypeOfAlert('success');
+      openAlert("Επιτυχία ανάκτησης μαθημάτων");
+      scrollToTop();
+      await delay(1500);
+      closeAlert(1000);
     });
 
-    const GetMyCoursesCall = async ():Promise<InternalDataTransfter<boolean>> => {
+    const GetMyCoursesCall = async (): Promise<InternalDataTransfter<boolean>> => {
       const getMyCoursesCall = await useAxios(
         CourseController + "get-my-courses",
         {
@@ -115,15 +176,15 @@ export default defineComponent({
         },
         setBackendInstanceAuth()
       );
-      if(getMyCoursesCall.isFinished){
-        const getMyCoursesResponse : ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
-        if(!getMyCoursesResponse || !getMyCoursesResponse.Status || !getMyCoursesResponse.Data || !getMyCoursesResponse.Data.PersonalisedCourses || !getMyCoursesResponse.Data.Count){
-          return {Status:false,Data:false,Error:"API Error"};
+      if (getMyCoursesCall.isFinished) {
+        const getMyCoursesResponse: ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
+        if (!getMyCoursesResponse || !getMyCoursesResponse.Status || !getMyCoursesResponse.Data || !getMyCoursesResponse.Data.PersonalisedCourses || !getMyCoursesResponse.Data.Count) {
+          return { Status: false, Data: false, Error: "API Error" };
         }
         personalisedCourses.value = getMyCoursesResponse.Data.PersonalisedCourses;
-        return {Status:true,Data:true};
+        return { Status: true, Data: true };
       }
-      return {Status:false,Data:false,Error:"Request didn't finish"}
+      return { Status: false, Data: false, Error: "Request didn't finish" }
     }
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
@@ -162,7 +223,16 @@ export default defineComponent({
           return "N/A";
       }
     };
-    return { emitMobileViewClose,showLoadingSpinner,personalisedCourses,showAlert, alertTitle, typeOfAlert,semesterReformer}
+    const logIt = () => {
+      if (errorOnFileInput.value === true) {
+        errorOnFileInput.value = false;
+        errorOnFileInputMessage.value = "";
+      }
+    };
+    const logAppend = () => {
+      console.log("Click append now");
+    }
+    return { logAppend, logIt, emitMobileViewClose, showLoadingSpinner, personalisedCourses, showAlert, alertTitle, typeOfAlert, semesterReformer, files, acceptableFileTypes, validationRules, errorOnFileInput, errorOnFileInputMessage }
   }
 
 });
@@ -203,7 +273,8 @@ export default defineComponent({
   word-break: break-word;
 }
 
-.export-panel-title-container,.export-panel-text-container {
+.export-panel-title-container,
+.export-panel-text-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -212,6 +283,7 @@ export default defineComponent({
   gap: 1rem;
   padding: 0 0.5rem
 }
+
 .export_left--chip {}
 
 .export_right--chips {
@@ -289,8 +361,21 @@ export default defineComponent({
   gap: 0.5rem;
 }
 
+.just-for-show :deep(.v-expansion-panel-text__wrapper) {
+  padding: 1rem 0.5rem;
+}
+.file-input__container{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
 @media (min-width: 769px) {
-  .export-panel-title-container,.export-panel-text-container {
+
+  .export-panel-title-container,
+  .export-panel-text-container {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -320,6 +405,14 @@ export default defineComponent({
     line-height: 1.3rem;
     white-space: normal;
   }
+  .file-input__container{
+    width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
 }
 
 @media (min-width: 1025px) {}

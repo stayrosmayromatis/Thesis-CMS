@@ -7,8 +7,8 @@
       :inner-description="confirmDeletionInnerDescription"
       @close-modal="showConfirmDeletionModal = false"
     ></base-dialog>
+    <!-- elevation="5" -->
     <v-card
-      elevation="5"
       class="card-item"
       :class="{ 'gray-out': IsAssistant }"
     >
@@ -332,9 +332,8 @@ export default defineComponent({
 
 <style scoped>
 .card {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
   min-width: 320px;
+  margin: 0.5rem 0.3rem;
 }
 
 .card-item {
@@ -345,6 +344,8 @@ export default defineComponent({
   flex-wrap: wrap;
   padding: 0;
   min-width: 320px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-radius: 12px;
 }
 
 .spacer {

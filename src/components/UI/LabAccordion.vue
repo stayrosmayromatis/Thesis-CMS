@@ -509,7 +509,17 @@ export default defineComponent({
   user-select: none;
   margin-inline-start: auto;
 }
-
+.sth-container :deep(.v-field__clearable) , :deep(.v-field__append-inner){
+    padding-top: 0; 
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.sth-container :deep(.v-field__input){
+  padding-bottom: 6px;
+}
 .parent-label {
   margin-bottom: 1rem;
   display: flex;

@@ -6,7 +6,7 @@
         <v-tabs v-if="isTeacher" v-model="tab" bg-color="#dae3f7">
           <div class="tab-override">            
             <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
-              :stacked="true" :loading="loadingTest" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
+              :stacked="true" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
               >{{ cmp.name }}</v-tab> 
           </div>
         </v-tabs>
@@ -31,6 +31,7 @@ import {
   ref,
   onMounted,
   defineAsyncComponent,
+Ref,
 } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
@@ -64,18 +65,26 @@ export default defineComponent({
   },
   emits: ['closeMobileView'],
   setup(_, context) {
-    const loadingTest = ref(true);
     const isAdmin = ref(false);
     const isTeacher = ref(false);
     const { GetUserDataDetails } = useAuth();
+    const tab = ref();
+    const component_loader:Ref<Array<{
+      id: string,
+        name: string,
+        component: string,
+    }> >= ref([
+      {
+        id: uuidv4().toString(),
+        name: "Εξαγωγη Δηλωσεων",
+        component: "ExportOption",
+      },
+    ]);
     onMounted(() => {
       emitMobileViewClose();
       determineIsAdmin();
       determineIsTeacher();
       addTheAdminComponent();
-      setTimeout(() => {
-        loadingTest.value = false;
-      }, 2000);
     });
     const determineIsAdmin = () => {
       const details = GetUserDataDetails();
@@ -104,38 +113,23 @@ export default defineComponent({
     };
     const addTheAdminComponent = () => {
       if(isAdmin.value == true){
-        component_loader.push({
+        component_loader.value = [...component_loader.value,{
           id: uuidv4().toString(),
           name: "Διαχειριση Περιοδου",
-          value: 3,
           component: "PeriodOption",  
-        });
-      }
-    };
-    const component_loader:Array<{
-      id: string,
-        name: string,
-        value: number,
-        component: string,
-    }> = [
-      {
+        },{
         id: uuidv4().toString(),
         name: "Διαχειριστες",
-        value: 1,
         component: "AdminOption",
-      },
-      {
-        id: uuidv4().toString(),
-        name: "Εξαγωγη Δηλωσεων",
-        value: 2,
-        component: "ExportOption",
-      },
-    ];
-    const tab = ref();
+      }];
+      }
+    };
+  
+   
     const emitMobileViewClose = (): void => {
       context.emit('closeMobileView', true);
     }
-    return { emitMobileViewClose,tab, component_loader, loadingTest ,isAdmin,isTeacher};
+    return { emitMobileViewClose,tab, component_loader ,isAdmin,isTeacher};
   },
 });
 </script>

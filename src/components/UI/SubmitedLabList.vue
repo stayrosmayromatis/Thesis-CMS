@@ -11,13 +11,16 @@
     <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle">
     </base-alert>
     <div class="parent-card">
-      <v-card elevation="5" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
 
-      <base-result-empty :show="showLabsNotFound" :title="showEmptyResultTitle" :description="showEmptyResultDescription"></base-result-empty>
+      <v-card elevation="10" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
+
+      <base-result-empty :show="showLabsNotFound" :title="showEmptyResultTitle"
+        :description="showEmptyResultDescription"></base-result-empty>
       <base-spinner :show="showSpinner"></base-spinner>
 
       <div v-if="!showLabsNotFound">
-        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab" :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
+        <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab"
+          :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
         <div class="pdf-button">
           <v-btn color="#ff5454" @click="pushToPdf">
             <svg style="margin-right: 0.3rem;" fill="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
@@ -55,7 +58,7 @@ import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 export default defineComponent({
   components: {
     SubmitedLab,
-  //  BaseDialog,
+    //  BaseDialog,
     PdfContent,
     BaseAlert,
     BaseResultEmpty,
@@ -66,9 +69,9 @@ export default defineComponent({
     //const isError = false;
     const showLabsNotFound = ref(false);
     const showSpinner = ref(false);
-    const showEmptyResultTitle =ref("");
-    const showEmptyResultDescription =ref("");
-    const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert,setTypeOfAlert } = useAlert();
+    const showEmptyResultTitle = ref("");
+    const showEmptyResultDescription = ref("");
+    const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const sLabs = ref(new Array<SubmittedLab>());
     const personAffiliation = ref(PersonAffiliation.STUDENT);
     const { setBackendInstanceAuth } = useAxiosInstance();
@@ -109,29 +112,29 @@ export default defineComponent({
         const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
         if (getInfoData.Status === false || !getInfoData.Status) {
           showSpinner.value = false;
-          showEmptyResultTitle.value="Δεν βρέθηκαν δηλωμένα εργαστήρια";
-          showEmptyResultDescription.value="Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+          showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+          showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
           return;
         }
         if (!getInfoData.Data || getInfoData.Data.Count === 0 || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
           showLabsNotFound.value = true;
-          showEmptyResultTitle.value="Δεν βρέθηκαν δηλωμένα εργαστήρια";
-          showEmptyResultDescription.value="Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+          showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+          showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
           showSpinner.value = false;
           return;
         }
         sLabs.value = getInfoData.Data.SubmittedLabs;
         personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
         showSpinner.value = false;
-        if(byInternalCall === true){
-          if(showAlert.value === true){
+        if (byInternalCall === true) {
+          if (showAlert.value === true) {
             closeAlert();
           }
           setTypeOfAlert('success');
           openAlert("Επιτυχία διαγραφής ");
           setTimeout(() => {
             closeAlert();
-          },1500);
+          }, 1500);
         }
         console.log(sLabs.value);
         console.log(personAffiliation.value);
@@ -176,6 +179,7 @@ export default defineComponent({
   font-weight: 500;
   background-color: #aacaf3;
   padding: 1.2rem;
+  margin-bottom: 1.2rem;
 }
 
 .dialog-header {
@@ -204,6 +208,12 @@ export default defineComponent({
   font-size: 1rem;
   height: 2.5rem;
 }
+:deep(.v-btn--elevated:hover) {
+  box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)), 
+  0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)), 
+  0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+}
+
 
 @media (min-width: 769px) {
   .parent-card {
