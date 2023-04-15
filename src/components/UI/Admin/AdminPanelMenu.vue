@@ -38,19 +38,19 @@ import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import { useAuth } from "@/composables/useAuth.composable";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
 const AdminOption = defineAsyncComponent({
-  loader: () => import("@/components/UI/Admin/AdminOption.vue"),
+  loader: () => import("@/components/UI/Admin/AdminOptions/AdminOption.vue"),
   loadingComponent: BaseSpinner,
   delay: 10,
   suspensible: true
 });
 const ExportOption = defineAsyncComponent({
-  loader: () => import("@/components/UI/Admin/ExportOption.vue"),
+  loader: () => import("@/components/UI/Admin/ExportOptions/ExportOption.vue"),
   loadingComponent: BaseSpinner,
   delay: 10,
   suspensible: true
 });
 const PeriodOption = defineAsyncComponent({
-  loader: () => import("@/components/UI/Admin/PeriodOption.vue"),
+  loader: () => import("@/components/UI/Admin/PeriodOptions/PeriodOption.vue"),
   loadingComponent: BaseSpinner,
   delay: 10,
   suspensible: true
