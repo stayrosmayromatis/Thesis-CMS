@@ -33,7 +33,7 @@
 <script lang="ts">
 import { LabSemesterEnum } from '@/enums/LabSemesterEnum';
 import { PersonalisedCourseBySemester } from '@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse';
-import { PropType, defineComponent, ref, toRefs } from 'vue';
+import { PropType, defineComponent, toRefs } from 'vue';
 import ExpansionPanelTextExportOption from '@/components/UI/Admin/ExportOptions/ExpansionPanelTextExportOption.vue';
 export default defineComponent({
     props: {
@@ -88,7 +88,6 @@ export default defineComponent({
 .export-panel-export-option__parent {
     width: 100%;
 }
-
 .export-panel-title-container {
     display: flex;
     flex-direction: column;
@@ -98,8 +97,6 @@ export default defineComponent({
     gap: 1rem;
     padding: 0 0.5rem
 }
-
-
 .export_left--chip {}
 
 .export_right--chips {
@@ -110,7 +107,6 @@ export default defineComponent({
     align-items: center;
     gap: 1rem;
 }
-
 .left_chip--bg {
     background: #f7f7f7;
     border: 1px solid #1c4397;
@@ -119,7 +115,6 @@ export default defineComponent({
     height: fit-content;
     padding: 0.3rem 2rem;
 }
-
 .left_chip--bg>label {
     font-size: 1.1rem;
     word-wrap: break-word;
@@ -132,7 +127,6 @@ export default defineComponent({
     letter-spacing: 0.05rem;
     line-height: 1.1rem;
 }
-
 .chip-attendance {
     background: #f7f7f7;
     border: 1px solid #00c900;
@@ -146,7 +140,6 @@ export default defineComponent({
     padding: 0.5rem 0.5rem;
     min-width: 8rem;
 }
-
 .chip-semester {
     background: #f7f7f7;
     border: 1px solid #0136e6;
@@ -160,16 +153,12 @@ export default defineComponent({
     padding: 0.5rem 0.5rem;
     min-width: 8rem;
 }
-
 .chip-attendance,
 .chip-semester>label {
     text-align: center;
     font-size: 1.1rem;
 }
-
-
 @media (min-width: 769px) {
-
     .export-panel-title-container {
         flex-direction: row;
         justify-content: space-between;
@@ -177,14 +166,12 @@ export default defineComponent({
         width: 100%;
         gap: 0;
     }
-
     .export_right--chips {
         justify-content: flex-end;
         align-items: center;
         gap: 1rem;
 
     }
-
     /* .left_chip--bg {
     background: #f7f7f7;
     border: 1px solid #1c4397;

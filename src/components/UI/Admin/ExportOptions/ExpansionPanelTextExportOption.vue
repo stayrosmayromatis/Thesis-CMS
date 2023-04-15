@@ -3,7 +3,7 @@
         <div class="theory-precedes__container">
             <label>Εχουν προηγηθεί οι δηλώσεις θεωρίας;</label>
             <span>
-                <!-- v-model="cantFindTeacherFlag" -->
+
                 <v-switch color="primary" v-model="theoryPrecedesFlag" :value="true" hide-details></v-switch>
             </span>
 
@@ -195,8 +195,7 @@ export default defineComponent({
     border: 1px solid #00c900;
     color: #00C900;
 }
-
-:deep .file-input__container {
+.file-input__container {
     width: 100%;
     display: flex;
     flex-direction: row;
