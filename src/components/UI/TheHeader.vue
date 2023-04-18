@@ -4,12 +4,12 @@
       <div class="svg-center">
         <!-- IHU LOGO SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50" height="50" version="1.1" style="
-                shape-rendering: geometricPrecision;
-                text-rendering: geometricPrecision;
-                image-rendering: optimizeQuality;
-                fill-rule: evenodd;
-                clip-rule: evenodd;
-              " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  shape-rendering: geometricPrecision;
+                  text-rendering: geometricPrecision;
+                  image-rendering: optimizeQuality;
+                  fill-rule: evenodd;
+                  clip-rule: evenodd;
+                " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="Layer_x0020_1">
             <metadata id="CorelCorpID_0Corel-Layer" />
             <path class="fil0"
@@ -48,12 +48,12 @@
       <router-link to="/">{{ title }}</router-link>
       <!-- IHU LOGO SVG -->
       <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50" height="40" version="1.1" style="
-              shape-rendering: geometricPrecision;
-              text-rendering: geometricPrecision;
-              image-rendering: optimizeQuality;
-              fill-rule: evenodd;
-              clip-rule: evenodd;
-            " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
+                shape-rendering: geometricPrecision;
+                text-rendering: geometricPrecision;
+                image-rendering: optimizeQuality;
+                fill-rule: evenodd;
+                clip-rule: evenodd;
+              " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Layer_x0020_1">
           <metadata id="CorelCorpID_0Corel-Layer" />
           <path class="fil0"
@@ -100,31 +100,34 @@
           </div>
 
           <div class="nav__item--cta" v-if="isLoggedIn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path
                 d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm7.753 18.305c-.261-.586-.789-.991-1.871-1.241-2.293-.529-4.428-.993-3.393-2.945 3.145-5.942.833-9.119-2.489-9.119-3.388 0-5.644 3.299-2.489 9.119 1.066 1.964-1.148 2.427-3.393 2.945-1.084.25-1.608.658-1.867 1.246-1.405-1.723-2.251-3.919-2.251-6.31 0-5.514 4.486-10 10-10s10 4.486 10 10c0 2.389-.845 4.583-2.247 6.305z" />
+            </svg> -->
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="8" r="2.1" fill="currentColor" opacity=".3"/><path fill="currentColor" d="M12 14.9c-2.97 0-6.1 1.46-6.1 2.1v1.1h12.2V17c0-.64-3.13-2.1-6.1-2.1z" opacity=".3"/><path fill="currentColor" d="M12 13c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4zm6.1 5.1H5.9V17c0-.64 3.13-2.1 6.1-2.1s6.1 1.46 6.1 2.1v1.1zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4zm0-6.1a2.1 2.1 0 1 1 0 4.2a2.1 2.1 0 0 1 0-4.2z"/></svg> -->
+            <!-- LOGGED IN USER ICON SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+              <path fill="currentColor"
+                d="M5.85 17.1q1.275-.975 2.85-1.538T12 15q1.725 0 3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4Q8.675 4 6.337 6.337T4 12q0 1.475.488 2.775T5.85 17.1ZM12 13q-1.475 0-2.488-1.012T8.5 9.5q0-1.475 1.012-2.488T12 6q1.475 0 2.488 1.012T15.5 9.5q0 1.475-1.012 2.488T12 13Zm0 9q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q1.325 0 2.5-.388t2.15-1.112q-.975-.725-2.15-1.113T12 17q-1.325 0-2.5.388T7.35 18.5q.975.725 2.15 1.113T12 20Zm0-9q.65 0 1.075-.425T13.5 9.5q0-.65-.425-1.075T12 8q-.65 0-1.075.425T10.5 9.5q0 .65.425 1.075T12 11Zm0-1.5Zm0 9Z" />
             </svg>
+            <!-- LOGGED IN USER ICON SVG -->
             <!-- <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link> -->
             <label style="text-transform: capitalize;text-decoration: none;
-    display: inline-block;
-    position: relative;
-    color: #0a369d;">{{ userName }}</label>
+      display: inline-block;
+      position: relative;
+      color: #0a369d;">{{ userName }}</label>
           </div>
           <div style="cursor: pointer" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
             <!-- ΑΠΟΣΥΝΔΕΣΗ -->
 
             <v-tooltip text="Αποσύνδεση" location="bottom">
               <template v-slot:activator="{ props }">
-                <svg v-bind="props" fill="#000000" height="30" width="30" version="1.1" id="XMLID_173_"
-                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 26"
-                  xml:space="preserve">
-                  <g id="logout">
-                    <g>
-                      <path
-                        d="M15,24H0V2h15v8h-2V4H2v18h11v-6h2V24z M18.4,18.7L17,17.3l3.3-3.3H5v-2h15.3L17,8.7l1.4-1.4L24,13L18.4,18.7z" />
-                    </g>
-                  </g>
+                <!-- LOGOUT SVG -->
+                <svg v-bind="props" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M5 5h7V3H3v18h9v-2H5z" />
+                  <path fill="currentColor" d="m21 12l-4-4v3H9v2h8v3z" />
                 </svg>
+                <!-- LOGOUT SVG -->
               </template>
             </v-tooltip>
           </div>
@@ -135,7 +138,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted, defineComponent, ref,computed, toRefs } from "vue";
+import { onMounted, defineComponent, ref, computed, toRefs } from "vue";
 import { computedEager, useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth.composable";
@@ -156,16 +159,16 @@ export default defineComponent({
     let title = "IHU SUBMISSIONS";
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher ,IsAuthenticated} = useAuth();
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated } = useAuth();
 
     const isLoggedIn = computed((): boolean => {
       return store.getters.IsAuth;
     });
     const userName = computed(() => {
-      if(!isLoggedIn.value)
+      if (!isLoggedIn.value)
         return "You are not logged in";
       const userDataDetails = GetUserDataDetails();
-      if(!userDataDetails ||!userDataDetails.DisplayNameEl)
+      if (!userDataDetails || !userDataDetails.DisplayNameEl)
         return "User";
       return userDataDetails.DisplayNameEl ?? "User";
     });
@@ -589,5 +592,4 @@ a::after {
     gap: 0.5rem;
     margin: 0 0.5rem;
   }
-}
-</style>
+}</style>

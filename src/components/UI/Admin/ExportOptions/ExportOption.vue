@@ -122,7 +122,7 @@ export default defineComponent({
   height: fit-content;
   min-width: 320px;
   background-color: #dae3f7;
-  padding: 1rem 0.2rem;
+  padding: 1rem 0.5rem;
   margin-bottom: 1rem;
 }
 

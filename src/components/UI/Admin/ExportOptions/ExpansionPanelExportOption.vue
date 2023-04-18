@@ -28,7 +28,7 @@
                 </div>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-                <expansion-panel-text-export-option :course_code="course.CourseCode"></expansion-panel-text-export-option>
+                <expansion-panel-text-export-option :course_code="course.CourseCode" :course_guid="course.CourseGUID"></expansion-panel-text-export-option>
             </v-expansion-panel-text>
         </v-expansion-panel>
     </div>
