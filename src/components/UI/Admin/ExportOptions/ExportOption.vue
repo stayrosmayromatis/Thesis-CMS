@@ -7,9 +7,9 @@
       <div class="just-for-show">
         <v-expansion-panels>
           <div class="expansion-panel-export-option__container">
-              <expansion-panel-export-option v-for=" course of personalisedCourses" :key="course.CourseGUID"
-                :course="course">
-              </expansion-panel-export-option>
+            <expansion-panel-export-option v-for=" course of personalisedCourses" :key="course.CourseGUID"
+              :course="course">
+            </expansion-panel-export-option>
           </div>
         </v-expansion-panels>
       </div>
@@ -104,12 +104,11 @@ export default defineComponent({
 
 <style scoped>
 .export-parent {
-  min-width: 390px;
+  min-width: 320px; 
   padding: 0;
   margin: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
-  width: inherit;
   justify-content: flex-start;
   align-items: inherit;
 }
@@ -123,7 +122,7 @@ export default defineComponent({
   height: fit-content;
   min-width: 320px;
   background-color: #dae3f7;
-  padding: 1rem 0;
+  padding: 1rem 0.2rem;
   margin-bottom: 1rem;
 }
 
