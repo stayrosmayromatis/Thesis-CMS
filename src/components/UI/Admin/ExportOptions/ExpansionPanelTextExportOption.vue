@@ -49,7 +49,8 @@
             <v-tooltip :location="'bottom center'" :text="`Λήψη αρχείου δηλώσεων του ${course_code.trim()} `">
                 <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" type="button" class="export--button__override" density="default" rounded
-                        @click="downloadExportFile">
+                    @click.left="serveTheFileRaw"
+                    >
                         <div class="export--button" style="cursor: pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -68,13 +69,14 @@
 
 <script lang="ts">
 import { useAxiosInstance } from '@/composables/useInstance.composable';
-import { InfoController } from '@/config';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAxios } from '@vueuse/integrations/useAxios';
+import { useAlert } from '@/composables/showAlert.composable';
 import { toRefs } from 'vue';
 import { computed, defineComponent, ref } from 'vue';
-import { createWriteStream } from 'fs';
-import { useAlert } from '@/composables/showAlert.composable';
+import { InfoController } from '@/config';
+
+
 export default defineComponent({
     props: {
         course_code: {
@@ -91,13 +93,13 @@ export default defineComponent({
     setup(props) {
         const files = ref(new Array<globalThis.File>());
         const { course_guid, course_code } = toRefs(props);
-        const { closeAlert, setTypeOfAlert, openAlert } = useAlert();
+        // const { closeAlert, setTypeOfAlert, openAlert } = useAlert();
         const theoryPrecedesFlag = ref(false);
         const errorOnFileInput = ref(false);
         const errorOnFileInputMessage = ref("");
         const counterSizeString = ref("Επιλέχθηκε αρχείο");
-        const fileInputHint = ref('Μέγιστο μέγεθος αρχείου 20Kb, επιτρεπόμενα αρχεία .xls, .xlsx');
-        const { setBackendInstanceAuth } = useAxiosInstance();
+        const fileInputHint = ref('Μέγιστο μέγεθος αρχείου 35Kb, επιτρεπόμενα αρχεία .xls, .xlsx');
+        // const { setBackendInstanceAuth } = useAxiosInstance();
         const validationRules = [
             (value: Array<globalThis.File>) => {
                 if (!value) {
@@ -122,13 +124,12 @@ export default defineComponent({
                     counterSizeString.value = "Επιλέχθηκε λάθος αρχείο";
                     return false;
                 }
-                if (value[0].size > 21000) {
+                if (value[0].size > 35000) {
                     errorOnFileInput.value = true;
-                    errorOnFileInputMessage.value = "Μέγιστο επιτρεπόμενο όριο 20 kB";
+                    errorOnFileInputMessage.value = "Μέγιστο επιτρεπόμενο όριο 35 kB";
                     counterSizeString.value = "Επιλέχθηκε λάθος αρχείο";
                     return false;
                 }
-                console.dir(value);
                 fileInputHint.value = "Έτοιμο προς μεταφόρτωση";
                 counterSizeString.value = "Επιλέχθηκε σωστό αρχείο";
                 return true;
@@ -154,92 +155,100 @@ export default defineComponent({
         const fileInputError = computed(() => {
             return errorOnFileInput.value || !files.value || !files.value.length;
         });
-        const downloadExportFile = async () => {
-            closeAlert();
-            const downloadExportIDT = await DownloadExportFileRequest();
-            if (!downloadExportIDT.Status) {
-                setTypeOfAlert('error');
-                openAlert(downloadExportIDT.Error!);
-                closeAlert(2000);
-                return;
-            }
-            setTypeOfAlert('success');
-            openAlert('Επιτυχία λήψης');
-            closeAlert(2000);
+        // const downloadExportFile = async () => {
+        //     closeAlert();
+        //     const downloadExportIDT = await DownloadExportFileRequest();
+        //     if (!downloadExportIDT.Status) {
+        //         setTypeOfAlert('error');
+        //         openAlert(downloadExportIDT.Error!);
+        //         closeAlert(2000);
+        //         return;
+        //     }
+        //     setTypeOfAlert('success');
+        //     openAlert('Επιτυχία λήψης');
+        //     closeAlert(2000);
+        // };
+        // const DownloadExportFileRequest = async (): Promise<InternalDataTransfter<boolean>> => {
+        //     const downloadExportFileRequest = await useAxios(
+        //         InfoController + `serve-item/${course_guid.value}`,
+        //         {
+        //             method: "GET"
+        //         },
+        //         setBackendInstanceAuth()
+        //     );
+           
+
+        //     if (downloadExportFileRequest.isFinished) {
+        //         if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
+        //             return { Status: false, Data: false, Error: "Δεν βρέθηκε ο πόρος" };
+        //         ///FOR SOME REASON THE DOCUMENT DOWNLOADS AS CORRUTED
+        //         // console.log(downloadExportFileRequest.response.value?.headers['content-disposition']);
+
+
+        //         const headerLine = downloadExportFileRequest.response.value?.headers['content-disposition'];
+        //         const startFileNameIndex = headerLine.indexOf('"') + 1
+        //         const endFileNameIndex = headerLine.lastIndexOf('"');
+        //         const filename = headerLine.substring(startFileNameIndex, endFileNameIndex).split(';')[0].replaceAll('"', '').replaceAll(' ', '');
+        //         const blob = new Blob([downloadExportFileRequest.data.value], { type: downloadExportFileRequest.response.value?.headers['content-type'] });
+        //         console.log(blob);
+        //         const url = window['URL'].createObjectURL(blob);
+        //         const a = document.createElement('a');
+        //         a.href = url;
+        //         //a.
+        //         a.download = filename;
+        //         a.click();
+        //         window['URL'].revokeObjectURL(url);
+        //         return { Status: true, Data: true };
+        //     }
+        //     // const saveFile = async (blob, suggestedName) => {
+        //     //     // Feature detection. The API needs to be supported
+        //     //     // and the app not run in an iframe.
+        //     //     const supportsFileSystemAccess =
+        //     //         'showSaveFilePicker' in window &&
+        //     //         (() => {
+        //     //             try {
+        //     //                 return window.self === window.top;
+        //     //             } catch {
+        //     //                 return false;
+        //     //             }
+        //     //         })();
+        //     //     // If the File System Access API is supported…
+        //     //     if (supportsFileSystemAccess) {
+        //     //         try {
+        //     //             // Show the file save dialog.
+        //     //             const handle = await window.showSaveFilePicker({
+        //     //                 suggestedName,
+        //     //             });
+        //     //             // Write the blob to the file.
+        //     //             const writable = await handle.createWritable();
+        //     //             await writable.write(blob);
+        //     //             await writable.close();
+        //     //             return;
+        //     //         } catch (err) {
+        //     //             // Fail silently if the user has simply canceled the dialog.
+        //     //             if (err.name !== 'AbortError') {
+        //     //                 console.error(err.name, err.message);
+        //     //                 return;
+        //     //             }
+        //     //         }
+        //     //     }
+
+        //     // return { Status: false, Data: false, Error: "Σφάλμα δεν βρέθηκε ο πόρος" };
+        //     // };
+        // };
+
+        const serveTheFileRaw = () => {
+            const a_tag = document.createElement('a');    
+            a_tag.href = `${import.meta.env.VITE_BACK_END_URI}${InfoController}serve-item/${course_guid.value}`;
+            a_tag.click();
+        }
+        return {
+            theoryPrecedesFlag, files, validationRules, errorOnFileInput, errorOnFileInputMessage,
+            acceptableFileTypes, counterSizeString, fileInputHint, fileInputError, 
+            logIt, logAppend,serveTheFileRaw
         }
 
-        const DownloadExportFileRequest = async (): Promise<InternalDataTransfter<boolean>> => {
-            const downloadExportFileRequest = await useAxios(
-                InfoController + `serve-item/${course_guid.value}`,
-                {
-                    method: "GET"
-                },
-                setBackendInstanceAuth()
-            );
-            if (downloadExportFileRequest.isFinished) {
-                if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
-                    return { Status: false, Data: false, Error: "Δεν βρέθηκε ο πόρος" };
-                ///FOR SOME REASON THE DOCUMENT DOWNLOADS AS CORRUTED
-                // console.log(downloadExportFileRequest.response.value?.headers['content-disposition']);
-
-
-                const headerLine = downloadExportFileRequest.response.value?.headers['content-disposition'];
-                const startFileNameIndex = headerLine.indexOf('"') + 1
-                const endFileNameIndex = headerLine.lastIndexOf('"');
-                const filename = headerLine.substring(startFileNameIndex, endFileNameIndex).split(';')[0].replaceAll('"', '').replaceAll(' ', '');
-                const blob = new Blob([downloadExportFileRequest.data.value], { type: downloadExportFileRequest.response.value?.headers['content-type'] });
-                console.log(blob);
-                const url = window['URL'].createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.
-                    a.download = filename;
-                a.click();
-                window['URL'].revokeObjectURL(url);
-                return { Status: true, Data: true };
-            }
-            const saveFile = async (blob, suggestedName) => {
-                // Feature detection. The API needs to be supported
-                // and the app not run in an iframe.
-                const supportsFileSystemAccess =
-                    'showSaveFilePicker' in window &&
-                    (() => {
-                        try {
-                            return window.self === window.top;
-                        } catch {
-                            return false;
-                        }
-                    })();
-                // If the File System Access API is supported…
-                if (supportsFileSystemAccess) {
-                    try {
-                        // Show the file save dialog.
-                        const handle = await window.showSaveFilePicker({
-                            suggestedName,
-                        });
-                        // Write the blob to the file.
-                        const writable = await handle.createWritable();
-                        await writable.write(blob);
-                        await writable.close();
-                        return;
-                    } catch (err) {
-                        // Fail silently if the user has simply canceled the dialog.
-                        if (err.name !== 'AbortError') {
-                            console.error(err.name, err.message);
-                            return;
-                        }
-                    }
-                }
-
-                return { Status: false, Data: false, Error: "Σφάλμα δεν βρέθηκε ο πόρος" };
-            };
-            return {
-                theoryPrecedesFlag, files, validationRules, errorOnFileInput, errorOnFileInputMessage,
-                acceptableFileTypes, counterSizeString, fileInputHint, fileInputError, downloadExportFile,
-                logIt, logAppend
-            }
-        }
-    });
+    }});
 </script>
 
 <style scoped>
