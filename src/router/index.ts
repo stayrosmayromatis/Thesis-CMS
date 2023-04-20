@@ -33,7 +33,8 @@ const routes: Array<RouteRecordRaw> = [
     path : "/lab-list",
     name : 'labList',
     component : () => import('@/components/UI/LabAccordion.vue'),
-    meta : {requiresAuth :true}
+    meta : {requiresAuth :true,requiredPeriodInitialized : true},
+    beforeEnter : [protectPeriodInitializedRoutes]
   },
   {
     path : "/submitted-labs",
@@ -45,14 +46,19 @@ const routes: Array<RouteRecordRaw> = [
     path : "/add-lab",
     name : 'addlab',
     component :  import('@/components/UI/AddLab.vue'),
-    meta : {requiresAuth :true,requiresIsTeacher : true}
+    meta : {requiresAuth :true,requiresIsTeacher : true,requiredPeriodInitialized : false},
+    beforeEnter:[protectTeacherRoutes,protectPeriodInitializedRoutes]
   },
   {
     path : "/enroll-in-department/:course_guid",
     name : 'enroll',
     component : () => import('@/components/UI/DepartmentCardsList.vue'),
     props : true,
-    meta : {requiresAuth :true,requiresIsTeacher : false}
+    meta : {requiresAuth :true
+     // ,requiresIsTeacher : false
+    }
+    ,
+    //beforeEnter:[protectTeacherRoutes]
   },
   {
     path : "/administration",
@@ -117,5 +123,26 @@ async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocatio
   }
   next({name:'submittedLabs'});
   
+}
+
+async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
+  const {GetPeriodInfo} = useAuth();
+  const periodInfo = GetPeriodInfo();
+  if(to.meta.requiredPeriodInitialized === true && (!periodInfo || !periodInfo.IsPeriodActive)){
+    next({name:'submittedLabs'});
+    return;
+  }
+  if(to.meta.requiredPeriodInitialized === false && periodInfo?.IsPeriodActive ){
+    next({name:'submittedLabs'});
+    return;
+  }
+  if(to.meta.requiredPeriodInitialized === true && periodInfo?.IsPeriodActive){
+    next();
+    return;
+  }
+  if(to.meta.requiredPeriodInitialized === false  && !periodInfo?.IsPeriodActive){
+    next();
+    return;
+  }
 }
 export default router;

@@ -4,12 +4,12 @@
       <div class="svg-center">
         <!-- IHU LOGO SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50" height="50" version="1.1" style="
-                  shape-rendering: geometricPrecision;
-                  text-rendering: geometricPrecision;
-                  image-rendering: optimizeQuality;
-                  fill-rule: evenodd;
-                  clip-rule: evenodd;
-                " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    shape-rendering: geometricPrecision;
+                    text-rendering: geometricPrecision;
+                    image-rendering: optimizeQuality;
+                    fill-rule: evenodd;
+                    clip-rule: evenodd;
+                  " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="Layer_x0020_1">
             <metadata id="CorelCorpID_0Corel-Layer" />
             <path class="fil0"
@@ -48,12 +48,12 @@
       <router-link to="/">{{ title }}</router-link>
       <!-- IHU LOGO SVG -->
       <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="50" height="40" version="1.1" style="
-                shape-rendering: geometricPrecision;
-                text-rendering: geometricPrecision;
-                image-rendering: optimizeQuality;
-                fill-rule: evenodd;
-                clip-rule: evenodd;
-              " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  shape-rendering: geometricPrecision;
+                  text-rendering: geometricPrecision;
+                  image-rendering: optimizeQuality;
+                  fill-rule: evenodd;
+                  clip-rule: evenodd;
+                " viewBox="0 0 31970 31970" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Layer_x0020_1">
           <metadata id="CorelCorpID_0Corel-Layer" />
           <path class="fil0"
@@ -75,13 +75,13 @@
     <div style="width: 100%">
       <div class="main-nav" v-if="hamburgerClose">
         <ul>
-          <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
+          <li v-if="isLoggedIn && IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
             <router-link :to="{ name: 'labList' }">Εργαστήρια</router-link>
           </li>
           <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
             <router-link :to="{ name: 'submittedLabs' }">Δηλωθέντα</router-link>
           </li>
-          <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
+          <li v-if="isLoggedIn && IsStaff && !IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
             <router-link :to="{ name: 'addlab' }">Προσθήκη</router-link>
           </li>
           <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
@@ -113,9 +113,9 @@
             <!-- LOGGED IN USER ICON SVG -->
             <!-- <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link> -->
             <label style="text-transform: capitalize;text-decoration: none;
-      display: inline-block;
-      position: relative;
-      color: #0a369d;">{{ userName }}</label>
+        display: inline-block;
+        position: relative;
+        color: #0a369d;">{{ userName }}</label>
           </div>
           <div style="cursor: pointer" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
             <!-- ΑΠΟΣΥΝΔΕΣΗ -->
@@ -159,7 +159,7 @@ export default defineComponent({
     let title = "IHU SUBMISSIONS";
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated } = useAuth();
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated, GetPeriodInfo } = useAuth();
 
     const isLoggedIn = computed((): boolean => {
       return store.getters.IsAuth;
@@ -172,10 +172,18 @@ export default defineComponent({
         return "User";
       return userDataDetails.DisplayNameEl ?? "User";
     });
+
     const IsStaff = computed(() => {
       return isLoggedIn.value === true ? IsTeacher() : false;
     });
-
+    const IsPeriodActive = computed(() => {
+      if (!isLoggedIn.value)
+        return false;
+      const periodInfo = GetPeriodInfo();
+      if (!periodInfo)
+        return false;
+      return periodInfo.IsPeriodActive;
+    });
     onMounted(async () => {
       if (width.value < 769) {
         hamburgerClose.value = false;
@@ -234,6 +242,7 @@ export default defineComponent({
       userName,
       IsStaff,
       logOut,
+      IsPeriodActive
     };
   },
 });
@@ -592,4 +601,5 @@ a::after {
     gap: 0.5rem;
     margin: 0 0.5rem;
   }
-}</style>
+}
+</style>

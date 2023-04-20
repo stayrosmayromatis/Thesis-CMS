@@ -1,85 +1,69 @@
 <template>
   <div class="parent-card-container">
-    <v-card
-      elevation="10"
-      class="parent-card-container__border-radius"
-      :disabled="completeness_percent === 100"
-    >
+    <v-card elevation="10" class="parent-card-container__border-radius" :disabled="completeness_percent === 100">
       <div class="parent-card__department-title">
-        <v-card-title> {{department_name}} </v-card-title>
+        <v-card-title> {{ department_name }} </v-card-title>
       </div>
-      <v-divider
-        class="border-opacity"
-        length="100%"
-        thickness="1px"
-        :vertical="false"
-      ></v-divider>
+      <v-divider class="border-opacity" length="100%" thickness="1px" :vertical="false"></v-divider>
       <div class="parent-card__main-info">
         <v-card-text>
           <div class="parent-card__main-info__labels">
             <div class="label__hours">
-              <label style="font-weight: 500;">Ώρες Εργαστηρίου:</label>
-              <label>{{timestring}}</label>
+              <label style="font-weight: 500; color: #696969;">Ώρες Εργαστηρίου</label>
+              <label>{{ timestring }}</label>
             </div>
             <div class="label__duration">
-              <label>Διάρκεια (ώρες):</label>
-              <label>{{`~ ${duration} ώρες`}}</label>
+              <label style="color: #696969">Διάρκεια</label>
+              <label>{{ `~ ${duration > 1 ? `${duration} ώρες` : `${duration} ώρα`} ` }}</label>
             </div>
             <div class="label__max-seats">
-              <label>Μέγιστες Θέσεις:</label>
-              <label>{{max_seats}}</label>
+              <label style="color: #696969">Χωριτηκότητα</label>
+              <label>{{ max_seats }}</label>
             </div>
 
             <div class="label__available-seats">
-              <label>Διαθέσιμες Θέσεις:</label>
-              <label style="font-weight: 500;">{{available_seats}}</label>
+              <label style="color: #696969">Διαθέσιμες Θέσεις</label>
+              <label style="font-weight: 500;">{{ available_seats }}</label>
             </div>
+            <v-divider style="max-width: 100%;
+      border-top-width: 1px;
+      width: 100%;
+      opacity: 0.5;
+      margin-top: 1rem;" length="100%" thickness="1px" :vertical="false"></v-divider>
             <div class="label__department-completeness">
-              <label style="font-weight: 500;">Πληρότητα Τμήματος: </label>
-              <label style="font-weight: 500;">{{`${completeness_percent}%`}}</label>
+              <label style="font-weight: 500;">Πληρότητα Τμήματος</label>
+              <label style="font-weight: 500;">{{ `${completeness_percent}%` }}</label>
             </div>
+
           </div>
           <div class="progress-bar">
-            <v-progress-linear
-              :model-value="completeness_percent"
-              :class="{
-                'progress-bar__80-100' : completeness_percent >= 80,
-                'progress-bar__60-80' : completeness_percent >= 60 && completeness_percent < 80,
-                'progress-bar__40-60' : completeness_percent >= 40 && completeness_percent < 60,
-                'progress-bar__20-40' : completeness_percent >= 20 && completeness_percent < 40,
-                'progress-bar__0-20' : completeness_percent >= 0 && completeness_percent < 20,
-              }"
-              height="15px"
-              :striped="completeness_percent < 100 ? true : false"
-              rounded="5rem"
-              :rounded-bar="true"
-              :tag="'div'"
-            ></v-progress-linear>
+            <v-progress-linear :model-value="completeness_percent" :class="{
+              'progress-bar__80-100': completeness_percent >= 80,
+              'progress-bar__60-80': completeness_percent >= 60 && completeness_percent < 80,
+              'progress-bar__40-60': completeness_percent >= 40 && completeness_percent < 60,
+              'progress-bar__20-40': completeness_percent >= 20 && completeness_percent < 40,
+              'progress-bar__0-20': completeness_percent >= 0 && completeness_percent < 20,
+            }" height="15px" :striped="completeness_percent < 100 ? true : false" rounded="5rem" :rounded-bar="true"
+              :tag="'div'"></v-progress-linear>
           </div>
           <div class="enroll-button">
-            <v-tooltip
-              :text="ToolTipText"
-              location="bottom"
-            >
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" @click="handActionByUserType()" variant="outlined" :class="{'button__border-color' : completeness_percent < 100,'button__border-color__full' : completeness_percent === 100}" :rounded="true">
-                <div class="enroll-button__inside">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 2048 2048"
-                  >
-                    <path
-                      fill="black"
-                      d="M1848 896q42 0 78 15t64 42t42 63t16 78q0 39-15 76t-43 65l-717 719l-377 94l94-377l717-718q28-28 65-42t76-15zm51 249q21-21 21-51q0-31-20-50t-52-20q-14 0-27 4t-23 15l-692 694l-34 135l135-34l692-693zM640 896H512V768h128v128zm896 0H768V768h768v128zM512 1152h128v128H512v-128zm128-640H512V384h128v128zm896 0H768V384h768v128zM384 1664h443l-32 128H256V0h1536v743q-67 10-128 44V128H384v1536zm384-512h514l-128 128H768v-128z"
-                    />
-                  </svg>
-                  <label :class="{'label__fill-color' : completeness_percent < 100,'label__fill-color__full' : completeness_percent === 100}">{{ ButtonText }}</label>
-                </div>
-              </v-btn>
-          </template>
-          </v-tooltip>
+            <v-tooltip :text="ToolTipText" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" @click="handActionByUserType()" variant="outlined"
+                  :class="{ 'button__border-color': completeness_percent < 100, 'button__border-color__full': completeness_percent === 100 }"
+                  :rounded="true">
+                  <div class="enroll-button__inside">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 2048 2048">
+                      <path fill="black"
+                        d="M1848 896q42 0 78 15t64 42t42 63t16 78q0 39-15 76t-43 65l-717 719l-377 94l94-377l717-718q28-28 65-42t76-15zm51 249q21-21 21-51q0-31-20-50t-52-20q-14 0-27 4t-23 15l-692 694l-34 135l135-34l692-693zM640 896H512V768h128v128zm896 0H768V768h768v128zM512 1152h128v128H512v-128zm128-640H512V384h128v128zm896 0H768V384h768v128zM384 1664h443l-32 128H256V0h1536v743q-67 10-128 44V128H384v1536zm384-512h514l-128 128H768v-128z" />
+                    </svg>
+                    <label
+                      :class="{ 'label__fill-color': completeness_percent < 100, 'label__fill-color__full': completeness_percent === 100 }">{{
+                        ButtonText }}</label>
+                  </div>
+                </v-btn>
+              </template>
+            </v-tooltip>
           </div>
         </v-card-text>
       </div>
@@ -99,120 +83,111 @@ export default defineComponent({
     duration: {
       type: Number,
       required: false,
-      default:2
+      default: 2
     },
     max_seats: {
       type: Number,
       required: false,
-      default:50
+      default: 50
     },
-    available_seats:{
+    available_seats: {
       type: Number,
       required: false,
-      default:0
+      default: 0
     },
-    department_name:{
+    department_name: {
       type: String,
       required: false,
-      default:'T1'
+      default: 'T1'
     },
-    timestring:{
+    timestring: {
       type: String,
       required: false,
-      default:'09:30-11:30'
+      default: '09:30-11:30'
     },
-    course_id:{
+    course_id: {
       type: String,
       required: true,
       default: undefined
     },
-    ladb_id:{
+    ladb_id: {
       type: String,
       required: true,
       default: undefined
     },
-    completeness_percent:{
+    completeness_percent: {
       type: Number,
       required: true,
       default: 0
     },
-    user_type:{
+    user_type: {
       type: Number,
       required: true,
       default: 2
     }
   },
   setup(props) {
-    const {available_seats,duration,max_seats,department_name,timestring,ladb_id,course_id,completeness_percent ,user_type} = toRefs(props);
-    const {setBackendInstanceAuth} = useAxiosInstance();
-    const {setTypeOfAlert,openAlert,closeAlert}= useAlert();
+    const { available_seats, duration, max_seats, department_name, timestring, ladb_id, course_id, completeness_percent, user_type } = toRefs(props);
+    const { setBackendInstanceAuth } = useAxiosInstance();
+    const { setTypeOfAlert, openAlert, closeAlert } = useAlert();
     const router = useRouter();
     const ButtonText = computed(() => {
-      if (completeness_percent.value >= 100)
-      {
+      if (completeness_percent.value >= 100) {
         return "ΠΛΗΡΕΣ";
       }
-      if (!completeness_percent.value || completeness_percent.value < 100)
-      {
-        if(user_type.value === 2)
-        {
+      if (!completeness_percent.value || completeness_percent.value < 100) {
+        if (user_type.value === 2) {
           return "ΕΓΓΡΑΦΗ";
         }
-        else{
+        else {
           return "ΔΙΑΘΕΣΙΜΟ";
         }
       }
     });
     const ToolTipText = computed(() => {
 
-      if (completeness_percent.value >= 100)
-      {
-        if(user_type.value === 2)
-        {
+      if (completeness_percent.value >= 100) {
+        if (user_type.value === 2) {
           return "ΜΗ ΔΙΑΘΕΣΙΜΟ ΓΙΑ ΔΗΛΩΣΗ";
-        }else{
+        } else {
           return "ΤΟ ΤΜΗΜΑ ΕΦΤΑΣΕ ΣΤΗ ΠΛΗΡΟΤΗΤΑ ΤΟΥ. ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΟ";
         }
       }
-      if (!completeness_percent.value || completeness_percent.value < 100)
-      {
-        if(user_type.value === 2)
-        {
+      if (!completeness_percent.value || completeness_percent.value < 100) {
+        if (user_type.value === 2) {
           return "ΕΠΙΚΥΡΩΣΤΕ ΤΗΝ ΔΗΛΩΣΗ ΤΟΥ ΤΜΗΜΑΤΟΣ";
         }
-        else{
+        else {
           return "ΠΑΡΑΚΟΛΟΥΣΗ ΠΟΡΕΙΑΣ";
         }
       }
     });
     const handActionByUserType = async () => {
-      if(!user_type.value)
-      {
+      if (!user_type.value) {
         setTypeOfAlert("error");
         openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
         closeAlert(1500);
         await delay(1500);
         return;
       }
-      if(user_type.value === 2 )
-      {
+      if (user_type.value === 2) {
         //make the final registration call with courseId and labId and upon response redirect to the dilwseis
         //if()
-        router.replace({name:"submittedLabs"});
+        router.replace({ name: "submittedLabs" });
         return;
       }
-      if(user_type.value === 1 || user_type.value === 12)
-      {
-        if(!course_id.value)
-        {
+      if (user_type.value === 1 || user_type.value === 12) {
+        if (!course_id.value) {
           setTypeOfAlert("error");
           openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
           closeAlert(1500);
           await delay(1500);
         }
-        router.push({name : 'addlab',query:{
-          editId : course_id.value!.trim().toString()
-        }});
+        router.push({
+          name: 'addlab', query: {
+            editId: course_id.value!.trim().toString()
+          }
+        });
         return;
       }
       setTypeOfAlert("error");
@@ -220,7 +195,7 @@ export default defineComponent({
       closeAlert(1500);
       await delay(1500);
       return;
-  };
+    };
     // async function MakeTheFinalRegisterCall(courseGuid:string,labGuid:string):Promise<InternalDataTransfter<boolean>>{
     //   if(!courseGuid || !labGuid)
     //     return {Status:false,Data:false,Error:"The parameters are null"};
@@ -237,7 +212,7 @@ export default defineComponent({
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
-    return { available_seats,duration,max_seats,department_name, timestring,ButtonText,completeness_percent,handActionByUserType,ToolTipText};
+    return { available_seats, duration, max_seats, department_name, timestring, ButtonText, completeness_percent, handActionByUserType, ToolTipText };
   },
 });
 </script>
@@ -253,9 +228,12 @@ export default defineComponent({
   min-width: 320px;
   padding: 1rem 1rem;
 }
+
 .parent-card-container__border-radius {
   border-radius: 32px;
+  min-width: 320px;
 }
+
 .parent-card__department-title {
   display: flex;
   flex-direction: row;
@@ -264,10 +242,12 @@ export default defineComponent({
   width: 100%;
   padding: 0.5rem 0.5rem;
 }
-.parent-card__department-title > .v-card-title {
+
+.parent-card__department-title>.v-card-title {
   font-weight: 1000;
   font-size: 1.8rem;
 }
+
 .parent-card__main-info {
   display: flex;
   flex-direction: column;
@@ -275,76 +255,102 @@ export default defineComponent({
   align-items: center;
   padding: 0.5rem 0.5rem;
 }
+
 div.parent-card__main-info__labels {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  line-height: 2rem;
+  line-height: 1.4rem;
   font-weight: 400;
+  gap: 0.5rem;
+  min-width: 320px;
 }
 
-.parent-card__main-info__labels > .label__department-completeness {
+.label__hours label,
+.label__duration label,
+.label__max-seats label,
+.label__available-seats label,
+.label__available-seats label {
+  flex: 1;
+  text-align: right;
+  font-weight: 500;
+}
+
+.parent-card__main-info__labels>.label__department-completeness {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   margin-top: 0.5rem;
   flex: 1 0;
-}
-.parent-card__main-info__labels > .label__available-seats {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  flex: 1 0;
-}
-.parent-card__main-info__labels > .label__max-seats {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  flex: 1 0;
-}
-.parent-card__main-info__labels > .label__duration {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  flex: 1 0;
-}
-.parent-card__main-info__labels > .label__hours {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
-  flex: 1 0;
-}
-.parent-card__main-info > .v-card-text {
-  font-weight: 400;
-  font-size: 1.2rem;
+  /* gap: 0.5rem;*/
 }
 
-.button__border-color{
-  color:#272996;
-  background-color:#f3f3f3;
+.parent-card__main-info__labels>.label__available-seats {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1 0;
+  /* gap: 1.5rem; */
 }
-.button__border-color__full{
-  color:#ff4545;
-  background-color:#f3f3f3;
+
+.parent-card__main-info__labels>.label__max-seats {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1 0;
+  /* gap: 1.5rem;*/
 }
-.label__fill-color{
-  color:#272996;
+
+.parent-card__main-info__labels>.label__duration {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1 0;
+  /* gap: 1.5rem; */
 }
-.label__fill-color__full{
-  color:#ff4545;
+
+.parent-card__main-info__labels>.label__hours {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* gap: 1.5rem; */
+  flex: 1 0;
 }
+
+.parent-card__main-info>.v-card-text {
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.button__border-color {
+  color: #272996;
+  background-color: #f3f3f3;
+}
+
+.button__border-color__full {
+  color: #ff4545;
+  background-color: #f3f3f3;
+}
+
+.label__fill-color {
+  color: #272996;
+}
+
+.label__fill-color__full {
+  color: #ff4545;
+}
+
 .enroll-button {
   display: flex;
   flex-direction: column;
@@ -352,6 +358,7 @@ div.parent-card__main-info__labels {
   align-items: center;
   margin-top: 1rem;
 }
+
 .enroll-button__inside {
   display: flex;
   flex-direction: row;
@@ -361,7 +368,8 @@ div.parent-card__main-info__labels {
   cursor: pointer;
   gap: 0.3rem;
 }
-.enroll-button__inside > label {
+
+.enroll-button__inside>label {
   cursor: pointer;
 }
 
@@ -370,21 +378,26 @@ div.parent-card__main-info__labels {
   width: 100%;
 }
 
-.progress-bar__0-20{
-  color:green
+.progress-bar__0-20 {
+  color: green
 }
-.progress-bar__20-40{
+
+.progress-bar__20-40 {
   color: darkgreen
 }
-.progress-bar__40-60{
+
+.progress-bar__40-60 {
   color: yellowgreen
 }
-.progress-bar__60-80{
+
+.progress-bar__60-80 {
   color: rgb(255, 166, 0)
 }
-.progress-bar__80-100{
+
+.progress-bar__80-100 {
   color: #ff4545;
 }
+
 .border-opacity {
   opacity: 50%;
   margin: 0 1rem;

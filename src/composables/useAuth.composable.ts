@@ -4,7 +4,7 @@ import { UserDataDetails } from "@/models/BACKEND-MODELS/UserDataDetails";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
-import { BaseUserAuthStateResponse } from "@/models/BACKEND-MODELS/BaseUserAuthStateResponse";
+import { BaseUserAuthStateResponse, PeriodInfo } from "@/models/BACKEND-MODELS/BaseUserAuthStateResponse";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { StoreSth } from "@/store/actions";
 import { useAlert } from "@/composables/showAlert.composable";
@@ -59,19 +59,20 @@ export function useAuth() {
         store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
         return;
       }
     }
     setTypeOfAlert("error");
     openAlert("Ανεπιτυχής Αποσύνδεση");
   };
-  const GetTypeStaff = (): TypeStaff | null => {
+  const GetTypeStaff = (): TypeStaff | undefined => {
     try {
-      const getStaffTypeRes: TypeStaff = store.getters.getStaffType;
-      return getStaffTypeRes;
+      return store.getters.getStaffType;
+       //getStaffTypeRes;
     } catch (error) {
       console.log(error);
-      return null;
+      return undefined;
     }
   };
   const IsTeacher = (): boolean => {
@@ -90,15 +91,23 @@ export function useAuth() {
       ? true
       : false;
   };
-
-  const GetUserDataDetails = (): UserDataDetails | null => {
+  const GetUserDataDetails = (): UserDataDetails | undefined => {
     try {
-      return store.getters.getUserDataDetails ?? null;
+      return store.getters.getUserDataDetails;
     } catch (error) {
       console.log(error);
-      return null;
+      return undefined;
     }
   };
+  const GetPeriodInfo = (): PeriodInfo | undefined => {
+    try{
+      return store.getters.getPeriodInfo;
+    }
+    catch(err){
+      console.log(err);
+      return undefined;
+    }
+  }
   const MakeInfoCall = async (): Promise<
     InternalDataTransfter<BaseUserAuthStateResponse>
   > => {
@@ -114,6 +123,7 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
       return {
         Status: false,
         Data: null,
@@ -129,9 +139,10 @@ export function useAuth() {
       !info_response_data.Status ||
       !info_response_data.Data
     ) {
-      store.dispatch("setAuthState", false);
+       store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
       return {
         Status: false,
         Data: null,
@@ -147,9 +158,10 @@ export function useAuth() {
   ): Promise<InternalDataTransfter<boolean>> => {
     const { openAlert, setTypeOfAlert } = useAlert();
     if (!response) {
-      store.dispatch("setAuthState", false);
+        store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
       return {
         Status: false,
         Data: false,
@@ -161,6 +173,7 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
       return {
         Status: false,
         Data: false,
@@ -172,6 +185,7 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
       return {
         Status: false,
         Data: false,
@@ -192,7 +206,7 @@ export function useAuth() {
     if (response.UserDataDetails.EduPersonAffiliation === TypeStaff.STAFF) {
       store.dispatch("setIsTeacherState", payload);
       store.dispatch("setUserDataDetails", response.UserDataDetails);
-      
+      store.dispatch("setPeriodInfo",response.PeriodInfo);
       if (byInternalUse === false) {
         openAlert("Επιτυχής Σύνδεση");
         setTypeOfAlert("success");
@@ -203,7 +217,7 @@ export function useAuth() {
     ) {
       store.dispatch("setIsStudentState", payload);
       store.dispatch("setUserDataDetails", response.UserDataDetails);
-      
+      store.dispatch("setPeriodInfo",response.PeriodInfo);
       if (byInternalUse === false) {
         openAlert("Επιτυχής Σύνδεση");
         setTypeOfAlert("success");
@@ -214,7 +228,7 @@ export function useAuth() {
     ) {
       store.dispatch("setIsAdminState", payload);
       store.dispatch("setUserDataDetails", response.UserDataDetails);
-      
+      store.dispatch("setPeriodInfo",response.PeriodInfo);
       if (byInternalUse === false) {
         openAlert("Επιτυχής Σύνδεση");
         setTypeOfAlert("success");
@@ -224,6 +238,7 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
     
       return {
         Status: false,
@@ -235,7 +250,6 @@ export function useAuth() {
   };
 
   return {
-
     IsAuthenticated,
     GetTypeStaff,
     GetUserDataDetails,
@@ -244,5 +258,6 @@ export function useAuth() {
     IsStudent,
     MakeInfoCall,
     DetermineIfAuth,
+    GetPeriodInfo
   };
 }
