@@ -159,9 +159,9 @@ export default defineComponent({
     let title = "IHU SUBMISSIONS";
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated, GetPeriodInfo } = useAuth();
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated,GetPeriodInfo } = useAuth();
 
-    const isLoggedIn = computed((): boolean => {
+    const isLoggedIn = computed(():boolean => {
       return store.getters.IsAuth;
     });
     const userName = computed(() => {
@@ -190,6 +190,7 @@ export default defineComponent({
         return;
       }
       hamburgerClose.value = true;
+      await IsAuthenticated();
       console.log(isLoggedIn.value);
     });
     // watch(closeInstantlyDirective, async () => {

@@ -46,19 +46,19 @@ const routes: Array<RouteRecordRaw> = [
     path : "/add-lab",
     name : 'addlab',
     component :  import('@/components/UI/AddLab.vue'),
-    meta : {requiresAuth :true,requiresIsTeacher : true,requiredPeriodInitialized : false},
-    beforeEnter:[protectTeacherRoutes,protectPeriodInitializedRoutes]
+    meta : {requiresAuth :true,requiresIsTeacher : true},
+    beforeEnter:[protectTeacherRoutes]
   },
   {
     path : "/enroll-in-department/:course_guid",
     name : 'enroll',
     component : () => import('@/components/UI/DepartmentCardsList.vue'),
     props : true,
-    meta : {requiresAuth :true
-     // ,requiresIsTeacher : false
+    meta : {requiresAuth :true,
+    requiredPeriodInitialized : true
     }
     ,
-    //beforeEnter:[protectTeacherRoutes]
+    beforeEnter : [protectPeriodInitializedRoutes]
   },
   {
     path : "/administration",
@@ -73,6 +73,14 @@ const routes: Array<RouteRecordRaw> = [
     name : 'poutsa',
     component : () => import('@/components/UI/Admin/AdminPanelMenu.vue'),
     meta : {requiresAuth :true}
+  },
+  {
+     path: "/:catchAll(.*)",
+     name: "notFound",
+     redirect: (to)=>{
+      return {name:'welcome'}
+     }
+     
   }
 ];
 
@@ -83,66 +91,63 @@ const router = createRouter({
 
 router.beforeEach(async (to,_,next) => {
   const  {IsAuthenticated} = useAuth();
-  const isAuth = await IsAuthenticated(true)
+  //const isAuth = await IsAuthenticated(true);
+  await IsAuthenticated(true);
   const storeIsAuth = store.getters.IsAuth;
   if(to.meta.requiresAuth === false && storeIsAuth == false){
-    isAuth === false ? next() : next(false);
+    return next();
+    //OLD IMPLE
+    // isAuth === false ? next() : next(false);
     return;
   }
   if(to.meta.requiresAuth === false && storeIsAuth == true){
-    if(isAuth === true){
-      SetNotAuthenticated();
-    }
-    next();
-    return;
+    SetNotAuthenticated();
+    return next();
+    //OLD IMPLE
+    // if(isAuth === true){
+    //   SetNotAuthenticated();
+    // }
+    // next();
+    // return;
   }
-  if(to.meta.requiresAuth === true && storeIsAuth === true)
-  {
-    isAuth === true ? next() : next({name:'red'});
-    return;
-  }
+  // if(to.meta.requiresAuth === true && storeIsAuth === true)
+  // {
+  //   isAuth === true ? next() : next({name:'red'});
+  //   return;
+  // }
   if(to.meta.requiresAuth === true && storeIsAuth === false)
   {
-    isAuth === true ? next() :  next({name:'red'});
-    return;
+    //isAuth === true ? next() :  next({name:'red'});
+    return next({name:'red'});
   }
-  next(false);
-  return;
+  //next(false);
+  return next();
+  // return;
 });
 
 async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
   const  {GetTypeStaff} = useAuth();
   const typeStaff = GetTypeStaff();
-  if(to.meta.requiresIsTeacher === true && typeStaff && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
-    next();
-    return;
+  if(!typeStaff || !to.meta.requiresIsTeacher)
+    return next(false);
+  if(to.meta.requiresIsTeacher === true && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
+    return next();
   }
-  if(to.meta.requiresIsTeacher === false && typeStaff && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
-    next({name:'submittedLabs'});
-    return;
-  }
-  next({name:'submittedLabs'});
+  // if(to.meta.requiresIsTeacher === false && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
+  //   next({name:'submittedLabs'});
+  //   return;
+  // }
+  next(false);
   
 }
 
 async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
   const {GetPeriodInfo} = useAuth();
   const periodInfo = GetPeriodInfo();
-  if(to.meta.requiredPeriodInitialized === true && (!periodInfo || !periodInfo.IsPeriodActive)){
-    next({name:'submittedLabs'});
-    return;
-  }
-  if(to.meta.requiredPeriodInitialized === false && periodInfo?.IsPeriodActive ){
-    next({name:'submittedLabs'});
-    return;
-  }
-  if(to.meta.requiredPeriodInitialized === true && periodInfo?.IsPeriodActive){
-    next();
-    return;
-  }
-  if(to.meta.requiredPeriodInitialized === false  && !periodInfo?.IsPeriodActive){
-    next();
-    return;
-  }
+  if(!periodInfo || !to.meta.requiredPeriodInitialized )
+    return next(false);
+  if(to.meta.requiredPeriodInitialized === true && (periodInfo.IsPeriodActive === false || !periodInfo.IsPeriodActive))
+    return next(false);
+  next();
 }
 export default router;

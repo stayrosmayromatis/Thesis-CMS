@@ -8,6 +8,8 @@ import { defineComponent, ref, onMounted } from "vue";
 import TheHeader from "@/components/UI/TheHeader.vue";
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { useAxios } from '@vueuse/integrations/useAxios';
+import { useAuth } from "@/composables/useAuth.composable";
+
 export default defineComponent({
   name: "App",
   components: {
@@ -27,7 +29,9 @@ export default defineComponent({
       eduPersonalEntitlementEn?: string;
     }> = Array();
     const {setCustomInstance,setBackendInstanceAuth} = useAxiosInstance();
+    const  {IsAuthenticated} = useAuth();
     onMounted(async () => {
+      await IsAuthenticated();
       //Seeding Db Part uncomment if all goes wrong and need to seed again
     //   const { data, isFinished } = await useAxios('/user',
     //     {

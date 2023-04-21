@@ -19,22 +19,25 @@ export function useAuth() {
         !info_result.Data
       ) {
         store.dispatch("setAuthState", false);
+        store.dispatch("clearUserDataDetails");
+        store.dispatch("clearSeededProfessors");
+        store.dispatch("clearPeriodInfo");
         return false;
       }
       const auth_response = await DetermineIfAuth(
         info_result.Data,
         byInternalUse
       );
-      if (
-        !auth_response ||
-        auth_response.Status === false ||
-        auth_response.Data === false ||
-        auth_response.Error
-      ) {
+      // if (
+      //   !auth_response ||
+      //   auth_response.Status === false ||
+      //   auth_response.Data === false ||
+      //   auth_response.Error
+      // ) {
        
-        return false;
-      }
-      return true;
+      //   return false;
+      // }
+      return auth_response.Status;
     } catch (error) {
       console.log(error);
       return false;
