@@ -51,7 +51,8 @@
                     <v-btn v-bind="props" type="button" class="export--button__override" density="default" rounded
                     @click.left="serveTheFileRaw"
                     >
-                        <div class="export--button" style="cursor: pointer;">
+                    <!-- @click.left="doSth" -->
+                    <div class="export--button" style="cursor: pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="m14 2l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8m4 18V9h-5V4H6v16h12m-6-1l-4-4h2.5v-3h3v3H16l-4 4Z" />
@@ -76,7 +77,6 @@ import { toRefs } from 'vue';
 import { computed, defineComponent, ref } from 'vue';
 import { InfoController } from '@/config';
 
-
 export default defineComponent({
     props: {
         course_code: {
@@ -93,13 +93,13 @@ export default defineComponent({
     setup(props) {
         const files = ref(new Array<globalThis.File>());
         const { course_guid, course_code } = toRefs(props);
-        // const { closeAlert, setTypeOfAlert, openAlert } = useAlert();
+        const { closeAlert, setTypeOfAlert, openAlert } = useAlert();
         const theoryPrecedesFlag = ref(false);
         const errorOnFileInput = ref(false);
         const errorOnFileInputMessage = ref("");
         const counterSizeString = ref("Επιλέχθηκε αρχείο");
         const fileInputHint = ref('Μέγιστο μέγεθος αρχείου 35Kb, επιτρεπόμενα αρχεία .xls, .xlsx');
-        // const { setBackendInstanceAuth } = useAxiosInstance();
+        const { setBackendInstanceAuth } = useAxiosInstance();
         const validationRules = [
             (value: Array<globalThis.File>) => {
                 if (!value) {
@@ -155,20 +155,89 @@ export default defineComponent({
         const fileInputError = computed(() => {
             return errorOnFileInput.value || !files.value || !files.value.length;
         });
-        // const downloadExportFile = async () => {
-        //     closeAlert();
-        //     const downloadExportIDT = await DownloadExportFileRequest();
-        //     if (!downloadExportIDT.Status) {
-        //         setTypeOfAlert('error');
-        //         openAlert(downloadExportIDT.Error!);
-        //         closeAlert(2000);
-        //         return;
-        //     }
-        //     setTypeOfAlert('success');
-        //     openAlert('Επιτυχία λήψης');
-        //     closeAlert(2000);
-        // };
-        // const DownloadExportFileRequest = async (): Promise<InternalDataTransfter<boolean>> => {
+        const serveTheFileRaw = async () => {
+            closeAlert();
+            const downloadExportIDT = await DownloadExportFileRequest();
+            if (!downloadExportIDT.Status) {
+                setTypeOfAlert('error');
+                openAlert(downloadExportIDT.Error!);
+                closeAlert(2000);
+                return;
+            }
+            setTypeOfAlert('success');
+            openAlert('Επιτυχία λήψης');
+            closeAlert(2000);
+        };
+
+        const DownloadExportFileRequest = async (): Promise<InternalDataTransfter<boolean>> => {
+            const downloadExportFileRequest = await useAxios(
+                InfoController + `serve-item-csv/${course_guid.value}`,
+                {
+                    method: "GET"
+                },
+                setBackendInstanceAuth()
+            );
+           
+
+            if (downloadExportFileRequest.isFinished.value) {
+                if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
+                    return { Status: false, Data: false, Error: "Δεν βρέθηκε ο πόρος" };
+                const headerLine = downloadExportFileRequest.response.value?.headers['content-disposition'];
+                const startFileNameIndex = headerLine.indexOf('"') + 1
+                const endFileNameIndex = headerLine.lastIndexOf('"');
+                let filename = headerLine.substring(startFileNameIndex, endFileNameIndex).split(';')[0].replaceAll('"', '').replaceAll(' ', '');
+                const blob = new Blob([downloadExportFileRequest.data.value], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                console.log(blob);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                filename = filename.replace(".csv",".xlsx");
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+                return { Status: true, Data: true };
+            }
+            // const saveFile = async (blob, suggestedName) => {
+            //     // Feature detection. The API needs to be supported
+            //     // and the app not run in an iframe.
+            //     const supportsFileSystemAccess =
+            //         'showSaveFilePicker' in window &&
+            //         (() => {
+            //             try {
+            //                 return window.self === window.top;
+            //             } catch {
+            //                 return false;
+            //             }
+            //         })();
+            //     // If the File System Access API is supported…
+            //     if (supportsFileSystemAccess) {
+            //         try {
+            //             // Show the file save dialog.
+            //             const handle = await window.showSaveFilePicker({
+            //                 suggestedName,
+            //             });
+            //             // Write the blob to the file.
+            //             const writable = await handle.createWritable();
+            //             await writable.write(blob);
+            //             await writable.close();
+            //             return;
+            //         } catch (err) {
+            //             // Fail silently if the user has simply canceled the dialog.
+            //             if (err.name !== 'AbortError') {
+            //                 console.error(err.name, err.message);
+            //                 return;
+            //             }
+            //         }
+            
+            return { Status: false, Data: false, Error: "Σφάλμα δεν βρέθηκε ο πόρος" };
+        }
+
+        // const serveTheFileRaw = () => {
+        //     const a_tag = document.createElement('a');    
+        //     a_tag.href = `${import.meta.env.VITE_BACK_END_URI}${InfoController}serve-item-csv/${course_guid.value}`;
+        //     a_tag.click(); 
+        // }
+        // const doSth = async () => {
         //     const downloadExportFileRequest = await useAxios(
         //         InfoController + `serve-item/${course_guid.value}`,
         //         {
@@ -176,76 +245,35 @@ export default defineComponent({
         //         },
         //         setBackendInstanceAuth()
         //     );
-           
-
-        //     if (downloadExportFileRequest.isFinished) {
-        //         if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
-        //             return { Status: false, Data: false, Error: "Δεν βρέθηκε ο πόρος" };
-        //         ///FOR SOME REASON THE DOCUMENT DOWNLOADS AS CORRUTED
-        //         // console.log(downloadExportFileRequest.response.value?.headers['content-disposition']);
-
-
-        //         const headerLine = downloadExportFileRequest.response.value?.headers['content-disposition'];
-        //         const startFileNameIndex = headerLine.indexOf('"') + 1
-        //         const endFileNameIndex = headerLine.lastIndexOf('"');
-        //         const filename = headerLine.substring(startFileNameIndex, endFileNameIndex).split(';')[0].replaceAll('"', '').replaceAll(' ', '');
-        //         const blob = new Blob([downloadExportFileRequest.data.value], { type: downloadExportFileRequest.response.value?.headers['content-type'] });
-        //         console.log(blob);
-        //         const url = window['URL'].createObjectURL(blob);
-        //         const a = document.createElement('a');
-        //         a.href = url;
-        //         //a.
-        //         a.download = filename;
-        //         a.click();
-        //         window['URL'].revokeObjectURL(url);
-        //         return { Status: true, Data: true };
+        //     if(downloadExportFileRequest.isFinished){
+        //         //const workBook = XLSX.utils.book_new();
+        //         const parser = downloadExportFileRequest.data.value.pipe(csvParser());
+        //         console.log(parser);
+        //         // XLSX.utils.book_append_sheet(workBook, XLSX.utils.sheet_add_json({}, parser), "Hello.txt");
+        //         // const data = await generateExcelFile(workBook);
+        //         // if(data)
+        //         // {
+        //         //     const blob = new Blob([data as BlobPart], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        //         //     fs.saveAs(blob, `hellomotherfucker.xlsx`);
+        //         // }
         //     }
-        //     // const saveFile = async (blob, suggestedName) => {
-        //     //     // Feature detection. The API needs to be supported
-        //     //     // and the app not run in an iframe.
-        //     //     const supportsFileSystemAccess =
-        //     //         'showSaveFilePicker' in window &&
-        //     //         (() => {
-        //     //             try {
-        //     //                 return window.self === window.top;
-        //     //             } catch {
-        //     //                 return false;
-        //     //             }
-        //     //         })();
-        //     //     // If the File System Access API is supported…
-        //     //     if (supportsFileSystemAccess) {
-        //     //         try {
-        //     //             // Show the file save dialog.
-        //     //             const handle = await window.showSaveFilePicker({
-        //     //                 suggestedName,
-        //     //             });
-        //     //             // Write the blob to the file.
-        //     //             const writable = await handle.createWritable();
-        //     //             await writable.write(blob);
-        //     //             await writable.close();
-        //     //             return;
-        //     //         } catch (err) {
-        //     //             // Fail silently if the user has simply canceled the dialog.
-        //     //             if (err.name !== 'AbortError') {
-        //     //                 console.error(err.name, err.message);
-        //     //                 return;
-        //     //             }
-        //     //         }
-        //     //     }
 
-        //     // return { Status: false, Data: false, Error: "Σφάλμα δεν βρέθηκε ο πόρος" };
-        //     // };
-        // };
-
-        const serveTheFileRaw = () => {
-            const a_tag = document.createElement('a');    
-            a_tag.href = `${import.meta.env.VITE_BACK_END_URI}${InfoController}serve-item/${course_guid.value}`;
-            a_tag.click();
-        }
+        // }
+        // function generateExcelFile(workbook:XLSX.WorkBook) {
+        //     return new Promise((resolve, reject) => {
+        //         try {
+        //         const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' }) as any;
+        //         resolve(excelData);
+        //         } catch (error) {
+        //         reject(error);
+        //         }
+        //     });
+        //     }
         return {
             theoryPrecedesFlag, files, validationRules, errorOnFileInput, errorOnFileInputMessage,
             acceptableFileTypes, counterSizeString, fileInputHint, fileInputError, 
             logIt, logAppend,serveTheFileRaw
+            //,doSth
         }
 
     }});
