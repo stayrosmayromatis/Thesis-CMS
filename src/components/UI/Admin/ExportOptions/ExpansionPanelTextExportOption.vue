@@ -1,5 +1,7 @@
 <template>
     <div class="export-panel-export-option-text__parent">
+        <base-dialog :show="showBaseDialog" :route-change-authorizer="true" :inner-title="innerTitle"
+            :inner-description="innerDescription"></base-dialog>
         <div class="theory-precedes__container">
             <label>Εχουν προηγηθεί οι δηλώσεις θεωρίας;</label>
             <span>
@@ -16,9 +18,8 @@
                             <v-btn type="button" v-bind="props" class="upload--button" :class="{
                                 'upload-button--disabled': fileInputError,
                                 'upload-button--enabled': !fileInputError
-                            }" :disabled="fileInputError">
+                            }" :disabled="fileInputError" @click="uploadTheFile">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
-                                    <!-- fill="#f7f7f7" -->
                                     <path fill="white"
                                         d="M11 20H6.5q-2.28 0-3.89-1.57Q1 16.85 1 14.58q0-1.95 1.17-3.48q1.18-1.53 3.08-1.95q.63-2.3 2.5-3.72Q9.63 4 12 4q2.93 0 4.96 2.04Q19 8.07 19 11q1.73.2 2.86 1.5q1.14 1.28 1.14 3q0 1.88-1.31 3.19T18.5 20H13v-7.15l1.6 1.55L16 13l-4-4l-4 4l1.4 1.4l1.6-1.55Z" />
                                 </svg>
@@ -27,12 +28,14 @@
                         </template>
                     </v-tooltip>
                     <v-file-input v-model="files" placeholder="Upload your documents"
-                        label="Αρχείο επιβεβαίωσης (cross-reference)" :multiple="false" counter
+                        label="Αρχείο φιλτραρίσματος (cross-reference)" :multiple="false" counter
                         :counter-size-string="counterSizeString" :accept="acceptableFileTypes" show-size
                         :persistent-hint="true" :prepend-icon="''" density="comfortable" :variant="'underlined'"
                         :hint="fileInputHint" :rules="validationRules" :error="errorOnFileInput"
-                        :error-messages="errorOnFileInputMessage" @click:clear="logIt" @update:model-value="logIt"
-                        @change="logIt" validate-on="input" chips>
+                        :error-messages="errorOnFileInputMessage" validate-on="input" chips>
+                        <!-- @click:clear="logIt"
+                        @update:model-value="logIt"
+                        @change="logIt" -->
                         <template v-slot:selection="{ fileNames }">
                             <template v-for="fileName in fileNames" :key="fileName">
                                 <v-chip size="small" label color="primary" class="me-2">
@@ -49,10 +52,9 @@
             <v-tooltip :location="'bottom center'" :text="`Λήψη αρχείου δηλώσεων του ${course_code.trim()} `">
                 <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" type="button" class="export--button__override" density="default" rounded
-                    @click.left="serveTheFileRaw"
-                    >
-                    <!-- @click.left="doSth" -->
-                    <div class="export--button" style="cursor: pointer;">
+                        @click.left="serveTheFileRaw">
+                        <!-- @click.left="doSth" -->
+                        <div class="export--button" style="cursor: pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="m14 2l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8m4 18V9h-5V4H6v16h12m-6-1l-4-4h2.5v-3h3v3H16l-4 4Z" />
@@ -76,7 +78,14 @@ import { useAlert } from '@/composables/showAlert.composable';
 import { toRefs } from 'vue';
 import { computed, defineComponent, ref } from 'vue';
 import { InfoController } from '@/config';
-
+import * as XLSX from 'xlsx';
+// import Papa from 'papaparse';
+import Papa from 'papaparse';
+import { AcceptableFileTypes } from "@/config";
+import { CourseController } from '@/config';
+import { ApiResult } from '@/models/DTO/ApiResult';
+import BaseDialog from '@/components/Base/BaseDialog.vue';
+import { confirm } from '@/composables/dialog.composable';
 export default defineComponent({
     props: {
         course_code: {
@@ -90,6 +99,9 @@ export default defineComponent({
             default: ""
         }
     },
+    components: {
+        BaseDialog
+    },
     setup(props) {
         const files = ref(new Array<globalThis.File>());
         const { course_guid, course_code } = toRefs(props);
@@ -98,8 +110,12 @@ export default defineComponent({
         const errorOnFileInput = ref(false);
         const errorOnFileInputMessage = ref("");
         const counterSizeString = ref("Επιλέχθηκε αρχείο");
-        const fileInputHint = ref('Μέγιστο μέγεθος αρχείου 35Kb, επιτρεπόμενα αρχεία .xls, .xlsx');
+        const fileInputHint = ref('Μέγιστο μέγεθος αρχείου 20Kb, επιτρεπόμενα αρχεία .xls, .xlsx , .csv');
         const { setBackendInstanceAuth } = useAxiosInstance();
+        const acceptableFileTypes = AcceptableFileTypes;
+        const showBaseDialog = ref(false);
+        const innerTitle = ref('ΠΡΟΕΙΔΟΠΟΙΗΣΗ');
+        const innerDescription = ref('ELaaaaaaaa');
         const validationRules = [
             (value: Array<globalThis.File>) => {
                 if (!value) {
@@ -124,9 +140,9 @@ export default defineComponent({
                     counterSizeString.value = "Επιλέχθηκε λάθος αρχείο";
                     return false;
                 }
-                if (value[0].size > 35000) {
+                if (value[0].size > 20000) {
                     errorOnFileInput.value = true;
-                    errorOnFileInputMessage.value = "Μέγιστο επιτρεπόμενο όριο 35 kB";
+                    errorOnFileInputMessage.value = "Μέγιστο επιτρεπόμενο όριο 20 kB";
                     counterSizeString.value = "Επιλέχθηκε λάθος αρχείο";
                     return false;
                 }
@@ -135,23 +151,6 @@ export default defineComponent({
                 return true;
             }
         ];
-        const acceptableFileTypes = [
-            "application/vnd.ms-excel",
-            "application/msexcel",
-            "application/x-msexcel",
-            "application/x-ms-excel",
-            "application/x-excel",
-            "application/x-dos_ms_excel",
-            "application/xls",
-            "application/x-xls",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ]
-        const logIt = () => {
-            console.dir(files.value);
-        };
-        const logAppend = () => {
-            console.log("Click append now");
-        };
         const fileInputError = computed(() => {
             return errorOnFileInput.value || !files.value || !files.value.length;
         });
@@ -168,7 +167,6 @@ export default defineComponent({
             openAlert('Επιτυχία λήψης');
             closeAlert(2000);
         };
-
         const DownloadExportFileRequest = async (): Promise<InternalDataTransfter<boolean>> => {
             const downloadExportFileRequest = await useAxios(
                 InfoController + `serve-item-csv/${course_guid.value}`,
@@ -177,7 +175,6 @@ export default defineComponent({
                 },
                 setBackendInstanceAuth()
             );
-           
 
             if (downloadExportFileRequest.isFinished.value) {
                 if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
@@ -186,15 +183,22 @@ export default defineComponent({
                 const startFileNameIndex = headerLine.indexOf('"') + 1
                 const endFileNameIndex = headerLine.lastIndexOf('"');
                 let filename = headerLine.substring(startFileNameIndex, endFileNameIndex).split(';')[0].replaceAll('"', '').replaceAll(' ', '');
-                const blob = new Blob([downloadExportFileRequest.data.value], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-                console.log(blob);
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                filename = filename.replace(".csv",".xlsx");
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(url);
+                const csvDataResponse = downloadExportFileRequest.data.value;
+                const parsedCsvDataResponse = Papa.parse(csvDataResponse, { header: true }).data;
+                const worksheetTBA = XLSX.utils.json_to_sheet(parsedCsvDataResponse);
+                const workbookTBA = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbookTBA, worksheetTBA, "Φύλλο_1");
+                XLSX.writeFile(workbookTBA, filename.replace(".csv", ".xlsx"));
+                //working for now
+                // const blob = new Blob([downloadExportFileRequest.data.value], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                // console.log(blob);
+                // const url = URL.createObjectURL(blob);
+                // const a = document.createElement('a');
+                // a.href = url;
+                // filename = filename.replace(".csv", ".xlsx");
+                // a.download = filename;
+                // a.click();
+                // URL.revokeObjectURL(url);
                 return { Status: true, Data: true };
             }
             // const saveFile = async (blob, suggestedName) => {
@@ -228,10 +232,56 @@ export default defineComponent({
             //                 return;
             //             }
             //         }
-            
-            return { Status: false, Data: false, Error: "Σφάλμα δεν βρέθηκε ο πόρος" };
-        }
 
+            return { Status: false, Data: false, Error: "Σφάλμα δεν βρέθηκε ο πόρος" };
+        };
+        const uploadTheFile = async () => {
+            showBaseDialog.value = true;
+            innerDescription.value = `Βεβαιωθείτε οτι στέλνετε το σωστό file προς επιβεβαίωση`;
+            //Logic to be added please review it whatsoever
+            if (await confirm()) {
+                showBaseDialog.value = false;
+                if (fileInputError.value || !files.value || !files.value.length)
+                    return;
+                const fileToUpload = files.value.at(0);
+                if (!fileToUpload)
+                    return;
+                const uploadFileIDT = await UploadTheFileApiCall(fileToUpload);
+                files.value = [];
+                theoryPrecedesFlag.value = false;
+                closeAlert();
+                if (!uploadFileIDT || !uploadFileIDT.Status) {
+                    setTypeOfAlert('error');
+                    openAlert(uploadFileIDT.Error!);
+                    closeAlert(2000);
+                    return;
+                }
+                setTypeOfAlert('success');
+                openAlert('Επιτυχία μεταφόρτωσης αρχείου');
+                closeAlert(2000);
+            }
+            showBaseDialog.value = false;
+
+        };
+        const UploadTheFileApiCall = async (file: File): Promise<InternalDataTransfter<boolean>> => {
+            const formData = new FormData();
+            formData.append("file", file);
+            const uploadFileCall = await useAxios(
+                CourseController + `student-sub-authorization/${course_guid.value}`,
+                {
+                    method: "POST",
+                    data: formData
+                },
+                setBackendInstanceAuth()
+            );
+            if (uploadFileCall.isFinished.value) {
+                const uploadFileCallData: ApiResult<string> = uploadFileCall.data.value;
+                if (!uploadFileCallData || !uploadFileCallData.Status)
+                    return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
+                return { Status: true, Data: true };
+            }
+            return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
+        };
         // const serveTheFileRaw = () => {
         //     const a_tag = document.createElement('a');    
         //     a_tag.href = `${import.meta.env.VITE_BACK_END_URI}${InfoController}serve-item-csv/${course_guid.value}`;
@@ -271,12 +321,18 @@ export default defineComponent({
         //     }
         return {
             theoryPrecedesFlag, files, validationRules, errorOnFileInput, errorOnFileInputMessage,
-            acceptableFileTypes, counterSizeString, fileInputHint, fileInputError, 
-            logIt, logAppend,serveTheFileRaw
+            acceptableFileTypes, counterSizeString, fileInputHint, fileInputError,
+            serveTheFileRaw,
+            uploadTheFile,
+            showBaseDialog,
+            innerTitle,
+            innerDescription
+            // ,logIt, logAppend
             //,doSth
         }
 
-    }});
+    }
+});
 </script>
 
 <style scoped>
