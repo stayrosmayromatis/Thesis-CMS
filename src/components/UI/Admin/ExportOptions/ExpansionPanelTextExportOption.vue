@@ -5,7 +5,7 @@
         <div class="theory-precedes__container">
             <label>Εχουν προηγηθεί οι δηλώσεις θεωρίας;</label>
             <span>
-                <v-switch style="cursor: pointer;" color="primary" v-model="theoryPrecedesFlag" :value="true"
+                <v-switch style="cursor: pointer;" color="primary" v-model="theoryPrecedesFlag" @update:model-value="clearFileInputErrorsIfSwitchedOff" :value="true"
                     hide-details></v-switch>
             </span>
         </div>
@@ -32,10 +32,12 @@
                         :counter-size-string="counterSizeString" :accept="acceptableFileTypes" show-size
                         :persistent-hint="true" :prepend-icon="''" density="comfortable" :variant="'underlined'"
                         :hint="fileInputHint" :rules="validationRules" :error="errorOnFileInput"
-                        :error-messages="errorOnFileInputMessage" validate-on="input" chips>
-                        <!-- @click:clear="logIt"
+                        :error-messages="errorOnFileInputMessage" validate-on="input" chips
+                        
+                        >
+                        <!-- @click:clear="clearErrorIfExists"
                         @update:model-value="logIt"
-                        @change="logIt" -->
+                        @change="logIt"  -->
                         <template v-slot:selection="{ fileNames }">
                             <template v-for="fileName in fileNames" :key="fileName">
                                 <v-chip size="small" label color="primary" class="me-2">
@@ -115,9 +117,11 @@ export default defineComponent({
         const acceptableFileTypes = AcceptableFileTypes;
         const showBaseDialog = ref(false);
         const innerTitle = ref('ΠΡΟΕΙΔΟΠΟΙΗΣΗ');
-        const innerDescription = ref('ELaaaaaaaa');
+        const innerDescription = ref('');
         const validationRules = [
             (value: Array<globalThis.File>) => {
+                errorOnFileInput.value = false;
+                errorOnFileInputMessage.value = '';
                 if (!value) {
                     errorOnFileInput.value = true;
                     errorOnFileInputMessage.value = "Δεν έχετε εισάγει αρχείο";
@@ -180,9 +184,7 @@ export default defineComponent({
                 if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
                     return { Status: false, Data: false, Error: "Δεν βρέθηκε ο πόρος" };
                 const headerLine = downloadExportFileRequest.response.value?.headers['content-disposition'];
-                const startFileNameIndex = headerLine.indexOf('"') + 1
-                const endFileNameIndex = headerLine.lastIndexOf('"');
-                let filename = headerLine.substring(startFileNameIndex, endFileNameIndex).split(';')[0].replaceAll('"', '').replaceAll(' ', '');
+                const filename = headerLine.split(';')[1].replace("filename=","").trim();
                 const csvDataResponse = downloadExportFileRequest.data.value;
                 const parsedCsvDataResponse = Papa.parse(csvDataResponse, { header: true }).data;
                 const worksheetTBA = XLSX.utils.json_to_sheet(parsedCsvDataResponse);
@@ -237,7 +239,11 @@ export default defineComponent({
         };
         const uploadTheFile = async () => {
             showBaseDialog.value = true;
-            innerDescription.value = `Βεβαιωθείτε οτι στέλνετε το σωστό file προς επιβεβαίωση`;
+            innerDescription.value = `Θα πραγματοποιηθεί <span style="color:green">φιλτράρισμα </span> βάσει αρχείου.
+                                       Η ακόλουθη λειτουργία  <span style="color:#1867C0">επηρρεάζει</span> εγγραφές, 
+                                       Βεβαιωθείτε οτι στέλνετε το <span style="color:green"> σωστό αρχείο θεωρίας </span> του μαθήματος προς επιβεβαίωση.
+                                       Έπειτα μπορείτε να κάνετε <span style="color: #1867C0">Λήψη</span> την ανανεωμένη μορφή των δηλώσεων.
+                                       Θέλετε να <span style="color:#1867C0">προχωρήσετε</span> στην μεταφόρτωση του;`;
             //Logic to be added please review it whatsoever
             if (await confirm()) {
                 showBaseDialog.value = false;
@@ -282,6 +288,13 @@ export default defineComponent({
             }
             return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
         };
+        const clearFileInputErrorsIfSwitchedOff = () => {
+            if(theoryPrecedesFlag.value === false){
+                errorOnFileInput.value = false;
+                errorOnFileInputMessage.value = '';
+                files.value = [];
+            }
+        }
         // const serveTheFileRaw = () => {
         //     const a_tag = document.createElement('a');    
         //     a_tag.href = `${import.meta.env.VITE_BACK_END_URI}${InfoController}serve-item-csv/${course_guid.value}`;
@@ -324,11 +337,11 @@ export default defineComponent({
             acceptableFileTypes, counterSizeString, fileInputHint, fileInputError,
             serveTheFileRaw,
             uploadTheFile,
+            // clearErrorIfExists,
             showBaseDialog,
             innerTitle,
-            innerDescription
-            // ,logIt, logAppend
-            //,doSth
+            innerDescription,
+            clearFileInputErrorsIfSwitchedOff
         }
 
     }
