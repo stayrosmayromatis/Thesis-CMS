@@ -335,13 +335,12 @@ export default defineComponent({
         return {
             theoryPrecedesFlag, files, validationRules, errorOnFileInput, errorOnFileInputMessage,
             acceptableFileTypes, counterSizeString, fileInputHint, fileInputError,
-            serveTheFileRaw,
-            uploadTheFile,
-            // clearErrorIfExists,
             showBaseDialog,
             innerTitle,
             innerDescription,
-            clearFileInputErrorsIfSwitchedOff
+            serveTheFileRaw,
+            uploadTheFile,
+            clearFileInputErrorsIfSwitchedOff,
         }
 
     }
