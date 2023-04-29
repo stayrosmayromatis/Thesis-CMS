@@ -17,8 +17,8 @@
             <div class="chip-separator">
               <div class="chip-separator__left-chip">
                 <v-chip class="chip-bg" :class="{
-                  'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
-                }" size="large" style="height: fit-content">
+                    'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                  }" size="large" style="height: fit-content">
                   <div class="lab-chip__details">
                     <div class="lab-course__code">
                       {{ lab.CourseCode + " " }}
@@ -88,7 +88,8 @@
                 </div> -->
                 <!-- OLD IMPLEMENTATION -->
                 <!-- NEW DIV REFACTOR -->
-                <div style="visibility: hidden;">
+                <!-- style="visibility: hidden;" -->
+                <div>
                   <v-tooltip :text="toolTipText(lab)" location="bottom"
                     v-if="(userType === 2 && lab.CanSubmit === false) || (userType == 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
                     <template v-slot:activator="{ props }">
@@ -111,8 +112,8 @@
                 </div>
                 <!-- NEW DIV REFACTOR -->
                 <v-chip class="chip-attendance" :class="{
-                  'gray-out-card-chip-attendance': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
-                }" size="large">
+                    'gray-out-card-chip-attendance': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                  }" size="large">
                   <div>{{ lab.CourseAttendanceString }}</div>
                 </v-chip>
                 <v-chip class="chip-semester" :class="{
@@ -130,26 +131,24 @@
           <div class="classOne">
             <p>{{ lab.ShortDescription }}</p>
             <div class="lab-details_if_submitted">
-              <p v-if="
-                (
+              <p v-if="(
                   userType === 2 &&
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === true &&
                   lab.LabInfo
                 )
-              ">
+                ">
                 {{
                   `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring}
                                 (${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})`
                 }}
               </p>
-              <v-btn v-if="
-                (userType === 2 &&
-                  lab.CanSubmit === true &&
-                  lab.HasAlreadySubmitted === false &&
-                  !lab.LabInfo) || (userType === 1)
-              " @click="pushToHandle(lab.CourseGUID)" color="#a3cef1" elevation="4">{{ userType === 2 ? 'Δηλωσε το' :
-  userType === 1 ? 'Πορεια Δηλωσης' : 'Επιλογη' }}</v-btn>
+              <v-btn v-if="(userType === 2 &&
+                    lab.CanSubmit === true &&
+                    lab.HasAlreadySubmitted === false &&
+                    !lab.LabInfo) || (userType === 1)
+                  " @click="pushToHandle(lab.CourseGUID)" color="#a3cef1" elevation="4">{{ userType === 2 ? 'Δηλωσε το' :
+      userType === 1 ? 'Πορεια Δηλωσης' : 'Επιλογη' }}</v-btn>
               <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`" :location="'bottom'"
                 v-if="(userType === 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
                 <template v-slot:activator="{ props }">
@@ -509,17 +508,21 @@ export default defineComponent({
   user-select: none;
   margin-inline-start: auto;
 }
-.sth-container :deep(.v-field__clearable) , :deep(.v-field__append-inner){
-    padding-top: 0; 
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+
+.sth-container :deep(.v-field__clearable),
+:deep(.v-field__append-inner) {
+  padding-top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.sth-container :deep(.v-field__input){
+
+.sth-container :deep(.v-field__input) {
   padding-bottom: 6px;
 }
+
 .parent-label {
   margin-bottom: 1rem;
   display: flex;
@@ -570,9 +573,8 @@ export default defineComponent({
   font-weight: 400;
   font-size: 1rem;
   width: fit-content;
-  align-items: center;
   text-align: center;
-  white-space: break-spaces;
+  white-space: pre-line;
   word-break: inherit;
 }
 
@@ -926,5 +928,4 @@ export default defineComponent({
     background-color: #aacaf3;
     /* min-width: 769px; */
   }
-}
-</style>
+}</style>
