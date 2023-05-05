@@ -2,8 +2,13 @@
   <div class="options-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
-      :routeChangeAuthorizer="true" @close-modal="showBaseDialog = false"></base-dialog>
+    <base-dialog :show="showBaseDialog"
+     :inner-description="baseDialogDescription" 
+     :inner-title="baseDialogTitle"
+      :routeChangeAuthorizer="true" 
+      :use-timer="true"
+      @close-modal="showBaseDialog = false"
+      ></base-dialog>
     <div v-if="!showLoadingSpinner">
       <v-card elevation="3" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
         `Περιοδος` }}</label></v-card>
@@ -322,8 +327,10 @@ export default defineComponent({
       showBaseDialog.value = true;
       baseDialogDescription.value = `Με την <span style="color:#ff4545;">κατάργηση</span> της τρέχων περιόδου,
                                     <span style="color:#ff4545;">διαγράφονται όλες οι εγγραφές που συσχετίζονται</span>,
-                                    όπως οι προτεραιότητες που είναι ενεργές καθώς και οι δηλώσεις των φοιτητών.
-                                    Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">καταργήσετε</span> την τρέχων περίοδο;`;
+                                    όπως <span style="color:#1867C0">προτεραιότητες</span> που είναι σε ισχύ καθώς και <span style="color:#1867C0">υπάρχουσες</span> δηλώσεις των φοιτητών.
+                                    Βεβαιωθείται οτι έχετε κάνει <span style="color:#1867C0;">Λήψη</span> των αρχείων για τα μαθήματα σας πηγαίνοντας,
+                                                      <span style="color:#1867C0;">Διαχείριση -> Εξαγωγή Δηλώσεων</span> προτού προβείται στην ενέργεια.
+                                    Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">κατάργηση</span> της τρέχων περιόδου;`;
       if (await confirm()) {
         showBaseDialog.value = false;
         showLoadingSpinner.value = true;
@@ -368,9 +375,11 @@ export default defineComponent({
     }
     const generateNewPeriod = async () => {
       showBaseDialog.value = true;
-      baseDialogDescription.value = `Με την επικύρσωη <span style="color:green;">προσθήκης Νέας Περιόδου </span>, 
+      baseDialogDescription.value = `Με την επικύρωση <span style="color:green;">προσθήκης Νέας Περιόδου </span>, 
                                                       <span style="color:#ff4545;">διαγράφονται όλες οι προηγούμενες περίοδοι</span>,
-                                                      καθώς και οι <span style="color:#ff4545;">προηγούμενες δηλώσεις των φοιτητών</span>. 
+                                                      καθώς και οι <span style="color:#ff4545;">προηγούμενες δηλώσεις των φοιτητών</span>.
+                                                      Βεβαιωθείται οτι έχετε κάνει <span style="color:#1867C0;">Λήψη</span> των αρχείων για τα μαθήματα σας πηγαίνοντας,
+                                                      <span style="color:#1867C0;">Διαχείριση -> Εξαγωγή Δηλώσεων</span> προτού προβείται στην ενέργεια.
                                                       Η διαδικασία είναι <span style="color:#ff4545;">μη αναστρέψιμη</span>.
                                                       Θέλετε να προσωρήσετε σε <span style="color:green;">έναρξη Νέας Περιόδου;</span>`;
       if (await confirm()) {

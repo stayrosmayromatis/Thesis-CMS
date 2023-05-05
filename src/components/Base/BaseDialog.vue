@@ -30,8 +30,9 @@
               variant="text"
               color="blue-darken-1"
               text
+              :disabled="okButtonDisabled"
               @click="closeDialog"
-              >ΟΚ</v-btn
+              >{{timerDisplayView}}</v-btn
             >
           </div>
           <div v-else>
@@ -47,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRefs } from "vue";
+import { onUpdated, computed, defineComponent, onMounted, onUnmounted, ref, toRefs } from "vue";
 import { closeDialog } from "vue3-promise-dialog";
 export default defineComponent({
   props: {
@@ -70,12 +71,21 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default: false,
+    },
+    useTimer:{
+      type:Boolean,
+      required:false,
+      default:false
     }
   },
   emits: ["close-modal"],
   setup(props, context) {
     //const modal = ref(true);
-    const {show} = toRefs(props);
+    const {show,useTimer} = toRefs(props);
+    const okButtonDisabled = ref(false);
+    const timerCounter = ref(5);//5 seconds
+    let timerInteval:NodeJS.Timer;
+    let timerTimeout:NodeJS.Timeout;
     const closeModal = (): void => {
       // modal.value = false;
       context.emit("close-modal");
@@ -83,7 +93,47 @@ export default defineComponent({
     function returnValue() {
       return true;
     }
-    return { show, closeModal, closeDialog, returnValue };
+    onMounted(() => {
+      clearTimers();
+      registerTheTimer();
+    });
+    onUpdated(() => {
+      clearTimers();
+      registerTheTimer();
+    })
+    onUnmounted(() => {
+      clearTimers();
+    })
+    const registerTheTimer = () => {
+      if(!useTimer.value)
+        return;
+      okButtonDisabled.value = true;
+      timerInteval = setInterval(() => {
+        if(timerCounter.value > 0)
+          timerCounter.value--;
+      },1000);
+      timerTimeout = setTimeout(() => {
+        okButtonDisabled.value = false;
+      },5000);
+    }
+    
+    const timerDisplayView = computed(() => {
+      if(!useTimer.value)
+        return "OK";
+      return timerCounter.value > 0 ? `OK (${timerCounter.value})` : "OK";
+    })
+    const clearTimers = () => {
+      if(!useTimer.value)
+        return;
+      if(timerInteval){
+       clearInterval(timerInteval);
+      }
+      if(timerTimeout){
+       clearTimeout(timerTimeout);
+      }
+      timerCounter.value = 5;
+    }
+    return { show, closeModal, closeDialog, returnValue,okButtonDisabled,timerCounter,timerDisplayView };
   },
 });
 </script>
@@ -96,7 +146,7 @@ export default defineComponent({
   background-color: #aacaf3;
   padding: 1rem;
   text-transform: capitalize;
-  font-size: 1rem;
+  font-size: 1.2rem !important;
   width: 100%;
   word-break: break-word;
   white-space: pre-line;
@@ -109,6 +159,7 @@ export default defineComponent({
   word-wrap: break-word;
   white-space: pre-line;
   text-align: center;
+  font-size: 1.1rem !important;
 }
 
 :deep(.v-dialog.v-overlay__content) {

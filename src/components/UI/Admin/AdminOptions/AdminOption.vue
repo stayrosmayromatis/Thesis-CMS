@@ -87,8 +87,9 @@ export default defineComponent({
         return;
       }
       showConfirmDeletionModal.value = true;
-      confirmDeletionInnerDescription.value = `Είστε σίγουρος οτι θέλετε να <span style="color:#ff4545;">διαγράψετε</span> τις διαχειριστηκές ιδιότητες
-                                              του χρήστη <span style="color: green;">${selectedTeacher.DisplayNameEl}</span>;`;
+      confirmDeletionInnerDescription.value = `Είστε σίγουρος οτι θέλετε να <span style="color:#ff4545;">διαγράψετε</span> τις διαχειριστικές ιδιότητες
+                                              του χρήστη <span style="color:#1867C0;">${selectedTeacher.DisplayNameEl}</span>;
+                                              Σε περίπτωση <span style="color:#ff4545;">λάθους</span> μπορεί να <span style="color: green;">ξαναπροστεθεί</span> ως <span style="color:#1867C0;">διαχειριστής</span>.`;
       if (await confirm()) {
         showConfirmDeletionModal.value = false;
         const payloadToSetAdminState: Partial<BaseUser> = {
