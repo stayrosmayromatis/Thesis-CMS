@@ -2,13 +2,8 @@
   <div class="options-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <base-dialog :show="showBaseDialog"
-     :inner-description="baseDialogDescription" 
-     :inner-title="baseDialogTitle"
-      :routeChangeAuthorizer="true" 
-      :use-timer="true"
-      @close-modal="showBaseDialog = false"
-      ></base-dialog>
+    <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
+      :routeChangeAuthorizer="true" :use-timer="true" @close-modal="showBaseDialog = false"></base-dialog>
     <div v-if="!showLoadingSpinner">
       <v-card elevation="3" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
         `Περιοδος` }}</label></v-card>
@@ -20,7 +15,8 @@
         <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">
           <div class="single-option_card--item">
             <div class="chip-separator__left-chip">
-              <v-chip class="chip-bg" size="large">
+              <v-chip class="chip-bg">
+                <!-- size="large" -->
                 <span>{{ semesterStringConverter(active) }}</span>
               </v-chip>
             </div>
@@ -29,9 +25,10 @@
                 'chip-is-inactive': active.Active === 1,
                 'chip-is-active': active.Active === 2,
                 'chip-is-up-to-activation': active.Active === 3
-              }" size="large">
+              }">
+                <!-- size="large" -->
                 <label>
-                  {{ semesterLabelConverter(active.Active) }}
+                  {{ semesterChipLabelConverter(active) }}
                 </label>
               </v-chip>
               <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
@@ -527,6 +524,23 @@ export default defineComponent({
       }
       return "";
     }
+    const semesterChipLabelConverter = (active: SemesterSubmitionDateResponse) => {
+      if (!active)
+        return "";
+      const label = semesterLabelConverter(active.Active);
+      if (!active.DateString)
+        return label;
+      switch (active.Active) {
+        case ActivityStatus.ACTIVE:
+          return `ΑΝΟΙΚΤΗ ΕΩΣ ${active.DateString}`;
+        case ActivityStatus.INACTIVE:
+          return `ΑΝΕΝΕΡΓΗ ΑΠΟ ${active.DateString}`;
+        case ActivityStatus.TO_BE_ACTIVATED:
+          return `ΠΡΟΣ ΔΡΟΜΟΛΟΓΗΣΗ ΣΤΙΣ ${active.DateString}`;
+        default:
+          return "ΑΝΕΝΕΡΓΗ";
+      }
+    };
     const semesterLabelConverter = (active: ActivityStatus) => {
       if (!active)
         return "ΑΝΕΝΕΡΓΗ";
@@ -582,7 +596,8 @@ export default defineComponent({
       initiateSubmissionPeriod,
       determine,
       deletePastSubmissions,
-      semesterLabelConverter
+      semesterLabelConverter,
+      semesterChipLabelConverter
     }
   }
 
@@ -602,7 +617,7 @@ export default defineComponent({
   align-items: inherit;
 }
 
-.period-label{
+.period-label {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -615,7 +630,7 @@ export default defineComponent({
   margin-bottom: 1rem;
 }
 
-.period-label > label {
+.period-label>label {
   word-wrap: break-word;
   text-align: center;
   font-size: 0.95rem;
@@ -659,13 +674,14 @@ export default defineComponent({
   background: #c91616 !important;
   margin: 0 !important;
   height: 2.4rem !important;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 400;
   padding: 1rem 1rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  max-width: 8rem;
   border-radius: 16px;
 }
 
@@ -814,6 +830,8 @@ export default defineComponent({
 
 .chip-activation {
   background: #f9f9f9 !important;
+  font-size: 0.8rem;
+  height: 2rem;
 }
 
 .chip-is-active {
@@ -846,12 +864,12 @@ export default defineComponent({
   color: #1c4397;
   word-wrap: break-word;
   gap: 0.5rem;
-  height: fit-content;
-  padding: 0.3rem 2rem;
+  height: 2rem;
+  padding: 0.3rem 1.2rem;
 }
 
 .chip-bg>span {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 .chip-separator__left-chip {
@@ -868,7 +886,7 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-  .period-label  {
+  .period-label {
     height: 3rem;
   }
 
@@ -910,6 +928,7 @@ export default defineComponent({
 
   .chip-activation {
     padding: 1rem 2rem;
+    font-size: 1rem;
   }
 
   .chip-separator {
@@ -918,9 +937,28 @@ export default defineComponent({
     width: fit-content;
     justify-content: flex-end;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
+    margin-left: 0.5rem;
   }
+
+  .chip-bg>span {
+    font-size: 1.05rem;
+  }
+
+  .delete-button {
+    font-size: 1rem;
+  }
+
 }
 
-@media (min-width: 1025px) {}
+@media (min-width: 1025px) {
+  .chip-separator {
+    gap: 1rem;
+  }
+
+  .chip-activation,
+  .chip-bg {
+    height: 2.5rem;
+  }
+}
 </style>

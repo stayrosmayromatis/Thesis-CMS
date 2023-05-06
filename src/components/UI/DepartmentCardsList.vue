@@ -40,7 +40,7 @@ import { CourseDepartment, CourseDepartmentsResponse } from '@/models/BACKEND-MO
 import { useRouter } from 'vue-router';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from '@/composables/showAlert.composable';
-import { PersonAffiliation } from '../../enums/PersonAffiliationEnum';
+import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
 export default defineComponent({
   props: {
     course_guid:{

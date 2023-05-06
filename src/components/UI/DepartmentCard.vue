@@ -74,6 +74,9 @@
 <script lang="ts">
 import { useAlert } from "@/composables/showAlert.composable";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
+import { CourseController, StudentsController } from "@/config";
+import { CreateSubResponse } from "@/models/BACKEND-MODELS/CreateSubResponse";
+import { ApiResult } from "@/models/DTO/ApiResult";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { defineComponent, computed, toRefs } from "vue";
@@ -163,7 +166,8 @@ export default defineComponent({
       }
     });
     const handActionByUserType = async () => {
-      if (!user_type.value) {
+      closeAlert();
+      if (!user_type.value || !course_id.value || !ladb_id.value) {
         setTypeOfAlert("error");
         openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
         closeAlert(1500);
@@ -171,18 +175,22 @@ export default defineComponent({
         return;
       }
       if (user_type.value === 2) {
-        //make the final registration call with courseId and labId and upon response redirect to the dilwseis
-        //if()
+        const finalRegisterIDT = await MakeTheFinalRegisterCall();
+        if (!finalRegisterIDT.Status) {
+          setTypeOfAlert("error");
+          openAlert("Αποτυχία δήλωσης, προσπαθήστε ξανά");
+          closeAlert(1500);
+          await delay(1500);
+          return;
+        }
+        setTypeOfAlert("error");
+        openAlert("Επιτυχία δήλωσης");
+        closeAlert(1500);
+        await delay(1500);
         router.replace({ name: "submittedLabs" });
         return;
       }
       if (user_type.value === 1 || user_type.value === 12) {
-        if (!course_id.value) {
-          setTypeOfAlert("error");
-          openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
-          closeAlert(1500);
-          await delay(1500);
-        }
         router.push({
           name: 'addlab', query: {
             editId: course_id.value!.trim().toString()
@@ -196,19 +204,27 @@ export default defineComponent({
       await delay(1500);
       return;
     };
-    // async function MakeTheFinalRegisterCall(courseGuid:string,labGuid:string):Promise<InternalDataTransfter<boolean>>{
-    //   if(!courseGuid || !labGuid)
-    //     return {Status:false,Data:false,Error:"The parameters are null"};
-    //   const finalRegisterCallApiRequest  = await useAxios(
-    //     //the controller
-    //     "Courses/final-sth",
-    //   {
-    //       method:"POST"
-    //     },
-    //     setBackendInstanceAuth()
-    //   );
-    //   //AND CONTINUE ON FROM HERE!
-    // }
+    async function MakeTheFinalRegisterCall(): Promise<InternalDataTransfter<boolean>> {
+      if (!course_id.value || !course_id.value)
+        return { Status: false, Data: false, Error: "The parameters are null" };
+      const finalRegisterCallApiRequest = await useAxios(
+        StudentsController + "create-student-submition",
+        {
+          method: "POST",
+          data: {
+            CourseId: course_id.value,
+            LabId: ladb_id.value
+          }
+        },
+        setBackendInstanceAuth()
+      );
+      if (!finalRegisterCallApiRequest.isFinished.value)
+        return { Status: false, Data: false, Error: "API Call didn't finish" };
+      const registrationResult: ApiResult<CreateSubResponse> = finalRegisterCallApiRequest.data.value;
+      if (!registrationResult.Status)
+        return { Status: false, Data: false, Error: registrationResult.Error };
+      return { Status: true, Data: true };
+    }
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };

@@ -6,4 +6,5 @@ export interface SemesterSubmitionDateResponse {
     Active : ActivityStatus;
     IsActive : boolean;
     Periodicity : PeriodicityEnum;
+    DateString? :string;
 }
