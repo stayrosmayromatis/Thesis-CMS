@@ -22,6 +22,10 @@ export interface PersonalisedCourseBySemester {
   CanSubmitAfter?:Date
   CanSubmitAfterString?:string
   LabInfo?: SubmittedLabInfo;
+  CanSubmitUntil? : Date,
+  CanSubmitUntilString? :string,
+  HasAlreadySubmittedAt? :Date,
+  HasAlreadySubmittedAtString? : string
 }
 export interface SubmittedLabInfo {
   LabName: string;
