@@ -2,8 +2,8 @@
   <v-container class="sth-container" @click="emitMobileViewClose">
     <v-card elevation="5" class="parent-label">ΑΝΑΖΗΤΗΣΗ ΕΡΓΑΣΤΗΡΙΩΝ</v-card>
     <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
-      density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable multiple
-      return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
+      density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable
+      :multiple="true" return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
       @update:model-value="requestLabs">
     </v-select>
     <base-spinner :show="isLoading"></base-spinner>
@@ -17,8 +17,8 @@
             <div class="chip-separator">
               <div class="chip-separator__left-chip">
                 <v-chip class="chip-bg" :class="{
-                    'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
-                  }" size="large" style="height: fit-content">
+                  'gray-out-card-chip-lab__details': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                }" size="large" style="height: fit-content">
                   <div class="lab-chip__details">
                     <div class="lab-course__code">
                       {{ lab.CourseCode + " " }}
@@ -112,8 +112,8 @@
                 </div>
                 <!-- NEW DIV REFACTOR -->
                 <v-chip class="chip-attendance" :class="{
-                    'gray-out-card-chip-attendance': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
-                  }" size="large">
+                  'gray-out-card-chip-attendance': (userType === 2 && lab.CanSubmit === false) || (userType === 1 && lab.IsAssistant === true),
+                }" size="large">
                   <div>{{ lab.CourseAttendanceString }}</div>
                 </v-chip>
                 <v-chip class="chip-semester" :class="{
@@ -131,35 +131,63 @@
           <div class="classOne">
             <p>{{ lab.ShortDescription }}</p>
             <div class="lab-details_if_submitted">
-              <p v-if="(
-                  userType === 2 &&
+              <div v-if="userType === 2">
+                <p v-if="(
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === true &&
                   lab.LabInfo
                 )
-                ">
-                {{
-                  `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring}
-                                (${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})`
-                }}
-              </p>
+                  ">
+                <div>
+                  <span>
+                    <label>{{ `Επιλέχθηκε το εργαστήριο` }}</label><br />
+                    <label>{{ `${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} -
+                                          ${lab.LabInfo?.ToTimeString})` }}</label>
+                  </span>
+                  <div>
+                    <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
+                      :location="'bottom'">
+                      <template v-slot:activator="{ props }">
+                        <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                            <path fill="#00c900"
+                              d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z" />
+                          </svg>
+                          </v-chip>
+                      </template>
+                    </v-tooltip>
+                  </div>
+                </div>
+
+                </p>
+                <p v-if="(
+                  lab.CanSubmit === false &&
+                  lab.HasAlreadySubmitted === false &&
+                  lab.DeniedReason
+                )
+                  ">
+                <div
+                  style="display: flex; flex-direction: row; align-items: center;justify-content: center; gap: 0.5rem;">
+                  <span>{{ deniedReasonHandler(lab) }}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                    <path fill="#ff4646"
+                      d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z" />
+                  </svg>
+                </div>
+                </p>
+              </div>
+              <!-- <div v-if="userType === 1">
+
+              </div> -->
+
+
+
               <v-btn v-if="(userType === 2 &&
-                    lab.CanSubmit === true &&
-                    lab.HasAlreadySubmitted === false &&
-                    !lab.LabInfo) || (userType === 1)
-                  " @click="pushToHandle(lab.CourseGUID)" color="#a3cef1" elevation="4">{{ userType === 2 ? 'Δηλωσε το' :
-      userType === 1 ? 'Πορεια Δηλωσης' : 'Επιλογη' }}</v-btn>
-              <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`" :location="'bottom'"
-                v-if="(userType === 2 && lab.CanSubmit === true && lab.HasAlreadySubmitted === true)">
-                <template v-slot:activator="{ props }">
-                  <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
-                      <path fill="#00c900"
-                        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z" />
-                    </svg>
-                  </v-chip>
-                </template>
-              </v-tooltip>
+                lab.CanSubmit === true &&
+                lab.HasAlreadySubmitted === false &&
+                !lab.LabInfo) || (userType === 1)
+                " @click="pushToHandle(lab.CourseGUID)" color="#a3cef1" elevation="4">{{ userType === 2 ? 'Δηλωσε το' :
+    userType === 1 ? 'Πορεια Δηλωσης' : 'Επιλογη' }}</v-btn>
             </div>
           </div>
         </v-expansion-panel-text>
@@ -183,6 +211,7 @@ import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import { useRouter } from "vue-router";
 import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } from "@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse";
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
+import { PermissionDeniedToSubmitReason } from "@/enums/PermissionDeniedToSubmitReason";
 
 
 
@@ -216,7 +245,7 @@ export default defineComponent({
         },
         setBackendInstanceAuth()
       );
-      if (personalised_api_response.isFinished) {
+      if (personalised_api_response.isFinished.value) {
         isLoading.value = false;
         const personalised_response_data: ApiResult<PersonalisedCoursesBySemesterResponse> =
           personalised_api_response.data.value;
@@ -327,6 +356,28 @@ export default defineComponent({
         return "";
       }
     };
+    const deniedReasonHandler = (lab: PersonalisedCourseBySemester): string => {
+      let result = "ΔΕΝ ΥΠΑΡΧΕΙ ΔΥΝΑΤΟΤΗΤΑ ΔΗΛΩΣΗΣ";
+      if (!lab || !lab.DeniedReason)
+        return result;
+      switch (lab.DeniedReason) {
+        case PermissionDeniedToSubmitReason.NOT_AT_VALID_DATE:
+          result = "ΔΕΝ ΕΙΝΑΙ ΑΝΟΙΚΤΗ Η ΘΥΡΙΔΑ ΠΡΟΤΕΡΑΙΟΤΗΤΑΣ ΣΑΣ";
+          if (lab.CanSubmitAfter && lab.CanSubmitAfterString) {
+            result = result + `ΘΑ ΜΠΟΡΕΙΤΕ ΝΑ ΔΗΛΩΣΕΤΕ ΑΠΟ ${lab.CanSubmitAfterString}`
+          }
+          if (lab.CanSubmitUntil && lab.CanSubmitUntilString) {
+            result = result + `ΕΩΣ ${lab.CanSubmitUntilString}`
+          }
+          break;
+        case PermissionDeniedToSubmitReason.NOT_AT_VALID_SEMESTER:
+          result = "ΔΕΝ ΕΙΣΤΕ ΣΤΟ ΤΥΠΙΚΟ ΕΞΑΜΗΝΟ ΤΟΥ ΜΑΘΗΜΑΤΟΣ";
+          break;
+        default:
+          break;
+      }
+      return result;
+    }
     return {
       userType,
       personalisedCourses,
@@ -340,7 +391,8 @@ export default defineComponent({
       semesterReformer,
       pushToHandle,
       isReadOnly,
-      toolTipText
+      toolTipText,
+      deniedReasonHandler
     };
   },
 });
@@ -358,12 +410,8 @@ export default defineComponent({
   -webkit-hyphens: auto;
   hyphens: auto;
   letter-spacing: 0.0125em;
-  /* min-width: 0; */
-  /* overflow-wrap: normal; */
-  /* overflow: hidden; */
   font-weight: 500;
   width: fit-content;
-  /* padding: 0.6rem 0.5rem; */
   padding-bottom: 0.5rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -928,4 +976,5 @@ export default defineComponent({
     background-color: #aacaf3;
     /* min-width: 769px; */
   }
-}</style>
+}
+</style>

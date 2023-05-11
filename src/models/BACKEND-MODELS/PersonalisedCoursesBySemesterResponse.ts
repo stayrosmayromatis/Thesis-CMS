@@ -1,5 +1,6 @@
 import { AttendanceEnum } from "@/enums/AttendanceEnums";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
+import { PermissionDeniedToSubmitReason } from "@/enums/PermissionDeniedToSubmitReason";
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 export interface PersonalisedCoursesBySemesterResponse {
   PersonalisedCourses: Array<PersonalisedCourseBySemester>;
@@ -26,6 +27,8 @@ export interface PersonalisedCourseBySemester {
   CanSubmitUntilString? :string,
   HasAlreadySubmittedAt? :Date,
   HasAlreadySubmittedAtString? : string
+  DeniedReason? : PermissionDeniedToSubmitReason;
+  DeniedReasonString? :string;
 }
 export interface SubmittedLabInfo {
   LabName: string;
