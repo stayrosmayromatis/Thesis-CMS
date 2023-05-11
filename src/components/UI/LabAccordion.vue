@@ -132,55 +132,66 @@
             <p>{{ lab.ShortDescription }}</p>
             <div class="lab-details_if_submitted">
               <div v-if="userType === 2">
-                <p v-if="(
+                <div v-if="(
                   lab.CanSubmit === true &&
                   lab.HasAlreadySubmitted === true &&
                   lab.LabInfo
                 )
                   ">
-                <div>
-                  <span>
-                    <label>{{ `Επιλέχθηκε το εργαστήριο` }}</label><br />
-                    <label>{{ `${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} -
-                                          ${lab.LabInfo?.ToTimeString})` }}</label>
-                  </span>
-                  <div>
-                    <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
-                      :location="'bottom'">
-                      <template v-slot:activator="{ props }">
-                        <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
-                            <path fill="#00c900"
-                              d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z" />
-                          </svg>
+                  <div class="lab-details_if_submitted__chose">
+                    <div class="view-aligner">
+                      <label>{{ `Επιλέχθηκε το εργαστήριο` }}</label>
+                      <label>{{ `${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} -
+                                              ${lab.LabInfo?.ToTimeString})` }}</label>
+                      <!-- <label>{{ `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} -
+                                          ${lab.LabInfo?.ToTimeString})` }}</label> -->
+                    </div>
+                    <div>
+                      <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
+                        :location="'bottom'">
+                        <template v-slot:activator="{ props }">
+                          <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                              <path fill="#00c900"
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z" />
+                            </svg>
                           </v-chip>
-                      </template>
-                    </v-tooltip>
+                        </template>
+                      </v-tooltip>
+                    </div>
                   </div>
                 </div>
-
-                </p>
-                <p v-if="(
+                <div v-if="(
                   lab.CanSubmit === false &&
                   lab.HasAlreadySubmitted === false &&
                   lab.DeniedReason
                 )
                   ">
-                <div
-                  style="display: flex; flex-direction: row; align-items: center;justify-content: center; gap: 0.5rem;">
-                  <span>{{ deniedReasonHandler(lab) }}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
-                    <path fill="#ff4646"
-                      d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z" />
-                  </svg>
+                  <div class="lab-details_if_submitted__chose">
+                    <div class="view-aligner">
+                      <label>{{ deniedReasonHandler(lab) }}</label>
+                      <label>{{ deniedReasonTextWithDates(lab) }}</label>
+                      <!-- <label>Θυρίδα προτεραιότητας κλειστή.</label>
+                      <label>{{ `Δήλώσεις ανοικτές απο 17-05-2023, εως 17-05-2023` }}</label> -->
+                    </div>
+                    <div>
+                      <v-tooltip :text="`Απαγορεύεται η δήλωση`" :location="'bottom'">
+                        <template v-slot:activator="{ props }">
+                          <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                              <path fill="#ff4646"
+                                d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z" />
+                            </svg>
+                          </v-chip>
+                        </template>
+                      </v-tooltip>
+                    </div>
+                  </div>
                 </div>
-                </p>
               </div>
               <!-- <div v-if="userType === 1">
 
               </div> -->
-
-
 
               <v-btn v-if="(userType === 2 &&
                 lab.CanSubmit === true &&
@@ -356,27 +367,34 @@ export default defineComponent({
         return "";
       }
     };
+
+    const deniedReasonTextWithDates = (lab: PersonalisedCourseBySemester) => {
+      let result = "";
+      if (!lab)
+        return result;
+      if (lab.DeniedReason && lab.DeniedReason === PermissionDeniedToSubmitReason.NOT_AT_VALID_DATE) {
+        if (lab.CanSubmitAfter && lab.CanSubmitAfterString) {
+          result += + `Δυνατότητα δήλωσης απο ${lab.CanSubmitAfterString}, `
+        }
+        if (lab.CanSubmitUntil && lab.CanSubmitUntilString) {
+          result += `εως ${lab.CanSubmitUntilString}.`
+        }
+      }
+      return result;
+    }
     const deniedReasonHandler = (lab: PersonalisedCourseBySemester): string => {
-      let result = "ΔΕΝ ΥΠΑΡΧΕΙ ΔΥΝΑΤΟΤΗΤΑ ΔΗΛΩΣΗΣ";
+      let result = "Δεν υπάρχει δυνατότητα δήλωσης";
       if (!lab || !lab.DeniedReason)
         return result;
       switch (lab.DeniedReason) {
         case PermissionDeniedToSubmitReason.NOT_AT_VALID_DATE:
-          result = "ΔΕΝ ΕΙΝΑΙ ΑΝΟΙΚΤΗ Η ΘΥΡΙΔΑ ΠΡΟΤΕΡΑΙΟΤΗΤΑΣ ΣΑΣ";
-          if (lab.CanSubmitAfter && lab.CanSubmitAfterString) {
-            result = result + `ΘΑ ΜΠΟΡΕΙΤΕ ΝΑ ΔΗΛΩΣΕΤΕ ΑΠΟ ${lab.CanSubmitAfterString}`
-          }
-          if (lab.CanSubmitUntil && lab.CanSubmitUntilString) {
-            result = result + `ΕΩΣ ${lab.CanSubmitUntilString}`
-          }
-          break;
+          return "Θυρίδα προτεραιότητας κλειστή. ";
         case PermissionDeniedToSubmitReason.NOT_AT_VALID_SEMESTER:
-          result = "ΔΕΝ ΕΙΣΤΕ ΣΤΟ ΤΥΠΙΚΟ ΕΞΑΜΗΝΟ ΤΟΥ ΜΑΘΗΜΑΤΟΣ";
-          break;
+          return "Δεν βρίσκεστε στο τυπικό εξάμηνο του μαθήματος";
         default:
-          break;
+          return result;
       }
-      return result;
+      //"Θυρίδα προτεραιότηας κλειστή. Δυνατότηα δήλωσης απο 17-05-2023, εως 17-05-2023.";
     }
     return {
       userType,
@@ -392,7 +410,8 @@ export default defineComponent({
       pushToHandle,
       isReadOnly,
       toolTipText,
-      deniedReasonHandler
+      deniedReasonHandler,
+      deniedReasonTextWithDates
     };
   },
 });
@@ -446,7 +465,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
   align-items: center;
   width: 100%;
   margin: 0;
@@ -613,8 +632,9 @@ export default defineComponent({
   display: flex;
   flex: 1 0;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .lab-details_if_submitted>p {
@@ -624,6 +644,33 @@ export default defineComponent({
   text-align: center;
   white-space: pre-line;
   word-break: inherit;
+}
+
+.lab-details_if_submitted__chose {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: inherit;
+  gap: 0.5rem;
+}
+
+.lab-details_if_submitted__chose>label {
+  text-align: center;
+}
+
+.lab-details_if_submitted__chose .view-aligner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.view-aligner label {
+  word-break: break-word;
+  word-wrap: break-word;
+  text-align: center;
 }
 
 @media (min-width: 480px) {
@@ -728,7 +775,7 @@ export default defineComponent({
 
   .classOne {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
@@ -882,6 +929,18 @@ export default defineComponent({
     font-weight: 500;
     background-color: #aacaf3;
     /* min-width: 769px; */
+  }
+
+  .lab-details_if_submitted {
+    justify-content: flex-end;
+  }
+
+  .lab-details_if_submitted__chose {
+    flex-direction: row;
+  }
+
+  .lab-details_if_submitted__chose .view-aligner {
+    align-items: flex-end;
   }
 }
 
