@@ -3,7 +3,7 @@
     <v-card elevation="5" class="parent-label">ΑΝΑΖΗΤΗΣΗ ΕΡΓΑΣΤΗΡΙΩΝ</v-card>
     <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
       density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable
-      :multiple="true" return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
+      multiple return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
       @update:model-value="requestLabs">
     </v-select>
     <base-spinner :show="isLoading"></base-spinner>
@@ -13,10 +13,10 @@
     <v-expansion-panels v-if="personalisedCourses">
       <v-expansion-panel v-for="lab in personalisedCourses" :key="lab.CourseGUID" :readonly="isReadOnly(lab)">
         <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
-          <lab-accordion-expansion-panel-title :lab="lab" :user_type="userType"></lab-accordion-expansion-panel-title>
+          <lab-accordion-expansion-panel-title :lab="lab" :user_type="userType ?? 1" @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-title>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
-          <lab-accordion-expansion-panel-text :lab="lab" :userType="userType"></lab-accordion-expansion-panel-text>
+          <lab-accordion-expansion-panel-text :lab="lab" :user_type="userType" @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-text>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -25,8 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
-import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
+import { defineComponent, onMounted, ref } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
 import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { CourseController } from "@/config";
@@ -103,7 +102,7 @@ export default defineComponent({
           return;
         }
         personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
-        userType.value = personalised_response_data.Data.UserType ?? undefined;
+        userType.value = personalised_response_data.Data.UserType ?? undefined;//
       }
       isLoading.value = false;
     };
@@ -114,6 +113,7 @@ export default defineComponent({
       emitMobileViewClose();
       GetDisplayedLabs();
       availableSemesters.value = DisplayedLabs.value;
+      // userType.value = 2;
     });
     const isReadOnly = (lab?: PersonalisedCourseBySemester): boolean => {
       if (!userType.value || !lab)
@@ -141,84 +141,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.aligner {
-  text-align: center;
-  text-overflow: ellipsis;
-  text-transform: none;
-  white-space: pre-line;
-  word-break: break-word;
-  word-wrap: normal;
-  font-size: 1rem;
-  -webkit-hyphens: auto;
-  hyphens: auto;
-  letter-spacing: 0.0125em;
-  font-weight: 500;
-  width: fit-content;
-  padding-bottom: 0.5rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-.lab-course__code {
-  font-weight: 500;
-  padding-top: 0.5rem;
-  font-size: 1rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.lab-chip__details {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  height: fit-content;
-}
-
-.chip-bg {
-  background: #f7f7f7;
-  border: 1px solid #1c4397;
-  color: #1c4397;
-  word-wrap: break-word;
-}
-
-
-
-
-.chip-attendance {
-  background: #f3f3f3;
-  /* border: 1px solid black; */
-  border: 1px solid #00c900;
-  color: #00c900;
-  word-wrap: break-word;
-  width: inherit;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.chip-semester {
-  background: #f3f3f3;
-  /* border: 1px solid black; */
-  border: 1px solid #0136e6;
-  color: #0136e6;
-  word-wrap: break-word;
-  width: inherit;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-
-
-
-
-
-
 :deep(.v-field-label) {
   color: #ffffff;
   opacity: 1;
@@ -288,88 +210,7 @@ export default defineComponent({
   margin: 0;
 }
 
-.gray-out-card-chip-lab__details {
-  background: #d1d3d8 !important;
-  border: 1px solid #273864 !important;
-  color: #273864 !important;
-}
-
-.gray-out-card-chip-semester {
-  background: #f9f9f9 !important;
-  border: 1px solid #303c64 !important;
-  color: #303c64 !important;
-}
-
-.gray-out-card-chip-attendance {
-  background: #f9f9f9 !important;
-  border: 1px solid #125e12 !important;
-  color: #125e12 !important;
-}
-
-
-
 @media (min-width: 480px) {
-  .aligner {
-    text-align: center;
-    text-overflow: ellipsis;
-    text-transform: none;
-    white-space: pre-line;
-    word-break: break-word;
-    word-wrap: break-word;
-    font-size: 1rem;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    letter-spacing: 0.0125em;
-    overflow-wrap: anywhere;
-    overflow: visible;
-    font-weight: 500;
-    width: fit-content;
-    padding: 0.5rem 0.5rem;
-    min-width: 8rem;
-    max-width: 8rem;
-  }
-
-  .lab-course__code {
-    font-weight: 500;
-    font-size: 1rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-  }
-
-  .lab-chip__details {
-    display: flex;
-    padding: 0;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  .chip-attendance {
-    background: #f3f3f3;
-    border: 1px solid #00c900;
-    color: #00c900;
-    word-wrap: break-word;
-    width: inherit;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .chip-semester {
-    background: #f3f3f3;
-    border: 1px solid #0136e6;
-    color: #0136e6;
-    word-wrap: break-word;
-    width: inherit;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
 
   :deep(.v-expansion-panel-title__icon) {
     display: inline-flex;
@@ -387,151 +228,20 @@ export default defineComponent({
     margin: 2rem 1rem;
     width: inherit;
     max-width: 100%;
-    min-width: 320px;
-  }
 
-  .lab-course__code {
-    font-weight: 500;
-    font-size: 1rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding: 0;
-    align-items: center;
-  }
-
-  .aligner {
-    text-align: center;
-    text-overflow: ellipsis;
-    text-transform: none;
-    white-space: nowrap;
-    word-break: break-word;
-    word-wrap: break-word;
-    font-size: 1rem;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    letter-spacing: 0.0125em;
-    overflow-wrap: anywhere;
-    overflow: visible;
-    font-weight: 500;
-    width: fit-content;
-    padding: 0.5rem 0.5rem;
-    min-width: min-content;
-    max-width: max-content;
-  }
-
-  .chip-attendance {
-    background: #f3f3f3;
-    border: 1px solid #00c900;
-    color: #00c900;
-    word-wrap: break-word;
-    width: inherit;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .chip-semester {
-    background: #f3f3f3;
-    border: 1px solid #0136e6;
-    color: #0136e6;
-    word-wrap: break-word;
-    width: inherit;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  :deep(.v-expansion-panel-title__icon) {
-    display: inline-flex;
-    margin-right: 0;
-    margin-bottom: -4px;
-    margin-top: -4px;
-    user-select: none;
-    margin-inline-start: auto;
   }
 
   .parent-label {
     margin-top: 2rem;
     margin-bottom: 2rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
     height: 3rem;
-    justify-content: center;
     font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    /* min-width: 769px; */
   }
 }
 
 @media (min-width: 1025px) {
   :deep(.v-container) {
     max-width: 100%;
-  }
-
-  .lab-course__code {
-    font-weight: 500;
-    font-size: 1rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-  }
-
-  .chip-attendance {
-    background: #f3f3f3;
-    border: 1px solid #00c900;
-    color: #00c900;
-    word-wrap: break-word;
-    width: inherit;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .chip-semester {
-    background: #f3f3f3;
-    border: 1px solid #0136e6;
-    color: #0136e6;
-    word-wrap: break-word;
-    width: inherit;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-
-  :deep(.v-expansion-panel-title__icon) {
-    display: inline-flex;
-    margin-right: 0;
-    margin-bottom: -4px;
-    margin-top: -4px;
-    user-select: none;
-    margin-inline-start: auto;
-  }
-
-  .parent-label {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 3rem;
-    justify-content: center;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    /* min-width: 769px; */
   }
 }
 </style>

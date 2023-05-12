@@ -32,7 +32,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/lab-list",
     name : 'labList',
-    component : () => import('@/components/UI/LabAccordion.vue'),
+    component : () => import('@/components/UI/LabAccordion/LabAccordion.vue'),
     meta : {requiresAuth :true,requiredPeriodInitialized : true},
     beforeEnter : [protectPeriodInitializedRoutes]
   },

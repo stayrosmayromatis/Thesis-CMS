@@ -1,8 +1,10 @@
 <template>
-    <div class="lab-accordion-expansion-panel-text-parent">
-        <label>{{ lab.ShortDescription }}</label>
+    <div class="lab-accordion-expansion-panel-text-parent" @click="emitToParentCloseMobile">
+        <!-- <label>{{ lab.ShortDescription }}</label> -->
+        <label>Αυτή ειναι πραγματικά μια πάρα πολύ μεγάλη περιγραφή,θα πρέπει να ανταποκριθέι αναλόγως όπως και να έχει με
+            πατάτες</label>
         <div class="lab-details_if_submitted">
-            <div v-if="userType === 2">
+            <div v-if="user_type === 2">
                 <div v-if="(
                     lab.CanSubmit === true &&
                     lab.HasAlreadySubmitted === true &&
@@ -12,10 +14,8 @@
                     <div class="lab-details_if_submitted__chose">
                         <div class="view-aligner">
                             <label>{{ `Επιλέχθηκε το εργαστήριο` }}</label>
-                            <label>{{ `${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} -
-                                                            ${lab.LabInfo?.ToTimeString})` }}</label>
-                            <!-- <label>{{ `Επιλέχθηκε το εργαστήριο ${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring} (${lab.LabInfo?.FromTimeString} -
-                                          ${lab.LabInfo?.ToTimeString})` }}</label> -->
+                            <label>{{ `${lab.LabInfo?.LabName} / ${lab.LabInfo?.Daystring}` }}</label>
+                            <label>{{ `(${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})` }}</label>
                         </div>
                         <div>
                             <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
@@ -60,16 +60,14 @@
                     </div>
                 </div>
             </div>
-            <!-- <div v-if="userType === 1">
-
-              </div> -->
-
-            <v-btn v-if="(userType === 2 &&
+            <!-- <div v-if="userType === 1"></div> -->
+            <v-btn v-if="user_type && (user_type === 2 &&
                 lab.CanSubmit === true &&
-                lab.HasAlreadySubmitted === false &&
-                !lab.LabInfo) || (userType === 1)
-                " @click="pushToHandle(lab.CourseGUID)" color="#a3cef1" elevation="4">{{ userType === 2 ? 'Δηλωσε το' :
-        user_type === 1 ? 'Πορεια Δηλωσης' : 'Επιλογη' }}</v-btn>
+                lab.HasAlreadySubmitted === false) || (user_type === 1)
+                " @click="pushToHandle" color="#a3cef1" elevation="4">
+
+                {{ pushToHandleButtonText
+                }}</v-btn>
         </div>
     </div>
 </template>
@@ -79,14 +77,13 @@ import { PermissionDeniedToSubmitReason } from '@/enums/PermissionDeniedToSubmit
 import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
 import { PersonalisedCourseBySemester } from '@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse';
 import { computedEager } from '@vueuse/core';
-import { onMounted } from 'vue';
-import { PropType, toRefs } from 'vue';
+import { PropType,toRefs } from 'vue';
 import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 
 
 export default defineComponent({
-    name: 'LabAccordionExpansionPanelText',
+    emits: ['close-mobile'],
     props: {
         lab: {
             type: Object as PropType<PersonalisedCourseBySemester>,
@@ -99,15 +96,16 @@ export default defineComponent({
             default: undefined
         }
     },
-    setup(props) {
+    setup(props, context) {
         const { lab, user_type } = toRefs(props);
         const router = useRouter();
-        const pushToHandle = (guid: string) => {
-            if (!guid) return;
+        const pushToHandle = () => {
+            if (!lab.value || !lab.value.CourseGUID)
+                return;
             router.push({
                 name: "enroll",
                 params: {
-                    course_guid: guid,
+                    course_guid: lab.value.CourseGUID,
                 },
             });
             return;
@@ -126,7 +124,6 @@ export default defineComponent({
             }
             return result;
         });
-
         const deniedReasonHandler = computedEager((): string => {
             let result = "Δεν υπάρχει δυνατότητα δήλωσης";
             if (!lab.value || !lab.value.DeniedReason)
@@ -140,7 +137,16 @@ export default defineComponent({
                     return result;
             }
         });
-        return { lab, userType: user_type, deniedReasonTextWithDates, deniedReasonHandler, pushToHandle }
+        const pushToHandleButtonText = computedEager(() => {
+            if (!user_type.value) return 'Επιλογη';
+            if (user_type.value === 2)
+                return 'Δηλωσε το';
+            return 'Πορεια Δηλωσης';
+        });
+        const emitToParentCloseMobile = () => {
+            context.emit("close-mobile");
+        }
+        return { lab, deniedReasonTextWithDates, pushToHandleButtonText, deniedReasonHandler, pushToHandle, emitToParentCloseMobile }
     }
 });
 </script>
@@ -164,6 +170,7 @@ export default defineComponent({
     text-align: center;
     white-space: pre-line;
     word-break: break-word;
+    max-width: 20rem;
 }
 
 .lab-accordion-expansion-panel-text-parent>button {
@@ -220,7 +227,8 @@ export default defineComponent({
 
 @media (min-width: 480px) {
     .lab-accordion-expansion-panel-text-parent>label {
-        text-align: left;
+        /* text-align: left; */
+        max-width: 25rem;
     }
 }
 
@@ -233,6 +241,8 @@ export default defineComponent({
 
     .lab-accordion-expansion-panel-text-parent>label {
         width: fit-content;
+        max-width: 25rem;
+        text-align: left;
     }
 
     .lab-details_if_submitted {
@@ -245,6 +255,16 @@ export default defineComponent({
 
     .lab-details_if_submitted__chose .view-aligner {
         align-items: flex-end;
+    }
+
+    .view-aligner label {
+        text-align: right;
+    }
+}
+
+@media (min-width: 1025px) {
+    .lab-accordion-expansion-panel-text-parent>label {
+        max-width: 35rem;
     }
 }
 </style>
