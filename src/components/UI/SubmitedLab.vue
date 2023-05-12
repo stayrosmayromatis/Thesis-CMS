@@ -167,14 +167,8 @@ export default defineComponent({
           return "Η ΕΞΑΜΗΝΟ";
         case LabSemesterEnum.TH_XEIM:
           return "Θ ΕΞΑΜΗΝΟ";
-        case LabSemesterEnum.I_EAR:
-          return "Ι ΕΞΑΜΗΝΟ";
-        case LabSemesterEnum.K_XEIM:
-          return "Κ ΕΞΑΜΗΝΟ";
-        case LabSemesterEnum.L_EAR:
-          return "Λ ΕΞΑΜΗΝΟ";
         default:
-          return "N/A";
+          return "Χ/Ε";
       }
     });
     const IsStaffOrAdmin = computed(() => {

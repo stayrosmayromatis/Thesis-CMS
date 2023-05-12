@@ -72,14 +72,9 @@ export default defineComponent({
                     return "Η ";
                 case LabSemesterEnum.TH_XEIM:
                     return "Θ ";
-                case LabSemesterEnum.I_EAR:
-                    return "Ι ";
-                case LabSemesterEnum.K_XEIM:
-                    return "Κ ";
-                case LabSemesterEnum.L_EAR:
-                    return "Λ ";
                 default:
-                    return "N/A";
+                    return "X/E";
+                    
             }
         };
         return { course, semesterReformer };

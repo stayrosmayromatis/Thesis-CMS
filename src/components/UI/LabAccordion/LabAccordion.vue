@@ -109,11 +109,10 @@ export default defineComponent({
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
     };
-    onMounted(() => {
+    onMounted(async () => {
       emitMobileViewClose();
-      GetDisplayedLabs();
+      await GetDisplayedLabs();
       availableSemesters.value = DisplayedLabs.value;
-      // userType.value = 2;
     });
     const isReadOnly = (lab?: PersonalisedCourseBySemester): boolean => {
       if (!userType.value || !lab)
