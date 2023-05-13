@@ -30,7 +30,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, toRefs, onMounted, ref, computed } from 'vue';
-import DepartmentCard from "@/components/UI/DepartmentCard.vue";
+import DepartmentCard from "@/components/UI/Departments/DepartmentCard.vue";
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
@@ -168,54 +168,16 @@ export default defineComponent({
     margin: 1.5rem 1.5rem;
   }
   .parent-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: fit-content;
-    justify-content: center;
     font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
     padding: 1rem;
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
-  }
-  .cards-overview {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
   }
 }
 @media (min-width: 1025px) {
-  .parent-card {
-    margin: 1.5rem 1.5rem;
-  }
   .parent-label {
-    display: flex;
     flex-direction: row;
-    align-items: center;
     gap: 1rem;
-    width: 100%;
-    height: fit-content;
-    justify-content: center;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    padding: 1rem;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  .cards-overview {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
   }
 }
 </style>

@@ -436,23 +436,12 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .cant-find-teacher-fields {
-    display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
-    width: 100%;
     gap: 1rem;
   }
 }
 
 @media (min-width: 1025px) {
-  .cant-find-teacher-fields {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    gap: 1rem;
-  }
 }
 </style>

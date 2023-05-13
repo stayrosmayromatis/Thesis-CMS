@@ -1,17 +1,9 @@
 <template>
   <div class="card">
-    <base-dialog
-      :show="showConfirmDeletionModal"
-      :route-change-authorizer="true"
-      :inner-title="confirmDeletionInnerTitle"
-      :inner-description="confirmDeletionInnerDescription"
-      @close-modal="showConfirmDeletionModal = false"
-    ></base-dialog>
+    <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
+      :inner-description="confirmDeletionInnerDescription" @close-modal="showConfirmDeletionModal = false"></base-dialog>
     <!-- elevation="5" -->
-    <v-card
-      class="card-item"
-      :class="{ 'gray-out': IsAssistant }"
-    >
+    <v-card class="card-item" :class="{ 'gray-out': IsAssistant }">
       <div class="spacer">
         <div class="lab-code">
           {{ LabCode }}
@@ -30,30 +22,16 @@
           </div>
         </v-card-text>
         <div class="chip-group">
-          <v-chip
-            outlined="true"
-            class="card-chip-semester"
-            :class="{ 'gray-out-card-chip-semester': IsAssistant }"
-            >{{ Semester }}</v-chip
-          >
-          <v-chip
-            outlined="true"
-            :class="{ 'gray-out-card-chip-attendance': IsAssistant }"
-            class="card-chip"
-            >{{ lab.AttendanceString }}</v-chip
-          >
+          <v-chip outlined="true" class="card-chip-semester" :class="{ 'gray-out-card-chip-semester': IsAssistant }">{{
+            Semester }}</v-chip>
+          <v-chip outlined="true" :class="{ 'gray-out-card-chip-attendance': IsAssistant }" class="card-chip">{{
+            lab.AttendanceString }}</v-chip>
           <div class="media-button-group">
             <div>
               <v-tooltip :text="DeletionText" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn
-                    :class="{ 'not-visible-buttons': IsAssistant }"
-                    v-bind="props"
-                    class="delete-button"
-                    icon="mdi-trash-can"
-                    size="x-small"
-                    @click="CheckDelete"
-                  ></v-btn>
+                  <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="delete-button"
+                    icon="mdi-trash-can" size="x-small" @click="CheckDelete"></v-btn>
                 </template>
               </v-tooltip>
             </div>
@@ -62,14 +40,8 @@
             <div v-if="IsStaffOrAdmin">
               <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <v-btn
-                    :class="{ 'not-visible-buttons': IsAssistant }"
-                    v-bind="props"
-                    class="edit-button"
-                    icon="mdi-pencil"
-                    size="x-small"
-                    @click="redirectToEditComponent"
-                  ></v-btn>
+                  <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="edit-button"
+                    icon="mdi-pencil" size="x-small" @click="redirectToEditComponent"></v-btn>
                 </template>
               </v-tooltip>
             </div>
@@ -105,7 +77,7 @@ export default defineComponent({
       required: true,
       default: null,
     },
-    course_guid:{
+    course_guid: {
       type: String,
       required: false,
       default: null,
@@ -121,7 +93,7 @@ export default defineComponent({
   },
   emits: ["force-refetch"],
   setup(props, context) {
-    const { lab, personAffiliation,course_guid } = toRefs(props);
+    const { lab, personAffiliation, course_guid } = toRefs(props);
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
@@ -198,112 +170,100 @@ export default defineComponent({
         return false;
       return true;
     });
-    const CheckDelete = async (): Promise<void> =>
-    {
-        const makeInformationCallResponse = await MakeTheInformationCall();
-        if(!makeInformationCallResponse.Status)
-        {
+    const CheckDelete = async (): Promise<void> => {
+      const makeInformationCallResponse = await MakeTheInformationCall();
+      if (!makeInformationCallResponse.Status) {
+        setTypeOfAlert('error');
+        openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
+        setTimeout(() => {
+          closeAlert();
+        }, 1500);
+        showConfirmDeletionModal.value = false;
+        return;
+      }
+      if (await confirm()) {
+        const makeConfirmDeleteCallResponse = await MakeTheConfirmDeleteCall();
+        showConfirmDeletionModal.value = false;
+        if (!makeConfirmDeleteCallResponse.Status) {
           setTypeOfAlert('error');
           openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
           setTimeout(() => {
             closeAlert();
-          },1500);
-          showConfirmDeletionModal.value = false;
+          }, 1500);
           return;
         }
-        if (await confirm())
-        {
-          const makeConfirmDeleteCallResponse = await MakeTheConfirmDeleteCall();
-          showConfirmDeletionModal.value = false;
-          if(!makeConfirmDeleteCallResponse.Status)
-          {
-            setTypeOfAlert('error');
-            openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
-            setTimeout(() => {
-              closeAlert();
-            },1500);
-            return;
-          }
-          context.emit("force-refetch");
-          return;
-        }
-        showConfirmDeletionModal.value = false;
+        context.emit("force-refetch");
         return;
+      }
+      showConfirmDeletionModal.value = false;
+      return;
     }
-    const MakeTheInformationCall = async ():Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(InfoController +`deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`,{ method: "GET" },setBackendInstanceAuth());
-      if (api_response.isFinished) 
-      {
-        const api_response_dta: ApiResult<InfoAggregateObjectResponse> =api_response.data.value;
-        if (api_response_dta.Status === true && api_response_dta.Data)
-        {
-          if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF)
-          {
-            if ((api_response_dta.Data.FoundRegistration === false ||!api_response_dta.Data.FoundRegistration) &&
-                (api_response_dta.Data.CountOfStudentsSubmited === 0 ||!api_response_dta.Data.CountOfStudentsSubmited))
-                {
+    const MakeTheInformationCall = async (): Promise<InternalDataTransfter<boolean>> => {
+      const api_response = await useAxios(InfoController + `deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "GET" }, setBackendInstanceAuth());
+      if (api_response.isFinished) {
+        const api_response_dta: ApiResult<InfoAggregateObjectResponse> = api_response.data.value;
+        if (api_response_dta.Status === true && api_response_dta.Data) {
+          if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF) {
+            if ((api_response_dta.Data.FoundRegistration === false || !api_response_dta.Data.FoundRegistration) &&
+              (api_response_dta.Data.CountOfStudentsSubmited === 0 || !api_response_dta.Data.CountOfStudentsSubmited)) {
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return {Data : true ,Status :true};
-            } else if (api_response_dta.Data.FoundRegistration === true &&api_response_dta.Data.CountOfStudentsSubmited > 0)
-            {
+              return { Data: true, Status: true };
+            } else if (api_response_dta.Data.FoundRegistration === true && api_response_dta.Data.CountOfStudentsSubmited > 0) {
               //Found dilwseis what do you want to do?
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
               Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
               Αυτο συνεπάγεται και στην <span style="color:#ff4545;">διαγραφή όλων των υπάρχοντων δηλώσεων των φοιτητών μέχρι αυτή τη στιγμή</span>.
               Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return {Data : true ,Status :true};
+              return { Data: true, Status: true };
             }
-            else if ((api_response_dta.Data.FoundRegistration === true &&!api_response_dta.Data.CountOfStudentsSubmited) ||api_response_dta.Data.CountOfStudentsSubmited === 0)
-             {
+            else if ((api_response_dta.Data.FoundRegistration === true && !api_response_dta.Data.CountOfStudentsSubmited) || api_response_dta.Data.CountOfStudentsSubmited === 0) {
               //Dilwseis not found though do you wanna continue?
               showConfirmDeletionModal.value = true;
               confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return {Data : true ,Status :true};
+              return { Data: true, Status: true };
             }
             else {
               showConfirmDeletionModal.value = false;
-              return {Data : null,Status :false ,Error:"Error"};
+              return { Data: null, Status: false, Error: "Error" };
             }
-          } if (api_response_dta.Data.PersonAffiliation &&api_response_dta.Data.PersonAffiliation === TypeStaff.STUDENT)
-          {
-            if (api_response_dta.Data.FoundRegistration === false ||!api_response_dta.Data.FoundRegistration)
-            {
+          } if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STUDENT) {
+            if (api_response_dta.Data.FoundRegistration === false || !api_response_dta.Data.FoundRegistration) {
               showConfirmDeletionModal.value = false;
-              return {Data : null,Status :false ,Error:"Error"};
+              return { Data: null, Status: false, Error: "Error" };
             }
             showConfirmDeletionModal.value = true;
             confirmDeletionInnerDescription.value = `Είστε σίγουροι οτι θέλετε να απεγγραφείτε απο το εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName} </span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseCode} ${api_response_dta.Data.CourseName}</span>.
             Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη</span>.`;
-            return {Data : true ,Status :true};
+            return { Data: true, Status: true };
           }
         }
       }
       showConfirmDeletionModal.value = false;
-      return {Data : null,Status :false ,Error:"Error"};
+      return { Data: null, Status: false, Error: "Error" };
     };
-    const MakeTheConfirmDeleteCall = async ():Promise<InternalDataTransfter<boolean>> =>
-    {
-      const api_response = await useAxios(CourseController +`confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`,{method: "POST",},setBackendInstanceAuth());
-      if (api_response.isFinished)
-      {
-        const api_data_response: ApiResult<boolean> =api_response.data.value;
-        return {Data: api_data_response.Data,Status : api_data_response.Status}
+    const MakeTheConfirmDeleteCall = async (): Promise<InternalDataTransfter<boolean>> => {
+      const api_response = await useAxios(CourseController + `confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "POST", }, setBackendInstanceAuth());
+      if (api_response.isFinished) {
+        const api_data_response: ApiResult<boolean> = api_response.data.value;
+        return { Data: api_data_response.Data, Status: api_data_response.Status }
       }
-      return {Data : null,Status :false ,Error:"Error"};
+      return { Data: null, Status: false, Error: "Error" };
     }
-    
+
     const redirectToEditComponent = () => {
-      if(!course_guid.value)
+      if (!course_guid.value)
         return;
-      router.push({name : 'addlab',query:{
-        editId : course_guid.value.trim().toString()
-      }});
+      router.push({
+        name: 'addlab', query: {
+          editId: course_guid.value.trim().toString()
+        }
+      });
     }
     return {
       confirmDeletionInnerDescription,
@@ -515,15 +475,11 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .card {
-    margin-bottom: 1.5rem;
-    margin-top: 1.5rem;
-    /* //min-width: 770px; */
+    margin: 1.5rem 0.3rem;
   }
 
   .card-item {
-    display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: center;
     flex-wrap: nowrap;
   }
@@ -531,37 +487,21 @@ export default defineComponent({
   .spacer {
     display: inline-flex;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
-    width: 100%;
   }
 
   :deep(.v-card-title) {
-    display: block;
     flex: 1 0;
-    font-size: 1.25rem;
-    font-weight: 500;
     -webkit-hyphens: auto;
-    hyphens: auto;
     letter-spacing: 0.0125em;
-    min-width: 0;
-    overflow-wrap: normal;
-    overflow: hidden;
-    padding: 0.5rem 1rem;
     text-overflow: ellipsis;
-    text-transform: none;
     white-space: initial;
-    word-break: break-word;
     word-wrap: unset;
     width: 45%;
-    text-align: center;
   }
 
   :deep(.v-card-text) {
-    font-size: 0.875rem;
     font-weight: 500;
-    letter-spacing: 0.0178571429em;
-    text-transform: none;
     margin: 1rem 1rem;
     padding: 0;
     width: fit-content;
@@ -578,109 +518,34 @@ export default defineComponent({
   }
 
   .card-chip {
-    width: fit-content;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0.5rem;
-    padding: 1rem 2rem;
-    font-weight: 500;
-    border: 1px solid #09aa09;
-    color: #09aa09;
-    background: #f3f3f3;
     max-width: 6rem;
   }
 
   .chip-group {
-    display: flex;
-    flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
     width: fit-content;
-    flex: 1 0;
   }
 }
 
 @media (min-width: 1025px) {
-  .card {
-    margin-bottom: 1.5rem;
-    margin-top: 1.5rem;
+  /* .card {
     min-width: 770px;
-  }
-
-  .card-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: nowrap;
-  }
+  } */
 
   .spacer {
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
     justify-content: flex-start;
-    width: 100%;
   }
 
   :deep(.v-card-title) {
-    display: block;
-    flex: 1 0;
-    font-size: 1.25rem;
-    font-weight: 500;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    letter-spacing: 0.0125em;
-    min-width: 0;
-    overflow-wrap: normal;
-    overflow: hidden;
-    padding: 0.5rem 1rem;
-    text-overflow: ellipsis;
-    text-transform: none;
     white-space: nowrap;
     word-break: normal;
     word-wrap: break-word;
-    width: 45%;
     text-align: inherit;
   }
 
-  :deep(.v-card-text) {
-    font-size: 0.875rem;
-    font-weight: 500;
-    letter-spacing: 0.0178571429em;
-    text-transform: none;
-    margin: 1rem 1rem;
-    padding: 0;
-    width: fit-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  /* :deep(.v-card-text) {
     flex: 1;
-  }
-
-  .card-chip {
-    width: fit-content;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0.5rem;
-    padding: 1rem 2rem;
-    font-weight: 500;
-    border: 1px solid #09aa09;
-    color: #09aa09;
-    background: #f3f3f3;
-    max-width: 6rem;
-  }
-
-  .chip-group {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    width: fit-content;
-    flex: 1 0;
-  }
+  } */
 
   .times-separator {
     display: flex;

@@ -1,3 +1,4 @@
+import { SubmittedLab } from './../models/BACKEND-MODELS/GenericSubmittedLabsResponse';
 
 import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import { store }from '@/store/index';
@@ -39,7 +40,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/submitted-labs",
     name : 'submittedLabs',
-    component : () => import('@/components/UI/SubmitedLabList.vue'),
+    component : () => import('@/components/UI/SubmittedLabs/SubmitedLabList.vue'),
     meta : {requiresAuth :true}
   },
   {
@@ -52,7 +53,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/enroll-in-department/:course_guid",
     name : 'enroll',
-    component : () => import('@/components/UI/DepartmentCardsList.vue'),
+    component : () => import('@/components/UI/Departments/DepartmentCardsList.vue'),
     props : true,
     meta : {requiresAuth :true,
     requiredPeriodInitialized : true

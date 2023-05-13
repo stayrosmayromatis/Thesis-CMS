@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import SubmitedLab from "@/components/UI/SubmitedLab.vue";
+import SubmitedLab from "@/components/UI/SubmittedLabs/SubmitedLab.vue";
 //import BaseDialog from "@/components/Base/BaseDialog.vue";
 import PdfContent from "@/components/UI/PdfContent.vue";
 import BaseAlert from '@/components/Base/BaseAlert.vue';
