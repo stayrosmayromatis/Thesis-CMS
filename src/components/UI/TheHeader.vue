@@ -69,68 +69,64 @@
         </g>
       </svg>
       <!-- IHU LOGO SVG END -->
-
     </div>
+    <div class="main-nav" v-if="hamburgerClose">
+      <ul>
+        <li v-if="isLoggedIn && IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
+          <router-link :to="{ name: 'labList' }">Εργαστήρια</router-link>
+        </li>
+        <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
+          <router-link :to="{ name: 'submittedLabs' }">Δηλωθέντα</router-link>
+        </li>
+        <li v-if="isLoggedIn && IsStaff && !IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
+          <router-link :to="{ name: 'addlab' }">Προσθήκη</router-link>
+        </li>
+        <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
+          <router-link :to="{ name: 'admin' }">Διαχείριση</router-link>
+        </li>
+        <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
+          <router-link to="/">Επικοινωνία</router-link>
+        </li>
+      </ul>
+      <div class="menu-divider"></div>
+      <div class="button-groupper">
+        <div class="nav__item--cta" v-if="!isLoggedIn">
+          <v-btn @click="redirectToLogin" class="sign-btn" rounded="pill" variant="outlined">
+            ΣΥΝΔΕΣΗ
+          </v-btn>
+        </div>
 
-    <div style="width: 100%">
-      <div class="main-nav" v-if="hamburgerClose">
-        <ul>
-          <li v-if="isLoggedIn && IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
-            <router-link :to="{ name: 'labList' }">Εργαστήρια</router-link>
-          </li>
-          <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
-            <router-link :to="{ name: 'submittedLabs' }">Δηλωθέντα</router-link>
-          </li>
-          <li v-if="isLoggedIn && IsStaff && !IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
-            <router-link :to="{ name: 'addlab' }">Προσθήκη</router-link>
-          </li>
-          <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
-            <router-link :to="{ name: 'admin' }">Διαχείριση</router-link>
-          </li>
-          <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
-            <router-link to="/">Επικοινωνία</router-link>
-          </li>
-        </ul>
-        <div class="menu-divider"></div>
-        <div class="button-groupper">
-          <div class="nav__item--cta" v-if="!isLoggedIn">
-            <v-btn @click="redirectToLogin" class="sign-btn" rounded="pill" variant="outlined">
-              ΣΥΝΔΕΣΗ
-            </v-btn>
-          </div>
-
-          <div class="nav__item--cta" v-if="isLoggedIn">
-            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <div class="nav__item--cta" v-if="isLoggedIn">
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path
                 d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm7.753 18.305c-.261-.586-.789-.991-1.871-1.241-2.293-.529-4.428-.993-3.393-2.945 3.145-5.942.833-9.119-2.489-9.119-3.388 0-5.644 3.299-2.489 9.119 1.066 1.964-1.148 2.427-3.393 2.945-1.084.25-1.608.658-1.867 1.246-1.405-1.723-2.251-3.919-2.251-6.31 0-5.514 4.486-10 10-10s10 4.486 10 10c0 2.389-.845 4.583-2.247 6.305z" />
             </svg> -->
-            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="8" r="2.1" fill="currentColor" opacity=".3"/><path fill="currentColor" d="M12 14.9c-2.97 0-6.1 1.46-6.1 2.1v1.1h12.2V17c0-.64-3.13-2.1-6.1-2.1z" opacity=".3"/><path fill="currentColor" d="M12 13c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4zm6.1 5.1H5.9V17c0-.64 3.13-2.1 6.1-2.1s6.1 1.46 6.1 2.1v1.1zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4zm0-6.1a2.1 2.1 0 1 1 0 4.2a2.1 2.1 0 0 1 0-4.2z"/></svg> -->
-            <!-- LOGGED IN USER ICON SVG -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
-              <path fill="currentColor"
-                d="M5.85 17.1q1.275-.975 2.85-1.538T12 15q1.725 0 3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4Q8.675 4 6.337 6.337T4 12q0 1.475.488 2.775T5.85 17.1ZM12 13q-1.475 0-2.488-1.012T8.5 9.5q0-1.475 1.012-2.488T12 6q1.475 0 2.488 1.012T15.5 9.5q0 1.475-1.012 2.488T12 13Zm0 9q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q1.325 0 2.5-.388t2.15-1.112q-.975-.725-2.15-1.113T12 17q-1.325 0-2.5.388T7.35 18.5q.975.725 2.15 1.113T12 20Zm0-9q.65 0 1.075-.425T13.5 9.5q0-.65-.425-1.075T12 8q-.65 0-1.075.425T10.5 9.5q0 .65.425 1.075T12 11Zm0-1.5Zm0 9Z" />
-            </svg>
-            <!-- LOGGED IN USER ICON SVG -->
-            <!-- <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link> -->
-            <label style="text-transform: capitalize;text-decoration: none;
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="8" r="2.1" fill="currentColor" opacity=".3"/><path fill="currentColor" d="M12 14.9c-2.97 0-6.1 1.46-6.1 2.1v1.1h12.2V17c0-.64-3.13-2.1-6.1-2.1z" opacity=".3"/><path fill="currentColor" d="M12 13c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4zm6.1 5.1H5.9V17c0-.64 3.13-2.1 6.1-2.1s6.1 1.46 6.1 2.1v1.1zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4zm0-6.1a2.1 2.1 0 1 1 0 4.2a2.1 2.1 0 0 1 0-4.2z"/></svg> -->
+          <!-- LOGGED IN USER ICON SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M5.85 17.1q1.275-.975 2.85-1.538T12 15q1.725 0 3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4Q8.675 4 6.337 6.337T4 12q0 1.475.488 2.775T5.85 17.1ZM12 13q-1.475 0-2.488-1.012T8.5 9.5q0-1.475 1.012-2.488T12 6q1.475 0 2.488 1.012T15.5 9.5q0 1.475-1.012 2.488T12 13Zm0 9q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q1.325 0 2.5-.388t2.15-1.112q-.975-.725-2.15-1.113T12 17q-1.325 0-2.5.388T7.35 18.5q.975.725 2.15 1.113T12 20Zm0-9q.65 0 1.075-.425T13.5 9.5q0-.65-.425-1.075T12 8q-.65 0-1.075.425T10.5 9.5q0 .65.425 1.075T12 11Zm0-1.5Zm0 9Z" />
+          </svg>
+          <!-- LOGGED IN USER ICON SVG -->
+          <!-- <router-link style="text-transform: capitalize;" to="/">{{ userName }}</router-link> -->
+          <label style="text-transform: capitalize;text-decoration: none;
         display: inline-block;
         position: relative;
         color: #0a369d;">{{ userName }}</label>
-          </div>
-          <div style="cursor: pointer" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
-            <!-- ΑΠΟΣΥΝΔΕΣΗ -->
+        </div>
+        <div style="cursor: pointer" class="logout-btn svg-center" v-if="isLoggedIn" @click="logOut">
+          <!-- ΑΠΟΣΥΝΔΕΣΗ -->
 
-            <v-tooltip text="Αποσύνδεση" location="bottom">
-              <template v-slot:activator="{ props }">
-                <!-- LOGOUT SVG -->
-                <svg v-bind="props" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M5 5h7V3H3v18h9v-2H5z" />
-                  <path fill="currentColor" d="m21 12l-4-4v3H9v2h8v3z" />
-                </svg>
-                <!-- LOGOUT SVG -->
-              </template>
-            </v-tooltip>
-          </div>
+          <v-tooltip text="Αποσύνδεση" location="bottom">
+            <template v-slot:activator="{ props }">
+              <!-- LOGOUT SVG -->
+              <svg v-bind="props" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M5 5h7V3H3v18h9v-2H5z" />
+                <path fill="currentColor" d="m21 12l-4-4v3H9v2h8v3z" />
+              </svg>
+              <!-- LOGOUT SVG -->
+            </template>
+          </v-tooltip>
         </div>
       </div>
     </div>
@@ -313,6 +309,8 @@ ul {
   align-items: center;
   gap: 0.5rem;
   height: 100%;
+  padding: 0;
+  width: 100%;
 }
 
 a,
@@ -324,24 +322,6 @@ a,
 }
 
 a:hover {}
-
-/* a:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}
-
-a::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  height: 3px;
-  bottom: -1rem;
-  left: 0;
-  background-color: #0a369d;
-  transform-origin: bottom right;
-  transition: transform 0.25s ease-out;
-} */
 
 .mobile-logo {
   display: flex;
@@ -411,13 +391,7 @@ a::after {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* width: 100%;
-    margin: 0 auto; */
     min-width: 769px;
-    /* position: sticky;
-    z-index: 100;
-    top: 0px;
-    left: 0px; */
   }
 
   .logo {
@@ -432,14 +406,9 @@ a::after {
   }
 
   .main-nav {
-    /* display: flex; */
     flex-direction: row;
-    /* justify-content: center; */
-    /* align-items: center; */
-    width: 100%;
     gap: 0;
-    /* height: 3.5rem; */
-    /* margin: 0; */
+    padding: 0.5rem;
   }
 
   .main-nav button {
@@ -447,10 +416,7 @@ a::after {
   }
 
   ul {
-    /* display: flex; */
     flex-direction: row;
-    /* justify-content: center; */
-    /* align-items: center; */
     max-width: 1025px;
     font-weight: 600;
     width: fit-content;
@@ -462,12 +428,8 @@ a::after {
   }
 
   .nav__item--cta {
-    /* display: flex; */
-    /* flex-direction: row; */
     justify-content: space-between;
     gap: 0.5rem;
-    /* align-items: center; */
-    /* font-weight: 450; */
     margin: 0;
   }
 
@@ -482,10 +444,7 @@ a::after {
   }
 
   .button-groupper {
-    /* display: flex; */
     flex-direction: row;
-    /* justify-content: center; */
-    /* align-items: center; */
     gap: 0.5rem;
   }
 
@@ -516,10 +475,6 @@ a::after {
     justify-content: space-between;
     min-width: 1025px;
     gap: 0.5rem;
-    /* display: flex; */
-    /* width: 100%; */
-    /* height: 6rem; */
-    /* align-items: center; */
   }
 
   .logo {
@@ -527,12 +482,6 @@ a::after {
     justify-content: flex-start;
     max-width: 1160px;
     font-size: 1.3965rem;
-    /* height: inherit; */
-    /* display: flex; */
-    /* align-items: center; */
-    /* flex-direction: row; */
-    /* font-weight: 600; */
-    /* text-transform: uppercase; */
   }
 
   .logo a {
@@ -544,68 +493,17 @@ a::after {
 
   .main-nav {
     justify-content: flex-end;
-    /* display: flex;
-    flex-direction: row; */
-    /* align-items: center;
-    width: 100%;
-    height: inherit; */
+    padding: 0;
   }
 
   ul {
     justify-content: flex-end;
     max-width: 1160px;
     gap: 0;
-    /* display: flex; */
-    /* flex-direction: row; */
-    /* align-items: center; */
-    /* font-weight: 450; */
-    /* width: fit-content; */
   }
 
   .button-groupper {
     margin: 0 0.5rem;
-    /* display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    width: fit-content;
-    gap: 0.5rem; */
   }
-
-  /* .nav__item {
-    margin: 0 1rem;
-    padding: 0;
-  } */
-
-  /* .nav__item--cta {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 0.5rem;
-    align-items: center;
-    font-weight: 450;
-  } */
-
-  /* .mobile-logo {
-    display: none;
-  } */
-  /* a:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
-  } */
-
-  /* a::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 3px;
-    bottom: -0.3rem;
-    left: 0;
-    background-color: #0a369d;
-    transform-origin: bottom right;
-    transition: transform 0.25s ease-out;
-  } */
-
-}</style>
+}
+</style>

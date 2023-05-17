@@ -1,11 +1,11 @@
 <template>
     <div class="container" @click="emitMobileViewClose">
-        <base-dialog v-if="error === true"  @close-modal="clearError">
+        <base-dialog v-if="error === true" @close-modal="clearError">
             <template #title>
-                <h1>{{errorTit}}</h1>
+                <h1>{{ errorTit }}</h1>
             </template>
             <template #description>
-                <p>{{errorDesc}}</p>
+                <p>{{ errorDesc }}</p>
             </template>
         </base-dialog>
         <base-alert :alert-type-prop="'success'" :show="showAlert" :title="alertTitle"></base-alert>
@@ -26,7 +26,7 @@
             </div>
             <div class="please-log-in">
                 <p>Παρακαλώ συνδεθείτε μέσω
-                    <router-link :to="{name:'red'}" > Apps</router-link>
+                    <router-link :to="{ name: 'red' }"> Apps</router-link>
                     για να συνεχίσετε στην εφαρμογή.
                 </p>
             </div>
@@ -42,7 +42,7 @@ import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 export default defineComponent({
     emits: ['closeMobileView'],
-    components:{
+    components: {
         BaseDialog,
         BaseAlert
     },
@@ -50,30 +50,30 @@ export default defineComponent({
         const error = ref(false);
         const errorDesc = ref<string>();
         const errorTit = ref<string>();
-        const {alertTitle,showAlert,openAlert,closeAlert} = useAlert();
+        const { alertTitle, showAlert, openAlert, closeAlert } = useAlert();
         onMounted(() => {
             emitMobileViewClose();
-            const {errorDescription,errorTitle,isError} = useErrorFunctions();
+            const { errorDescription, errorTitle, isError } = useErrorFunctions();
             error.value = isError.value;
-            errorDesc.value=errorDescription.value;
-            errorTit.value= errorTitle.value;
-            if(showAlert.value === true){
+            errorDesc.value = errorDescription.value;
+            errorTit.value = errorTitle.value;
+            if (showAlert.value === true) {
                 setTimeout(() => {
                     openAlert(alertTitle.value);
-                },1000)
+                }, 1000)
                 setTimeout(() => {
                     closeAlert();
-                },1500)
+                }, 1500)
             }
         });
         const emitMobileViewClose = (): void => {
             context.emit('closeMobileView', true);
         }
         const clearError = () => {
-            const {clearError} = useErrorFunctions();
+            const { clearError } = useErrorFunctions();
             clearError();
         }
-        return { emitMobileViewClose,error,errorDesc, errorTit,clearError,alertTitle,showAlert}
+        return { emitMobileViewClose, error, errorDesc, errorTit, clearError, alertTitle, showAlert }
     }
 })
 </script>
@@ -100,13 +100,13 @@ export default defineComponent({
     width: 100%;
     font-size: 1.2rem;
     font-weight: 600;
+    text-align: center;
 }
 
 .logo {
     padding: 0.3rem;
     background-color: #d1dffd;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin: 1rem auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -114,7 +114,6 @@ export default defineComponent({
     -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     border: 0px none #f3f3f3;
-    /* border-radius: 21px 21px 21px 21px; */
 }
 
 .main {
@@ -128,7 +127,6 @@ export default defineComponent({
     -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     border: 0px none #f3f3f3;
-    /* border-radius: 21px 21px 21px 21px; */
     padding: 1rem;
     text-align: center;
 }
@@ -161,24 +159,6 @@ a {
 }
 
 @media (min-width: 769px) {
-    .container {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .greeting-title {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        font-size: 1.2rem;
-        font-weight: 600;
-        text-align: center;
-
-    }
 
     .mobile-view-picture {
         width: 25rem;
@@ -186,136 +166,33 @@ a {
     }
 
     .logo {
-        padding: 1rem;
-        background-color: #d1dffd;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        padding: 1rem auto;
         width: 32rem;
-        -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        border: 0px none #f3f3f3;
         border-radius: 21px 21px 21px 21px;
     }
 
     .main {
-        background-color: #d1dffd;
-        margin: 1rem 1rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
         width: fit-content;
-        -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        border: 0px none #f3f3f3;
         border-radius: 21px 21px 21px 21px;
-        padding: 1rem;
-        text-align: center;
-    }
-
-    .main-content {
-        margin-top: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        font-weight: 500;
-        color: #5c5c5c;
-    }
-
-    .please-log-in {
-        margin-top: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        font-weight: 500;
-        font-size: 1.5rem;
-        color: #000000;
     }
 }
 
 @media (min-width: 1025px) {
-    .container {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-    }
 
     .mobile-view-picture {
         width: 30rem;
         height: 9rem;
     }
 
-    .greeting-title {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        font-size: 1.2rem;
-        font-weight: 600;
-        text-align: center;
-
-    }
-
     .logo {
-        padding: 1rem;
-        background-color: #d1dffd;
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        margin: 1.5rem auto;
         width: 48rem;
-        -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        border: 0px none #f3f3f3;
         border-radius: 21px 21px 21px 21px;
     }
 
     .main {
-        background-color: #d1dffd;
         margin: 1.5rem 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: fit-content;
-        -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
-        border: 0px none #f3f3f3;
-        border-radius: 21px 21px 21px 21px;
         padding: 1rem;
-    }
-
-    .main-content {
-        margin-top: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        font-weight: 500;
-        color: #5c5c5c;
-    }
-
-    .please-log-in {
-        margin-top: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        font-weight: 500;
-        font-size: 1.5rem;
-        color: #000000;
     }
 }
 </style>
