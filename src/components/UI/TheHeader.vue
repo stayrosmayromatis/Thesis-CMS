@@ -159,9 +159,9 @@ export default defineComponent({
     let title = "IHU SUBMISSIONS";
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated,GetPeriodInfo } = useAuth();
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated, GetPeriodInfo } = useAuth();
 
-    const isLoggedIn = computed(():boolean => {
+    const isLoggedIn = computed((): boolean => {
       return store.getters.IsAuth;
     });
     const userName = computed(() => {
@@ -323,9 +323,7 @@ a,
   color: #0a369d;
 }
 
-a:hover {
-  /* color: white; */
-}
+a:hover {}
 
 /* a:hover::after {
   transform: scaleX(1);
@@ -449,12 +447,12 @@ a::after {
   }
 
   ul {
-    display: flex;
+    /* display: flex; */
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; */
+    /* align-items: center; */
     max-width: 1025px;
-    /* font-weight: 600; */
+    font-weight: 600;
     width: fit-content;
   }
 
@@ -490,6 +488,14 @@ a::after {
     /* align-items: center; */
     gap: 0.5rem;
   }
+
+  .burger-button {
+    visibility: hidden;
+  }
+
+  .mobile-logo {
+    display: none;
+  }
 }
 
 @media (min-width: 1025px) {
@@ -505,45 +511,27 @@ a::after {
     align-items: center;
   }
 
-  a:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
-  }
-
-  a::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 3px;
-    bottom: -0.3rem;
-    left: 0;
-    background-color: #0a369d;
-    transform-origin: bottom right;
-    transition: transform 0.25s ease-out;
-  }
-
   .header {
-    /* display: flex; */
-    /* width: 100%; */
-    height: 6rem;
     flex-direction: row;
     justify-content: space-between;
-    /* align-items: center; */
     min-width: 1025px;
     gap: 0.5rem;
+    /* display: flex; */
+    /* width: 100%; */
+    /* height: 6rem; */
+    /* align-items: center; */
   }
 
   .logo {
     width: 40%;
+    justify-content: flex-start;
+    max-width: 1160px;
+    font-size: 1.3965rem;
     /* height: inherit; */
     /* display: flex; */
-    /* flex-direction: row; */
-    justify-content: flex-start;
     /* align-items: center; */
-    max-width: 1160px;
+    /* flex-direction: row; */
     /* font-weight: 600; */
-    font-size: 1.3965rem;
     /* text-transform: uppercase; */
   }
 
@@ -555,23 +543,34 @@ a::after {
   }
 
   .main-nav {
+    justify-content: flex-end;
     /* display: flex;
     flex-direction: row; */
-    justify-content: flex-end;
     /* align-items: center;
     width: 100%;
     height: inherit; */
   }
 
   ul {
-    display: flex;
-    flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
-    font-weight: 450;
     max-width: 1160px;
-    width: fit-content;
     gap: 0;
+    /* display: flex; */
+    /* flex-direction: row; */
+    /* align-items: center; */
+    /* font-weight: 450; */
+    /* width: fit-content; */
+  }
+
+  .button-groupper {
+    margin: 0 0.5rem;
+    /* display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    width: fit-content;
+    gap: 0.5rem; */
   }
 
   /* .nav__item {
@@ -588,19 +587,25 @@ a::after {
     font-weight: 450;
   } */
 
-  .mobile-logo {
+  /* .mobile-logo {
     display: none;
-  }
+  } */
+  /* a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  } */
 
-  .button-groupper {
-    /* display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    width: fit-content;
-    gap: 0.5rem; */
-    margin: 0 0.5rem;
-  }
-}
-</style>
+  /* a::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 3px;
+    bottom: -0.3rem;
+    left: 0;
+    background-color: #0a369d;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+  } */
+
+}</style>
