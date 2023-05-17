@@ -413,13 +413,13 @@ a::after {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    margin: 0 auto;
+    /* width: 100%;
+    margin: 0 auto; */
     min-width: 769px;
-    position: sticky;
+    /* position: sticky;
     z-index: 100;
     top: 0px;
-    left: 0px;
+    left: 0px; */
   }
 
   .logo {
@@ -434,14 +434,14 @@ a::after {
   }
 
   .main-nav {
-    display: flex;
+    /* display: flex; */
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; */
+    /* align-items: center; */
     width: 100%;
     gap: 0;
-    height: 3.5rem;
-    margin: 0;
+    /* height: 3.5rem; */
+    /* margin: 0; */
   }
 
   .main-nav button {
@@ -464,12 +464,12 @@ a::after {
   }
 
   .nav__item--cta {
-    display: flex;
-    flex-direction: row;
+    /* display: flex; */
+    /* flex-direction: row; */
     justify-content: space-between;
     gap: 0.5rem;
-    align-items: center;
-    font-weight: 450;
+    /* align-items: center; */
+    /* font-weight: 450; */
     margin: 0;
   }
 
@@ -484,10 +484,10 @@ a::after {
   }
 
   .button-groupper {
-    display: flex;
+    /* display: flex; */
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; */
+    /* align-items: center; */
     gap: 0.5rem;
   }
 }
@@ -524,27 +524,27 @@ a::after {
   }
 
   .header {
-    display: flex;
-    width: 100%;
+    /* display: flex; */
+    /* width: 100%; */
     height: 6rem;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    /* align-items: center; */
     min-width: 1025px;
     gap: 0.5rem;
   }
 
   .logo {
     width: 40%;
-    height: inherit;
-    display: flex;
-    flex-direction: row;
+    /* height: inherit; */
+    /* display: flex; */
+    /* flex-direction: row; */
     justify-content: flex-start;
-    align-items: center;
+    /* align-items: center; */
     max-width: 1160px;
-    font-weight: 600;
+    /* font-weight: 600; */
     font-size: 1.3965rem;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
   }
 
   .logo a {
@@ -555,12 +555,12 @@ a::after {
   }
 
   .main-nav {
-    display: flex;
-    flex-direction: row;
+    /* display: flex;
+    flex-direction: row; */
     justify-content: flex-end;
-    align-items: center;
+    /* align-items: center;
     width: 100%;
-    height: inherit;
+    height: inherit; */
   }
 
   ul {
@@ -574,32 +574,32 @@ a::after {
     gap: 0;
   }
 
-  .nav__item {
+  /* .nav__item {
     margin: 0 1rem;
     padding: 0;
-  }
+  } */
 
-  .nav__item--cta {
+  /* .nav__item--cta {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     gap: 0.5rem;
     align-items: center;
     font-weight: 450;
-  }
+  } */
 
   .mobile-logo {
     display: none;
   }
 
   .button-groupper {
-    display: flex;
+    /* display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     margin: 0;
     width: fit-content;
-    gap: 0.5rem;
+    gap: 0.5rem; */
     margin: 0 0.5rem;
   }
 }
