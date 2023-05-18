@@ -33,7 +33,8 @@
             <div class="u-container-layout u-similar-container u-container-layout-3">
               <p
               class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
-                {{ 'Περίοδος Δηλώσεων: [[SEMESTER]]' }}
+                <!-- {{ 'Περίοδος Δηλώσεων: [[SEMESTER]]' }} -->
+                {{ `Περίοδος Δηλώσεων: ${semesterString}` }}
               </p>
             </div>
           </div>
@@ -97,6 +98,14 @@ import jsPDF, { ImageOptions } from "jspdf";
 import { useAuth } from '@/composables/useAuth.composable';
 import { AttendanceEnum } from '@/enums/AttendanceEnums';
 import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
+import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
+import { CourseController } from '@/config';
+import { useAxiosInstance } from '@/composables/useInstance.composable';
+import { useAxios } from '@vueuse/integrations/useAxios';
+import { ApiResult } from '@/models/DTO/ApiResult';
+interface Object{
+  DisplayString:string;
+}
 export default defineComponent({
   props: {
     labs: {
@@ -122,7 +131,15 @@ export default defineComponent({
     const { labs, callToGeneratePdf ,personAffiliation} = toRefs(props);
     const firstName = ref<string>("");
     const lastName = ref<string>("");
-    onMounted(() => {
+    const { setBackendInstanceAuth} = useAxiosInstance();
+    const semesterString = ref("");
+    onMounted(async () => {
+      var c =  await GetSemesterPeriodCall();
+      if(!c.Status || !c.Data){
+        semesterString.value = "";
+        return;
+      }
+      semesterString.value = c.Data;
       const userDetails = GetUserDataDetails();
       if (!userDetails) {
         firstName.value = "";
@@ -144,6 +161,7 @@ export default defineComponent({
           }
         }
       }
+     
     });
     const generatePdf = async () => {
       if (!pdfContent.value)
@@ -199,7 +217,6 @@ export default defineComponent({
           return "ΥΠΟΧΡΕΩΤΙΚΗ";
       }
     }
-
     function IsAssistant(isAssistant?:boolean){
       if(isAssistant === false || !isAssistant )
         return "-";
@@ -213,7 +230,23 @@ export default defineComponent({
         return true;
       return false;
     });
-    return { labs, pdfContent, generatePdf, firstName, lastName, AttendaceReformer,IsStaffOrAdmin,IsAssistant };
+    const GetSemesterPeriodCall = async ():Promise<InternalDataTransfter<string>> => {
+      
+      const semesterPeriodCall = await useAxios(
+        CourseController + `semesters/period`,
+        {
+          method: "GET",
+        },
+        setBackendInstanceAuth()
+      );
+      if(!semesterPeriodCall.isFinished.value)
+        return {Status : false , Data: "Error"};
+      const dataIDT:ApiResult<Object> = semesterPeriodCall.data.value;
+      if(!dataIDT.Status || !dataIDT.Data || dataIDT.Error)
+        return {Status : false , Data: "Error"};
+      return {Status : true , Data: dataIDT.Data.DisplayString};
+    }
+    return { labs, pdfContent,semesterString, generatePdf, firstName, lastName, AttendaceReformer,IsStaffOrAdmin,IsAssistant };
   },
 });
 </script>
