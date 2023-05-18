@@ -37,7 +37,7 @@
           </div>
           <div v-else>
             <v-btn variant="flat" color="red darken-1" text @click="closeModal"
-              >ΟΚ</v-btn
+              >{{timerDisplayView}}</v-btn
             >
           </div>
         </v-card-actions>

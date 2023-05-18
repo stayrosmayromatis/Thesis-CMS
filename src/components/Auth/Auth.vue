@@ -1,8 +1,9 @@
 <template>
-  <auth-in-progress></auth-in-progress>
+  <base-dialog :show="showErrorResult" :inner-description="showErrorDescription" :inner-title="showErrorTitle" :route-change-authorizer="false" @close-modal="closeModal"></base-dialog>
+  <auth-in-progress v-if="!authenticationErrorOccured"></auth-in-progress>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { Ref, defineComponent, ref } from "vue";
 import { onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useErrorFunctions } from "@/composables/throwError.composable";
@@ -18,9 +19,11 @@ import { ApiResult } from '@/models/DTO/ApiResult';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAuth } from '@/composables/useAuth.composable';
 import AuthInProgress from "@/components/Base/AuthInProgress.vue"
+import BaseDialog from "@/components/Base/BaseDialog.vue";
 export default defineComponent({
   components: {
-    AuthInProgress
+    AuthInProgress,
+    BaseDialog
   },
   setup() {
     const route = useRoute();
@@ -31,13 +34,17 @@ export default defineComponent({
       setBackendInstanceUnAuth,
     } = useAxiosInstance();
     const { MakeInfoCall, DetermineIfAuth } = useAuth();
+    const showErrorResult = ref(false);
+    const showErrorTitle=ref("Σφάλμα Αυθεντικοποίησης"); 
+    const showErrorDescription = ref("Η διαδίκασία δεν ολοκληρώθηκε");
+    const authenticationErrorOccured = ref(false);
     onMounted(async () => {
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
 
       if (hasQueryParams) {
         if (queryParamsLength === 1) {
-          setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
+          await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
           return;
         }
         if (queryParamsLength === 2) {
@@ -52,7 +59,7 @@ export default defineComponent({
             return;
           const makeInfoCallResponse = await MakeInfoCall();
           if (!makeInfoCallResponse || makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data) {
-            setErrorPushToHome(
+            await setErrorPushToHome(
               makeInfoCallResponse.Error,
               makeInfoCallResponse.Description
             );
@@ -60,7 +67,7 @@ export default defineComponent({
           }
           const determineIfAuthResponse = await DetermineIfAuth(makeInfoCallResponse.Data);
           if (!determineIfAuthResponse || determineIfAuthResponse.Status === false || determineIfAuthResponse.Error || !determineIfAuthResponse.Data) {
-            setErrorPushToHome(
+            await setErrorPushToHome(
               determineIfAuthResponse.Error,
               determineIfAuthResponse.Description
             );
@@ -70,22 +77,31 @@ export default defineComponent({
           return;
         }
       }
-      setErrorPushToHome(
+      await setErrorPushToHome(
         "Σφάλμα Αυθεντικοποίησης",
         "Η διαδίκασία δεν ολοκληρώθηκε"
       );
     });
 
-    const setErrorPushToHome = (title: string | undefined, description?: string | undefined): void => {
+    const setErrorPushToHome = async (title: string | undefined, description?: string | undefined): Promise<void> => {
       const { setError } = useErrorFunctions();
       setError(title ?? "Σφάλμα Αυθεντικοποίησης", description ?? "Η διαδίκασία δεν ολοκληρώθηκε");
+      authenticationErrorOccured.value = true;
+      showErrorResult.value = true;
+      showErrorDescription.value = `Η αυθεντικοποίηση <span style="color:#ff4545"><b>απέτυχε</b></span>. 
+                                    Προσπαθήστε εκ νέου την διαδικασία <span style="color:#ff4545">Σύνδεσης</span>. 
+                                    Αυτόματη ανακατεύθυνση σε <span style="color:green">2 δευτερόλεπτα</span>`;
+     
       store.dispatch("setAuthState", false);
-      router.replace({ name: "welcome" });
-      return;
+      await delay(2000);
+      await router.replace({ name: "welcome" });
     };
+    const closeModal = async () => {
+      showErrorResult.value = false;
+    }
     const makeAccessTokenCall = async (): Promise<InternalDataTransfter<string>> => {
       if (!route.query.code) {
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
+        await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
         return { Status: false, Data: null, Error: "error" };
       }
       const params = new URLSearchParams();
@@ -106,7 +122,7 @@ export default defineComponent({
         setCustomInstance("https://login.iee.ihu.gr")
       );
       if (access_token_object.isFinished.value && (access_token_object.error.value || !access_token_object.data.value)) {
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
+        await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
         return { Status: false, Data: null, Error: "error" };
       }
       return { Status: true, Data: access_token_object.data.value!.access_token };
@@ -130,7 +146,7 @@ export default defineComponent({
       );
       if (profileObject.isFinished.value &&
         (profileObject.error.value || !profileObject.data.value)) {
-        setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+        await setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }
 
@@ -173,11 +189,11 @@ export default defineComponent({
           admin:undefined,
         };
       } else {
-        setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+        await setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }
       if (!objectToPush) {
-        setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
+        await setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }
       return { Status: true, Data: objectToPush };
@@ -194,16 +210,18 @@ export default defineComponent({
         setBackendInstanceUnAuth()
       );
       if (sign_in_response.isFinished.value && (!sign_in_response.data.value || sign_in_response.error.value)) {
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+        await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }
       const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
       if (sign_in_response_data.Status === false || !sign_in_response_data.Status || !sign_in_response_data.Data) {
-        setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+        await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }
       return { Status: true, Data: true };
     };
+    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+    return {showErrorResult,showErrorDescription,showErrorTitle,authenticationErrorOccured,closeModal};
   },
 });
 </script>

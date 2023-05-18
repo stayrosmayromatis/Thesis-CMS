@@ -4,7 +4,7 @@
     <v-card elevation="5" class="parent-label">
       <div class="text-divider">
         <label id="titleText"> {{ TitleText }} </label>
-        <label>{{ courseCode }}</label>
+        <label class="label__lab-title">{{ courseCode }}</label>
         <label class="label__lab-title">{{ courseName }}</label>
       </div>
     </v-card>
@@ -87,11 +87,6 @@ export default defineComponent({
       }
       return { Status: false, Data: false, Error: "Request didn't finish" };
     };
-    const CourseInfo = computed(() => {
-      if (courseCode.value && courseName.value)
-        return `${courseCode.value} ${courseName.value}`;
-      return "ΣΥΝΕΒΗ ΣΦΑΛΜΑ ΘΑ ΜΕΤΑΦΕΡΘΕΙΤΕ ΣΤΗΝ ΑΡΧΙΚΗ ΣΕ ΠΟΛΥ ΛΙΓΟ.";
-    });
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
@@ -138,6 +133,7 @@ export default defineComponent({
 .label__lab-title {
   text-align: center;
   white-space: break-spaces;
+  color: #044091;
 }
 .text-divider{
   display: flex;
@@ -153,7 +149,7 @@ export default defineComponent({
   flex-wrap: wrap;
 }
 .text-divider label#titleText{
-  color: #182750;
+  color:#555a69;
 }
 @media (min-width: 769px) {
   .parent-label {
