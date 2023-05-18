@@ -73,16 +73,16 @@
     <div class="main-nav" v-if="hamburgerClose">
       <ul>
         <li v-if="isLoggedIn && IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'labList' }">Εργαστήρια</router-link>
+          <router-link :to="{ name: 'labList' }" exact-active-class="router-link-exact-active-mark">Εργαστήρια</router-link>
         </li>
         <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'submittedLabs' }">Δηλωθέντα</router-link>
+          <router-link :to="{ name: 'submittedLabs' }"  exact-active-class="router-link-exact-active-mark" >Δηλωθέντα</router-link>
         </li>
         <li v-if="isLoggedIn && IsStaff && !IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'addlab' }">Προσθήκη</router-link>
+          <router-link :to="{ name: 'addlab' }"  exact-active-class="router-link-exact-active-mark">Προσθήκη</router-link>
         </li>
         <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'admin' }">Διαχείριση</router-link>
+          <router-link :to="{ name: 'admin' }"  exact-active-class="router-link-exact-active-mark">Διαχείριση</router-link>
         </li>
         <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
           <router-link to="/">Επικοινωνία</router-link>
@@ -384,6 +384,12 @@ a:hover {}
     background-color: #0a369d;
     transform-origin: bottom right;
     transition: transform 0.25s ease-out;
+  }
+  a:active{
+    color: white;
+  }
+  .router-link-exact-active-mark {
+    color: #276EF1;
   }
 
   .header {

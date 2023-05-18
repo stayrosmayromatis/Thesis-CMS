@@ -87,7 +87,9 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes : routes
+  routes : routes,
+  linkActiveClass : 'router-link-active',
+  linkExactActiveClass : 'router-link-exact-active'
 });
 
 router.beforeEach(async (to,_,next) => {

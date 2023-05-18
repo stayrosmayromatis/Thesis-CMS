@@ -1,13 +1,15 @@
 <template>
   <div class="parent-card">
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <v-card elevation="5" class="parent-label">
-      <div class="text-divider">
-        <label id="titleText"> {{ TitleText }} </label>
-        <label class="label__lab-title">{{ courseCode }}</label>
-        <label class="label__lab-title">{{ courseName }}</label>
-      </div>
-    </v-card>
+    <div class="outer-parent-label">
+      <v-card elevation="5" class="parent-label">
+        <div class="text-divider">
+          <label id="titleText"> {{ TitleText }} </label>
+          <label class="label__lab-title">{{ courseCode }}</label>
+          <label class="label__lab-title">{{ courseName }}</label>
+        </div>
+      </v-card>
+    </div>
     <div class="cards-overview">
       <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
         :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
@@ -101,7 +103,7 @@ export default defineComponent({
         return "ΠΑΡΑΚΟΛΟΥΘΗΣΗ ΠΟΡΕΙΑΣ ΔΗΛΩΣΕΩΝ ΤΩΝ ΤΜΗΜΑΤΩΝ ΤΟΥ ΜΑΘΗΜΑΤΟΣ:";
       }
     });
-    return { resultArray, courseGuid, courseCode,courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
+    return { resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
   },
 });
 </script>
@@ -135,12 +137,14 @@ export default defineComponent({
   white-space: break-spaces;
   color: #044091;
 }
-.text-divider{
+
+.text-divider {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 .cards-overview {
   display: flex;
   flex-direction: row;
@@ -148,14 +152,23 @@ export default defineComponent({
   justify-content: space-evenly;
   flex-wrap: wrap;
 }
-.text-divider label#titleText{
-  color:#555a69;
+
+.text-divider label#titleText {
+  color: #555a69;
 }
+div.outer-parent-label{
+  padding: 0;
+}
+
 @media (min-width: 769px) {
   .parent-label {
     font-size: 1.1rem;
     padding: 0.5rem;
   }
+  
+div.outer-parent-label{
+  padding: 0 1rem;
+}
 }
 
 @media (min-width: 1025px) {
@@ -163,5 +176,4 @@ export default defineComponent({
     flex-direction: row;
     gap: 1rem;
   }
-}
-</style>
+}</style>
