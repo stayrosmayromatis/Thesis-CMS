@@ -1,0 +1,8 @@
+:root{
+    --header-label-color: #555a69;
+    --header-label-background-color:#aacaf3;
+    --header-label-text-color: #044091;
+    --admin-panel-manu-options-background-color: #dae3f7;
+    --card-box-shadow : 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --card-border-radius : 12px;
+}

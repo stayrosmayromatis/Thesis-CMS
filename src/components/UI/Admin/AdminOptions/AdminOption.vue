@@ -5,7 +5,7 @@
   <div class="parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="3" class="admin-label">Διαχειριστες εφαρμογης</v-card>
+      <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
       <v-card elevation="5" class="single-admin_card" v-for="admin of arrayOfAdmins" :key="admin.Id">
         <div class="single-admin_card--item">
           <v-chip class="chip-bg" size="large">
@@ -204,11 +204,11 @@ export default defineComponent({
   flex: 1 0 auto;
   width: 100%;
   height: 2rem;
-  text-transform: uppercase;
   min-width: 320px;
   font-size: 0.9rem;
   font-weight: 450;
-  background-color: #dae3f7;
+  background-color:var(--header-label-background-color);
+  color: var(--header-label-text-color);
   word-wrap: break-word;
   word-break: break-word;
   text-align: center;
@@ -220,6 +220,8 @@ export default defineComponent({
   padding: 0.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  box-shadow: var(--card-box-shadow);
+  border-radius: var(--card-border-radius);
 }
 
 .single-admin_card--item {
@@ -277,7 +279,6 @@ export default defineComponent({
     margin-bottom: 0.5rem;
     height: 3rem;
     font-size: 1rem;
-    background-color: #dae3f7;
   }
 }
 

@@ -16,6 +16,7 @@ import { registerPlugins } from '@/plugins'
 import router from "@/router";
 import {store,key} from '@/store/index';
 import '@vuepic/vue-datepicker/dist/main.css'
+import "./global-styles/global-styles.css"
 const app = createApp(App)
 registerPlugins(app)
 app.use(store,key);

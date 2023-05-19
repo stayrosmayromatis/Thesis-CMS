@@ -3,7 +3,7 @@
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="3" class="export-label"><label>{{ 'Εξαγωγη πορειας / καταστασης δηλωσεων' }}</label></v-card>
+      <v-card elevation="5" class="export-label"><label>{{ 'Εξαγωγη πορειας / καταστασης δηλωσεων' }}</label></v-card>
       <div class="just-for-show">
         <v-expansion-panels>
           <div class="expansion-panel-export-option__container">
@@ -121,7 +121,8 @@ export default defineComponent({
   width: 100%;
   height: fit-content;
   min-width: 320px;
-  background-color: #dae3f7;
+  background-color:var(--header-label-background-color);
+  color: var(--header-label-text-color);
   padding: 1rem 0.5rem;
   margin-bottom: 1rem;
 }
@@ -131,7 +132,6 @@ export default defineComponent({
   text-align: center;
   font-size: 0.95rem;
   font-weight: 450;
-  text-transform: uppercase;
   white-space: pre-line;
   word-break: break-word;
 }

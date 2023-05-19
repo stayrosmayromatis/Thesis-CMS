@@ -158,11 +158,15 @@ export default defineComponent({
   font-size: 0.8rem;
   padding: 0;
   min-width: 80px !important;
-  color: rgb(10, 54, 157);
-  caret-color: rgb(10, 54, 157);
+  color: var(--header-label-text-color);
+  caret-color: #0a369d;
   text-align: center;
 }
-
+.tab-override .v-btn{
+  text-transform: none;
+  background-color: var(--admin-panel-manu-options-background-color);
+ 
+}
 @media (min-width: 769px) {
   .parent {
     margin: 1rem 1rem;

@@ -21,6 +21,7 @@
       "@/composables/*":["src/composables/*"],
       "@/models/*":["src/models/*"],
       "@/store/*":["src/store/*"],
+      "@/styles/*":["src/global-styles/*"],
     },
   },
   "include": [

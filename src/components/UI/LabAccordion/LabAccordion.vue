@@ -1,6 +1,6 @@
 <template>
   <v-container class="sth-container" @click="emitMobileViewClose">
-    <v-card elevation="5" class="parent-label">ΑΝΑΖΗΤΗΣΗ ΕΡΓΑΣΤΗΡΙΩΝ</v-card>
+    <v-card elevation="10" class="parent-label">Αναζήτηση Εργαστηρίων</v-card>
     <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
       density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable
       multiple return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
@@ -197,11 +197,11 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   height: 2rem;
-  text-transform: uppercase;
   min-width: 320px;
   font-size: 0.95rem;
   font-weight: 500;
-  background-color: #aacaf3;
+  background-color: var( --header-label-background-color);
+  color: var( --header-label-text-color);
   padding: 1.2rem;
 }
 

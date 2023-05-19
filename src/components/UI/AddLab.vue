@@ -1,8 +1,8 @@
 <template>
   <div @click="emitMobileViewClose">
     <div class="parent-card">
-      <v-card elevation="5" class="parent-label">
-        <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
+      <v-card elevation="10" class="parent-label">
+        <v-card-title> Φόρμα Εισαγωγής Εργαστηρίου </v-card-title>
       </v-card>
     </div>
     <base-alert
@@ -14,7 +14,7 @@
       :show="showRouteLeaveModal"
       :route-change-authorizer="true"
       inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"
+      inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span>, θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
       @close-modal="showRouteLeaveModal = false"
     ></base-dialog>
     <base-dialog
@@ -910,6 +910,7 @@ export default defineComponent({
 <style scoped>
 #submit-btn:disabled {
   width: 15rem;
+  color: #f3f3f3;
 }
 
 :deep(.v-alert-title) {
@@ -921,9 +922,9 @@ export default defineComponent({
   text-transform: inherit;
 }
 
-.positioner {
+/* .positioner {
   width: 100% !important;
-}
+} */
 
 #submit-btn {
   color: white;
@@ -950,8 +951,8 @@ export default defineComponent({
 }
 
 .parent-card {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin : 0.5rem auto;
+
 }
 
 .parent-label {
@@ -961,16 +962,15 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   height: 2rem;
-  text-transform: uppercase;
   min-width: 320px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
-  background-color: #aacaf3;
+  background-color: var( --header-label-background-color);
+  color: var(--header-label-text-color);
   padding: 1.2rem;
 }
 
 .parent-card-form {
-  /* height: 66vh; */
   min-width: 320px;
   max-width: 100%;
 }
@@ -1029,7 +1029,7 @@ export default defineComponent({
   padding: 0;
   max-width: 768px;
   min-width: 320px;
-  margin-bottom: 1rem;
+  margin: 1rem auto;
 }
 
 :deep(.v-container) {
@@ -1084,10 +1084,6 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-  #submit-btn:disabled {
-    color: #f3f3f3;
-    width: 15rem;
-  }
 
   .percent49-5 {
     width: 49.5%;
@@ -1100,33 +1096,16 @@ export default defineComponent({
   }
 
   .parent-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin: 1rem 1rem;
   }
 
   .parent-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
     height: 3rem;
-    justify-content: center;
     font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
   }
 
   :deep(.v-chip-group) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
     align-content: flex-start;
-    margin-bottom: 1rem;
-    margin-top: 1rem;
     max-width: 1024px;
     min-width: 769px;
     overflow-x: auto;
@@ -1135,94 +1114,35 @@ export default defineComponent({
   .parent-card-form {
     margin-left: 1rem;
     margin-right: 1rem;
-    height: 66vh;
-    min-width: 320px;
-    max-width: 100%;
-  }
 
-  .parent-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
   }
 
   .form-first {
-    width: 100%;
-    display: flex;
     flex-direction: row;
     gap: 1rem;
-  }
-
-  .label-centerer {
-    background-color: #f3f3f3;
-    margin: 1rem auto;
-    text-align: center;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
   }
 }
 
 @media (min-width: 1025px) {
   #submit-btn:disabled {
-    color: #f3f3f3;
     min-width: 5rem;
     max-width: 10rem;
     width: 100%;
   }
 
-  .percent49-5 {
-    width: 49.5%;
-  }
-
   #submit-btn {
-    color: white;
     min-width: 5rem;
     max-width: 10rem;
-    background-color: #156ed3;
     width: 100%;
   }
 
   .parent-card {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-
-  .parent-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 3rem;
-    justify-content: center;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    min-width: 769px;
-  }
-
-  .label-centerer {
-    background-color: #f3f3f3;
-    margin: 1rem auto;
-    text-align: center;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+    margin: 2rem 1rem;
   }
 
   :deep(.v-chip-group) {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 1rem;
     column-gap: 1rem;
-    margin-top: 1rem;
-    overflow-x: auto;
     flex-wrap: nowrap;
     max-width: 100%;
   }

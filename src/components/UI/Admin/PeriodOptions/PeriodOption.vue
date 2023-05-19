@@ -5,7 +5,7 @@
     <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
       :routeChangeAuthorizer="true" :use-timer="true" @close-modal="showBaseDialog = false"></base-dialog>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="3" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
+      <v-card elevation="5" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
         `Περιοδος` }}</label></v-card>
       <div v-if="!currentlyActiveSsds.length">
         <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκε περίοδος'"
@@ -625,7 +625,8 @@ export default defineComponent({
   width: 100%;
   height: 2rem;
   min-width: 320px;
-  background-color: #dae3f7;
+  background-color:var(--header-label-background-color);
+  color: var(--header-label-text-color);
   padding: 1.5rem 0;
   margin-bottom: 1rem;
 }
@@ -635,7 +636,6 @@ export default defineComponent({
   text-align: center;
   font-size: 0.95rem;
   font-weight: 450;
-  text-transform: uppercase;
   white-space: pre-line;
   word-break: break-word;
 }
@@ -648,6 +648,8 @@ export default defineComponent({
   padding: 0.5rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  box-shadow: var(--card-box-shadow);
+  border-radius: var(--card-border-radius);
 }
 
 .single-option_card--item {

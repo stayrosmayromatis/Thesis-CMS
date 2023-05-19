@@ -2,11 +2,12 @@
   <div class="parent-card">
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div class="outer-parent-label">
-      <v-card elevation="5" class="parent-label">
+      <v-card elevation="10" class="parent-label">
         <div class="text-divider">
           <label id="titleText"> {{ TitleText }} </label>
-          <label class="label__lab-title">{{ courseCode }}</label>
-          <label class="label__lab-title">{{ courseName }}</label>
+        </div>
+        <div class="label__lab-title-divider">
+          <label class="label__lab-title">{{ `${courseCode} ${courseName}` }}</label>
         </div>
       </v-card>
     </div>
@@ -94,13 +95,13 @@ export default defineComponent({
     };
     const TitleText = computed(() => {
       if (!userType.value) {
-        return "ΣΥΝΕΒΗ ΣΦΑΛΜΑ ΘΑ ΜΕΤΑΦΕΡΘΕΙΤΕ ΣΤΗΝ ΑΡΧΙΚΗ ΣΕ ΠΟΛΥ ΛΙΓΟ.";
+        return "Συνέβη σφάλμα θα μεταφερθείτε στην αρχική σε πολύ λιγό.";
       }
       if (userType.value === 2) {
         return "Επιλογη Τμηματος";
       }
       else {
-        return "ΠΑΡΑΚΟΛΟΥΘΗΣΗ ΠΟΡΕΙΑΣ ΔΗΛΩΣΕΩΝ ΤΩΝ ΤΜΗΜΑΤΩΝ ΤΟΥ ΜΑΘΗΜΑΤΟΣ:";
+        return "Παρακολούθηση δηλώσεων μαθήματος:";
       }
     });
     return { resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
@@ -121,11 +122,10 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   height: fit-content;
-  text-transform: uppercase;
   min-width: 320px;
   font-size: 1rem;
   font-weight: 500;
-  background-color: #aacaf3;
+  background-color: var( --header-label-background-color);
   padding: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -135,7 +135,7 @@ export default defineComponent({
 .label__lab-title {
   text-align: center;
   white-space: break-spaces;
-  color: #044091;
+  color: var(--header-label-color);
 }
 
 .text-divider {
@@ -144,7 +144,12 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
-
+.label__lab-title-divider{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 .cards-overview {
   display: flex;
   flex-direction: row;
@@ -154,7 +159,8 @@ export default defineComponent({
 }
 
 .text-divider label#titleText {
-  color: #555a69;
+  color: var(--header-label-text-color);
+   /* #555a69; */
 }
 div.outer-parent-label{
   padding: 0;

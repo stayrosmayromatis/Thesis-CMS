@@ -173,11 +173,12 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   height: 2rem;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   min-width: 320px;
   font-size: 0.95rem;
   font-weight: 500;
-  background-color: #aacaf3;
+  background-color: var( --header-label-background-color);
+  color: var(--header-label-text-color);
   padding: 1.2rem;
   margin-bottom: 1.2rem;
 }
@@ -224,17 +225,8 @@ export default defineComponent({
   }
 
   .parent-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
     height: 3rem;
-    justify-content: center;
     font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    /* min-width: 769px; */
   }
 
   .pdf-button {
@@ -261,20 +253,6 @@ export default defineComponent({
     margin-bottom: 2rem;
     margin-left: 1rem;
     margin-right: 1rem;
-  }
-
-  .parent-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 3rem;
-    justify-content: center;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    /* min-width: 769px; */
   }
 
   .pdf-button {
