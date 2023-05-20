@@ -110,13 +110,14 @@ export default defineComponent({
       );
       if (apiGetInfos.isFinished) {
         const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
-        if (getInfoData.Status === false || !getInfoData.Status) {
-          showSpinner.value = false;
+        if (!getInfoData || !getInfoData.Status) {
+          showLabsNotFound.value = true;
           showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
           showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+          showSpinner.value = false;
           return;
         }
-        if (!getInfoData.Data || getInfoData.Data.Count === 0 || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
+        if (!getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
           showLabsNotFound.value = true;
           showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
           showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";

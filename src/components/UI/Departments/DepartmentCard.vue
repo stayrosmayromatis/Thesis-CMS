@@ -170,8 +170,8 @@ export default defineComponent({
       if (!user_type.value || !course_id.value || !ladb_id.value) {
         setTypeOfAlert("error");
         openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
-        closeAlert(1500);
-        await delay(1500);
+        closeAlert(1000);
+        await delay(1000);
         return;
       }
       if (user_type.value === 2) {
@@ -179,14 +179,14 @@ export default defineComponent({
         if (!finalRegisterIDT.Status) {
           setTypeOfAlert("error");
           openAlert("Αποτυχία δήλωσης, προσπαθήστε ξανά");
-          closeAlert(1500);
-          await delay(1500);
+          closeAlert(1000);
+          await delay(1000);
           return;
         }
-        setTypeOfAlert("error");
+        setTypeOfAlert("success");
         openAlert("Επιτυχία δήλωσης");
-        closeAlert(1500);
-        await delay(1500);
+        closeAlert(1000);
+        await delay(1000);
         router.replace({ name: "submittedLabs" });
         return;
       }
@@ -200,8 +200,8 @@ export default defineComponent({
       }
       setTypeOfAlert("error");
       openAlert("Αποτυχία ενέργειας προσπαθήστε ξανά");
-      closeAlert(1500);
-      await delay(1500);
+      closeAlert(1000);
+      await delay(1000);
       return;
     };
     async function MakeTheFinalRegisterCall(): Promise<InternalDataTransfter<boolean>> {

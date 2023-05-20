@@ -448,6 +448,7 @@ export default defineComponent({
         },
       };
     });
+    // @ts-ignore
     const v$ = useVuelidate(rules, formState);
 
     const errorOfLabId = computed(() => {

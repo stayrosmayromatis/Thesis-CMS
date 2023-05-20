@@ -152,7 +152,7 @@ export default defineComponent({
     let hamburgerClose = ref(false);
     const { width } = useWindowSize();
     const { closeInstantlyDirective } = toRefs(props);
-    let title = "IHU SUBMISSIONS";
+    const title = import.meta.env.VITE_APP_TITLE;
     const store = useStore(key);
     const router = useRouter();
     const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated, GetPeriodInfo } = useAuth();
