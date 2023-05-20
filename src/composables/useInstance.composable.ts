@@ -5,13 +5,13 @@ export function useAxiosInstance() {
 
     const setBackendInstanceUnAuth = () => {
         return axios.create({
-          baseURL : import.meta.env.VITE_BACK_END_URI,
+          baseURL : import.meta.env.VITE_BACKEND_BASE_URI,
           withCredentials:true
         });
     }
     const setBackendInstanceAuth = () => {
       return axios.create({
-        baseURL : import.meta.env.VITE_BACK_END_URI,
+        baseURL : import.meta.env.VITE_BACKEND_BASE_URI,
         withCredentials:true,
       });
 
