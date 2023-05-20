@@ -3,7 +3,6 @@ import { UserDataDetails } from "@/models/BACKEND-MODELS/UserDataDetails";
 import { State } from "@/models/stateInterface.type";
 import { StoreSth } from "@/store/actions";
 import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
-import { PeriodInfo } from "@/models/BACKEND-MODELS/BaseUserAuthStateResponse";
 
 const setAuthState = (state: State, authState: boolean) => {
   state.IsAuth = authState;
@@ -47,10 +46,12 @@ const addSeededProfessors = (state:State , payload : BaseUser) => {
   arrayOfSeeded?.push(payload);
   setSeededProfessors(state,arrayOfSeeded);
 }
-const setPeriodInfo = (state:State , payload:PeriodInfo) => {
-  state.PeriodInfo = payload;  
-}
-const clearPeriodInfo =(state:State) => {
-  state.PeriodInfo = undefined;
-}
-export default {addSeededProfessors, setIsAdminState,setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors ,clearUserDataDetails,clearSeededProfessors,setPeriodInfo,clearPeriodInfo};
+// const setPeriodInfo = (state:State , payload:PeriodInfo) => {
+//   state.PeriodInfo = payload;  
+// }
+// const clearPeriodInfo =(state:State) => {
+//   state.PeriodInfo = undefined;
+// }
+export default {addSeededProfessors, setIsAdminState,setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors ,clearUserDataDetails,clearSeededProfessors
+  // ,setPeriodInfo,clearPeriodInfo
+};

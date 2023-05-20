@@ -8,8 +8,7 @@ export const state =():State=>{
         IsTeacher:false,
         IsStaffType:undefined,
         UserDataDetails : undefined,
-        SeededProfessors : Array<BaseUser>(),
-        PeriodInfo : undefined
+        SeededProfessors : Array<BaseUser>()
     };
     return stateObj;
 }

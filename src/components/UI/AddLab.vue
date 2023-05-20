@@ -1,5 +1,6 @@
 <template>
-  <div @click="emitMobileViewClose">
+  <base-spinner :show="showSpinner"></base-spinner>
+  <div @click="emitMobileViewClose" v-if="!showSpinner">
     <div class="parent-card">
       <v-card elevation="10" class="parent-label">
         <v-card-title> Φόρμα Εισαγωγής Εργαστηρίου </v-card-title>
@@ -183,11 +184,13 @@ import {
   UpdateCourseRequest,
   UpdateLaboratories,
 } from "@/models/BACKEND-MODELS/UpdateCourseRequest";
+import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 export default defineComponent({
   components: {
     LabForm,
     BaseAlert,
     BaseDialog,
+    BaseSpinner
   },
   emits: ["closeMobileView"],
   setup(_, context) {
@@ -213,6 +216,7 @@ export default defineComponent({
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
+    const showSpinner = ref(false);
     onBeforeRouteLeave(async () => {
       closeAlert();
       if (successFullSubmision.value === true) return true;
@@ -242,7 +246,8 @@ export default defineComponent({
         hasQueryParams.includes("editId") &&
         queryParamsLength == 1
       ) {
-        //make the call to the api
+        
+        showSpinner.value = true;
         const courseInfoEditIDT = await MakeGetCourseInfoForEditCall(
           Object.values(route.query)[0]!.toString()
         );
@@ -252,6 +257,7 @@ export default defineComponent({
         }
         PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
         isCallByEdit.value = true;
+        showSpinner.value = false;
       }
       closeAlert(1000);
       //SeedProfessorsSegment
@@ -903,6 +909,7 @@ export default defineComponent({
       showConfirmDeletionModal,
       confirmDeletionInnerTitle,
       confirmDeletionInnerDescription,
+      showSpinner
     };
   },
 });

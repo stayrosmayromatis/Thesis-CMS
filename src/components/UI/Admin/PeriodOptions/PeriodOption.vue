@@ -175,6 +175,7 @@ import { SubmissionPeriodRequest } from '@/models/BACKEND-MODELS/SubmissionPerio
 import { confirm } from "@/composables/dialog.composable";
 import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
 import { ActivityStatus } from '@/enums/ActivityStatusEnum';
+import { usePeriod } from '@/composables/usePeriod.composable';
 export default defineComponent({
   components:
   {
@@ -190,6 +191,7 @@ export default defineComponent({
     const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { scrollToTop } = useTimeObjectExtensions();
+    const {GetPeriodState} = usePeriod();
     const currentlyActiveSsds = ref(new Array<SemesterSubmitionDateResponse>());
     const newPeriodContext = ref<SemesterSubmitionDateResponse>();
     const fromTime = ref(new Date());
@@ -357,6 +359,8 @@ export default defineComponent({
           closeAlert(1000);
           return;
         }
+        ///Need to Refetch the active period
+        await GetPeriodState();
         showLoadingSpinner.value = false;
         newPeriodContext.value = undefined;
         calculatedPriorites.value = undefined;
@@ -364,6 +368,7 @@ export default defineComponent({
         setTypeOfAlert('success');
         openAlert("Επιτυχία διαγραφής περιόδου");
         scrollToTop();
+        
         await delay(1500);
         closeAlert(1000);
         return;

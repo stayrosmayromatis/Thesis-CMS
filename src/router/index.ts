@@ -5,6 +5,7 @@ import { store }from '@/store/index';
 import { login_redirect_url } from '@/config';
 import {useAuth} from '@/composables/useAuth.composable'
 import { TypeStaff } from '@/enums/StaffTypeEnum';
+import { usePeriod } from '@/composables/usePeriod.composable';
 const {SetNotAuthenticated} = useAuth();
 const routes: Array<RouteRecordRaw> = [
   {
@@ -145,8 +146,9 @@ async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocatio
 }
 
 async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
-  const {GetPeriodInfo} = useAuth();
-  const periodInfo = GetPeriodInfo();
+  const {GetPeriodState,PeriodInfoState} = usePeriod();
+  await GetPeriodState();
+  const periodInfo = PeriodInfoState.value;
   if(!periodInfo || !to.meta.requiredPeriodInitialized )
     return next(false);
   if(to.meta.requiredPeriodInitialized === true && (periodInfo.IsPeriodActive === false || !periodInfo.IsPeriodActive))

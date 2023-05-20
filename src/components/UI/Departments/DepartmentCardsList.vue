@@ -1,7 +1,8 @@
 <template>
   <div class="parent-card">
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <div class="outer-parent-label">
+    <base-spinner :show="showSpinner"></base-spinner>
+    <div class="outer-parent-label" v-if="!showSpinner">
       <v-card elevation="10" class="parent-label">
         <div class="text-divider">
           <label id="titleText"> {{ TitleText }} </label>
@@ -32,6 +33,7 @@ import { useRouter } from 'vue-router';
 import BaseAlert from '@/components/Base/BaseAlert.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
+import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 export default defineComponent({
   props: {
     course_guid: {
@@ -41,7 +43,8 @@ export default defineComponent({
   },
   components: {
     DepartmentCard,
-    BaseAlert
+    BaseAlert,
+    BaseSpinner
   },
   setup(props) {
     const { course_guid } = toRefs(props);
@@ -53,10 +56,13 @@ export default defineComponent({
     const userType = ref<PersonAffiliation>();
     const router = useRouter();
     const resultArray = ref(new Array<CourseDepartment>());
+    const showSpinner = ref(false);
     onMounted(async () => {
       //Make the api call to fetch all labs according to that course_guid
       closeAlert(1500);
+      showSpinner.value = true;
       const makeGetDepartmentsByCourseCallResponseIDT = await MakeGetDepartmentsByCourseCall(course_guid.value);
+      showSpinner.value = false;
       if (!makeGetDepartmentsByCourseCallResponseIDT.Status || !makeGetDepartmentsByCourseCallResponseIDT.Data) {
         setTypeOfAlert("error");
         openAlert("Αποτυχία συστήματος επαναλάβετε την διαδικασία");
@@ -104,7 +110,7 @@ export default defineComponent({
         return "Παρακολούθηση δηλώσεων μαθήματος:";
       }
     });
-    return { resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
+    return { showSpinner,resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
   },
 });
 </script>

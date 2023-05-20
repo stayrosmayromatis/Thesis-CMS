@@ -151,17 +151,17 @@ export default defineComponent({
 
       if (completeness_percent.value >= 100) {
         if (user_type.value === 2) {
-          return "ΜΗ ΔΙΑΘΕΣΙΜΟ ΓΙΑ ΔΗΛΩΣΗ";
+          return "Μη διαθέσιμη δήλωση";
         } else {
-          return "ΤΟ ΤΜΗΜΑ ΕΦΤΑΣΕ ΣΤΗ ΠΛΗΡΟΤΗΤΑ ΤΟΥ. ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΟ";
+          return "Το τμήμα είναι σε πληρότητα, τροποποιείστε το";
         }
       }
       if (!completeness_percent.value || completeness_percent.value < 100) {
         if (user_type.value === 2) {
-          return "ΕΠΙΚΥΡΩΣΤΕ ΤΗΝ ΔΗΛΩΣΗ ΤΟΥ ΤΜΗΜΑΤΟΣ";
+          return "Επικυρώστε τη δήλωση σας";
         }
         else {
-          return "ΠΑΡΑΚΟΛΟΥΣΗ ΠΟΡΕΙΑΣ";
+          return "Τροποποίηση";
         }
       }
     });

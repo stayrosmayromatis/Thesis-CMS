@@ -140,6 +140,7 @@ import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth.composable";
 import { useStore } from "vuex";
 import { key } from "@/store/index";
+import { usePeriod } from "@/composables/usePeriod.composable";
 export default defineComponent({
   props: {
     closeInstantlyDirective: {
@@ -155,8 +156,10 @@ export default defineComponent({
     const title = import.meta.env.VITE_APP_TITLE;
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated, GetPeriodInfo } = useAuth();
-
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated
+      // , GetPeriodInfo 
+    } = useAuth();
+    const {IsPeriodActive,GetPeriodState,} = usePeriod();
     const isLoggedIn = computed((): boolean => {
       return store.getters.IsAuth;
     });
@@ -172,14 +175,6 @@ export default defineComponent({
     const IsStaff = computed(() => {
       return isLoggedIn.value === true ? IsTeacher() : false;
     });
-    const IsPeriodActive = computed(() => {
-      if (!isLoggedIn.value)
-        return false;
-      const periodInfo = GetPeriodInfo();
-      if (!periodInfo)
-        return false;
-      return periodInfo.IsPeriodActive;
-    });
     onMounted(async () => {
       if (width.value < 769) {
         hamburgerClose.value = false;
@@ -187,6 +182,7 @@ export default defineComponent({
       }
       hamburgerClose.value = true;
       await IsAuthenticated();
+      await GetPeriodState();
       console.log(isLoggedIn.value);
     });
     // watch(closeInstantlyDirective, async () => {
@@ -194,7 +190,6 @@ export default defineComponent({
     //     closeHamburgerFn();
     //   }
     // });
-
     computedEager(() => {
       if (closeInstantlyDirective.value === true) {
         closeHamburgerFn();
