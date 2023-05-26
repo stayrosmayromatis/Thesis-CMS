@@ -14,10 +14,9 @@
         </suspense>
       </div>
     </div>
-
-    <div class="mobile-date-picker">
-      <suspense>
-        <template #default>
+    <suspense>
+      <template #default>
+        <div class="mobile-date-picker">
           <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
             disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" :is-24="true"
             show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
@@ -26,22 +25,18 @@
             disable-time-range-validation placeholder="Έως" @update:model-value="isToTimeEmpty" :is-24="true"
             show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
           </date-picker>
-        </template>
-      </suspense>
-      <v-select class="v-input_max-width" :items="days" variant="solo" label="Ημέρα" hide-details density="comfortable"
-        persistent-hint direction="horizontal" single-line v-model="department.day"></v-select>
-      <div class="teacher-select-box">
-        <suspense>
-          <template #default>
+          <v-select class="v-input_max-width" :items="days" variant="solo" label="Ημέρα" hide-details
+            density="comfortable" persistent-hint direction="horizontal" single-line v-model="department.day"></v-select>
+          <div class="teacher-select-box">
             <teacher-select :selected_teacher_by_edit_flag="is_by_edit"
               :selected_teacher_by_edit_value="is_by_edit ? department.selectedTeacher : undefined"
               :error_on_selected_teacher="department.errorOnSelectedTeacher"
               @emit-selected-teacher="populateFormWithSelectedTeacher"
               :seeded_professors="seeded_professors_reactive"></teacher-select>
-          </template>
-        </suspense>
-      </div>
-    </div>
+          </div>
+        </div>
+      </template>
+    </suspense>
     <div class="mobile-actions">
       <v-btn color="error" variant="outlined" @click="deleteByDeptId()">
         Καταργηση
