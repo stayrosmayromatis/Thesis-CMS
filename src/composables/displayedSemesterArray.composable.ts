@@ -71,7 +71,7 @@ export function useDisplayedLabs() {
     );
     if(getSemestersCall.isFinished.value){
       const result:ApiResult<DisplaySemestersResponse> = getSemestersCall.data.value;
-      if(result.Status && result.Data && result.Data.Count){
+      if(result && result.Status && result.Data && result.Data.Count){
         DisplayedLabs.value = result.Data.Semesters.map((semester)=>{
           return {
             title:semester.DisplayTitle,

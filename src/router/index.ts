@@ -11,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/",
     name : 'welcome',
-    component : import('@/components/UI/WelcomePage.vue'),
+    component :() => import('@/components/UI/WelcomePage.vue'),
     meta:{requiresAuth :false}
   },
   {
@@ -47,7 +47,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path : "/add-lab",
     name : 'addlab',
-    component :  import('@/components/UI/AddLab.vue'),
+    component : () => import('@/components/UI/AddLab.vue'),
     meta : {requiresAuth :true,requiresIsTeacher : true},
     beforeEnter:[protectTeacherRoutes]
   },
@@ -77,7 +77,7 @@ const routes: Array<RouteRecordRaw> = [
     meta : {requiresAuth :true}
   },
   {
-     path: "/:catchAll(.*)",
+    path: "/:catchAll(.*)",
      name: "notFound",
      redirect: (to)=>{
       return {name:'welcome'}

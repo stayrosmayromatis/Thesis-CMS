@@ -25,7 +25,8 @@ export default defineComponent({
     AuthInProgress,
     BaseDialog
   },
-  setup() {
+  emits: ["closeMobileView"],
+  setup(_,context) {
     const route = useRoute();
     const router = useRouter();
     const store = useStore(key);
@@ -39,6 +40,7 @@ export default defineComponent({
     const showErrorDescription = ref("Η διαδίκασία δεν ολοκληρώθηκε");
     const authenticationErrorOccured = ref(false);
     onMounted(async () => {
+      context.emit("closeMobileView");
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
 
