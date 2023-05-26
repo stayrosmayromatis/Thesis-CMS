@@ -1,107 +1,22 @@
 <template>
-  <suspense>
-    <template #default>
-      <the-header :closeInstantlyDirective="closeInstantly"></the-header>
-    </template>
-    <template #fallback>
-          <h1>ERROR OCCURRED</h1>
-      </template>
-  </suspense>
+  <the-header :closeInstantlyDirective="closeInstantly"></the-header>
   <router-view @closeMobileView="closeMobileViewInstantly"></router-view>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, defineAsyncComponent } from "vue";
-//import TheHeader from "@/components/UI/TheHeader.vue";
-import { useAxiosInstance } from '@/composables/useInstance.composable';
-import { useAxios } from '@vueuse/integrations/useAxios';
+import { defineComponent, ref, onMounted} from "vue";
+import TheHeader from "@/components/UI/TheHeader.vue";
 import { useAuth } from "@/composables/useAuth.composable";
-const TheHeader = defineAsyncComponent({
-  loader: () => import("@/components/UI/TheHeader.vue"),
-  delay: 500,
-  suspensible: false,
-});
 export default defineComponent({
   name: "App",
   components: {
     TheHeader,
   },
   setup() {
-    const cooardinators: Array<{
-      id: string;
-      displayNameEl: string;
-      titleEl: string;
-      eduPersonalEntitlementEl: string;
-      personalTitle: string;
-      eduPersonAffiliation: string;
-      isStaff: boolean;
-      displayNameEn?: string;
-      titleEn?: string;
-      eduPersonalEntitlementEn?: string;
-    }> = Array();
-    const { setCustomInstance, setBackendInstanceAuth } = useAxiosInstance();
     const { IsAuthenticated } = useAuth();
     onMounted(async () => {
       await IsAuthenticated();
-      //Seeding Db Part uncomment if all goes wrong and need to seed again
-      //   const { data, isFinished } = await useAxios('/user',
-      //     {
-      //       method: "GET",
-      //       withCredentials: false,
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //         Accept: "*/*",
-      //       },
-      //     }
-      //     ,setCustomInstance('https://api.iee.ihu.gr')
-      //   );
-      //   console.log(data);
-      //   if (data.value.length === 0 || !data.value.length) {
-      //     console.log("error");
-      //     return;
-      //   }
-      //   for (const record of data.value) {
-      //     if (
-      //       !record.id ||
-      //       record.id === null ||
-      //       record.id === undefined ||
-      //       record.id === "" ||
-      //       record.id === "9123" ||
-      //       record.id === "5737" ||
-      //       record.id === "5738"
-      //     ) {
-      //       continue;
-      //     }
-      //     if (record.title === "Dummy") continue;
-      //     if (!record.displayName || !record["displayName;lang-el"]) continue;
-      //     cooardinators.push({
-      //       id: !record.id ? "-" : record.id,
-      //       displayNameEl: !record["displayName;lang-el"]
-      //         ? "-"
-      //         : record["displayName;lang-el"],
-      //       titleEl: !record["title;lang-el"] ? "-" : record["title;lang-el"],
-      //       personalTitle: !record.personalTitle ? "-" : record.personalTitle,
-      //       eduPersonalEntitlementEl: !record["eduPersonEntitlement;lang-el"]
-      //         ? "-"
-      //         : record["eduPersonEntitlement;lang-el"],
-      //       isStaff: record.eduPersonAffiliation ? true : false,
-      //       eduPersonAffiliation: !record.eduPersonAffiliation ? "-"
-      //         : record.eduPersonAffiliation,
-      //       displayNameEn : !record.displayName ? "-" : record.displayName,
-      //       titleEn : !record.title ? "-" : record.title,
-      //       eduPersonalEntitlementEn :!record.eduPersonEntitlement ? "-" : record.eduPersonEntitlement,
-      //     });
-      //   }
-      //   console.dir(cooardinators);
-
-      //   const seeding_response = await useAxios("/dev/seed",
-      //   {
-      //     method:"POST",
-      //     data:cooardinators
-      //   },
-      // setBackendInstanceAuth());
     });
-
     const closeInstantly = ref(false);
 
     const closeMobileViewInstantly = async (val: boolean) => {
