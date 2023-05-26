@@ -12,17 +12,27 @@
         </div>
       </v-card>
     </div>
-    <div class="cards-overview">
-      <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
-        :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
-        :timestring="`${lab.FromString} - ${lab.ToString}`" :course_id="courseGuid" :ladb_id="lab.LabId"
-        :completeness_percent="lab.CompletenessPercent" :user_type="userType"></department-card>
-    </div>
+    <suspense>
+      <template #default>
+        <div class="cards-overview">
+          <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
+            :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
+            :timestring="`${lab.FromString} - ${lab.ToString}`" :course_id="courseGuid" :ladb_id="lab.LabId"
+            :completeness_percent="lab.CompletenessPercent" :user_type="userType"></department-card>
+        </div>
+      </template>
+    </suspense>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs, onMounted, ref, computed } from 'vue';
-import DepartmentCard from "@/components/UI/Departments/DepartmentCard.vue";
+import { defineComponent, toRefs, onMounted, ref, computed, defineAsyncComponent } from 'vue';
+//import DepartmentCard from "@/components/UI/Departments/DepartmentCard.vue";
+const DepartmentCard = defineAsyncComponent({
+  loader: () => import("@/components/UI/Departments/DepartmentCard.vue"),
+  delay: 2000,
+  suspensible: false
+});
+
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
@@ -110,7 +120,7 @@ export default defineComponent({
         return "Παρακολούθηση δηλώσεων μαθήματος:";
       }
     });
-    return { showSpinner,resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
+    return { showSpinner, resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
   },
 });
 </script>
@@ -131,7 +141,7 @@ export default defineComponent({
   min-width: 320px;
   font-size: 1rem;
   font-weight: 500;
-  background-color: var( --header-label-background-color);
+  background-color: var(--header-label-background-color);
   padding: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -150,12 +160,14 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 }
-.label__lab-title-divider{
+
+.label__lab-title-divider {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 .cards-overview {
   display: flex;
   flex-direction: row;
@@ -166,9 +178,10 @@ export default defineComponent({
 
 .text-divider label#titleText {
   color: var(--header-label-text-color);
-   /* #555a69; */
+  /* #555a69; */
 }
-div.outer-parent-label{
+
+div.outer-parent-label {
   padding: 0;
 }
 
@@ -177,10 +190,10 @@ div.outer-parent-label{
     font-size: 1.1rem;
     padding: 0.5rem;
   }
-  
-div.outer-parent-label{
-  padding: 0 1rem;
-}
+
+  div.outer-parent-label {
+    padding: 0 1rem;
+  }
 }
 
 @media (min-width: 1025px) {
@@ -188,4 +201,5 @@ div.outer-parent-label{
     flex-direction: row;
     gap: 1rem;
   }
-}</style>
+}
+</style>
