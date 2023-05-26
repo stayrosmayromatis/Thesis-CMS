@@ -40,19 +40,19 @@ import { TypeStaff } from "@/enums/StaffTypeEnum";
 const AdminOption = defineAsyncComponent({
   loader: () => import("@/components/UI/Admin/AdminOptions/AdminOption.vue"),
   loadingComponent: BaseSpinner,
-  delay: 10,
+  delay: 500,
   suspensible: true
 });
 const ExportOption = defineAsyncComponent({
   loader: () => import("@/components/UI/Admin/ExportOptions/ExportOption.vue"),
   loadingComponent: BaseSpinner,
-  delay: 10,
+  delay: 500,
   suspensible: true
 });
 const PeriodOption = defineAsyncComponent({
   loader: () => import("@/components/UI/Admin/PeriodOptions/PeriodOption.vue"),
   loadingComponent: BaseSpinner,
-  delay: 10,
+  delay: 500,
   suspensible: true
 });
 

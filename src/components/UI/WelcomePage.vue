@@ -1,14 +1,28 @@
 <template>
     <div class="container" @click="emitMobileViewClose">
-        <base-dialog v-if="error === true" @close-modal="clearError">
-            <template #title>
-                <h1>{{ errorTit }}</h1>
+        <suspense>
+            <template #default>
+                <base-dialog :show="isError" @close-modal="clearError">
+                    <template #title>
+                        <h1>{{ errorTitle }}</h1>
+                    </template>
+                    <template #description>
+                        <p>{{ errorDescription }}</p>
+                    </template>
+                </base-dialog>
             </template>
-            <template #description>
-                <p>{{ errorDesc }}</p>
+            <template #fallback>
+                <h1>ERROR</h1>
             </template>
-        </base-dialog>
-        <base-alert :alert-type-prop="'success'" :show="showAlert" :title="alertTitle"></base-alert>
+        </suspense>
+        <suspense>
+            <template #default>
+                <base-alert :alert-type-prop="'success'" :show="showAlert" :title="alertTitle"></base-alert>
+            </template>
+            <template #fallback>
+                <h1>ERROR</h1>
+            </template>
+        </suspense>
         <div class="logo">
             <img class="mobile-view-picture" src="@/assets/ihu_logo.png" alt="IHU-LOGO-ALT" />
         </div>
@@ -35,10 +49,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineAsyncComponent, defineComponent, onMounted, ref } from 'vue'
 import { useErrorFunctions } from '@/composables/throwError.composable';
-import BaseDialog from '@/components/Base/BaseDialog.vue';
-import BaseAlert from '@/components/Base/BaseAlert.vue';
+//import BaseDialog from '@/components/Base/BaseDialog.vue';
+//import BaseAlert from '@/components/Base/BaseAlert.vue';
+const BaseDialog = defineAsyncComponent({
+    loader: () => import('@/components/Base/BaseDialog.vue'),
+    delay: 500,
+    suspensible: false
+});
+const BaseAlert = defineAsyncComponent({
+    loader: () => import('@/components/Base/BaseAlert.vue'),
+    delay: 500,
+    suspensible: false
+});
+
 import { useAlert } from '@/composables/showAlert.composable';
 export default defineComponent({
     emits: ['closeMobileView'],
@@ -47,33 +72,34 @@ export default defineComponent({
         BaseAlert
     },
     setup(_, context) {
-        const error = ref(false);
-        const errorDesc = ref<string>();
-        const errorTit = ref<string>();
+        // const error = ref(false);
+        // const errorDesc = ref<string>();
+        // const errorTit = ref<string>();
         const { alertTitle, showAlert, openAlert, closeAlert } = useAlert();
+        const { errorDescription, errorTitle, isError,clearError } = useErrorFunctions();
         onMounted(() => {
             emitMobileViewClose();
-            const { errorDescription, errorTitle, isError } = useErrorFunctions();
-            error.value = isError.value;
-            errorDesc.value = errorDescription.value;
-            errorTit.value = errorTitle.value;
-            if (showAlert.value === true) {
-                setTimeout(() => {
-                    openAlert(alertTitle.value);
-                }, 1000)
-                setTimeout(() => {
-                    closeAlert();
-                }, 1500)
-            }
+            closeAlert();
+            // error.value = isError.value;
+            // errorDesc.value = errorDescription.value;
+            // errorTit.value = errorTitle.value;
+            // if (showAlert.value === true) {
+            //     setTimeout(() => {
+            //         openAlert(alertTitle.value);
+            //     }, 1000)
+            //     setTimeout(() => {
+            //         closeAlert();
+            //     }, 1500)
+            // }
         });
         const emitMobileViewClose = (): void => {
             context.emit('closeMobileView', true);
         }
-        const clearError = () => {
-            const { clearError } = useErrorFunctions();
-            clearError();
-        }
-        return { emitMobileViewClose, error, errorDesc, errorTit, clearError, alertTitle, showAlert }
+        // const clearError = () => {
+        //     const {  } = useErrorFunctions();
+        //     clearError();
+        // }
+        return { emitMobileViewClose, isError, errorDescription, errorTitle, clearError, alertTitle, showAlert }
     }
 })
 </script>

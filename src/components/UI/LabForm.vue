@@ -6,28 +6,40 @@
           type="text" placeholder="(π.χ. Τ1)" v-model="department.deptId" />
       </div>
       <div class="slider-grow">
-        <base-slider @update:model-value="changeNumberOfStudents" :min-value="minValue" :max-value="maxValue"
-          :starting-value="startingValue"></base-slider>
+        <suspense>
+          <template #default>
+            <base-slider @update:model-value="changeNumberOfStudents" :min-value="minValue" :max-value="maxValue"
+              :starting-value="startingValue"></base-slider>
+          </template>
+        </suspense>
       </div>
     </div>
 
     <div class="mobile-date-picker">
-      <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
-        disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" :is-24="true"
-        show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
-      </date-picker>
-      <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
-        disable-time-range-validation placeholder="Έως" @update:model-value="isToTimeEmpty" :is-24="true" show-now-button
-        position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
-      </date-picker>
+      <suspense>
+        <template #default>
+          <date-picker :class="{ 'error-border': department.errorOnFromTime }" v-model="department.fromTime" time-picker
+            disable-time-range-validation placeholder="Απο" @update:model-value="isFromTimeEmpty" :is-24="true"
+            show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
+          </date-picker>
+          <date-picker :class="{ 'error-border': department.errorOnToTime }" v-model="department.toTime" time-picker
+            disable-time-range-validation placeholder="Έως" @update:model-value="isToTimeEmpty" :is-24="true"
+            show-now-button position="center" select-text="Οκ" cancel-text="Άκυρο" now-button-label="Τώρα">
+          </date-picker>
+        </template>
+      </suspense>
       <v-select class="v-input_max-width" :items="days" variant="solo" label="Ημέρα" hide-details density="comfortable"
         persistent-hint direction="horizontal" single-line v-model="department.day"></v-select>
       <div class="teacher-select-box">
-        <teacher-select :selected_teacher_by_edit_flag="is_by_edit"
-          :selected_teacher_by_edit_value="is_by_edit ? department.selectedTeacher : undefined"
-          :error_on_selected_teacher="department.errorOnSelectedTeacher"
-          @emit-selected-teacher="populateFormWithSelectedTeacher"
-          :seeded_professors="seeded_professors_reactive"></teacher-select>
+        <suspense>
+          <template #default>
+            <teacher-select :selected_teacher_by_edit_flag="is_by_edit"
+              :selected_teacher_by_edit_value="is_by_edit ? department.selectedTeacher : undefined"
+              :error_on_selected_teacher="department.errorOnSelectedTeacher"
+              @emit-selected-teacher="populateFormWithSelectedTeacher"
+              :seeded_professors="seeded_professors_reactive"></teacher-select>
+          </template>
+        </suspense>
       </div>
     </div>
     <div class="mobile-actions">
@@ -39,13 +51,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, ref, toRefs } from "vue";
+import { defineAsyncComponent, defineComponent, onMounted, PropType, ref, toRefs } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
-import TeacherSelect from "@/components/UI/TeacherSelect.vue";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
-import DatePicker  from '@vuepic/vue-datepicker';
-import BaseSlider from "@/components/Base/BaseSlider.vue";
+
+//import TeacherSelect from "@/components/UI/TeacherSelect.vue";
+//import DatePicker  from '@vuepic/vue-datepicker';
+//import BaseSlider from "@/components/Base/BaseSlider.vue";
+
+const TeacherSelect = defineAsyncComponent({
+  loader: () => import("@/components/UI/TeacherSelect.vue"),
+  delay: 500,
+  suspensible: false
+});
+const BaseSlider = defineAsyncComponent({
+  loader: () => import("@/components/Base/BaseSlider.vue"),
+  delay: 500,
+  suspensible: false
+});
+const DatePicker = defineAsyncComponent({
+  loader: () => import('@vuepic/vue-datepicker'),
+  delay: 500,
+  suspensible: false
+});
+
+
 export default defineComponent({
   props: {
     department: {

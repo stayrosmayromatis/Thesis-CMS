@@ -146,12 +146,12 @@ async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocatio
 }
 
 async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
-  const {GetPeriodState,PeriodInfoState} = usePeriod();
+  const {GetPeriodState,IsPeriodActive} = usePeriod();
   await GetPeriodState();
-  const periodInfo = PeriodInfoState.value;
+  const periodInfo = IsPeriodActive.value;
   if(!periodInfo || !to.meta.requiredPeriodInitialized )
     return next(false);
-  if(to.meta.requiredPeriodInitialized === true && (periodInfo.IsPeriodActive === false || !periodInfo.IsPeriodActive))
+  if(to.meta.requiredPeriodInitialized === true && !IsPeriodActive.value)
     return next(false);
   next();
 }
