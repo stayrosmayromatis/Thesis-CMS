@@ -119,10 +119,15 @@ export default defineComponent({
       default: false
     },
     personAffiliation: {
-      type: Object as PropType<PersonAffiliation>,
-      required: true,
-      default: null,
-    }
+      type: Number as PropType<PersonAffiliation>,
+        required: true,
+        default: undefined
+    },
+    // personAffiliation: {
+    //   type: Object as PropType<PersonAffiliation>,
+    //   required: true,
+    //   default: null,
+    // }
   },
   emits: ["pdfCreated"],
   setup(props, context) {
@@ -135,7 +140,7 @@ export default defineComponent({
     const semesterString = ref("");
     onMounted(async () => {
       var c =  await GetSemesterPeriodCall();
-      if(!c.Status || !c.Data){
+      if( !c || !c.Status || !c.Data){
         semesterString.value = "";
         return;
       }
@@ -242,7 +247,7 @@ export default defineComponent({
       if(!semesterPeriodCall.isFinished.value)
         return {Status : false , Data: "Error"};
       const dataIDT:ApiResult<Object> = semesterPeriodCall.data.value;
-      if(!dataIDT.Status || !dataIDT.Data || dataIDT.Error)
+      if(!dataIDT || !dataIDT.Status || !dataIDT.Data || dataIDT.Error)
         return {Status : false , Data: "Error"};
       return {Status : true , Data: dataIDT.Data.DisplayString};
     }

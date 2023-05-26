@@ -83,10 +83,15 @@ export default defineComponent({
       default: null,
     },
     personAffiliation: {
-      type: Object as PropType<PersonAffiliation>,
-      required: true,
-      default: null,
+      type: Number as PropType<PersonAffiliation>,
+        required: true,
+        default: undefined
     },
+    // personAffiliation: {
+    //   type: Object as PropType<PersonAffiliation>,
+    //   required: true,
+    //   default: null,
+    // },
   },
   components: {
     BaseDialog,
