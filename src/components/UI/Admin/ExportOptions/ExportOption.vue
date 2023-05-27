@@ -1,7 +1,6 @@
 <template>
   <div class="export-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
-    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <div v-if="!showLoadingSpinner">
       <v-card elevation="5" class="export-label"><label>{{ 'Εξαγωγη πορειας / καταστασης δηλωσεων' }}</label></v-card>
       <div class="just-for-show">
@@ -21,7 +20,6 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
-import BaseAlert from '@/components/Base/BaseAlert.vue';
 import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
@@ -36,7 +34,6 @@ import ExpansionPanelExportOption from '@/components/UI/Admin/ExportOptions/Expa
 export default defineComponent({
   components: {
     BaseDialog,
-    BaseAlert,
     BaseSpinner,
     BaseResultEmpty,
     ExpansionPanelExportOption
@@ -45,7 +42,7 @@ export default defineComponent({
   setup(_, context) {
     const showLoadingSpinner = ref(false);
     const personalisedCourses = ref(new Array<PersonalisedCourseBySemester>());
-    const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
+    const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { scrollToTop } = useTimeObjectExtensions();
     const { setBackendInstanceAuth } = useAxiosInstance();
 
@@ -96,7 +93,7 @@ export default defineComponent({
     const emitMobileViewClose = (): void => {
       context.emit('propagateCloseMobileView', true);
     };
-    return { emitMobileViewClose, showLoadingSpinner, personalisedCourses, showAlert, alertTitle, typeOfAlert }
+    return { emitMobileViewClose, showLoadingSpinner, personalisedCourses }
   }
 
 });

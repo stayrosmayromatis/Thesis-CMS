@@ -98,14 +98,7 @@ export default defineComponent({
     };
     onMounted(async () => {
       emitMobileViewClose();
-      if (showAlert.value === true) {
-        setTimeout(() => {
-          openAlert(alertTitle.value);
-        }, 1000)
-        setTimeout(() => {
-          closeAlert();
-        }, 1500)
-      }
+      closeAlert(1000);
       await populateSubmittedLabs();
       return;
     });
@@ -183,6 +176,7 @@ export default defineComponent({
 .parent-card {
   margin-top: 1rem;
   margin-bottom: 1rem;
+  margin: 1rem auto;
 }
 
 .parent-label {
@@ -238,10 +232,7 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .parent-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin: 1rem 1rem;
   }
 
   .parent-label {
@@ -268,13 +259,6 @@ export default defineComponent({
 }
 
 @media (min-width: 1025px) {
-  .parent-card {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-
   .pdf-button {
     display: flex;
     flex-direction: row;

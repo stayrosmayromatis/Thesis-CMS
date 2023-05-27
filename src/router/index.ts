@@ -95,38 +95,20 @@ const router = createRouter({
 
 router.beforeEach(async (to,_,next) => {
   const  {IsAuthenticated} = useAuth();
-  //const isAuth = await IsAuthenticated(true);
   await IsAuthenticated(true);
   const storeIsAuth = store.getters.IsAuth;
   if(to.meta.requiresAuth === false && storeIsAuth == false){
     return next();
-    //OLD IMPLE
-    // isAuth === false ? next() : next(false);
-    return;
   }
   if(to.meta.requiresAuth === false && storeIsAuth == true){
     SetNotAuthenticated();
     return next();
-    //OLD IMPLE
-    // if(isAuth === true){
-    //   SetNotAuthenticated();
-    // }
-    // next();
-    // return;
   }
-  // if(to.meta.requiresAuth === true && storeIsAuth === true)
-  // {
-  //   isAuth === true ? next() : next({name:'red'});
-  //   return;
-  // }
   if(to.meta.requiresAuth === true && storeIsAuth === false)
   {
-    //isAuth === true ? next() :  next({name:'red'});
     return next({name:'red'});
   }
-  //next(false);
   return next();
-  // return;
 });
 
 async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
@@ -137,12 +119,7 @@ async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocatio
   if(to.meta.requiresIsTeacher === true && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
     return next();
   }
-  // if(to.meta.requiresIsTeacher === false && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)){
-  //   next({name:'submittedLabs'});
-  //   return;
-  // }
-  next(false);
-  
+  return next(false);
 }
 
 async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
@@ -153,6 +130,6 @@ async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:Ro
     return next(false);
   if(to.meta.requiredPeriodInitialized === true && !IsPeriodActive.value)
     return next(false);
-  next();
+  return next();
 }
 export default router;

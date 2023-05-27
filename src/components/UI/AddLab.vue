@@ -1,51 +1,29 @@
 <template>
   <base-spinner :show="showSpinner"></base-spinner>
+
+  <base-dialog :show="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
+    inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span>, θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
+    @close-modal="showRouteLeaveModal = false"></base-dialog>
+  <base-dialog :show="somethingWentWrongModal" :route-change-authorizer="false" inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
+    inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
+    @close-modal="somethingWentWrongModal = false"></base-dialog>
+  <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
+    :inner-description="confirmDeletionInnerDescription" @close-modal="showConfirmDeletionModal = false"></base-dialog>
   <div @click="emitMobileViewClose" v-if="!showSpinner">
+    <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
     <div class="parent-card">
       <v-card elevation="10" class="parent-label">
         <v-card-title> Φόρμα Εισαγωγής Εργαστηρίου </v-card-title>
       </v-card>
     </div>
-    <base-alert
-      :alert-type-prop="typeOfAlert"
-      :show="showAlert"
-      :title="alertTitle"
-    ></base-alert>
-    <base-dialog
-      :show="showRouteLeaveModal"
-      :route-change-authorizer="true"
-      inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-      inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span>, θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
-      @close-modal="showRouteLeaveModal = false"
-    ></base-dialog>
-    <base-dialog
-      :show="somethingWentWrongModal"
-      :route-change-authorizer="false"
-      inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
-      inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
-      @close-modal="somethingWentWrongModal = false"
-    ></base-dialog>
-    <base-dialog
-      :show="showConfirmDeletionModal"
-      :route-change-authorizer="true"
-      :inner-title="confirmDeletionInnerTitle"
-      :inner-description="confirmDeletionInnerDescription"
-      @close-modal="showConfirmDeletionModal = false"
-    ></base-dialog>
-
     <div class="parent-card-form">
       <v-card elevation="5">
         <v-form @submit.prevent="submitForm">
           <v-container>
             <div :class="{ 'error-color': v$.semester.$error }">
               <v-chip-group>
-                <v-chip
-                  :class="{ 'active-chip': semester.isActive }"
-                  @click="clickOnChip(semester.value)"
-                  v-for="semester of displayedSemester"
-                  :key="semester.title"
-                  >{{ semester.title }}</v-chip
-                >
+                <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
+                  v-for="semester of displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
               </v-chip-group>
             </div>
             <v-divider inset></v-divider>
@@ -53,36 +31,18 @@
               <label for="year">Βασικά Στοιχεία</label>
             </div>
             <div class="form-first">
-              <v-text-field
-                :class="{ 'error-color': v$.labId.$error }"
-                :error-messages="errorOfLabId"
-                label="Κωδικός Εργαστηρίου"
-                v-model.trim="formState.labId"
-              ></v-text-field>
-              <v-text-field
-                :class="{ 'error-color': v$.labTitle.$error }"
-                :error-messages="errorOfLabTitle"
-                label="Τίτλος Εργαστηρίου"
-                v-model.trim="formState.labTitle"
-              ></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
+                label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
+                label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
             </div>
             <div class="form-first">
-              <v-text-field
-                :class="{ 'error-color': v$.description.$error }"
-                :error-messages="errorOfDescription"
-                label="Περιγραφή Εργαστηρίου"
-                v-model.trim="formState.description"
-              ></v-text-field>
+              <v-text-field :class="{ 'error-color': v$.description.$error }" :error-messages="errorOfDescription"
+                label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
               <div class="percent49-5">
-                <v-select
-                  :class="{ 'error-color': v$.labTitle.$error }"
-                  :items="displayedAttendaceValues"
-                  :error-messages="errorOfAttendance"
-                  label="Παρακολούθηση"
-                  density="default"
-                  v-model="formState.attendance"
-                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"
-                ></v-select>
+                <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
+                  :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
+                  v-model="formState.attendance" no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
               </div>
             </div>
             <v-divider inset></v-divider>
@@ -90,52 +50,26 @@
               <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
             </div>
             <div class="info-centerer" v-if="departments.length">
-              <base-alert
-                :alert-type-prop="'info'"
-                :show="true"
-                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"
-              ></base-alert>
+              <base-alert :alert-type-prop="'info'" :show="true"
+                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
             </div>
             <div class="form-control-add-btn">
-              <v-btn
-                type="button"
-                @click="addFormGroup"
-                elevation="4"
-                color="green"
-                ><svg
-                  width="30"
-                  height="30"
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
-                  stroke-linejoin="round"
-                  stroke-miterlimit="2"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+              <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
+                  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                    fill-rule="nonzero"
-                  />
+                    fill-rule="nonzero" />
                 </svg>
                 ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
               </v-btn>
             </div>
-            <lab-form
-              v-for="department in departments"
-              :key="department.Guid"
-              :department="department"
-              :seeded_professors="seededProfessors"
-              @deleteByDeptId="removeFormGroup"
-              :is_by_edit="isCallByEdit"
-              @global-error="validateEachDepartment"
-            ></lab-form>
+            <lab-form v-for="department in departments" :key="department.Guid" :department="department"
+              :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
+              @global-error="validateEachDepartment"></lab-form>
             <div class="submit-button" v-if="departments.length">
-              <v-btn
-                id="submit-btn"
-                :disabled="buttonDisablity"
-                type="submit"
-                >{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" : "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn
-              >
+              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" :
+                "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn>
             </div>
           </v-container>
         </v-form>
@@ -205,7 +139,7 @@ export default defineComponent({
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
-    const { toTimeString,scrollToTop } = useTimeObjectExtensions();
+    const { toTimeString, scrollToTop } = useTimeObjectExtensions();
     const router = useRouter();
     const route = useRoute();
     const seededProfessors = ref(new Array<BaseUser>());
@@ -246,7 +180,7 @@ export default defineComponent({
         hasQueryParams.includes("editId") &&
         queryParamsLength == 1
       ) {
-        
+
         showSpinner.value = true;
         const courseInfoEditIDT = await MakeGetCourseInfoForEditCall(
           Object.values(route.query)[0]!.toString()
@@ -263,7 +197,7 @@ export default defineComponent({
       //SeedProfessorsSegment
       await GetSeededProfessors();
       seededProfessors.value = SeedProfessorsArray.value;
-     
+
     });
     //SeedProfessorsSegment
     const emitMobileViewClose = (): void => {
@@ -626,10 +560,9 @@ export default defineComponent({
         somethingWentWrongModal.value = true;
         setTypeOfAlert("error");
         openAlert(
-          `Αποτυχία ${
-            isCallByEdit.value === true ? "ενημέρωσης" : "καταχώρησης"
+          `Αποτυχία ${isCallByEdit.value === true ? "ενημέρωσης" : "καταχώρησης"
           } εργαστηρίου`
-          );
+        );
 
         scrollToTop();
         closeAlert(1500);
@@ -639,16 +572,15 @@ export default defineComponent({
       }
       setTypeOfAlert("success");
       openAlert(
-        `Επιτυχής  ${
-          isCallByEdit.value === true ? "ενημέρωση" : "καταχώρηση"
+        `Επιτυχής  ${isCallByEdit.value === true ? "ενημέρωση" : "καταχώρηση"
         } εργαστηρίου`
-        );
+      );
       scrollToTop();
       closeAlert(1500);
       await delay(1500);
       somethingWentWrongModal.value = false;
       successFullSubmision.value = true;
-      router.replace({ name: 'labList' })
+      router.replace({ name: 'submittedLabs' });
       return;
     };
     const anythingIsPopulated = computed(() => {
@@ -812,11 +744,9 @@ export default defineComponent({
                 !api_response_dta.Data.CountOfStudentsSubmited)
             ) {
               showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${
-                api_response_dta.Data.LabName ?? ""
-              }</span> του μαθήματος <span style="color:green;">${
-                api_response_dta.Data.CourseName ?? ""
-              }</span>.
+              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName ?? ""
+                }</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""
+                }</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
               return { Data: true, Status: true };
@@ -838,11 +768,9 @@ export default defineComponent({
             ) {
               //Dilwseis not found though do you wanna continue?
               showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${
-                api_response_dta.Data.LabName ?? ""
-              }</span> του μαθήματος <span style="color:green;">${
-                api_response_dta.Data.CourseName ?? ""
-              }</span>.
+              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName ?? ""
+                }</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""
+                }</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                                                       Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
               return { Data: true, Status: true };
@@ -864,7 +792,7 @@ export default defineComponent({
     ): Promise<InternalDataTransfter<boolean>> => {
       const api_response = await useAxios(
         CourseController +
-          `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
+        `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
         { method: "POST" },
         setBackendInstanceAuth()
       );
@@ -959,7 +887,7 @@ export default defineComponent({
 }
 
 .parent-card {
-  margin : 0.5rem auto;
+  margin: 0.5rem auto;
 
 }
 
@@ -973,7 +901,7 @@ export default defineComponent({
   min-width: 320px;
   font-size: 1rem;
   font-weight: 500;
-  background-color: var( --header-label-background-color);
+  background-color: var(--header-label-background-color);
   color: var(--header-label-text-color);
   padding: 1.2rem;
 }
@@ -1144,14 +1072,10 @@ export default defineComponent({
     width: 100%;
   }
 
-  .parent-card {
-    margin: 2rem 1rem;
-  }
-
   :deep(.v-chip-group) {
     align-items: center;
     column-gap: 1rem;
-    flex-wrap: nowrap;
+    /* flex-wrap: nowrap; */
     max-width: 100%;
   }
 }

@@ -25,16 +25,16 @@
             <div class="u-container-layout u-similar-container u-container-layout-2">
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-2">
-                {{ 'Ονοματεπώνυμο: ' + `${firstName} ${lastName}`}}
+                {{ 'Ονοματεπώνυμο: ' + `${firstName} ${lastName}` }}
               </p>
             </div>
           </div>
           <div class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-3">
               <p
-              class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
+                class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
                 <!-- {{ 'Περίοδος Δηλώσεων: [[SEMESTER]]' }} -->
-                {{ `Περίοδος Δηλώσεων: ${semesterString}` }}
+                {{ `Περίοδος Δηλώσεων: ${SubmissionPeriodString}` }}
               </p>
             </div>
           </div>
@@ -67,10 +67,12 @@
               <td class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Ώρα
               </td>
-              <td v-if="!IsStaffOrAdmin" class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
+              <td v-if="!IsStaffOrAdmin"
+                class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Παρακολούθηση
               </td>
-              <td v-if="IsStaffOrAdmin" class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
+              <td v-if="IsStaffOrAdmin"
+                class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Συνεργάτης
               </td>
             </tr>
@@ -80,7 +82,7 @@
               <td class="u-table-cell">{{ lab.LabName }}</td>
               <td class="u-table-cell">{{ lab.DayString }}</td>
               <td class="u-table-cell">{{ `${lab.From} - ${lab.To}` }}</td>
-              <td  v-if="!IsStaffOrAdmin" class="u-table-cell">{{ AttendaceReformer(lab.Attendance) }}</td>
+              <td v-if="!IsStaffOrAdmin" class="u-table-cell">{{ AttendaceReformer(lab.Attendance) }}</td>
               <td v-if="IsStaffOrAdmin" class="u-table-cell">{{ IsAssistant(lab.IsAssistantProfessor) }}</td>
             </tr>
           </tbody>
@@ -98,14 +100,7 @@ import jsPDF, { ImageOptions } from "jspdf";
 import { useAuth } from '@/composables/useAuth.composable';
 import { AttendanceEnum } from '@/enums/AttendanceEnums';
 import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
-import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
-import { CourseController } from '@/config';
-import { useAxiosInstance } from '@/composables/useInstance.composable';
-import { useAxios } from '@vueuse/integrations/useAxios';
-import { ApiResult } from '@/models/DTO/ApiResult';
-interface Object{
-  DisplayString:string;
-}
+import { usePeriod } from '@/composables/usePeriod.composable';
 export default defineComponent({
   props: {
     labs: {
@@ -120,53 +115,41 @@ export default defineComponent({
     },
     personAffiliation: {
       type: Number as PropType<PersonAffiliation>,
-        required: true,
-        default: undefined
-    },
-    // personAffiliation: {
-    //   type: Object as PropType<PersonAffiliation>,
-    //   required: true,
-    //   default: null,
-    // }
+      required: true,
+      default: undefined
+    }
   },
   emits: ["pdfCreated"],
   setup(props, context) {
     const pdfContent = ref<HTMLElement>();
     const { GetUserDataDetails } = useAuth();
-    const { labs, callToGeneratePdf ,personAffiliation} = toRefs(props);
+    const { labs, callToGeneratePdf, personAffiliation } = toRefs(props);
     const firstName = ref<string>("");
     const lastName = ref<string>("");
-    const { setBackendInstanceAuth} = useAxiosInstance();
-    const semesterString = ref("");
+    const { SubmissionPeriodString, GetPeriodState } = usePeriod();
     onMounted(async () => {
-      var c =  await GetSemesterPeriodCall();
-      if( !c || !c.Status || !c.Data){
-        semesterString.value = "";
-        return;
+      if (!SubmissionPeriodString.value) {
+        await GetPeriodState();
       }
-      semesterString.value = c.Data;
       const userDetails = GetUserDataDetails();
       if (!userDetails) {
         firstName.value = "";
         lastName.value = "";
+        return;
+      }
+      let splitted = userDetails.DisplayNameEl.replaceAll('-', ' ').split(' ');
+      if (!splitted || !splitted.length) {
+        firstName.value = "";
+        lastName.value = "";
+        return;
+      }
+      lastName.value = splitted[splitted.length - 1];
+      if (splitted.length >= 3) {
+        firstName.value = splitted[0] + " - " + splitted[1];
       }
       else {
-        let splitted = userDetails.DisplayNameEl.replaceAll('-', ' ').split(' ');
-        if (!splitted || splitted.length === 0) {
-          firstName.value = "";
-          lastName.value = "";
-        }
-        else {
-          lastName.value = splitted[splitted.length - 1];
-          if (splitted.length >= 3) {
-            firstName.value = splitted[0] + " - " + splitted[1];
-          }
-          else {
-            firstName.value = splitted[0];
-          }
-        }
+        firstName.value = splitted[0];
       }
-     
     });
     const generatePdf = async () => {
       if (!pdfContent.value)
@@ -207,7 +190,7 @@ export default defineComponent({
         generatePdf();
       }
     });
-    function AttendaceReformer(attendace: AttendanceEnum):string{
+    function AttendaceReformer(attendace: AttendanceEnum): string {
       if (!attendace) {
         return "ΥΠΟΧΡΕΩΤΙΚΗ";
       }
@@ -222,10 +205,10 @@ export default defineComponent({
           return "ΥΠΟΧΡΕΩΤΙΚΗ";
       }
     }
-    function IsAssistant(isAssistant?:boolean){
-      if(isAssistant === false || !isAssistant )
+    function IsAssistant(isAssistant?: boolean) {
+      if (isAssistant === false || !isAssistant)
         return "-";
-      if(isAssistant === true)
+      if (isAssistant === true)
         return "ΣΥΝΕΡΓΑΤΗΣ";
     }
     const IsStaffOrAdmin = computed(() => {
@@ -235,23 +218,7 @@ export default defineComponent({
         return true;
       return false;
     });
-    const GetSemesterPeriodCall = async ():Promise<InternalDataTransfter<string>> => {
-      
-      const semesterPeriodCall = await useAxios(
-        CourseController + `semesters/period`,
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if(!semesterPeriodCall.isFinished.value)
-        return {Status : false , Data: "Error"};
-      const dataIDT:ApiResult<Object> = semesterPeriodCall.data.value;
-      if(!dataIDT || !dataIDT.Status || !dataIDT.Data || dataIDT.Error)
-        return {Status : false , Data: "Error"};
-      return {Status : true , Data: dataIDT.Data.DisplayString};
-    }
-    return { labs, pdfContent,semesterString, generatePdf, firstName, lastName, AttendaceReformer,IsStaffOrAdmin,IsAssistant };
+    return { labs, pdfContent, SubmissionPeriodString, generatePdf, firstName, lastName, AttendaceReformer, IsStaffOrAdmin, IsAssistant };
   },
 });
 </script>

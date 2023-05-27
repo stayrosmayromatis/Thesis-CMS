@@ -138,6 +138,7 @@ import {
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
 import { isNumber } from "@vueuse/shared";
 import { useProfessor } from "@/composables/useProfessors.composable";
+import { computedEager } from "@vueuse/core";
 export interface CreateProfRequest {
   Firstname: string;
   Lastname: string;
@@ -168,6 +169,11 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default:false,
+    },
+    delete_selected_by_admin_option:{
+      type: Boolean,
+      required: false,
+      default:false,
     }
   },
   emits: ["emit-selected-teacher"],
@@ -187,13 +193,12 @@ export default defineComponent({
     const newName = ref<string>("");
     const newSurname = ref<string>("");
 
-    const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value,by_admin_option} = toRefs(props);
+    const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value,by_admin_option,delete_selected_by_admin_option} = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
 
     const selectedTeacher = ref<BaseUser>();
     const cantFindTeacherFlag = ref(false);
     onMounted(() => {
-      console.dir(seeded_professors);
       if(selected_teacher_by_edit_flag.value === true && selected_teacher_by_edit_value.value){
         selectedTeacher.value = selected_teacher_by_edit_value.value;
         context.emit("emit-selected-teacher", selected_teacher_by_edit_value.value);
@@ -212,10 +217,10 @@ export default defineComponent({
       }
     };
     const configSelectedTeacher = async () => {
-      if (cantFindTeacherFlag.value === true) {
+      if (cantFindTeacherFlag.value ) {
         const isValidName = validateName();
         const isValidSurname = validateName();
-        if (isValidName === true && isValidSurname === true) {
+        if (isValidName && isValidSurname) {
           const payload: CreateProfRequest = {
             Firstname: newName.value,
             Lastname: newSurname.value,
@@ -247,7 +252,7 @@ export default defineComponent({
       }
     };
     const validateName = () => {
-      if (!newName.value || newName.value === " ") {
+      if (!newName.value || !newName.value.trim().length ||  newName.value.trim() === " ") {
         errorMessageName.value = "Υποχρεωτικό όνομα";
         errorOnName.value = true;
         return false;
@@ -262,7 +267,7 @@ export default defineComponent({
       }
     };
     const validateSurname = () => {
-      if (!newSurname.value || newSurname.value === " ") {
+      if (!newSurname.value|| !newSurname.value.trim().length || newSurname.value.trim() === " ") {
         errorMessageSurname.value = "Υποχρεωτικό επώνυμο";
         errorOnSurname.value = true;
         return false;
@@ -280,16 +285,14 @@ export default defineComponent({
       }
     };
     const lastNameProp = computed(() => {
-      console.log(selectedTeacher.value);
       if (!error_on_selected_teacher || !selectedTeacher.value)
       {
-        return by_admin_option.value === false ? "Καθηγητες" : "Νεος Διαχειριστης";
+        return !by_admin_option.value ? "Καθηγητες" : "Νεος Διαχειριστης";
       }
       const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-      //let splitted = selectedTeacher.value?["displayNameEl"].toString().split(" ") as string;
       if (!splitted || splitted.length == 0)
       {
-        return by_admin_option.value === false ? "Καθηγητες" : "Νεος Διαχειριστης";
+        return !by_admin_option.value ? "Καθηγητες" : "Νεος Διαχειριστης";
       }
       return splitted[splitted.length - 1];
     });
@@ -303,7 +306,13 @@ export default defineComponent({
       context.emit("emit-selected-teacher", selectedTeacher.value );
       dialog.value = false;
     }
-
+    const deleteSelectedByAdminOption = computedEager(() => {
+      if(by_admin_option.value && delete_selected_by_admin_option.value){
+        selectedTeacher.value = undefined;
+        context.emit("emit-selected-teacher", selectedTeacher.value );
+        dialog.value = false;
+      }
+    });
     return {
       error,
       dialog,

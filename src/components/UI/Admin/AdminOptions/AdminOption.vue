@@ -1,5 +1,4 @@
 <template>
-  <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
   <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
     :inner-description="confirmDeletionInnerDescription"></base-dialog>
   <div class="parent" @click="emitMobileViewClose">
@@ -20,7 +19,8 @@
         </div>
       </v-card>
       <div class="add-new__admin--container">
-        <teacher-select :seeded_professors="seededProfessors" :by_admin_option="true"
+        <teacher-select :seeded_professors="SeedProfessorsArray" :by_admin_option="true"
+        :delete_selected_by_admin_option="delete_selected_by_admin_option"
           @emit-selected-teacher="setStateToAdmin"></teacher-select>
       </div>
     </div>
@@ -40,14 +40,12 @@ import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { AllAdminsResponse } from "@/models/BACKEND-MODELS/AllAdminsResponse";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { BaseUserResponse } from "@/models/BACKEND-MODELS/BaseUserResponse";
-import BaseAlert from "@/components/Base/BaseAlert.vue";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
 import { confirm } from "@/composables/dialog.composable";
 export default defineComponent({
   components: {
     TeacherSelect,
-    BaseAlert,
     BaseSpinner,
     BaseDialog
   },
@@ -55,19 +53,22 @@ export default defineComponent({
   setup(_, context) {
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
     const { setBackendInstanceAuth } = useAxiosInstance();
-    const { openAlert, setTypeOfAlert, typeOfAlert, showAlert, closeAlert, alertTitle } = useAlert();
-    const seededProfessors = ref(new Array<BaseUser>());
+    const { openAlert, setTypeOfAlert, closeAlert,} = useAlert();
+    
     const arrayOfAdmins = ref(new Array<BaseUserResponse>());
     const showLoadingSpinner = ref(false);
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
+    const delete_selected_by_admin_option = ref(false);
     onMounted(async () => {
       emitMobileViewClose()
       closeAlert(1000);
-      //SeedProfessorsSegment
-      await GetSeededProfessors();
-      seededProfessors.value = SeedProfessorsArray.value;
+      
+      if( !SeedProfessorsArray|| !SeedProfessorsArray.value ||!SeedProfessorsArray.value.length){
+        await GetSeededProfessors();
+      }
+      
       showLoadingSpinner.value = true;
       const popAdminsIDT = await MakeApiCallToPopulateAdmins();
       showLoadingSpinner.value = false;
@@ -119,12 +120,22 @@ export default defineComponent({
       if (!selectedTeacher || !selectedTeacher.Guid)
         return {Status :false,Data:"Αποτυχία",Error:"Αποτυχία"};
       const changeAdminStateIDT = await MakeApiCallToChangeAdminState(selectedTeacher.Guid, removeAdmin);
-      if (!changeAdminStateIDT.Status) {
+      if (!changeAdminStateIDT || !changeAdminStateIDT.Status) {
         return {Status :false,Data:"Αποτυχία αλλαγής κατάστασης διαχειριστή",Error:"Αποτυχία αλλαγής κατάστασης διαχειριστή"};
       }
       const populateAdminsIDT = await MakeApiCallToPopulateAdmins();
       if (!populateAdminsIDT.Status) {
         return {Status :false,Data:"Αποτυχία λήψης διαχειριστών",Error:"Αποτυχία λήψης διαχειριστών"};
+      }
+      if(!removeAdmin){
+        delete_selected_by_admin_option.value = true;
+        await delay(1000);
+        delete_selected_by_admin_option.value = false;
+        closeAlert(1000);
+        setTypeOfAlert('success');
+        openAlert("Επιτυχία αλλαγής κατάστασης σε διαχειριστή");
+        await delay(1500);
+        closeAlert(1000);
       }
       return {Status :true,Data:"OK"};
     };
@@ -171,11 +182,9 @@ export default defineComponent({
     return {
       emitMobileViewClose,
       arrayOfAdmins,
-      seededProfessors,
+      delete_selected_by_admin_option,
+      SeedProfessorsArray,
       setStateToAdmin,
-      typeOfAlert,
-      showAlert,
-      alertTitle,
       showLoadingSpinner,
       setStateToAdminInterceptor,
       showConfirmDeletionModal,
@@ -205,7 +214,7 @@ export default defineComponent({
   width: 100%;
   height: 2rem;
   min-width: 320px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 450;
   background-color:var(--header-label-background-color);
   color: var(--header-label-text-color);
@@ -275,10 +284,8 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .admin-label {
-    margin-top: 0.5rem;
     margin-bottom: 0.5rem;
     height: 3rem;
-    font-size: 1rem;
   }
 }
 

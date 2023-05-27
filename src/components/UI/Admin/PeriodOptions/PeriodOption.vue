@@ -1,7 +1,6 @@
 <template>
   <div class="options-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
-    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
       :routeChangeAuthorizer="true" :use-timer="true" @close-modal="showBaseDialog = false"></base-dialog>
     <div v-if="!showLoadingSpinner">
@@ -158,7 +157,7 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
-import BaseAlert from '@/components/Base/BaseAlert.vue';
+// import BaseAlert from '@/components/Base/BaseAlert.vue';
 import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
@@ -181,14 +180,13 @@ export default defineComponent({
   {
     BaseSpinner,
     BaseDialog,
-    BaseAlert,
     BaseResultEmpty,
     DatePicker
   },
   emits: ['propagateCloseMobileView'],
   setup(_, context) {
     const showLoadingSpinner = ref(false);
-    const { showAlert, alertTitle, typeOfAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
+    const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { setBackendInstanceAuth } = useAxiosInstance();
     const { scrollToTop } = useTimeObjectExtensions();
     const {GetPeriodState} = usePeriod();
@@ -578,12 +576,9 @@ export default defineComponent({
       baseDialogTitle,
       baseDialogDescription,
       showLoadingSpinner,
-      showAlert,
       dateFormater,
       yearRange,
       dayNames,
-      alertTitle,
-      typeOfAlert,
       currentlyActiveSsds,
       newPeriodContext,
       semesterStringConverter,

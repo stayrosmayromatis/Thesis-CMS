@@ -1,8 +1,8 @@
 <template>
   <div class="parent" @click="emitMobileViewClose">
+    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <v-card>
       <div>
-        <!-- ITS A WORK IN PROGRESS -->
         <v-tabs v-if="isTeacher" v-model="tab" bg-color="#dae3f7">
           <div class="tab-override">            
             <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
@@ -37,6 +37,8 @@ import { v4 as uuidv4 } from "uuid";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import { useAuth } from "@/composables/useAuth.composable";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
+import BaseAlert from "@/components/Base/BaseAlert.vue";
+import { useAlert } from "@/composables/showAlert.composable";
 const AdminOption = defineAsyncComponent({
   loader: () => import("@/components/UI/Admin/AdminOptions/AdminOption.vue"),
   loadingComponent: BaseSpinner,
@@ -61,7 +63,8 @@ export default defineComponent({
     AdminOption,
     ExportOption,
     PeriodOption,
-    BaseSpinner
+    BaseSpinner,
+    BaseAlert
   },
   emits: ['closeMobileView'],
   setup(_, context) {
@@ -69,6 +72,7 @@ export default defineComponent({
     const isTeacher = ref(false);
     const { GetUserDataDetails } = useAuth();
     const tab = ref();
+    const { showAlert, alertTitle, typeOfAlert,closeAlert} = useAlert();
     const component_loader:Ref<Array<{
       id: string,
         name: string,
@@ -82,6 +86,7 @@ export default defineComponent({
     ]);
     onMounted(() => {
       emitMobileViewClose();
+      closeAlert();
       determineIsAdmin();
       determineIsTeacher();
       addTheAdminComponent();
@@ -129,14 +134,14 @@ export default defineComponent({
     const emitMobileViewClose = (): void => {
       context.emit('closeMobileView', true);
     }
-    return { emitMobileViewClose,tab, component_loader ,isAdmin,isTeacher};
+    return { emitMobileViewClose,tab, component_loader ,isAdmin,isTeacher,showAlert, alertTitle, typeOfAlert};
   },
 });
 </script>
 
 <style scoped>
 .parent {
-  margin: 1rem 0;
+  margin: 1rem auto;
   min-width: 320px;
 }
 
@@ -188,8 +193,5 @@ export default defineComponent({
 }
 
 @media (min-width: 1025px) {
-  .parent {
-    margin: 2rem 1rem;
-  }
 }
 </style>

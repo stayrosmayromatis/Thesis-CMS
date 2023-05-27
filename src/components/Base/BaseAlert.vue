@@ -53,7 +53,7 @@ export default defineComponent({
 .outer-alert-container {
   width: 100%;
   min-width: 320px;
-  margin: 0.5rem 0.5rem;
+  margin: 1rem 0.5rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   display: flex;
