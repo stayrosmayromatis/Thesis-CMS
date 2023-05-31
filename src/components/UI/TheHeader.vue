@@ -156,53 +156,42 @@ export default defineComponent({
     const title = import.meta.env.VITE_APP_TITLE;
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated
-      // , GetPeriodInfo 
-    } = useAuth();
-    const {IsPeriodActive,GetPeriodState,} = usePeriod();
-    const isLoggedIn = computed((): boolean => {
-      return store.getters.IsAuth;
-    });
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated} = useAuth();
+    const {IsPeriodActive,GetPeriodState} = usePeriod();
+    const isLoggedIn = computed((): boolean => store.getters.IsAuth);
     const userName = computed(() => {
       if (!isLoggedIn.value)
         return "You are not logged in";
       const userDataDetails = GetUserDataDetails();
-      if (!userDataDetails || !userDataDetails.DisplayNameEl)
-        return "User";
-      return userDataDetails.DisplayNameEl ?? "User";
+      return !userDataDetails || !userDataDetails.DisplayNameEl ? "User" : userDataDetails.DisplayNameEl ?? "User";
     });
 
     const IsStaff = computed(() => {
       return isLoggedIn.value === true ? IsTeacher() : false;
     });
+   
     onMounted(async () => {
-      if (width.value < 769) {
-        hamburgerClose.value = false;
-        return;
+      if(await IsAuthenticated()){
+        await GetPeriodState();
       }
-      hamburgerClose.value = true;
-      await IsAuthenticated();
-      await GetPeriodState();
-      console.log(isLoggedIn.value);
     });
     // watch(closeInstantlyDirective, async () => {
     //   if (closeInstantlyDirective.value === true) {
     //     closeHamburgerFn();
     //   }
     // });
+    computedEager(async () => {
+      if(isLoggedIn.value)
+        await GetPeriodState();
+    });
     computedEager(() => {
       if (closeInstantlyDirective.value === true) {
         closeHamburgerFn();
       }
     });
-
     computedEager(() => {
       console.log("I am recomputing!");
-      if (width.value >= 769) {
-        hamburgerClose.value = true;
-        return;
-      }
-      hamburgerClose.value = false;
+      hamburgerClose.value = width.value >= 769 ? true : false;
     });
 
     const closeHamburgerFn = async () => {

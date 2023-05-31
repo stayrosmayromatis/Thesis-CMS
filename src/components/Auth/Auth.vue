@@ -20,6 +20,7 @@ import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useAuth } from '@/composables/useAuth.composable';
 import AuthInProgress from "@/components/Base/AuthInProgress.vue"
 import BaseDialog from "@/components/Base/BaseDialog.vue";
+import { AuthClientController } from "@/config";
 export default defineComponent({
   components: {
     AuthInProgress,
@@ -204,7 +205,7 @@ export default defineComponent({
       if (!object)
         return { Status: false, Data: null, Error: "error" };
       const sign_in_response = await useAxios(
-        "/authclient/sign-in",
+        AuthClientController+"sign-in",
         {
           method: "POST",
           data: object,
@@ -216,7 +217,7 @@ export default defineComponent({
         return { Status: false, Data: null, Error: "error" };
       }
       const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
-      if (sign_in_response_data.Status === false || !sign_in_response_data.Status || !sign_in_response_data.Data) {
+      if (!sign_in_response_data || sign_in_response_data.Status === false || !sign_in_response_data.Status || !sign_in_response_data.Data) {
         await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }

@@ -1,5 +1,3 @@
-import { SubmittedLab } from './../models/BACKEND-MODELS/GenericSubmittedLabsResponse';
-
 import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import { store }from '@/store/index';
 import { login_redirect_url } from '@/config';
@@ -77,7 +75,8 @@ const routes: Array<RouteRecordRaw> = [
     meta : {requiresAuth :true}
   },
   {
-    path: "/:catchAll(.*)",
+    // path: "/:catchAll(.*)",
+    path: "/:pathMatch(.*)*",
      name: "notFound",
      redirect: (to)=>{
       return {name:'welcome'}

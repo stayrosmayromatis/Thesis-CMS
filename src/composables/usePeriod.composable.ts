@@ -1,9 +1,9 @@
-import {Ref, ref} from "vue";
-import {useAxiosInstance} from "@/composables/useInstance.composable";
+import { Ref, ref } from "vue";
+import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { CourseController } from "@/config";
 import { ApiResult } from "@/models/DTO/ApiResult";
-import { PeriodInfo} from "@/models/BACKEND-MODELS/PeriodInfoResponse";
+import { PeriodInfo } from "@/models/BACKEND-MODELS/PeriodInfoResponse";
 import { ActivityStatus } from "@/enums/ActivityStatusEnum";
 const IsPeriodActive =ref(false);
 const PeriodActivityStatusString: Ref<string|undefined> = ref();
