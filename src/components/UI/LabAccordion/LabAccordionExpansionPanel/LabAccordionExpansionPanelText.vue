@@ -1,8 +1,8 @@
 <template>
     <div class="lab-accordion-expansion-panel-text-parent" @click="emitToParentCloseMobile">
-        <!-- <label>{{ lab.ShortDescription }}</label> -->
-        <label>Αυτή ειναι πραγματικά μια πάρα πολύ μεγάλη περιγραφή,θα πρέπει να ανταποκριθέι αναλόγως όπως και να έχει με
-            πατάτες</label>
+        <label>{{ lab.ShortDescription }}</label>
+        <!-- <label>Αυτή ειναι πραγματικά μια πάρα πολύ μεγάλη περιγραφή,θα πρέπει να ανταποκριθέι αναλόγως όπως και να έχει με
+            πατάτες</label> -->
         <div class="lab-details_if_submitted">
             <div v-if="user_type === 2">
                 <div v-if="(
@@ -116,10 +116,10 @@ export default defineComponent({
                 return result;
             if (lab.value.DeniedReason && lab.value.DeniedReason === PermissionDeniedToSubmitReason.NOT_AT_VALID_DATE) {
                 if (lab.value.CanSubmitAfter && lab.value.CanSubmitAfterString) {
-                    result += + `Δυνατότητα δήλωσης απο ${lab.value.CanSubmitAfterString}, `
+                    result += `Δυνατότητα δήλωσης απο ${lab.value.CanSubmitAfterString}`
                 }
                 if (lab.value.CanSubmitUntil && lab.value.CanSubmitUntilString) {
-                    result += `εως ${lab.value.CanSubmitUntilString}.`
+                    result += ` εως ${lab.value.CanSubmitUntilString}.`
                 }
             }
             return result;
