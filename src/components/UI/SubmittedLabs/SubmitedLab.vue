@@ -68,6 +68,7 @@ import { confirm } from "@/composables/dialog.composable";
 import { useAlert } from "@/composables/showAlert.composable";
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useRouter } from "vue-router";
+import { computedEager } from "@vueuse/core";
 export default defineComponent({
   props: {
     title: String,
@@ -112,19 +113,19 @@ export default defineComponent({
       alertTitle,
       typeOfAlert,
     } = useAlert();
-    const LabCode = computed(() => {
+    const LabCode = computedEager(() => {
       return `(${lab.value.CourseCode.trim()})`;
     });
-    const LabTitle = computed(() => {
+    const LabTitle = computedEager(() => {
       return `${lab.value.CourseName.trim()}`;
     });
-    const LabDescription = computed(() => {
+    const LabDescription = computedEager(() => {
       return `${lab.value.LabName.trim()} / ${lab.value.DayString.trim()}`;
     });
-    const LabTimes = computed(() => {
+    const LabTimes = computedEager(() => {
       return `(${lab.value.From.trim()} - ${lab.value.To.trim()})`;
     });
-    const Semester = computed(() => {
+    const Semester = computedEager(() => {
       switch (lab.value.Semester) {
         case LabSemesterEnum.A_XEIM:
           return "Α ΕΞΑΜΗΝΟ";
@@ -148,7 +149,7 @@ export default defineComponent({
           return "Χ/Ε";
       }
     });
-    const IsStaffOrAdmin = computed(() => {
+    const IsStaffOrAdmin = computedEager(() => {
       if (!personAffiliation.value) return false;
       if (
         personAffiliation.value === PersonAffiliation.STAFF ||
@@ -157,7 +158,7 @@ export default defineComponent({
         return true;
       return false;
     });
-    const DeletionText = computed(() => {
+    const DeletionText = computedEager(() => {
       if (!personAffiliation.value) return "Διαγραφή δηλωτέου ";
       if (
         personAffiliation.value === PersonAffiliation.STAFF ||
@@ -166,7 +167,7 @@ export default defineComponent({
         return "Διαγραφή εργαστηρίου";
       return "Διαγραφή δηλωτέου";
     });
-    const IsAssistant = computed(() => {
+    const IsAssistant = computedEager(() => {
       if (
         !lab.value ||
         lab.value.IsAssistantProfessor === false ||
@@ -176,13 +177,13 @@ export default defineComponent({
       return true;
     });
     const CheckDelete = async (): Promise<void> => {
+      closeAlert();
       const makeInformationCallResponse = await MakeTheInformationCall();
       if (!makeInformationCallResponse.Status) {
         setTypeOfAlert('error');
         openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
-        setTimeout(() => {
-          closeAlert();
-        }, 1500);
+        closeAlert(1500);
+        await delay(1500);
         showConfirmDeletionModal.value = false;
         return;
       }
@@ -192,9 +193,8 @@ export default defineComponent({
         if (!makeConfirmDeleteCallResponse.Status) {
           setTypeOfAlert('error');
           openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
-          setTimeout(() => {
-            closeAlert();
-          }, 1500);
+          closeAlert(1500);
+          await delay(1500);
           return;
         }
         context.emit("force-refetch");
@@ -205,7 +205,7 @@ export default defineComponent({
     }
     const MakeTheInformationCall = async (): Promise<InternalDataTransfter<boolean>> => {
       const api_response = await useAxios(InfoController + `deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "GET" }, setBackendInstanceAuth());
-      if (api_response.isFinished) {
+      if (api_response.isFinished.value) {
         const api_response_dta: ApiResult<InfoAggregateObjectResponse> = api_response.data.value;
         if (api_response_dta.Status === true && api_response_dta.Data) {
           if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF) {
@@ -254,13 +254,13 @@ export default defineComponent({
     };
     const MakeTheConfirmDeleteCall = async (): Promise<InternalDataTransfter<boolean>> => {
       const api_response = await useAxios(CourseController + `confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "POST", }, setBackendInstanceAuth());
-      if (api_response.isFinished) {
+      if (api_response.isFinished.value) {
         const api_data_response: ApiResult<boolean> = api_response.data.value;
         return { Data: api_data_response.Data, Status: api_data_response.Status }
       }
       return { Data: null, Status: false, Error: "Error" };
     }
-
+    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
     const redirectToEditComponent = () => {
       if (!course_guid.value)
         return;

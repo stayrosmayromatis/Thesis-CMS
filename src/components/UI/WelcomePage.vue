@@ -72,33 +72,15 @@ export default defineComponent({
         BaseAlert
     },
     setup(_, context) {
-        // const error = ref(false);
-        // const errorDesc = ref<string>();
-        // const errorTit = ref<string>();
         const { alertTitle, showAlert, openAlert, closeAlert } = useAlert();
         const { errorDescription, errorTitle, isError,clearError } = useErrorFunctions();
         onMounted(() => {
             emitMobileViewClose();
             closeAlert();
-            // error.value = isError.value;
-            // errorDesc.value = errorDescription.value;
-            // errorTit.value = errorTitle.value;
-            // if (showAlert.value === true) {
-            //     setTimeout(() => {
-            //         openAlert(alertTitle.value);
-            //     }, 1000)
-            //     setTimeout(() => {
-            //         closeAlert();
-            //     }, 1500)
-            // }
         });
         const emitMobileViewClose = (): void => {
             context.emit('closeMobileView', true);
         }
-        // const clearError = () => {
-        //     const {  } = useErrorFunctions();
-        //     clearError();
-        // }
         return { emitMobileViewClose, isError, errorDescription, errorTitle, clearError, alertTitle, showAlert }
     }
 })

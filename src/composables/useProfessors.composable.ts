@@ -9,7 +9,7 @@ import { CreateProfRequest } from "@/components/UI/TeacherSelect.vue";
 import { ref} from "vue";
 import {AllProf} from "@/models/BACKEND-MODELS/AllProf";
 import {BaseUserResponse} from "@/models/BACKEND-MODELS/BaseUserResponse";
-
+import { CreateProfessorController } from '@/config';
 const SeedProfessorsArray = ref<Array<BaseUser>>(new Array<BaseUser>());
 export function useProfessor() {
   const GetSeededProfessors = async () => {
@@ -65,7 +65,7 @@ export function useProfessor() {
       return {Status :false,Data : null,Error : "Error on creating professor"};
     }
     const api_response = await useAxios(
-      "/createprofessor/create-professor",
+      CreateProfessorController+"create-professor",
       {
         method: "POST",
         data: payload,

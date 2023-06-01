@@ -5,7 +5,6 @@ export const CourseController = '/Course/';
 export const CreateProfessorController = '/CreateProfessor/';
 export const StudentsController = '/Students/'
 export const AdminController = '/Admin/'
-export const GAPIKEY = '.....';
 export const AcceptableFileTypes = [
     "application/vnd.ms-excel",
     "application/msexcel",

@@ -20,11 +20,7 @@ const getUserDataDetails = (state:State): UserDataDetails | undefined => {
 const getSeededProfessors = (state:State):Array<Partial<BaseUser>> => {
   return state.SeededProfessors ?? Array<BaseUser>();
 }
-// const getPeriodInfo = (state:State) : PeriodInfo | undefined => {
-//   return state.PeriodInfo;
-// }
 export default {
   getSeededProfessors,
   IsAuth,
-  // getPeriodInfo,
   IsStudent,IsTeacher,getStaffType,getUserDataDetails};

@@ -92,20 +92,20 @@ export default defineComponent({
     const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const sLabs = ref(new Array<SubmittedLab>());
     const personAffiliation = ref(PersonAffiliation.STUDENT);
+    const callToGeneratePdf = ref(false);
     const { setBackendInstanceAuth } = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
     };
     onMounted(async () => {
       emitMobileViewClose();
-      closeAlert(1000);
+      closeAlert();
       await populateSubmittedLabs();
-      return;
     });
     const pdfCreationCompleted = (val: boolean) => {
       callToGeneratePdf.value = val;
     };
-    const callToGeneratePdf = ref(false);
+    
     const invokeGeneratePdf = () => {
       callToGeneratePdf.value = true;
     };
@@ -119,38 +119,25 @@ export default defineComponent({
         },
         setBackendInstanceAuth()
       );
-      if (apiGetInfos.isFinished) {
+      if (apiGetInfos.isFinished.value) {
+        showSpinner.value = false;
         const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
-        if (!getInfoData || !getInfoData.Status) {
+        if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
           showLabsNotFound.value = true;
           showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
           showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-          showSpinner.value = false;
-          return;
-        }
-        if (!getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
-          showLabsNotFound.value = true;
-          showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-          showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-          showSpinner.value = false;
           return;
         }
         sLabs.value = getInfoData.Data.SubmittedLabs;
         personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
-        showSpinner.value = false;
         if (byInternalCall === true) {
-          if (showAlert.value === true) {
-            closeAlert();
-          }
+          closeAlert();
           setTypeOfAlert('success');
-          openAlert("Επιτυχία διαγραφής ");
-          setTimeout(() => {
-            closeAlert();
-          }, 1500);
+          openAlert("Επιτυχία διαγραφής");
+          closeAlert(1500);
         }
-        console.log(sLabs.value);
-        console.log(personAffiliation.value);
       }
+      showSpinner.value = false;
     }
     return {
       sLabs,
