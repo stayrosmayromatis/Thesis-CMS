@@ -3,6 +3,7 @@ import { UserDataDetails } from '@/models/BACKEND-MODELS/UserDataDetails';
 import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
 // import { PeriodInfo } from './BACKEND-MODELS/BaseUserAuthStateResponse';
 export interface State{
+    FirstTimeLogIn : boolean,
     IsAuth:boolean;
     IsStudent:boolean;
     IsTeacher:boolean;

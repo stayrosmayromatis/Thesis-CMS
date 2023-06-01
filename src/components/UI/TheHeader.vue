@@ -153,7 +153,7 @@ export default defineComponent({
     let hamburgerClose = ref(false);
     const { width } = useWindowSize();
     const { closeInstantlyDirective } = toRefs(props);
-    const title = import.meta.env.VITE_APP_TITLE;
+    const title = ref(import.meta.env.VITE_APP_TITLE as string);
     const store = useStore(key);
     const router = useRouter();
     const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated} = useAuth();
@@ -206,12 +206,12 @@ export default defineComponent({
       hamburgerClose.value = !hamburgerClose.value;
     };
     const redirectToLogin = async () => {
-      router.replace({ name: "sign-in" });
+      await router.replace({ name: "sign-in" });
     };
 
     const logOut = async () => {
       await SetNotAuthenticated();
-      router.replace({ name: "welcome" });
+      await router.replace({ name: "welcome" });
     };
 
     return {

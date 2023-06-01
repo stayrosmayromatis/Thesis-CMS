@@ -94,13 +94,18 @@ const router = createRouter({
 
 router.beforeEach(async (to,_,next) => {
   const  {IsAuthenticated} = useAuth();
-  await IsAuthenticated(true);
+  const firstTimeLogin = store.getters.IsFirstTimeLogin;
+  console.log(firstTimeLogin);
+  if(firstTimeLogin){
+    await IsAuthenticated(true);
+    // store.dispatch('setFirstTimeLogin',false);
+  }
   const storeIsAuth = store.getters.IsAuth;
   if(to.meta.requiresAuth === false && storeIsAuth == false){
     return next();
   }
   if(to.meta.requiresAuth === false && storeIsAuth == true){
-    SetNotAuthenticated();
+    await SetNotAuthenticated();
     return next();
   }
   if(to.meta.requiresAuth === true && storeIsAuth === false)
@@ -122,8 +127,10 @@ async function protectTeacherRoutes(to:RouteLocationNormalized,from:RouteLocatio
 }
 
 async function protectPeriodInitializedRoutes(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
-  const {GetPeriodState,IsPeriodActive} = usePeriod();
-  await GetPeriodState();
+  const {
+    //GetPeriodState,
+    IsPeriodActive} = usePeriod();
+  //await GetPeriodState();
   const periodInfo = IsPeriodActive.value;
   if(!periodInfo || !to.meta.requiredPeriodInitialized )
     return next(false);

@@ -9,6 +9,10 @@ export interface StoreSth {
   isAdmin : boolean;
   eduPersonAffiliation: TypeStaff;
 }
+
+const setFirstTimeLogin = (context: any, value: boolean) => {
+  context.commit("setFirstTimeLogin", value);
+}
 const setAuthState = (context: any, authState: boolean) => {
   if (authState === null || authState === undefined) return;
   context.commit("setAuthState", authState);
@@ -80,5 +84,6 @@ export default {
   // setPeriodInfo,
   // clearPeriodInfo,
   clearUserDataDetails,
-  clearSeededProfessors
+  clearSeededProfessors,
+  setFirstTimeLogin
 };

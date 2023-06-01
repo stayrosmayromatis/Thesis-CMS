@@ -10,6 +10,10 @@ const setAuthState = (state: State, authState: boolean) => {
   state.IsStaffType = undefined;
   state.UserDataDetails = undefined;
 };
+const setFirstTimeLogin = (state:State,firstTime:boolean) => {
+  state.FirstTimeLogIn = firstTime;
+}
+
 const setIsTeacherState = (state: State, payload:StoreSth) => {
   state.IsAuth = true;
   state.IsTeacher = payload.isTeacher;
@@ -52,6 +56,6 @@ const addSeededProfessors = (state:State , payload : BaseUser) => {
 // const clearPeriodInfo =(state:State) => {
 //   state.PeriodInfo = undefined;
 // }
-export default {addSeededProfessors, setIsAdminState,setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors ,clearUserDataDetails,clearSeededProfessors
+export default {addSeededProfessors, setIsAdminState,setAuthState, setIsTeacherState, setIsStudentState,setUserDataDetails,setSeededProfessors ,clearUserDataDetails,clearSeededProfessors,setFirstTimeLogin
   // ,setPeriodInfo,clearPeriodInfo
 };

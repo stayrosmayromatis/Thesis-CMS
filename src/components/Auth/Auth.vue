@@ -44,49 +44,55 @@ export default defineComponent({
       context.emit("closeMobileView");
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
-
-      if (hasQueryParams) {
-        if (queryParamsLength === 1) {
-          await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
-          return;
-        }
-        if (queryParamsLength === 2) {
-          const makeAccessCallResponse = await makeAccessTokenCall();
-          if (makeAccessCallResponse.Status === false || makeAccessCallResponse.Error || !makeAccessCallResponse.Data)
-            return;
-          const makeProfileCallResponse = await makeProfileCall(makeAccessCallResponse.Data);
-          if (makeProfileCallResponse.Status === false || makeProfileCallResponse.Error || !makeProfileCallResponse.Data)
-            return;
-          const signInResponse = await makeSignInCall(makeProfileCallResponse.Data);
-          if (signInResponse.Status === false || signInResponse.Error || !signInResponse.Data)
-            return;
-          const makeInfoCallResponse = await MakeInfoCall();
-          if (!makeInfoCallResponse || makeInfoCallResponse.Status === false || makeInfoCallResponse.Error || !makeInfoCallResponse.Data) {
-            await setErrorPushToHome(
-              makeInfoCallResponse.Error,
-              makeInfoCallResponse.Description
-            );
-            return;
-          }
-          const determineIfAuthResponse = await DetermineIfAuth(makeInfoCallResponse.Data);
-          if (!determineIfAuthResponse || determineIfAuthResponse.Status === false || determineIfAuthResponse.Error || !determineIfAuthResponse.Data) {
-            await setErrorPushToHome(
-              determineIfAuthResponse.Error,
-              determineIfAuthResponse.Description
-            );
-            return;
-          }
-          router.replace({ name: 'submittedLabs' });
-          return;
-        }
+      if(!hasQueryParams || !queryParamsLength || queryParamsLength <= 1 || queryParamsLength >= 3){
+        await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
+        return;
       }
-      await setErrorPushToHome(
-        "Σφάλμα Αυθεντικοποίησης",
-        "Η διαδίκασία δεν ολοκληρώθηκε"
-      );
+      const makeAccessCallResponse = await makeAccessTokenCall();
+      if (!makeAccessCallResponse || !makeAccessCallResponse.Status || makeAccessCallResponse.Error || !makeAccessCallResponse.Data){
+          await setErrorPushToHome(
+          "Σφάλμα Αυθεντικοποίησης",
+          "Η διαδίκασία δεν ολοκληρώθηκε"
+        );
+        return;
+      }
+      const makeProfileCallResponse = await makeProfileCall(makeAccessCallResponse.Data);
+      if (!makeProfileCallResponse || !makeProfileCallResponse.Status || makeProfileCallResponse.Error || !makeProfileCallResponse.Data){
+        await setErrorPushToHome(
+          "Σφάλμα Αυθεντικοποίησης",
+          "Η διαδίκασία δεν ολοκληρώθηκε"
+        );
+        return;
+      }
+      const signInResponse = await makeSignInCall(makeProfileCallResponse.Data);
+      if (!signInResponse || !signInResponse.Status || signInResponse.Error || !signInResponse.Data){
+        await setErrorPushToHome(
+          "Σφάλμα Αυθεντικοποίησης",
+          "Η διαδίκασία δεν ολοκληρώθηκε"
+        );
+        return;
+      }
+      const makeInfoCallResponse = await MakeInfoCall();
+      if (!makeInfoCallResponse || !makeInfoCallResponse.Status || makeInfoCallResponse.Error || !makeInfoCallResponse.Data) {
+        await setErrorPushToHome(
+          makeInfoCallResponse.Error,
+          makeInfoCallResponse.Description
+        );
+        return;
+      }
+      const determineIfAuthResponse = await DetermineIfAuth(makeInfoCallResponse.Data);
+      if (!determineIfAuthResponse || !determineIfAuthResponse.Status || determineIfAuthResponse.Error || !determineIfAuthResponse.Data) {
+        await setErrorPushToHome(
+          determineIfAuthResponse.Error,
+          determineIfAuthResponse.Description
+        );
+        return;
+      }
+      router.replace({ name: 'submittedLabs' });
+      return;
     });
 
-    const setErrorPushToHome = async (title: string | undefined, description?: string | undefined): Promise<void> => {
+    const setErrorPushToHome = async (title?: string, description?: string): Promise<void> => {
       const { setError } = useErrorFunctions();
       setError(title ?? "Σφάλμα Αυθεντικοποίησης", description ?? "Η διαδίκασία δεν ολοκληρώθηκε");
       authenticationErrorOccured.value = true;
@@ -96,7 +102,9 @@ export default defineComponent({
                                     Αυτόματη ανακατεύθυνση σε <span style="color:green">2 δευτερόλεπτα</span>`;
      
       store.dispatch("setAuthState", false);
-      await delay(2000);
+      store.dispatch("clearUserDataDetails");
+      store.dispatch("clearSeededProfessors");
+      await delay(1000);
       await router.replace({ name: "welcome" });
     };
     const closeModal = async () => {

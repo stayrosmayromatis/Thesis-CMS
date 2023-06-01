@@ -7,15 +7,21 @@
 import { defineComponent, ref, onMounted} from "vue";
 import TheHeader from "@/components/UI/TheHeader.vue";
 import { useAuth } from "@/composables/useAuth.composable";
+import { usePeriod } from "@/composables/usePeriod.composable";
+
+import { InfoController } from "./config";
+import { ApiResult } from "./models/DTO/ApiResult";
+import { BaseUserAuthStateResponse } from "./models/BACKEND-MODELS/BaseUserAuthStateResponse";
 export default defineComponent({
   name: "App",
   components: {
     TheHeader,
   },
   setup() {
-    const { IsAuthenticated } = useAuth();
-    onMounted(async () => {
-      await IsAuthenticated();
+    // const { IsAuthenticated } = useAuth();
+    // const {GetPeriodState} = usePeriod();
+    onMounted( async () => {
+      
     });
     const closeInstantly = ref(false);
 

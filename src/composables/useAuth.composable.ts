@@ -24,6 +24,7 @@ export function useAuth() {
         store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("setFirstTimeLogin", true); 
         // store.dispatch("clearPeriodInfo");
         return false;
       }
@@ -51,12 +52,14 @@ export function useAuth() {
       return;
     }
     const logOutResponse: ApiResult<string> = logout_response.data.value;
-    if (logOutResponse.Status && logOutResponse.Data.trim().toLowerCase() === "OK".toLowerCase()) {
-      setTypeOfAlert("success");
-      openAlert("Επιτυχής Αποσύνδεση");
+    if (logOutResponse || logOutResponse.Status && logOutResponse.Data.trim().toLowerCase() === "OK".toLowerCase()) {
       store.dispatch("setAuthState", false);
       store.dispatch("clearUserDataDetails");
       store.dispatch("clearSeededProfessors");
+      store.dispatch("setFirstTimeLogin", true); 
+      setTypeOfAlert("success");
+      openAlert("Επιτυχής Αποσύνδεση");
+      closeAlert(1500);
       // store.dispatch("clearPeriodInfo");
     }
   };
@@ -103,6 +106,7 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
       store.dispatch("clearUserDataDetails");
       store.dispatch("clearSeededProfessors");
+      store.dispatch("setFirstTimeLogin", true); 
       // store.dispatch("clearPeriodInfo");
       return {
         Status: false,
@@ -120,6 +124,7 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
       store.dispatch("clearUserDataDetails");
       store.dispatch("clearSeededProfessors");
+      store.dispatch("setFirstTimeLogin", true); 
       // store.dispatch("clearPeriodInfo");
       return {
         Status: false,
@@ -143,6 +148,7 @@ export function useAuth() {
         store.dispatch("setAuthState", false);
         store.dispatch("clearUserDataDetails");
         store.dispatch("clearSeededProfessors");
+        store.dispatch("setFirstTimeLogin", true); 
         // store.dispatch("clearPeriodInfo");
         return theFalsyReponse;
       }
@@ -159,6 +165,7 @@ export function useAuth() {
       if (response.UserDataDetails.EduPersonAffiliation === TypeStaff.STAFF) {
         store.dispatch("setIsTeacherState", payload);
         store.dispatch("setUserDataDetails", response.UserDataDetails);
+        store.dispatch("setFirstTimeLogin", false); 
         // store.dispatch("setPeriodInfo",response.PeriodInfo);
         if (!byInternalUse) {
           openAlert("Επιτυχής Σύνδεση");
@@ -169,6 +176,7 @@ export function useAuth() {
       if (response.UserDataDetails.EduPersonAffiliation === TypeStaff.STUDENT) {
         store.dispatch("setIsStudentState", payload);
         store.dispatch("setUserDataDetails", response.UserDataDetails);
+        store.dispatch("setFirstTimeLogin", false); 
         // store.dispatch("setPeriodInfo",response.PeriodInfo);
         if (byInternalUse === false) {
           openAlert("Επιτυχής Σύνδεση");
@@ -179,6 +187,7 @@ export function useAuth() {
       if (response.UserDataDetails.EduPersonAffiliation === TypeStaff.ADMIN) {
         store.dispatch("setIsAdminState", payload);
         store.dispatch("setUserDataDetails", response.UserDataDetails);
+        store.dispatch("setFirstTimeLogin", false); 
         // store.dispatch("setPeriodInfo",response.PeriodInfo);
         if (byInternalUse === false) {
           openAlert("Επιτυχής Σύνδεση");
@@ -190,12 +199,14 @@ export function useAuth() {
       store.dispatch("setAuthState", false);
       store.dispatch("clearUserDataDetails");
       store.dispatch("clearSeededProfessors");
+      store.dispatch("setFirstTimeLogin", true); 
       // store.dispatch("clearPeriodInfo");
       return theFalsyReponse;
     } catch (_) {
       store.dispatch("setAuthState", false);
       store.dispatch("clearUserDataDetails");
       store.dispatch("clearSeededProfessors");
+      store.dispatch("setFirstTimeLogin", true); 
       // store.dispatch("clearPeriodInfo");
       return theFalsyReponse;
     }
