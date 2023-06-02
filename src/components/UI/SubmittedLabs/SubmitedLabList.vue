@@ -50,7 +50,7 @@ import { defineComponent, ref, onMounted, defineAsyncComponent } from "vue";
 import { useAlert } from "@/composables/showAlert.composable";
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { InfoController } from '@/config';
-import { useAxios } from "@vueuse/integrations/useAxios";
+//import { useAxios } from "@vueuse/integrations/useAxios";
 import { ApiResult } from '@/models/DTO/ApiResult';
 import { GenericSubmittedLabsResponse, SubmittedLab } from '@/models/BACKEND-MODELS/GenericSubmittedLabsResponse';
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
@@ -93,7 +93,8 @@ export default defineComponent({
     const sLabs = ref(new Array<SubmittedLab>());
     const personAffiliation = ref(PersonAffiliation.STUDENT);
     const callToGeneratePdf = ref(false);
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
     };
@@ -112,22 +113,30 @@ export default defineComponent({
 
     const populateSubmittedLabs = async (byInternalCall = false): Promise<void> => {
       showSpinner.value = true;
-      const apiGetInfos = await useAxios(
-        InfoController + "get-submitted-labs-info",
-        {
-          method: 'GET'
-        },
-        setBackendInstanceAuth()
-      );
-      if (apiGetInfos.isFinished.value) {
-        showSpinner.value = false;
-        const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
-        if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
+      // const apiGetInfos = await useAxios(
+      //   InfoController + "get-submitted-labs-info",
+      //   {
+      //     method: 'GET'
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController,"get-submitted-labs-info","GET");
+      showSpinner.value = false;
+      if(!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs){
           showLabsNotFound.value = true;
           showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
           showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
           return;
-        }
+      }
+
+      //if (apiGetInfos.isFinished.value) {
+        //const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
+        // if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
+        //   showLabsNotFound.value = true;
+        //   showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+        //   showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+        //   return;
+        // }
         sLabs.value = getInfoData.Data.SubmittedLabs;
         personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
         if (byInternalCall === true) {
@@ -136,7 +145,7 @@ export default defineComponent({
           openAlert("Επιτυχία διαγραφής");
           closeAlert(1500);
         }
-      }
+      //}
       showSpinner.value = false;
     }
     return {

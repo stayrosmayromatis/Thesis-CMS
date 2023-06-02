@@ -113,7 +113,7 @@ export default defineComponent({
         const errorOnFileInputMessage = ref("");
         const counterSizeString = ref("Επιλέχθηκε αρχείο");
         const fileInputHint = ref('Μέγιστο μέγεθος αρχείου 20Kb, επιτρεπόμενα αρχεία .xls, .xlsx , .csv');
-        const { setBackendInstanceAuth } = useAxiosInstance();
+        const { setBackendInstanceAuth , MakeAPICall } = useAxiosInstance();
         const acceptableFileTypes = AcceptableFileTypes;
         const showBaseDialog = ref(false);
         const innerTitle = ref('ΠΡΟΕΙΔΟΠΟΙΗΣΗ');
@@ -179,6 +179,7 @@ export default defineComponent({
                 },
                 setBackendInstanceAuth()
             );
+            //const downloadExportFileRequest = await MakeAPICall(InfoController,`serve-item-csv/${course_guid.value}`,);
 
             if (downloadExportFileRequest.isFinished.value) {
                 if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
@@ -272,21 +273,22 @@ export default defineComponent({
         const UploadTheFileApiCall = async (file: File): Promise<InternalDataTransfter<boolean>> => {
             const formData = new FormData();
             formData.append("file", file);
-            const uploadFileCall = await useAxios(
-                CourseController + `student-sub-authorization/${course_guid.value}`,
-                {
-                    method: "POST",
-                    data: formData
-                },
-                setBackendInstanceAuth()
-            );
-            if (uploadFileCall.isFinished.value) {
-                const uploadFileCallData: ApiResult<string> = uploadFileCall.data.value;
-                if (!uploadFileCallData || !uploadFileCallData.Status)
-                    return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
-                return { Status: true, Data: true };
-            }
-            return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
+            // const uploadFileCall = await useAxios(
+            //     CourseController + `student-sub-authorization/${course_guid.value}`,
+            //     {
+            //         method: "POST",
+            //         data: formData
+            //     },
+            //     setBackendInstanceAuth()
+            // );
+            const uploadFileCallData = await MakeAPICall<ApiResult<string>,FormData>(CourseController,`student-sub-authorization/${course_guid.value}`,"POST",formData);
+            // if (uploadFileCall.isFinished.value) {
+            //const uploadFileCallData: ApiResult<string> = uploadFileCall.data.value;
+            if (!uploadFileCallData || !uploadFileCallData.Status)
+                return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
+            return { Status: true, Data: true };
+            // }
+            // return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
         };
         const clearFileInputErrorsIfSwitchedOff = () => {
             if(theoryPrecedesFlag.value === false){

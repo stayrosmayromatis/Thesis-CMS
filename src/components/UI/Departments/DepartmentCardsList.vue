@@ -34,7 +34,7 @@ const DepartmentCard = defineAsyncComponent({
 });
 
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
-import { useAxios } from "@vueuse/integrations/useAxios";
+//import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CourseController } from "@/config";
@@ -58,7 +58,8 @@ export default defineComponent({
   },
   setup(props) {
     const { course_guid } = toRefs(props);
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const { openAlert, closeAlert, setTypeOfAlert, typeOfAlert, alertTitle, showAlert } = useAlert();
     const courseGuid = ref<string>();
     const courseCode = ref("");
@@ -85,17 +86,18 @@ export default defineComponent({
       if (!course_guid)
         return { Status: false, Data: false, Error: "Guid null" };
 
-      const getDepartmentsByCourseCallRequest = await useAxios(
-        CourseController + `get-departments-by-course/${course_guid}`,
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (getDepartmentsByCourseCallRequest.isFinished) {
-        const getDepartmentsByCourseCallResponse: ApiResult<CourseDepartmentsResponse> = getDepartmentsByCourseCallRequest.data.value;
+      // const getDepartmentsByCourseCallRequest = await useAxios(
+      //   CourseController + `get-departments-by-course/${course_guid}`,
+      //   {
+      //     method: "GET",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const getDepartmentsByCourseCallResponse = await MakeAPICall<ApiResult<CourseDepartmentsResponse>>(CourseController,`get-departments-by-course/${course_guid}`,"GET");
+      //if (getDepartmentsByCourseCallRequest.isFinished) {
+//        const getDepartmentsByCourseCallResponse: ApiResult<CourseDepartmentsResponse> = getDepartmentsByCourseCallRequest.data.value;
         if (!getDepartmentsByCourseCallResponse || !getDepartmentsByCourseCallResponse.Status || !getDepartmentsByCourseCallResponse.Data) {
-          return { Status: false, Data: false, Error: getDepartmentsByCourseCallResponse.Error };
+          return { Status: false, Data: false, Error: getDepartmentsByCourseCallResponse.Error ?? "Request didn't finish"   };
         }
         resultArray.value = getDepartmentsByCourseCallResponse.Data.CourseDepartments;
         courseGuid.value = getDepartmentsByCourseCallResponse.Data.CourseId;
@@ -103,8 +105,8 @@ export default defineComponent({
         courseName.value = getDepartmentsByCourseCallResponse.Data.CourseName;
         userType.value = getDepartmentsByCourseCallResponse.Data.UserType;
         return { Status: true, Data: true };
-      }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      //}
+      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));

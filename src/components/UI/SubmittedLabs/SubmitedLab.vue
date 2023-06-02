@@ -103,15 +103,16 @@ export default defineComponent({
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
-    const { setBackendInstanceAuth } = useAxiosInstance();
+   // const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const router = useRouter();
     const {
       closeAlert,
       openAlert,
       setTypeOfAlert,
-      showAlert,
-      alertTitle,
-      typeOfAlert,
+      // showAlert,
+      // alertTitle,
+      // typeOfAlert,
     } = useAlert();
     const LabCode = computedEager(() => {
       return `(${lab.value.CourseCode.trim()})`;
@@ -204,10 +205,12 @@ export default defineComponent({
       return;
     }
     const MakeTheInformationCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(InfoController + `deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "GET" }, setBackendInstanceAuth());
-      if (api_response.isFinished.value) {
-        const api_response_dta: ApiResult<InfoAggregateObjectResponse> = api_response.data.value;
-        if (api_response_dta.Status === true && api_response_dta.Data) {
+      //const api_response = await useAxios(InfoController + `deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "GET" }, setBackendInstanceAuth());
+
+      const api_response_dta = await MakeAPICall<ApiResult<InfoAggregateObjectResponse>>(InfoController,`deletion-informant/${lab.value.CourseGUID}/${lab.value.LabGUID}`,"GET");
+      //if (api_response.isFinished.value) {
+        //const api_response_dta: ApiResult<InfoAggregateObjectResponse> = api_response.data.value;
+        if (api_response_dta.Status && api_response_dta.Data) {
           if (api_response_dta.Data.PersonAffiliation && api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF) {
             if ((api_response_dta.Data.FoundRegistration === false || !api_response_dta.Data.FoundRegistration) &&
               (api_response_dta.Data.CountOfStudentsSubmited === 0 || !api_response_dta.Data.CountOfStudentsSubmited)) {
@@ -248,14 +251,15 @@ export default defineComponent({
             return { Data: true, Status: true };
           }
         }
-      }
+      //}
       showConfirmDeletionModal.value = false;
       return { Data: null, Status: false, Error: "Error" };
     };
     const MakeTheConfirmDeleteCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(CourseController + `confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "POST", }, setBackendInstanceAuth());
-      if (api_response.isFinished.value) {
-        const api_data_response: ApiResult<boolean> = api_response.data.value;
+      //const api_response = await useAxios(CourseController + `confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`, { method: "POST", }, setBackendInstanceAuth());
+      const api_data_response = await MakeAPICall<ApiResult<boolean>,Object>(CourseController,`confirm-delete-submitted-course/${lab.value.CourseGUID}/${lab.value.LabGUID}`,"POST",{});
+      if (api_data_response) {
+        //const api_data_response: ApiResult<boolean> = api_response.data.value;
         return { Data: api_data_response.Data, Status: api_data_response.Status }
       }
       return { Data: null, Status: false, Error: "Error" };

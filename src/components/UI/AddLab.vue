@@ -102,7 +102,7 @@ import {
   CreateCourseRequest,
   LaboratoryRequest,
 } from "@/models/BACKEND-MODELS/CreateCourseRequest";
-import { useAxios } from "@vueuse/integrations/useAxios";
+//import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
@@ -136,7 +136,8 @@ export default defineComponent({
       showAlert,
       closeAlert,
     } = useAlert();
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
     const { toTimeString, scrollToTop } = useTimeObjectExtensions();
@@ -595,109 +596,131 @@ export default defineComponent({
       return false;
     });
 
-    const MakeCreateCourseRequest = async (
-      createCourseRequest: CreateCourseRequest
-    ): Promise<InternalDataTransfter<boolean>> => {
+    const MakeCreateCourseRequest = async (createCourseRequest: CreateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
       if (!createCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      const createCourseApiRequest = await useAxios(
-        CourseController + "create-course",
-        {
-          method: "POST",
-          data: createCourseRequest,
-        },
-        setBackendInstanceAuth()
-      );
-      if (createCourseApiRequest.isFinished) {
-        const createCourseApiResponse: ApiResult<CreateCourseResponse> =
-          createCourseApiRequest.data.value;
-        if (
-          createCourseApiResponse.Status === false ||
-          !createCourseApiResponse.Status ||
-          !createCourseApiResponse.Data
-        ) {
-          return {
+      // const createCourseApiRequest = await useAxios(
+      //   CourseController + "create-course",
+      //   {
+      //     method: "POST",
+      //     data: createCourseRequest,
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const createCourseApiRequest = await MakeAPICall<ApiResult<CreateCourseResponse>,CreateCourseRequest>(CourseController,"create-course","POST",createCourseRequest);
+      if(!createCourseApiRequest ||   !createCourseApiRequest.Status ||!createCourseApiRequest.Data){
+        return {
             Status: false,
             Data: false,
             Error: "Request call returned false",
           };
-        }
-        return { Status: true, Data: true };
       }
-      return {
-        Status: false,
-        Data: false,
-        Error: "Request call never finished",
-      };
+      return { Status: true, Data: true };
+      
+        //if (createCourseApiRequest.isFinished) {
+        // const createCourseApiResponse: ApiResult<CreateCourseResponse> =
+        //   createCourseApiRequest.data.value;
+        // if (
+        //   createCourseApiResponse.Status === false ||
+        //   !createCourseApiResponse.Status ||
+        //   !createCourseApiResponse.Data
+        // ) {
+        //   return {
+        //     Status: false,
+        //     Data: false,
+        //     Error: "Request call returned false",
+        //   };
+        // }
+       // return { Status: true, Data: true };
+      
+      // return {
+      //   Status: false,
+      //   Data: false,
+      //   Error: "Request call never finished",
+      // };
     };
-    const MakeUpdateCourseRequest = async (
-      updateCourseRequest: UpdateCourseRequest
-    ): Promise<InternalDataTransfter<boolean>> => {
+    const MakeUpdateCourseRequest = async (updateCourseRequest: UpdateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
       if (!updateCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      const updateCourseApiRequest = await useAxios(
-        CourseController + "update-course",
-        {
-          method: "POST",
-          data: updateCourseRequest,
-        },
-        setBackendInstanceAuth()
-      );
-      if (updateCourseApiRequest.isFinished) {
-        const updateCourseApiResponse: ApiResult<CreateCourseResponse> =
-          updateCourseApiRequest.data.value;
-        if (
-          updateCourseApiResponse.Status === false ||
-          !updateCourseApiResponse.Status ||
-          !updateCourseApiResponse.Data
-        ) {
-          return {
+      // const updateCourseApiRequest = await useAxios(
+      //   CourseController + "update-course",
+      //   {
+      //     method: "POST",
+      //     data: updateCourseRequest,
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const updateCourseApiRequest = await MakeAPICall<ApiResult<CreateCourseResponse>,UpdateCourseRequest>(CourseController,"update-course","POST",updateCourseRequest);
+      if( !updateCourseApiRequest || !updateCourseApiRequest.Status || !updateCourseApiRequest.Data){
+        return {
             Status: false,
             Data: false,
             Error: "Request call returned false",
           };
-        }
-        return { Status: true, Data: true };
       }
-      return {
-        Status: false,
-        Data: false,
-        Error: "Request call never finished",
-      };
+      return { Status: true, Data: true };
+      //   if (updateCourseApiRequest.isFinished) {
+      //   const updateCourseApiResponse: ApiResult<CreateCourseResponse> =
+      //     updateCourseApiRequest.data.value;
+      //   if (
+      //     updateCourseApiResponse.Status === false ||
+      //     !updateCourseApiResponse.Status ||
+      //     !updateCourseApiResponse.Data
+      //   ) {
+      //     return {
+      //       Status: false,
+      //       Data: false,
+      //       Error: "Request call returned false",
+      //     };
+      //   }
+      //   return { Status: true, Data: true };
+      // }
+      // return {
+      //   Status: false,
+      //   Data: false,
+      //   Error: "Request call never finished",
+      // };
     };
-    const MakeGetCourseInfoForEditCall = async (
-      courseGuid: string
-    ): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
+    const MakeGetCourseInfoForEditCall = async (courseGuid: string): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
       if (!courseGuid)
         return { Status: false, Data: null, Error: "Request object null" };
-      const getCourseInfoForEditApiRequest = await useAxios(
-        CourseController + "get-course-info-for-edit/" + courseGuid,
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (getCourseInfoForEditApiRequest.isFinished) {
-        const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> =
-          getCourseInfoForEditApiRequest.data.value;
-        if (
-          getCourseInfoForEditApiResponse.Status === false ||
-          !getCourseInfoForEditApiResponse.Status ||
-          !getCourseInfoForEditApiResponse.Data
-        ) {
-          return {
+      // const getCourseInfoForEditApiRequest = await useAxios(
+      //   CourseController + "get-course-info-for-edit/" + courseGuid,
+      //   {
+      //     method: "GET",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const getCourseInfoForEditApiRequest = await MakeAPICall<ApiResult<InfoUpdateCourseResponse>>(CourseController,`get-course-info-for-edit/${courseGuid}`,"GET");
+      if(!getCourseInfoForEditApiRequest || !getCourseInfoForEditApiRequest.Status ||!getCourseInfoForEditApiRequest.Data){
+        return {
             Status: false,
             Data: null,
             Error: "Request call returned false",
           };
-        }
-        return { Status: true, Data: getCourseInfoForEditApiResponse.Data };
       }
-      return {
-        Status: false,
-        Data: null,
-        Error: "Request call never finished",
-      };
+      return { Status: true, Data: getCourseInfoForEditApiRequest.Data };
+      //   if (getCourseInfoForEditApiRequest.isFinished) {
+      //   const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> =
+      //     getCourseInfoForEditApiRequest.data.value;
+      //   if (
+      //     getCourseInfoForEditApiResponse.Status === false ||
+      //     !getCourseInfoForEditApiResponse.Status ||
+      //     !getCourseInfoForEditApiResponse.Data
+      //   ) {
+      //     return {
+      //       Status: false,
+      //       Data: null,
+      //       Error: "Request call returned false",
+      //     };
+      //   }
+      //   return { Status: true, Data: getCourseInfoForEditApiResponse.Data };
+      // }
+      // return {
+      //   Status: false,
+      //   Data: null,
+      //   Error: "Request call never finished",
+      // };
     };
     const PopulateTheFormObjectInEditMode = (
       data: InfoUpdateCourseResponse
@@ -719,19 +742,17 @@ export default defineComponent({
       formState.semester = data.Semester;
       formState.departments = data.Labs;
     };
-    const MakeTheDeleteInformationCall = async (
-      labGuid: string,
-      courseGuid: string
-    ): Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(
-        InfoController + `deletion-informant/${courseGuid}/${labGuid}`,
-        { method: "GET" },
-        setBackendInstanceAuth()
-      );
-      if (api_response.isFinished) {
-        const api_response_dta: ApiResult<InfoAggregateObjectResponse> =
-          api_response.data.value;
-        if (api_response_dta.Status === true && api_response_dta.Data) {
+    const MakeTheDeleteInformationCall = async (labGuid: string,courseGuid: string): Promise<InternalDataTransfter<boolean>> => {
+      // const api_response = await useAxios(
+      //   InfoController + `deletion-informant/${courseGuid}/${labGuid}`,
+      //   { method: "GET" },
+      //   setBackendInstanceAuth()
+      // );
+      const api_response_dta = await MakeAPICall<ApiResult<InfoAggregateObjectResponse>>(InfoController,`deletion-informant/${courseGuid}/${labGuid}`, "GET");
+      //if (api_response.isFinished) {
+        // const api_response_dta: ApiResult<InfoAggregateObjectResponse> =
+        //   api_response.data.value;
+        if (api_response_dta.Status && api_response_dta.Data) {
           if (
             api_response_dta.Data.PersonAffiliation &&
             (api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF ||
@@ -782,28 +803,35 @@ export default defineComponent({
             return { Data: null, Status: false, Error: "FatalError" };
           }
         }
-      }
+      //}
       showConfirmDeletionModal.value = false;
       return { Data: null, Status: false, Error: "Error" };
     };
-    const MakeTheDeleteApiCall = async (
-      labGuid: string,
-      courseGuid: string
-    ): Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(
-        CourseController +
-        `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
-        { method: "POST" },
-        setBackendInstanceAuth()
-      );
-      if (api_response.isFinished) {
-        const api_data_response: ApiResult<boolean> = api_response.data.value;
-        return {
-          Data: api_data_response.Data,
-          Status: api_data_response.Status,
-        };
-      }
-      return { Data: null, Status: false, Error: "Error" };
+    const MakeTheDeleteApiCall = async (labGuid: string,courseGuid: string): Promise<InternalDataTransfter<boolean>> => {
+      // const api_response = await useAxios(
+      //   CourseController +
+      //   `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
+      //   { method: "POST" },
+      //   setBackendInstanceAuth()
+      // );
+      const api_response = await MakeAPICall<ApiResult<boolean>,Object>(CourseController,`confirm-delete-submitted-course/${labGuid}/${courseGuid}`,"POST",{});
+      // if(api_response){
+      //   return {
+      //     Data: api_response.Data,
+      //     Status: api_response.Status,
+      //   };
+      // }
+      return api_response ? {Data: api_response.Data,Status: api_response.Status,} 
+                          :
+                            { Data: null, Status: false, Error: "Error" };
+      // if (api_response.isFinished) {
+      //   const api_data_response: ApiResult<boolean> = api_response.data.value;
+      //   return {
+      //     Data: api_data_response.Data,
+      //     Status: api_data_response.Status,
+      //   };
+      // }
+      //return { Data: null, Status: false, Error: "Error" };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));

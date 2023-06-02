@@ -162,7 +162,7 @@ import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { AdminController } from '@/config';
-import { useAxios } from '@vueuse/integrations/useAxios';
+// import { useAxios } from '@vueuse/integrations/useAxios';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { ApiResult } from '@/models/DTO/ApiResult';
 import DatePicker from '@vuepic/vue-datepicker';
@@ -187,7 +187,8 @@ export default defineComponent({
   setup(_, context) {
     const showLoadingSpinner = ref(false);
     const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const { scrollToTop } = useTimeObjectExtensions();
     const {GetPeriodState} = usePeriod();
     const currentlyActiveSsds = ref(new Array<SemesterSubmitionDateResponse>());
@@ -244,40 +245,42 @@ export default defineComponent({
       }
     };
     const FetchCurrentlyActiveSsd = async (): Promise<InternalDataTransfter<boolean>> => {
-      const currentlyActiveSsdCall = await useAxios(
-        AdminController + "fetch-currently-active-ssd",
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (currentlyActiveSsdCall.isFinished) {
-        const currentlyActiveSsdResponse: ApiResult<SemesterSubmitionDateOverviewResponse> = currentlyActiveSsdCall.data.value;
+      // const currentlyActiveSsdCall = await useAxios(
+      //   AdminController + "fetch-currently-active-ssd",
+      //   {
+      //     method: "GET",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const currentlyActiveSsdResponse = await MakeAPICall<ApiResult<SemesterSubmitionDateOverviewResponse>>(AdminController,"fetch-currently-active-ssd", "GET");
+      // if (currentlyActiveSsdCall.isFinished) {
+      //   const currentlyActiveSsdResponse: ApiResult<SemesterSubmitionDateOverviewResponse> = currentlyActiveSsdCall.data.value;
         if (!currentlyActiveSsdResponse || !currentlyActiveSsdResponse.Status || !currentlyActiveSsdResponse.Data) {
-          return { Status: false, Data: false, Error: "API Error" };
-        }
-        currentlyActiveSsds.value = currentlyActiveSsdResponse.Data.SemesterSubmitionDates;
-        return { Status: true, Data: true };
+        return { Status: false, Data: false, Error: "API Error" };
       }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      currentlyActiveSsds.value = currentlyActiveSsdResponse.Data.SemesterSubmitionDates;
+      return { Status: true, Data: true };
+      //}
+      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const GenerateTheNewPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      const generateNewPeriodContext = await useAxios(
-        AdminController + "generate-new-period",
-        {
-          method: "POST",
-        },
-        setBackendInstanceAuth()
-      );
-      if (generateNewPeriodContext.isFinished) {
-        const newGeneratedPeriodContext: ApiResult<SemesterSubmitionDateResponse> = generateNewPeriodContext.data.value;
-        if (!newGeneratedPeriodContext || !newGeneratedPeriodContext.Status || !newGeneratedPeriodContext.Data) {
-          return { Status: false, Data: false, Error: "API Call Error" };
-        }
-        newPeriodContext.value = newGeneratedPeriodContext.Data;
-        return { Status: true, Data: true }
+      // const generateNewPeriodContext = await useAxios(
+      //   AdminController + "generate-new-period",
+      //   {
+      //     method: "POST",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const newGeneratedPeriodContext = await MakeAPICall<ApiResult<SemesterSubmitionDateResponse>,Object>(AdminController,"generate-new-period", "POST",{});
+      //if (generateNewPeriodContext.isFinished) {
+      //const newGeneratedPeriodContext: ApiResult<SemesterSubmitionDateResponse> = generateNewPeriodContext.data.value;
+      if (!newGeneratedPeriodContext || !newGeneratedPeriodContext.Status || !newGeneratedPeriodContext.Data) {
+        return { Status: false, Data: false, Error: "API Call Error" };
       }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      newPeriodContext.value = newGeneratedPeriodContext.Data;
+      return { Status: true, Data: true }
+      //}
+      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const CalculateThePrioritiesCall = async (): Promise<InternalDataTransfter<boolean>> => {
       if (!fromTime.value || !toTime.value)
@@ -286,39 +289,41 @@ export default defineComponent({
         From: fromTime.value,
         To: toTime.value
       }
-      const calculateThePrioritiesCall = await useAxios(
-        AdminController + "calculate-new-ssd-by-date",
-        {
-          method: "POST",
-          data: payload
-        },
-        setBackendInstanceAuth()
-      );
-      if (calculateThePrioritiesCall.isFinished) {
-        const calculateThePrioritiesCallResponse: ApiResult<GeneratedPrioritiesResponse> = calculateThePrioritiesCall.data.value;
-        if (!calculateThePrioritiesCallResponse.Status || !calculateThePrioritiesCallResponse.Data) {
-          return { Status: false, Data: false, Error: calculateThePrioritiesCallResponse.Error };
-        }
-        calculatedPriorites.value = calculateThePrioritiesCallResponse.Data
-        return { Status: true, Data: true };
+      // const calculateThePrioritiesCall = await useAxios(
+      //   AdminController + "calculate-new-ssd-by-date",
+      //   {
+      //     method: "POST",
+      //     data: payload
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const calculateThePrioritiesCallResponse = await MakeAPICall<ApiResult<GeneratedPrioritiesResponse>,Object>(AdminController,"calculate-new-ssd-by-date", "POST",payload);
+      //if (calculateThePrioritiesCall.isFinished) {
+        //const calculateThePrioritiesCallResponse: ApiResult<GeneratedPrioritiesResponse> = calculateThePrioritiesCall.data.value;
+      if (!calculateThePrioritiesCallResponse.Status || !calculateThePrioritiesCallResponse.Data) {
+        return { Status: false, Data: false, Error: calculateThePrioritiesCallResponse.Error };
       }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      calculatedPriorites.value = calculateThePrioritiesCallResponse.Data
+      return { Status: true, Data: true };
+      //}
+      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const DeletePastSubmissionCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      const deletePastSubmissionsCall = await useAxios(
-        AdminController + "delete-past-submission-periods",
-        {
-          method: "POST",
-        },
-        setBackendInstanceAuth()
-      );
-      if (deletePastSubmissionsCall.isFinished) {
-        const deletePastSubmissionsResponse: ApiResult<boolean> = deletePastSubmissionsCall.data.value;
-        if (!deletePastSubmissionsResponse || !deletePastSubmissionsResponse.Status || !deletePastSubmissionsResponse.Data)
-          return { Status: false, Data: false, Error: deletePastSubmissionsResponse?.Error };
-        return { Status: true, Data: true };
-      }
-      return { Status: false, Data: false, Error: "Request not finished" };
+      // const deletePastSubmissionsCall = await useAxios(
+      //   AdminController + "delete-past-submission-periods",
+      //   {
+      //     method: "POST",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const deletePastSubmissionsResponse = await MakeAPICall<ApiResult<boolean>,Object>(AdminController,"delete-past-submission-periods", "POST",{});
+      // if (deletePastSubmissionsCall.isFinished) {
+       // const deletePastSubmissionsResponse: ApiResult<boolean> = deletePastSubmissionsCall.data.value;
+      if (!deletePastSubmissionsResponse || !deletePastSubmissionsResponse.Status || !deletePastSubmissionsResponse.Data)
+        return { Status: false, Data: false, Error: deletePastSubmissionsResponse?.Error ?? "Request not finished" };
+      return { Status: true, Data: true };
+      // }
+      // return { Status: false, Data: false, Error: "Request not finished" };
     }
     const deletePastSubmissions = async () => {
       showBaseDialog.value = true;
@@ -500,21 +505,22 @@ export default defineComponent({
         From: fromTime.value!,
         To: toTime.value!
       };
-      const initiateSubmissionsCall = await useAxios(
-        AdminController + "initiate-submission-period",
-        {
-          method: "POST",
-          data: submissionPeriodRequest
-        },
-        setBackendInstanceAuth()
-      );
-      if (initiateSubmissionsCall.isFinished) {
-        const initiateSubmissionsResponse: ApiResult<boolean> = initiateSubmissionsCall.data.value;
-        if (!initiateSubmissionsResponse || !initiateSubmissionsResponse.Status)
-          return { Status: false, Data: false, Error: initiateSubmissionsResponse?.Error };
-        return { Status: true, Data: true };
-      }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      // const initiateSubmissionsCall = await useAxios(
+      //   AdminController + "initiate-submission-period",
+      //   {
+      //     method: "POST",
+      //     data: submissionPeriodRequest
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const initiateSubmissionsResponse = await MakeAPICall<ApiResult<boolean>,SubmissionPeriodRequest>(AdminController,"initiate-submission-period","POST",submissionPeriodRequest);
+      // if (initiateSubmissionsCall.isFinished) {
+        //const initiateSubmissionsResponse: ApiResult<boolean> = initiateSubmissionsCall.data.value;
+      if (!initiateSubmissionsResponse || !initiateSubmissionsResponse.Status)
+        return { Status: false, Data: false, Error: initiateSubmissionsResponse?.Error ?? "Request didn't finish" };
+      return { Status: true, Data: true };
+      // }
+      // return { Status: false, Data: false, Error: "Request didn't finish" };
     }
     const semesterStringConverter = (ssd: SemesterSubmitionDateResponse) => {
       if (!ssd || !ssd.Semester || !ssd.Periodicity)

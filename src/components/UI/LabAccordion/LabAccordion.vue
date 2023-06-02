@@ -29,7 +29,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
 import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { CourseController } from "@/config";
-import { useAxios } from "@vueuse/integrations/useAxios";
+//import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import BaseResultEmpty from "@/components/Base/BaseResultEmpty.vue";
@@ -38,6 +38,7 @@ import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } f
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 import LabAccordionExpansionPanelText from "@/components/UI/LabAccordion/LabAccordionExpansionPanel/LabAccordionExpansionPanelText.vue";
 import LabAccordionExpansionPanelTitle from "@/components/UI/LabAccordion/LabAccordionExpansionPanel/LabAccordionExpansionPanelTitle.vue";
+import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
 
 export default defineComponent({
   emits: ["closeMobileView"],
@@ -58,27 +59,29 @@ export default defineComponent({
     );
     const isLoading = ref(false);
     const userType = ref<PersonAffiliation>();
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const RequestLabs = async () => {
       const requestArray = selectedSemesters.value.map((item) => item.value);
       isLoading.value = true;
-      const personalised_api_response = await useAxios(
-        CourseController + "courses-by-semester",
-        {
-          method: "POST",
-          data: requestArray,
-        },
-        setBackendInstanceAuth()
-      );
-      if (personalised_api_response.isFinished.value) {
+      // const personalised_api_response = await useAxios(
+      //   CourseController + "courses-by-semester",
+      //   {
+      //     method: "POST",
+      //     data: requestArray,
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const personalised_response_data = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>,Array<LabSemesterEnum>>(CourseController,"courses-by-semester","POST",requestArray);
+      //if (personalised_api_response.isFinished.value) {
+      //if (personalised_api_response.isFinished.value) {
         isLoading.value = false;
-        const personalised_response_data: ApiResult<PersonalisedCoursesBySemesterResponse> =
-          personalised_api_response.data.value;
-        console.log(personalised_response_data);
+        // const personalised_response_data: ApiResult<PersonalisedCoursesBySemesterResponse> =
+        //   personalised_api_response.data.value;
+        // console.log(personalised_response_data);
 
         if (
           !personalised_response_data ||
-          personalised_response_data.Status === false ||
           !personalised_response_data.Status ||
           !personalised_response_data.Data
         ) {
@@ -91,7 +94,6 @@ export default defineComponent({
         }
         if (
           !personalised_response_data.Data.Count ||
-          personalised_response_data.Data.Count === 0 ||
           !personalised_response_data.Data.PersonalisedCourses
         ) {
           // do something about it!
@@ -103,8 +105,8 @@ export default defineComponent({
         }
         personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
         userType.value = personalised_response_data.Data.UserType ?? undefined;//
-      }
-      isLoading.value = false;
+      // }
+      // isLoading.value = false;
     };
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);

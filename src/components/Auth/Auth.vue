@@ -33,9 +33,10 @@ export default defineComponent({
     const store = useStore(key);
     const {
       setCustomInstance,
-      setBackendInstanceUnAuth,
+      //setBackendInstanceUnAuth,
     } = useAxiosInstance();
     const { MakeInfoCall, DetermineIfAuth } = useAuth();
+    const {MakeAPICall} = useAxiosInstance();
     const showErrorResult = ref(false);
     const showErrorTitle=ref("Σφάλμα Αυθεντικοποίησης"); 
     const showErrorDescription = ref("Η διαδίκασία δεν ολοκληρώθηκε");
@@ -132,6 +133,7 @@ export default defineComponent({
         },
         setCustomInstance("https://login.iee.ihu.gr")
       );
+      
       if (access_token_object.isFinished.value && (access_token_object.error.value || !access_token_object.data.value)) {
         await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Η διαδίκασία δεν ολοκληρώθηκε");
         return { Status: false, Data: null, Error: "error" };
@@ -212,23 +214,31 @@ export default defineComponent({
     const makeSignInCall = async (object: Student | Staff): Promise<InternalDataTransfter<boolean>> => {
       if (!object)
         return { Status: false, Data: null, Error: "error" };
-      const sign_in_response = await useAxios(
-        AuthClientController+"sign-in",
-        {
-          method: "POST",
-          data: object,
-        },
-        setBackendInstanceUnAuth()
-      );
-      if (sign_in_response.isFinished.value && (!sign_in_response.data.value || sign_in_response.error.value)) {
+      
+      const sign_in_response = await MakeAPICall<ApiResult<string>, Student | Staff>(AuthClientController,"sign-in","POST",object);
+      //   const sign_in_response = await useAxios(
+      //   AuthClientController+"sign-in",
+      //   {
+      //     method: "POST",
+      //     data: object,
+      //   },
+      //   setBackendInstanceUnAuth()
+      // );
+      if (!sign_in_response || !sign_in_response.Status || !sign_in_response.Data ||  sign_in_response.Data !== "OK") {
         await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
         return { Status: false, Data: null, Error: "error" };
       }
-      const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
-      if (!sign_in_response_data || sign_in_response_data.Status === false || !sign_in_response_data.Status || !sign_in_response_data.Data) {
-        await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
-        return { Status: false, Data: null, Error: "error" };
-      }
+      
+
+      // if (sign_in_response.isFinished.value && (!sign_in_response.data.value || sign_in_response.error.value)) {
+      //   await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+      //   return { Status: false, Data: null, Error: "error" };
+      // }
+      // const sign_in_response_data: ApiResult<string> = sign_in_response.data.value;
+      // if (!sign_in_response_data || sign_in_response_data.Status === false || !sign_in_response_data.Status || !sign_in_response_data.Data) {
+      //   await setErrorPushToHome("Σφάλμα Αυθεντικοποίησης", "Προσπαθήστε ξανά");
+      //   return { Status: false, Data: null, Error: "error" };
+      // }
       return { Status: true, Data: true };
     };
     const delay = (ms: number) => new Promise(res => setTimeout(res, ms));

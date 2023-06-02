@@ -61,26 +61,37 @@ const DisplayedLabs = ref([
 ]);
 export function useDisplayedLabs() {
   const GetDisplayedLabs = async () =>{
-    const { setBackendInstanceAuth}= useAxiosInstance();
-    const getSemestersCall = await useAxios(
-      CourseController+"semesters",
-      {
-        method: "GET",
-      },
-      setBackendInstanceAuth()
-    );
-    if(getSemestersCall.isFinished.value){
-      const result:ApiResult<DisplaySemestersResponse> = getSemestersCall.data.value;
-      if(result && result.Status && result.Data && result.Data.Count){
-        DisplayedLabs.value = result.Data.Semesters.map((semester)=>{
-          return {
-            title:semester.DisplayTitle,
-            value:semester.SemesterEnum,
-            isActive:false
-          }
-        });
-      }
+    //const { setBackendInstanceAuth}= useAxiosInstance();
+    const { MakeAPICall}= useAxiosInstance();
+    // const getSemestersCall = await useAxios(
+    //   CourseController+"semesters",
+    //   {
+    //     method: "GET",
+    //   },
+    //   setBackendInstanceAuth()
+    // );
+    const getSemestersCall = await MakeAPICall<ApiResult<DisplaySemestersResponse>>(CourseController,"semesters","GET");
+    if(getSemestersCall && getSemestersCall.Status && getSemestersCall.Data && getSemestersCall.Data.Count){
+      DisplayedLabs.value = getSemestersCall.Data.Semesters.map((semester)=>{
+        return {
+          title:semester.DisplayTitle,
+          value:semester.SemesterEnum,
+          isActive:false
+        }
+      });
     }
+    // if(getSemestersCall.isFinished.value){
+    //   const result:ApiResult<DisplaySemestersResponse> = getSemestersCall.data.value;
+    //   if(result && result.Status && result.Data && result.Data.Count){
+    //     DisplayedLabs.value = result.Data.Semesters.map((semester)=>{
+    //       return {
+    //         title:semester.DisplayTitle,
+    //         value:semester.SemesterEnum,
+    //         isActive:false
+    //       }
+    //     });
+    //   }
+    // }
   }
   return {DisplayedLabs,GetDisplayedLabs}
 }

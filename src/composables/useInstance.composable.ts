@@ -61,6 +61,9 @@ export function useAxiosInstance() {
         },
         useBackEnd ? setBackendInstanceAuth() : setCustomInstance(customUri!)
       );
+      if(!httpCall.isFinished.value || httpCall.isAborted.value || httpCall.isCanceled.value){
+        throw new Error("Http call did not finish ");
+      }
       if (
         httpCall.error.value &&
         httpCall.error.value.response &&
@@ -102,7 +105,7 @@ export function useAxiosInstance() {
     } 
     catch (error:any ) {
       console.error(`Api error call on exception with message: ${error}`);
-      return undefined;
+      return  undefined;
     }
   };
   const KickHimOutRN = async () => {
@@ -110,7 +113,7 @@ export function useAxiosInstance() {
     store.dispatch("clearUserDataDetails");
     store.dispatch("clearSeededProfessors");
     store.dispatch("setFirstTimeLogin", true);
-    await router.replace({ name: "red" });
+    //await router.replace({ name: "red" });
   };
 
   return {

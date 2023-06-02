@@ -25,7 +25,7 @@ import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { CourseController } from '@/config';
-import { useAxios } from '@vueuse/integrations/useAxios';
+// import { useAxios } from '@vueuse/integrations/useAxios';
 import { ApiResult } from '@/models/DTO/ApiResult';
 import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } from '@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse';
 import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
@@ -44,7 +44,8 @@ export default defineComponent({
     const personalisedCourses = ref(new Array<PersonalisedCourseBySemester>());
     const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { scrollToTop } = useTimeObjectExtensions();
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
 
     onMounted(async () => {
       emitMobileViewClose();
@@ -70,22 +71,23 @@ export default defineComponent({
     });
 
     const GetMyCoursesCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      const getMyCoursesCall = await useAxios(
-        CourseController + "get-my-courses",
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (getMyCoursesCall.isFinished) {
-        const getMyCoursesResponse: ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
-        if (!getMyCoursesResponse || !getMyCoursesResponse.Status || !getMyCoursesResponse.Data || !getMyCoursesResponse.Data.PersonalisedCourses || !getMyCoursesResponse.Data.Count) {
-          return { Status: false, Data: false, Error: "API Error" };
-        }
-        personalisedCourses.value = getMyCoursesResponse.Data.PersonalisedCourses;
-        return { Status: true, Data: true };
+      // const getMyCoursesCall = await useAxios(
+      //   CourseController + "get-my-courses",
+      //   {
+      //     method: "GET",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const getMyCoursesResponse = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>>(CourseController,"get-my-courses", "GET");
+      //if (getMyCoursesCall.isFinished) {
+        //const getMyCoursesResponse: ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
+      if (!getMyCoursesResponse || !getMyCoursesResponse.Status || !getMyCoursesResponse.Data || !getMyCoursesResponse.Data.PersonalisedCourses || !getMyCoursesResponse.Data.Count) {
+        return { Status: false, Data: false, Error: "API Error" };
       }
-      return { Status: false, Data: false, Error: "Request didn't finish" }
+      personalisedCourses.value = getMyCoursesResponse.Data.PersonalisedCourses;
+      return { Status: true, Data: true };
+      // }
+      // return { Status: false, Data: false, Error: "Request didn't finish" }
     }
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));

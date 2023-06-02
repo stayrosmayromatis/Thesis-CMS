@@ -78,7 +78,7 @@ import { CourseController, StudentsController } from "@/config";
 import { CreateSubResponse } from "@/models/BACKEND-MODELS/CreateSubResponse";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
-import { useAxios } from "@vueuse/integrations/useAxios";
+//import { useAxios } from "@vueuse/integrations/useAxios";
 import { defineComponent, computed, toRefs } from "vue";
 import { useRouter } from 'vue-router';
 export default defineComponent({
@@ -131,7 +131,8 @@ export default defineComponent({
   },
   setup(props) {
     const { available_seats, duration, max_seats, department_name, timestring, ladb_id, course_id, completeness_percent, user_type } = toRefs(props);
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const { setTypeOfAlert, openAlert, closeAlert } = useAlert();
     const router = useRouter();
     const ButtonText = computed(() => {
@@ -207,22 +208,26 @@ export default defineComponent({
     async function MakeTheFinalRegisterCall(): Promise<InternalDataTransfter<boolean>> {
       if (!course_id.value || !course_id.value)
         return { Status: false, Data: false, Error: "The parameters are null" };
-      const finalRegisterCallApiRequest = await useAxios(
-        StudentsController + "create-student-submition",
-        {
-          method: "POST",
-          data: {
+      // const finalRegisterCallApiRequest = await useAxios(
+      //   StudentsController + "create-student-submition",
+      //   {
+      //     method: "POST",
+      //     data: {
+      //       CourseId: course_id.value,
+      //       LabId: ladb_id.value
+      //     }
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const registrationResult = await MakeAPICall<ApiResult<CreateSubResponse>,{CourseId:string,LabId:string}>(StudentsController,"create-student-submition","POST",{
             CourseId: course_id.value,
             LabId: ladb_id.value
-          }
-        },
-        setBackendInstanceAuth()
-      );
-      if (!finalRegisterCallApiRequest.isFinished.value)
-        return { Status: false, Data: false, Error: "API Call didn't finish" };
-      const registrationResult: ApiResult<CreateSubResponse> = finalRegisterCallApiRequest.data.value;
-      if (!registrationResult.Status)
-        return { Status: false, Data: false, Error: registrationResult.Error };
+          });
+      // if (!finalRegisterCallApiRequest.isFinished.value)
+      //   return { Status: false, Data: false, Error: "API Call didn't finish" };
+      // const registrationResult: ApiResult<CreateSubResponse> = finalRegisterCallApiRequest.data.value;
+      if (!registrationResult || !registrationResult.Status)
+        return { Status: false, Data: false, Error: registrationResult.Error ?? "API Call didn't finish" };
       return { Status: true, Data: true };
     }
     const delay = async (time: number) => {

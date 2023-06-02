@@ -93,11 +93,11 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to,_,next) => {
-  const  {IsAuthenticated} = useAuth();
+  //const {IsAuthenticated} = useAuth();
   const firstTimeLogin = store.getters.IsFirstTimeLogin;
   console.log(firstTimeLogin);
   if(firstTimeLogin){
-    await IsAuthenticated(true);
+    //await IsAuthenticated(true);
     // store.dispatch('setFirstTimeLogin',false);
   }
   const storeIsAuth = store.getters.IsAuth;

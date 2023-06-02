@@ -52,7 +52,8 @@ export default defineComponent({
   emits: ['propagateCloseMobileView'],
   setup(_, context) {
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const { openAlert, setTypeOfAlert, closeAlert,} = useAlert();
     
     const arrayOfAdmins = ref(new Array<BaseUserResponse>());
@@ -140,38 +141,40 @@ export default defineComponent({
       return {Status :true,Data:"OK"};
     };
     const MakeApiCallToPopulateAdmins = async (): Promise<InternalDataTransfter<boolean>> => {
-      const get_all_admins_api_call = await useAxios(
-        AdminController + "get-admins",
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (get_all_admins_api_call.isFinished) {
-        const get_all_admins_api_call_response: ApiResult<AllAdminsResponse> = get_all_admins_api_call.data.value;
-        if (!get_all_admins_api_call_response || !get_all_admins_api_call_response.Status || !get_all_admins_api_call_response.Data || !get_all_admins_api_call_response.Data.Admins || !get_all_admins_api_call_response.Data.Count)
-          return { Status: false, Data: false, Error: "API Error" };
-        arrayOfAdmins.value = get_all_admins_api_call_response.Data.Admins;
-        return { Status: true, Data: true };
-      }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      // const get_all_admins_api_call = await useAxios(
+      //   AdminController + "get-admins",
+      //   {
+      //     method: "GET",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const get_all_admins_api_call_response = await MakeAPICall< ApiResult<AllAdminsResponse>>(AdminController,"get-admins","GET");
+      //if (get_all_admins_api_call.isFinished) {
+        //const get_all_admins_api_call_response: ApiResult<AllAdminsResponse> = get_all_admins_api_call.data.value;
+      if (!get_all_admins_api_call_response || !get_all_admins_api_call_response.Status || !get_all_admins_api_call_response.Data || !get_all_admins_api_call_response.Data.Admins || !get_all_admins_api_call_response.Data.Count)
+        return { Status: false, Data: false, Error: "API Error" };
+      arrayOfAdmins.value = get_all_admins_api_call_response.Data.Admins;
+      return { Status: true, Data: true };
+      // }
+      // return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const MakeApiCallToChangeAdminState = async (baseUserId: string, removeAdmin: boolean = false): Promise<InternalDataTransfter<boolean>> => {
-      const change_admin_state_call = await useAxios(
-        AdminController + `change-admin-state/${baseUserId}/${removeAdmin}`,
-        {
-          method: "POST",
-        },
-        setBackendInstanceAuth()
-      );
-      if (change_admin_state_call.isFinished) {
-        const change_admin_state_call_response: ApiResult<boolean> = change_admin_state_call.data.value;
-        if (!change_admin_state_call_response || !change_admin_state_call_response.Status || !change_admin_state_call_response.Data) {
-          return { Status: false, Data: false, Error: "Couldn't Add Admin" };
-        }
-        return { Status: true, Data: true };
+      // const change_admin_state_call = await useAxios(
+      //   AdminController + `change-admin-state/${baseUserId}/${removeAdmin}`,
+      //   {
+      //     method: "POST",
+      //   },
+      //   setBackendInstanceAuth()
+      // );
+      const change_admin_state_call_response = await MakeAPICall<ApiResult<boolean>,Object>(AdminController,`change-admin-state/${baseUserId}/${removeAdmin}`,"POST",{});
+      // if (change_admin_state_call.isFinished) {
+      //const change_admin_state_call_response: ApiResult<boolean> = change_admin_state_call.data.value;
+      if (!change_admin_state_call_response || !change_admin_state_call_response.Status || !change_admin_state_call_response.Data) {
+        return { Status: false, Data: false, Error: "Couldn't Add Admin" };
       }
-      return { Status: false, Data: false, Error: "Request didn't finish" };
+      return { Status: true, Data: true };
+      // }
+      // return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
