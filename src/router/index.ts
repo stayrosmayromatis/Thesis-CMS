@@ -97,14 +97,14 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _, next) => {
-  //const {IsAuthenticated} = useAuth();
+  const {IsAuthenticated} = useAuth();
   if (store.getters.IsFirstTimeLogin && to.fullPath.trim() === "/") {
     // await IsAuthenticated(true);
     //store.dispatch("setFirstTimeLogin", false);
     return next();
   } else {
+    await IsAuthenticated(true);
     const storeIsAuth = store.getters.IsAuth;
-    //await IsAuthenticated(true);
     if (to.meta.requiresAuth === false && storeIsAuth == false) {
       return next();
     }
@@ -112,9 +112,9 @@ router.beforeEach(async (to, _, next) => {
       await SetNotAuthenticated();
       return next();
     }
-    // if (to.meta.requiresAuth === true && storeIsAuth === false) {
-    //   return next({ name: "red" });
-    // }
+    if (to.meta.requiresAuth === true && storeIsAuth === false) {
+      return next({ name: "red" });
+    }
     return next();
   }
 });
@@ -142,14 +142,15 @@ async function protectPeriodInitializedRoutes(
   next: NavigationGuardNext
 ) {
   const {
-    //GetPeriodState,
+    GetPeriodState,
     IsPeriodActive,
   } = usePeriod();
-  //await GetPeriodState();
-  const periodInfo = IsPeriodActive.value;
-  if (!periodInfo || !to.meta.requiredPeriodInitialized) return next(false);
-  if (to.meta.requiredPeriodInitialized === true && !IsPeriodActive.value)
-    return next(false);
-  return next();
+  if(!IsPeriodActive.value){
+    await GetPeriodState();
+  } 
+  if (!IsPeriodActive.value && !to.meta.requiredPeriodInitialized) return next();
+  if (to.meta.requiredPeriodInitialized === true && IsPeriodActive.value) return next();
+  return next({name: "sign-in"});
+  
 }
 export default router;

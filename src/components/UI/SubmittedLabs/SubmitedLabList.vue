@@ -101,7 +101,7 @@ export default defineComponent({
       closeAlert();
       //showSpinner.value = true;
       await populateSubmittedLabs();
-      showSpinner.value = false;
+      //showSpinner.value = false;
     });
     const pdfCreationCompleted = (val: boolean) => {
       callToGeneratePdf.value = val;
@@ -122,7 +122,7 @@ export default defineComponent({
       // );
       //showSpinner.value = true;
       const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController,"get-submitted-labs-info","GET");
-      //showSpinner.value = false;
+      showSpinner.value = false;
       if(!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs){
         showLabsIfFound.value = false;
           // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";

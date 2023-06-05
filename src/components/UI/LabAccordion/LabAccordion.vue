@@ -7,10 +7,10 @@
       @update:model-value="requestLabs">
     </v-select>
     <base-spinner :show="isLoading"></base-spinner>
-    <base-result-empty :show="personalisedCourses.length === 0" :title="resultEmptyTitle"
+    <base-result-empty :show="!isLoading && personalisedCourses.length === 0" :title="resultEmptyTitle"
       :description="resutlEmptyDesc"></base-result-empty>
     <!-- <v-app> -->
-    <v-expansion-panels v-if="personalisedCourses">
+    <v-expansion-panels v-if="!isLoading && personalisedCourses">
       <v-expansion-panel v-for="lab in personalisedCourses" :key="lab.CourseGUID" :readonly="isReadOnly(lab)">
         <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
           <lab-accordion-expansion-panel-title :lab="lab" :user_type="userType ?? 1" @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-title>
@@ -64,52 +64,22 @@ export default defineComponent({
     const RequestLabs = async () => {
       const requestArray = selectedSemesters.value.map((item) => item.value);
       isLoading.value = true;
-      // const personalised_api_response = await useAxios(
-      //   CourseController + "courses-by-semester",
-      //   {
-      //     method: "POST",
-      //     data: requestArray,
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const personalised_response_data = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>,Array<LabSemesterEnum>>(CourseController,"courses-by-semester","POST",requestArray);
-      //if (personalised_api_response.isFinished.value) {
-      //if (personalised_api_response.isFinished.value) {
-        isLoading.value = false;
-        // const personalised_response_data: ApiResult<PersonalisedCoursesBySemesterResponse> =
-        //   personalised_api_response.data.value;
-        // console.log(personalised_response_data);
-
-        // if (
-        //   !personalised_response_data ||
-        //   !personalised_response_data.Status ||
-        //   !personalised_response_data.Data
-        // ) {
-        //   // do something!
-        //   personalisedCourses.value = [];
-        //   resultEmptyTitle.value = "Κάτι πήγε στραβά";
-        //   resutlEmptyDesc.value =
-        //     "Δοκιμάστε να καθαρίσετε τα επιλεγμένα φίλτρα απο την μπάρα ώστε να ξεκινήσει εκ νέου η διαδικάσια αναζήτησης";
-        //   return;
-        // }
-        if (
-          !personalised_response_data ||
-          !personalised_response_data.Status ||
-          !personalised_response_data.Data || 
-          !personalised_response_data.Data.Count ||
-          !personalised_response_data.Data.PersonalisedCourses
-        ) {
-          // do something about it!
-          personalisedCourses.value = [];
-          resultEmptyTitle.value = "Κανένα Αποτέλεσμα";
-          resutlEmptyDesc.value =
-            "Επιλέξτε Εξάμηνο είτε Συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης";
-          return;
-        }
-        personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
-        userType.value = personalised_response_data.Data.UserType ?? undefined;//
-      // }
-      // isLoading.value = false;
+      isLoading.value = false;
+      if (
+        !personalised_response_data ||
+        !personalised_response_data.Status ||
+        !personalised_response_data.Data || 
+        !personalised_response_data.Data.Count ||
+        !personalised_response_data.Data.PersonalisedCourses
+      ) {
+        personalisedCourses.value = [];
+        resultEmptyTitle.value = "Κανένα Αποτέλεσμα";
+        resutlEmptyDesc.value ="Επιλέξτε Εξάμηνο είτε Συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης";
+        return;
+      }
+      personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
+      userType.value = personalised_response_data.Data.UserType ?? undefined;//
     };
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);

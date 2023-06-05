@@ -170,11 +170,11 @@ export default defineComponent({
       return isLoggedIn.value === true ? IsTeacher() : false;
     });
    
-    onMounted(async () => {
-      if(await IsAuthenticated() && store.getters.IsFirstTimeLogin){
-        await GetPeriodState();
-      }
-    });
+    //onMounted(async () => {
+      // if(await IsAuthenticated() && store.getters.IsFirstTimeLogin){
+      //   await GetPeriodState();
+      // }
+    // });
     // watch(closeInstantlyDirective, async () => {
     //   if (closeInstantlyDirective.value === true) {
     //     closeHamburgerFn();
@@ -211,10 +211,9 @@ export default defineComponent({
     };
 
     const logOut = async () => {
-      await SetNotAuthenticated();
       await router.replace({ name: "welcome" });
+      //await SetNotAuthenticated();
     };
-
     return {
       title,
       redirectToLogin,
