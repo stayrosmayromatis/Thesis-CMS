@@ -109,11 +109,13 @@ export function useAxiosInstance() {
     }
   };
   const KickHimOutRN = async () => {
-    store.dispatch("setAuthState", false);
-    store.dispatch("clearUserDataDetails");
-    store.dispatch("clearSeededProfessors");
-    store.dispatch("setFirstTimeLogin", true);
-    //await router.replace({ name: "red" });
+    if(!store.getters.IsFirstTimeLogin){
+      store.dispatch("setAuthState", false);
+      store.dispatch("clearUserDataDetails");
+      store.dispatch("clearSeededProfessors");
+      store.dispatch("setFirstTimeLogin", true);
+      await router.replace({ name: 'red' });
+    }
   };
 
   return {

@@ -14,9 +14,9 @@ export default defineComponent({
   setup() {
     // const { IsAuthenticated } = useAuth();
     // const {GetPeriodState} = usePeriod();
-    onMounted( async () => {
+    // onMounted( async () => {
       
-    });
+    // });
     const closeInstantly = ref(false);
 
     const closeMobileViewInstantly = async (val: boolean) => {

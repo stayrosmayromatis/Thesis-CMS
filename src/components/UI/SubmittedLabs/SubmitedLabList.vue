@@ -11,18 +11,16 @@
     <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle">
     </base-alert>
     <div class="parent-card">
-
       <v-card elevation="10" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
-
-      <base-result-empty :show="showLabsNotFound" :title="showEmptyResultTitle"
+      <base-result-empty :show="!showSpinner && !showLabsIfFound" :title="showEmptyResultTitle"
         :description="showEmptyResultDescription"></base-result-empty>
       <base-spinner :show="showSpinner"></base-spinner>
       <suspense>
         <template #default>
-          <div v-if="!showLabsNotFound">
+          <div v-if="!showSpinner && showLabsIfFound">
             <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab"
               :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
-            <div class="pdf-button">
+            <div class="pdf-button" >
               <v-btn color="#ff5454" @click="pushToPdf">
                 <svg style="margin-right: 0.3rem;" fill="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                   viewBox="0 0 24 24">
@@ -55,7 +53,7 @@ import { ApiResult } from '@/models/DTO/ApiResult';
 import { GenericSubmittedLabsResponse, SubmittedLab } from '@/models/BACKEND-MODELS/GenericSubmittedLabsResponse';
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 
-// import SubmitedLab from "@/components/UI/SubmittedLabs/SubmitedLab.vue";
+ //import SubmitedLab from "@/components/UI/SubmittedLabs/SubmitedLab.vue";
 const SubmitedLab = defineAsyncComponent({
   loader: () => import("@/components/UI/SubmittedLabs/SubmitedLab.vue"),
   delay: 5000,
@@ -85,10 +83,10 @@ export default defineComponent({
   emits: ["closeMobileView"],
   setup(_, context) {
     //const isError = false;
-    const showLabsNotFound = ref(false);
-    const showSpinner = ref(false);
-    const showEmptyResultTitle = ref("");
-    const showEmptyResultDescription = ref("");
+    const showLabsIfFound = ref(false);
+    const showSpinner = ref(true);
+    const showEmptyResultTitle = ref("Δεν βρέθηκαν δηλωμένα εργαστήρια");
+    const showEmptyResultDescription = ref("Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας");
     const { alertTitle, typeOfAlert, showAlert, closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const sLabs = ref(new Array<SubmittedLab>());
     const personAffiliation = ref(PersonAffiliation.STUDENT);
@@ -101,7 +99,9 @@ export default defineComponent({
     onMounted(async () => {
       emitMobileViewClose();
       closeAlert();
+      //showSpinner.value = true;
       await populateSubmittedLabs();
+      showSpinner.value = false;
     });
     const pdfCreationCompleted = (val: boolean) => {
       callToGeneratePdf.value = val;
@@ -112,7 +112,7 @@ export default defineComponent({
     };
 
     const populateSubmittedLabs = async (byInternalCall = false): Promise<void> => {
-      showSpinner.value = true;
+     
       // const apiGetInfos = await useAxios(
       //   InfoController + "get-submitted-labs-info",
       //   {
@@ -120,12 +120,16 @@ export default defineComponent({
       //   },
       //   setBackendInstanceAuth()
       // );
+      //showSpinner.value = true;
       const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController,"get-submitted-labs-info","GET");
-      showSpinner.value = false;
+      //showSpinner.value = false;
       if(!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs){
-          showLabsNotFound.value = true;
-          showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-          showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+        showLabsIfFound.value = false;
+          // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+          // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+          // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+          // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+          
           return;
       }
 
@@ -139,14 +143,17 @@ export default defineComponent({
         // }
         sLabs.value = getInfoData.Data.SubmittedLabs;
         personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
-        if (byInternalCall === true) {
+        showLabsIfFound.value = true;
+        // showEmptyResultTitle.value = "";
+        // showEmptyResultDescription.value = "";
+        if (byInternalCall) {
           closeAlert();
           setTypeOfAlert('success');
           openAlert("Επιτυχία διαγραφής");
           closeAlert(1500);
         }
       //}
-      showSpinner.value = false;
+      //showSpinner.value = false;
     }
     return {
       sLabs,
@@ -159,7 +166,7 @@ export default defineComponent({
       typeOfAlert,
       showAlert,
       personAffiliation,
-      showLabsNotFound,
+      showLabsIfFound,
       showSpinner,
       showEmptyResultTitle,
       showEmptyResultDescription,

@@ -80,19 +80,22 @@ export default defineComponent({
         //   personalised_api_response.data.value;
         // console.log(personalised_response_data);
 
+        // if (
+        //   !personalised_response_data ||
+        //   !personalised_response_data.Status ||
+        //   !personalised_response_data.Data
+        // ) {
+        //   // do something!
+        //   personalisedCourses.value = [];
+        //   resultEmptyTitle.value = "Κάτι πήγε στραβά";
+        //   resutlEmptyDesc.value =
+        //     "Δοκιμάστε να καθαρίσετε τα επιλεγμένα φίλτρα απο την μπάρα ώστε να ξεκινήσει εκ νέου η διαδικάσια αναζήτησης";
+        //   return;
+        // }
         if (
           !personalised_response_data ||
           !personalised_response_data.Status ||
-          !personalised_response_data.Data
-        ) {
-          // do something!
-          personalisedCourses.value = [];
-          resultEmptyTitle.value = "Κάτι πήγε στραβά";
-          resutlEmptyDesc.value =
-            "Δοκιμάστε να καθαρίσετε τα επιλεγμένα φίλτρα απο την μπάρα ώστε να ξεκινήσει εκ νέου η διαδικάσια αναζήτησης";
-          return;
-        }
-        if (
+          !personalised_response_data.Data || 
           !personalised_response_data.Data.Count ||
           !personalised_response_data.Data.PersonalisedCourses
         ) {

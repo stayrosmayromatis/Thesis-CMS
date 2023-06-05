@@ -54,10 +54,10 @@ export default defineComponent({
             default:false
         }
     },
-    setup(props) {
-        const {show} = toRefs(props);
-        return {show}
-    },
+    // setup(props) {
+    //     const {show} = toRefs(props);
+    //     return {show}
+    // },
 })
 </script>
 <style scoped>

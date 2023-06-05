@@ -55,7 +55,7 @@ export function useAuth() {
     // }
     //const logOutResponse: ApiResult<string> = logout_response.data.value;
     //if (logOutResponse || logOutResponse.Status && logOutResponse.Data.trim().toLowerCase() === "OK".toLowerCase()) {
-    if (logout_response || logout_response.Status && logout_response.Data.trim().toLowerCase() === "OK".toLowerCase()) {
+    if (logout_response && logout_response.Status && logout_response.Data.trim().toLowerCase() === "OK".toLowerCase()) {
       store.dispatch("setAuthState", false);
       store.dispatch("clearUserDataDetails");
       store.dispatch("clearSeededProfessors");
@@ -63,7 +63,6 @@ export function useAuth() {
       setTypeOfAlert("success");
       openAlert("Επιτυχής Αποσύνδεση");
       closeAlert(1500);
-      // store.dispatch("clearPeriodInfo");
     }
   };
   const GetTypeStaff = (): TypeStaff | undefined => {
@@ -100,19 +99,14 @@ export function useAuth() {
     }
   };
   const MakeInfoCall = async (): Promise<InternalDataTransfter<BaseUserAuthStateResponse>> => {
-    // const { setBackendInstanceAuth } = useAxiosInstance();
-     const { MakeAPICall } = useAxiosInstance();
-    // const info_response = await useAxios(
-    //   InfoController+"infos",
-    //   setBackendInstanceAuth()
-    // );
+    const { MakeAPICall } = useAxiosInstance();
     const info_response = await MakeAPICall<ApiResult<BaseUserAuthStateResponse>>(InfoController,"infos");
     if(!info_response || !info_response.Status || !info_response.Data || info_response.Error){
     //if (!info_response.isFinished.value || ( info_response.isFinished.value && (!info_response.data.value || info_response.error.value))) {
-      store.dispatch("setAuthState", false);
-      store.dispatch("clearUserDataDetails");
-      store.dispatch("clearSeededProfessors");
-      store.dispatch("setFirstTimeLogin", true); 
+      // store.dispatch("setAuthState", false);
+      // store.dispatch("clearUserDataDetails");
+      // store.dispatch("clearSeededProfessors");
+      // store.dispatch("setFirstTimeLogin", true); 
       // store.dispatch("clearPeriodInfo");
       return {
         Status: false,
@@ -121,24 +115,6 @@ export function useAuth() {
         Description: "Η διαδίκασία δεν ολοκληρώθηκε",
       };
     }
-    // const info_response_data: ApiResult<BaseUserAuthStateResponse> = info_response.data.value;
-    // if (
-    //   !info_response_data ||
-    //   !info_response_data.Status ||
-    //   !info_response_data.Data
-    // ) {
-    //   store.dispatch("setAuthState", false);
-    //   store.dispatch("clearUserDataDetails");
-    //   store.dispatch("clearSeededProfessors");
-    //   store.dispatch("setFirstTimeLogin", true); 
-    //   // store.dispatch("clearPeriodInfo");
-    //   return {
-    //     Status: false,
-    //     Data: null,
-    //     Error: "Σφάλμα Εξουσιοδήτησης",
-    //     Description: "Η διαδίκασία δεν ολοκληρώθηκε",
-    //   };
-    // }
     return { Status: true, Data: info_response.Data };
   };
   const DetermineIfAuth = async (response: BaseUserAuthStateResponse,byInternalUse: boolean = false): Promise<InternalDataTransfter<boolean>> => {

@@ -171,7 +171,7 @@ export default defineComponent({
     });
    
     onMounted(async () => {
-      if(await IsAuthenticated()){
+      if(await IsAuthenticated() && store.getters.IsFirstTimeLogin){
         await GetPeriodState();
       }
     });
@@ -181,8 +181,10 @@ export default defineComponent({
     //   }
     // });
     computedEager(async () => {
-      if(isLoggedIn.value)
+      if(isLoggedIn.value){
         await GetPeriodState();
+        return;
+      }
     });
     computedEager(() => {
       if (closeInstantlyDirective.value === true) {
@@ -190,7 +192,6 @@ export default defineComponent({
       }
     });
     computedEager(() => {
-      console.log("I am recomputing!");
       hamburgerClose.value = width.value >= 769 ? true : false;
     });
 
