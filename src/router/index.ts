@@ -126,14 +126,7 @@ async function protectTeacherRoutes(
 ) {
   const { GetTypeStaff } = useAuth();
   const typeStaff = GetTypeStaff();
-  if (!typeStaff || !to.meta.requiresIsTeacher) return next(false);
-  if (
-    to.meta.requiresIsTeacher === true &&
-    (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN)
-  ) {
-    return next();
-  }
-  return next(false);
+  return to.meta.requiresIsTeacher && typeStaff && (typeStaff === TypeStaff.STAFF || typeStaff === TypeStaff.ADMIN) ?  next() : next(false);
 }
 
 async function protectPeriodInitializedRoutes(

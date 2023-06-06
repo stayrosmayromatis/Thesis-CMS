@@ -65,7 +65,7 @@ export function useAuth() {
       closeAlert(1500);
     }
   };
-  const GetTypeStaff = (): TypeStaff | undefined => {
+  const GetTypeStaff = () : TypeStaff | undefined => {
     try {
       return store.getters.getStaffType;
       //getStaffTypeRes;
