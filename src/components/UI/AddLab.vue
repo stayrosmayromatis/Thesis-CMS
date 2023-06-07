@@ -41,35 +41,42 @@
                 label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
               <div class="percent49-5">
                 <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
-                  :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
-                  v-model="formState.attendance" no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
+                  item-title="title" :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
+                  return-object v-model="formState.attendance"
+                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
               </div>
             </div>
             <v-divider inset></v-divider>
             <div class="label-centerer">
               <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
             </div>
-            <div class="info-centerer" v-if="departments.length">
+            <!-- <div class="info-centerer" v-if="departments.length">
               <base-alert :alert-type-prop="'info'" :show="true"
                 :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
-            </div>
+            </div> -->
             <div class="form-control-add-btn">
-              <v-btn type="button" @click="addFormGroup" elevation="4" color="green"><svg width="30" height="30"
+              <v-btn type="button" @click="addFormGroup" 
+              
+              color="green">
+              <!-- elevation="4"  -->
+                <!-- <svg width="30" height="30"
                   clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
                   viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
                     fill-rule="nonzero" />
-                </svg>
-                ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
+                </svg> -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#000000" d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z"/></svg>
+                <label>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
               </v-btn>
             </div>
             <lab-form v-for="department in departments" :key="department.Guid" :department="department"
               :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
               @global-error="validateEachDepartment"></lab-form>
             <div class="submit-button" v-if="departments.length">
-              <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" :
-                "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn>
+              <v-btn id="submit-btn"
+                :disabled="buttonDisablity" type="submit">{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" :
+                  "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn>
             </div>
           </v-container>
         </v-form>
@@ -218,12 +225,7 @@ export default defineComponent({
         const allRestLabs = displayedSemester.value.filter(
           (restLab) => restLab.value != selectedLab.value
         );
-        if (
-          allRestLabs &&
-          allRestLabs != null &&
-          allRestLabs != undefined &&
-          allRestLabs.length > 1
-        ) {
+        if (allRestLabs && allRestLabs.length) {
           allRestLabs.forEach((lab) => {
             if (lab.isActive) lab.isActive = false;
           });
@@ -231,7 +233,7 @@ export default defineComponent({
       }
     };
     const addFormGroup = () => {
-      if (departments.value.length === 0) {
+      if (!departments.value.length) {
         deptIncremental = 1;
       }
       departments.value.push({
@@ -301,23 +303,27 @@ export default defineComponent({
       description: "",
       semester: null,
       departments,
-      attendance: {
-        value: AttendanceEnum.ΥΠ,
-        title: "ΥΠ",
-      },
+      attendance: displayedAttendaceValues.find(w => w.value === AttendanceEnum.ΥΠ)
+      //  {
+      //   value: AttendanceEnum.ΥΠ,
+      //   title: "ΥΠ",
+      // }
+      ,
     });
     const atLeaseOneDepartment = () => {
-      return departments.value.length >= 1 ? true : false;
+      return departments.value.length >= 1;
     };
     const atLeastOneAttendanceSelected = (value: number) => {
-      return !value ? false : true;
+      return !!value;
+      //return !value ? false : true;
     };
     const mustBeANumberOrDash = (value: string) => {
       const pattern = /^[0-9]{4}\-[0-9]{4}$/;
-      if (value.match(pattern)) {
-        return true;
-      }
-      return false;
+      // if (value.match(pattern)) {
+      //   return true;
+      // }
+      // return false;
+      return value.match(pattern) ? true : false;
     };
     const rules = computed(() => {
       return {
@@ -393,37 +399,44 @@ export default defineComponent({
     // @ts-ignore
     const v$ = useVuelidate(rules, formState);
 
-    const errorOfLabId = computed(() => {
-      if (v$.value.labId.$error) {
-        return v$.value.labId.$errors[0].$message.toString();
-      }
-      return "";
-    });
-    const errorOfLabTitle = computed(() => {
-      if (v$.value.labTitle.$error) {
-        return v$.value.labTitle.$errors[0].$message.toString();
-      }
-      return "";
-    });
-    const errorOfDescription = computed(() => {
-      if (v$.value.description.$error) {
-        return v$.value.description.$errors[0].$message.toString();
-      }
-      return "";
-    });
-    const errorOfAttendance = computed(() => {
-      if (v$.value.attendance.$error) {
-        return v$.value.attendance.$errors[0].$message.toString();
-      }
-      return "";
-    });
+    const errorOfLabId = computed(() => v$.value.labId.$error ? v$.value.labId.$errors[0].$message.toString() : ""
+      // if (v$.value.labId.$error) {
+      //   return v$.value.labId.$errors[0].$message.toString();
+      // }
+      // return v$.value.labId.$error ? v$.value.labId.$errors[0].$message.toString() : "";
+    );
+    const errorOfLabTitle = computed(() => v$.value.labTitle.$error ? v$.value.labTitle.$errors[0].$message.toString() : ""
+      //{
+      //   if (v$.value.labTitle.$error) {
+      //     return v$.value.labTitle.$errors[0].$message.toString();
+      //   }
+      //   return "";
+      // }
+    );
+    const errorOfDescription = computed(() => v$.value.description.$error ? v$.value.description.$errors[0].$message.toString() : ""
+      // {
+      //   if (v$.value.description.$error) {
+      //     return v$.value.description.$errors[0].$message.toString();
+      //   }
+      //   return "";
+      // }
+    );
+    const errorOfAttendance = computed(() => v$.value.attendance.$error ? v$.value.attendance.$errors[0].$message.toString() : ""
+      // {
+      //   if (v$.value.attendance.$error) {
+      //     return v$.value.attendance.$errors[0].$message.toString();
+      //   }
+      //   return "";
+      // }
+    );
     const buttonDisablity = computed(() => {
       if (
         !formState.labId ||
         !formState.labTitle ||
-        formState.semester === null ||
+        !formState.semester ||
         !formState.description ||
-        departments.value.length <= 0
+        (!departments || !departments.value || !departments.value.length)
+        //departments.value.length <= 0
       )
         return true;
       return false;
@@ -470,7 +483,7 @@ export default defineComponent({
         closeAlert(1500);
         return;
       }
-      if (!formState.departments || formState.departments.length == 0) {
+      if (!formState.departments || !formState.departments.length) {
         console.log("There are errors");
         setTypeOfAlert("error");
         openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
@@ -479,8 +492,8 @@ export default defineComponent({
         return;
       }
 
-      for (let dept of departments.value) {
-        if (validateEachDepartment(dept) === false) {
+      for (const dept of departments.value) {
+        if (!validateEachDepartment(dept)) {
           allDeptsAreCorrect = false;
         }
         if (!isNumber(dept.numberOfStudents)) {
@@ -498,8 +511,7 @@ export default defineComponent({
 
       let requestToBeMade:
         | CreateCourseRequest
-        | UpdateCourseRequest
-        | undefined = undefined;
+        | UpdateCourseRequest;
       if (isCallByEdit.value === true) {
         requestToBeMade = {
           CourseId: Object.values(route.query)[0]!.toString(),
@@ -529,7 +541,7 @@ export default defineComponent({
           CourseName: formState.labTitle,
           Semester: formState.semester!,
           ShortDescription: formState.description!,
-          CourseAttentance: formState.attendance!.value!,
+          CourseAttentance: formState.attendance.value,
           Labs: new Array<LaboratoryRequest>(),
         };
         for (const department of formState.departments) {
@@ -719,10 +731,14 @@ export default defineComponent({
     };
     const PopulateTheFormObjectInEditMode = (data: InfoUpdateCourseResponse) => {
       if (!data) return;
-      (formState.labId = data.CourseCode), (formState.labTitle = data.CourseName), (formState.attendance = {
+      formState.labId = data.CourseCode;
+      formState.labTitle = data.CourseName;
+      formState.attendance = displayedAttendaceValues.find(w => w.value === data.CourseAttendance) ?? {
         title: data.CourseAttendanceString,
         value: data.CourseAttendance,
-      });
+      };
+
+
 
       displayedSemester.value.find((val) => {
         if (val.value === data.Semester) {
@@ -752,7 +768,7 @@ export default defineComponent({
         ) {
           if (
             (api_response_dta.Data.FoundRegistration === false ||
-              !api_response_dta.Data.FoundRegistration ) &&
+              !api_response_dta.Data.FoundRegistration) &&
             (api_response_dta.Data.CountOfStudentsSubmited === 0 ||
               !api_response_dta.Data.CountOfStudentsSubmited)
           ) {
@@ -877,7 +893,11 @@ export default defineComponent({
   font-weight: 500;
   text-transform: inherit;
 }
-
+.form-control-add-btn :deep(.v-btn--elevated:hover), .submit-button :deep(.v-btn--elevated:hover){
+  box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
+    0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+}
 /* .positioner {
   width: 100% !important;
 } */
@@ -1018,7 +1038,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: fit-content;
-  gap: 0.2rem;
+  gap: 0.3rem;
 }
 
 :deep(.positioner) {

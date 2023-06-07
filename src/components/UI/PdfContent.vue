@@ -29,7 +29,7 @@
               </p>
             </div>
           </div>
-          <div class="u-container-style u-custom-item u-list-item u-repeater-item">
+          <div v-if="SubmissionPeriodString" class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-3">
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">

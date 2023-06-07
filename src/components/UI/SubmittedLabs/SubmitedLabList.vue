@@ -244,13 +244,7 @@ export default defineComponent({
   }
 
   .pdf-button {
-    display: flex;
-    flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
-    height: fit-content;
-    margin: 1rem 1rem;
-    width: 100%;
   }
 
   :deep(.v-btn.v-btn--density-default) {
@@ -262,16 +256,7 @@ export default defineComponent({
 }
 
 @media (min-width: 1025px) {
-  .pdf-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    height: fit-content;
-    margin: 1rem 1rem;
-    width: 100%;
-  }
-
+  
   :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
     font-size: 1rem;
