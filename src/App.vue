@@ -37,7 +37,9 @@ export default defineComponent({
 body {
   box-sizing: border-box;
   background-color: #f4f4ff;
-
+  margin: 0 auto;
+  min-width: 320px;
+  max-width: 120rem;
 }
 
 html {

@@ -1,5 +1,8 @@
 <template>
-  <div @click="emitMobileViewClose">
+  <div @click="emitMobileViewClose" style="max-width: 1800px;
+    max-width: 120rem;
+    min-width: 320px;
+    margin: 0 auto;">
     <!-- <base-dialog v-if="isError">
       <template #title>
         <h1>Http Error</h1>
@@ -18,9 +21,14 @@
       <suspense>
         <template #default>
           <div v-if="!showSpinner && showLabsIfFound">
-            <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab"
-              :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab>
-            <div class="pdf-button" >
+            <!-- <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab"
+              :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab> -->
+            <div class="temp-class">
+              <submitted-lab-card v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation"
+                :lab="sLab" :course_guid="sLab.CourseGUID"
+                @force-refetch="populateSubmittedLabs(true)"></submitted-lab-card>
+            </div>
+            <div class="pdf-button">
               <v-btn color="#ff5454" @click="pushToPdf">
                 <svg style="margin-right: 0.3rem;" fill="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25"
                   viewBox="0 0 24 24">
@@ -53,9 +61,15 @@ import { ApiResult } from '@/models/DTO/ApiResult';
 import { GenericSubmittedLabsResponse, SubmittedLab } from '@/models/BACKEND-MODELS/GenericSubmittedLabsResponse';
 import { PersonAffiliation } from "@/enums/PersonAffiliationEnum";
 
- //import SubmitedLab from "@/components/UI/SubmittedLabs/SubmitedLab.vue";
+//import SubmitedLab from "@/components/UI/SubmittedLabs/SubmitedLab.vue";
 const SubmitedLab = defineAsyncComponent({
   loader: () => import("@/components/UI/SubmittedLabs/SubmitedLab.vue"),
+  delay: 5000,
+  suspensible: false
+});
+
+const SubmittedLabCard = defineAsyncComponent({
+  loader: () => import("@/components/UI/SubmittedLabs/SubmittedLabCard.vue"),
   delay: 5000,
   suspensible: false
 });
@@ -74,6 +88,7 @@ import BaseAlert from '@/components/Base/BaseAlert.vue';
 export default defineComponent({
   components: {
     SubmitedLab,
+    SubmittedLabCard,
     //  BaseDialog,
     PdfContent,
     BaseAlert,
@@ -106,13 +121,13 @@ export default defineComponent({
     const pdfCreationCompleted = (val: boolean) => {
       callToGeneratePdf.value = val;
     };
-    
+
     const invokeGeneratePdf = () => {
       callToGeneratePdf.value = true;
     };
 
     const populateSubmittedLabs = async (byInternalCall = false): Promise<void> => {
-     
+
       // const apiGetInfos = await useAxios(
       //   InfoController + "get-submitted-labs-info",
       //   {
@@ -121,37 +136,37 @@ export default defineComponent({
       //   setBackendInstanceAuth()
       // );
       //showSpinner.value = true;
-      const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController,"get-submitted-labs-info","GET");
+      const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController, "get-submitted-labs-info", "GET");
       showSpinner.value = false;
-      if(!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs){
+      if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
         showLabsIfFound.value = false;
-          // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-          // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-          // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-          // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-          
-          return;
+        // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+        // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+        // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+        // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+
+        return;
       }
 
       //if (apiGetInfos.isFinished.value) {
-        //const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
-        // if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
-        //   showLabsNotFound.value = true;
-        //   showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-        //   showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-        //   return;
-        // }
-        sLabs.value = getInfoData.Data.SubmittedLabs;
-        personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
-        showLabsIfFound.value = true;
-        // showEmptyResultTitle.value = "";
-        // showEmptyResultDescription.value = "";
-        if (byInternalCall) {
-          closeAlert();
-          setTypeOfAlert('success');
-          openAlert("Επιτυχία διαγραφής");
-          closeAlert(1500);
-        }
+      //const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
+      // if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
+      //   showLabsNotFound.value = true;
+      //   showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
+      //   showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
+      //   return;
+      // }
+      sLabs.value = getInfoData.Data.SubmittedLabs;
+      personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
+      showLabsIfFound.value = true;
+      // showEmptyResultTitle.value = "";
+      // showEmptyResultDescription.value = "";
+      if (byInternalCall) {
+        closeAlert();
+        setTypeOfAlert('success');
+        openAlert("Επιτυχία διαγραφής");
+        closeAlert(1500);
+      }
       //}
       //showSpinner.value = false;
     }
@@ -180,6 +195,16 @@ export default defineComponent({
   margin-top: 1rem;
   margin-bottom: 1rem;
   margin: 1rem auto;
+}
+
+.temp-class {
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* flex-wrap: wrap; */
 }
 
 .parent-label {
@@ -234,6 +259,15 @@ export default defineComponent({
 
 
 @media (min-width: 769px) {
+
+  .temp-class {
+
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
   .parent-card {
     margin: 1rem 1rem;
   }
@@ -244,7 +278,7 @@ export default defineComponent({
   }
 
   .pdf-button {
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   :deep(.v-btn.v-btn--density-default) {
@@ -256,7 +290,14 @@ export default defineComponent({
 }
 
 @media (min-width: 1025px) {
-  
+  .temp-class {
+
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
   :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
     font-size: 1rem;
