@@ -1,5 +1,5 @@
 <template>
-  <div @click="emitMobileViewClose" style="max-width: 1800px;
+  <div @click="emitMobileViewClose" style="max-width: 120rem;
     max-width: 120rem;
     min-width: 320px;
     margin: 0 auto;">

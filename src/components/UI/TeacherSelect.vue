@@ -1,50 +1,23 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :scrollable="false"
-    :close-on-back="false"
-    :contained="false"
-    persistent
-    width="100%"
-    max-width="40rem"
-    min-width="320px"
-    attach="body"
-  >
+  <v-dialog v-model="dialog" :scrollable="false" :close-on-back="false" :contained="false" persistent width="100%"
+    max-width="40rem" min-width="320px" attach="body">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="!by_admin_option"
-        class="button-dimensions-adjustment"
-        :class="{
-          'teacher-button-success': error_on_selected_teacher === false,
-          'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
-          'teacher-button-failure': error_on_selected_teacher === true,
-        }"
-        v-bind="props"
-      >
+      <v-btn v-if="!by_admin_option" class="button-dimensions-adjustment" :class="{
+        'teacher-button-success': error_on_selected_teacher === false,
+        'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
+        'teacher-button-failure': error_on_selected_teacher === true,
+      }" v-bind="props">
         {{ lastNameProp }}
       </v-btn>
-      <v-btn v-else
-        class="button-dimensions-adjustment__admin"
-        :class="{
-          'teacher-button-success': error_on_selected_teacher === false,
-          'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
-          'teacher-button-failure': error_on_selected_teacher === true,
-        }"
-        v-bind="props"
-      ><svg
-          width="30"
-          height="30"
-          clip-rule="evenodd"
-          fill-rule="evenodd"
-          stroke-linejoin="round"
-          stroke-miterlimit="2"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          style="margin-right: 0.5rem;"
-        >
+      <v-btn v-else class="button-dimensions-adjustment__admin" :class="{
+        'teacher-button-success': error_on_selected_teacher === false,
+        'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
+        'teacher-button-failure': error_on_selected_teacher === true,
+      }" v-bind="props"><svg width="30" height="30" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round"
+          stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
           <path
             d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-            fill-rule="nonzero"
-          />
+            fill-rule="nonzero" />
         </svg>
         {{ lastNameProp }}
       </v-btn>
@@ -55,58 +28,25 @@
         <v-divider></v-divider>
         <v-card-text>
           <div class="autocomplete-padder">
-            <v-autocomplete
-              :disabled="cantFindTeacherFlag"
-              :autofocus="false"
-              clearable
-              label="Αναζητήστε εδώ"
-              :items="autoCompleteItems"
-              :item-title="'displayNameEl'"
-              return-object
-              :multiple="false"
-              variant="plain"
-              density="comfortable"
-              v-model="selectedTeacher"
-              @update:model-value="validateAutoComplete"
-              :open-on-clear="false"
-              :error-messages="errorMessage"
-              no-data-text="Δεν βρέθηκαν καθηγητές. Παρακαλώ κάντε ανανέωση το παράθυρο."
-            ></v-autocomplete>
+            <v-autocomplete :disabled="cantFindTeacherFlag" :autofocus="false" clearable label="Αναζητήστε εδώ"
+              :items="autoCompleteItems" :item-title="'displayNameEl'" return-object :custom-filter="validationRules"
+              :multiple="false" variant="plain" density="comfortable" v-model="selectedTeacher"
+              @update:model-value="validateAutoComplete" :open-on-clear="false" :error-messages="errorMessage"
+              no-data-text="Δεν βρέθηκαν καθηγητές. Παρακαλώ κάντε ανανέωση το παράθυρο."></v-autocomplete>
           </div>
         </v-card-text>
         <div class="cant-find-teacher-outer-div">
           <div class="cant-find-teacher">
-            <v-card-title :class="{ 'gray-out': !cantFindTeacherFlag }"
-              >Δεν βρίσκω τον καθηγητή</v-card-title
-            >
+            <v-card-title :class="{ 'gray-out': !cantFindTeacherFlag }">Δεν βρίσκω τον καθηγητή</v-card-title>
             <span>
-              <v-switch
-                color="primary"
-                v-model="cantFindTeacherFlag"
-                :value="true"
-                hide-details
-              ></v-switch>
+              <v-switch color="primary" v-model="cantFindTeacherFlag" :value="true" hide-details></v-switch>
             </span>
           </div>
           <div class="cant-find-teacher-fields">
-            <v-text-field
-              label="Όνομα"
-              variant="solo"
-              :disabled="!cantFindTeacherFlag"
-              v-model.trim="newName"
-              :error-messages="errorMessageName"
-              :error="errorOnName"
-              @input="validateName"
-            ></v-text-field>
-            <v-text-field
-              label="Επώνυμο"
-              variant="solo"
-              :disabled="!cantFindTeacherFlag"
-              v-model.trim="newSurname"
-              :error-messages="errorMessageSurname"
-              :error="errorOnSurname"
-              @input="validateSurname"
-            ></v-text-field>
+            <v-text-field label="Όνομα" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newName"
+              :error-messages="errorMessageName" :error="errorOnName" @input="validateName"></v-text-field>
+            <v-text-field label="Επώνυμο" variant="solo" :disabled="!cantFindTeacherFlag" v-model.trim="newSurname"
+              :error-messages="errorMessageSurname" :error="errorOnSurname" @input="validateSurname"></v-text-field>
           </div>
         </div>
         <v-divider></v-divider>
@@ -114,11 +54,7 @@
           <v-btn color="red-darken-1" variant="text" @click="closeModal">
             Κλεισιμο
           </v-btn>
-          <v-btn
-            color="blue-darken-1"
-            variant="text"
-            @click="configSelectedTeacher"
-          >
+          <v-btn color="blue-darken-1" variant="text" @click="configSelectedTeacher">
             Επιλογή
           </v-btn>
         </v-card-actions>
@@ -150,30 +86,30 @@ export default defineComponent({
       required: false,
       default: Array<BaseUser>(),
     },
-    error_on_selected_teacher :{
+    error_on_selected_teacher: {
       type: Boolean,
       required: false,
-      default:false,
+      default: false,
     },
-    selected_teacher_by_edit_flag:{
+    selected_teacher_by_edit_flag: {
       type: Boolean,
       required: false,
-      default:false,
+      default: false,
     },
-    selected_teacher_by_edit_value:{
+    selected_teacher_by_edit_value: {
       type: Object as PropType<BaseUser>,
       required: false,
-      default:undefined,
+      default: undefined,
     },
-    by_admin_option:{
+    by_admin_option: {
       type: Boolean,
       required: false,
-      default:false,
+      default: false,
     },
-    delete_selected_by_admin_option:{
+    delete_selected_by_admin_option: {
       type: Boolean,
       required: false,
-      default:false,
+      default: false,
     }
   },
   emits: ["emit-selected-teacher"],
@@ -193,13 +129,48 @@ export default defineComponent({
     const newName = ref<string>("");
     const newSurname = ref<string>("");
 
-    const { seeded_professors,error_on_selected_teacher ,selected_teacher_by_edit_flag,selected_teacher_by_edit_value,by_admin_option,delete_selected_by_admin_option} = toRefs(props);
+    const { seeded_professors, error_on_selected_teacher, selected_teacher_by_edit_flag, selected_teacher_by_edit_value, by_admin_option, delete_selected_by_admin_option } = toRefs(props);
     const seeded_professors_reactive = seeded_professors;
 
     const selectedTeacher = ref<BaseUser>();
     const cantFindTeacherFlag = ref(false);
+    const validationRules = (listOfTeachers:string, searchValue:string) => {
+      // Split the teacher's name into first and last name
+      const list = listOfTeachers.split(" ");
+      if(!list || !list.length)
+        return false;
+      const [firstName, lastName] = list;
+      // Convert both the first name, last name, and the search string to lowercase
+      const teacherFirstName = convertGreekEmphasisToRegular(firstName.trim().toLowerCase());
+      const teacherLastName = convertGreekEmphasisToRegular(lastName.trim().toLowerCase());
+      const search = convertGreekEmphasisToRegular(searchValue.trim().toLowerCase());
+      // Check if the first name or last name includes the search string
+      return teacherFirstName.includes(search) || teacherLastName.includes(search);
+      ;
+    };
+    const greekEmphasisMap = {
+      "ά": "α",
+      "έ": "ε",
+      "ί": "ι",
+      "ό": "ο",
+      "ύ": "υ",
+      "ή": "η",
+      "ώ": "ω",
+      "ϊ": "ι",
+      "ϋ": "υ",
+      "ΐ": "ι",
+      "ΰ": "υ"
+    };
+
+    const convertGreekEmphasisToRegular = (text:string) => {
+      for (const [emphasisChar, regularChar] of Object.entries(greekEmphasisMap)) {
+        text = text.replace(new RegExp(emphasisChar, "g"), regularChar);
+      }
+      return text;
+    }
+
     onMounted(() => {
-      if(selected_teacher_by_edit_flag.value === true && selected_teacher_by_edit_value.value){
+      if (selected_teacher_by_edit_flag.value === true && selected_teacher_by_edit_value.value) {
         selectedTeacher.value = selected_teacher_by_edit_value.value;
         context.emit("emit-selected-teacher", selected_teacher_by_edit_value.value);
         return;
@@ -217,7 +188,7 @@ export default defineComponent({
       }
     };
     const configSelectedTeacher = async () => {
-      if (cantFindTeacherFlag.value ) {
+      if (cantFindTeacherFlag.value) {
         const isValidName = validateName();
         const isValidSurname = validateName();
         if (isValidName && isValidSurname) {
@@ -252,7 +223,7 @@ export default defineComponent({
       }
     };
     const validateName = () => {
-      if (!newName.value || !newName.value.trim().length ||  newName.value.trim() === " ") {
+      if (!newName.value || !newName.value.trim().length || newName.value.trim() === " ") {
         errorMessageName.value = "Υποχρεωτικό όνομα";
         errorOnName.value = true;
         return false;
@@ -267,7 +238,7 @@ export default defineComponent({
       }
     };
     const validateSurname = () => {
-      if (!newSurname.value|| !newSurname.value.trim().length || newSurname.value.trim() === " ") {
+      if (!newSurname.value || !newSurname.value.trim().length || newSurname.value.trim() === " ") {
         errorMessageSurname.value = "Υποχρεωτικό επώνυμο";
         errorOnSurname.value = true;
         return false;
@@ -285,13 +256,11 @@ export default defineComponent({
       }
     };
     const lastNameProp = computed(() => {
-      if (!error_on_selected_teacher || !selectedTeacher.value)
-      {
+      if (!error_on_selected_teacher || !selectedTeacher.value) {
         return !by_admin_option.value ? "Καθηγητες" : "Νεος Διαχειριστης";
       }
       const splitted = selectedTeacher.value?.displayNameEl.split(" ");
-      if (!splitted || splitted.length == 0)
-      {
+      if (!splitted || splitted.length == 0) {
         return !by_admin_option.value ? "Καθηγητες" : "Νεος Διαχειριστης";
       }
       return splitted[splitted.length - 1];
@@ -301,19 +270,20 @@ export default defineComponent({
       const numberpattern = /\d/;
       return Boolean(str.match(numberpattern) || str.match(pattern));
     }
-    function closeModal(){
+    function closeModal() {
       selectedTeacher.value = undefined;
-      context.emit("emit-selected-teacher", selectedTeacher.value );
+      context.emit("emit-selected-teacher", selectedTeacher.value);
       dialog.value = false;
     }
     const deleteSelectedByAdminOption = computedEager(() => {
-      if(by_admin_option.value && delete_selected_by_admin_option.value){
+      if (by_admin_option.value && delete_selected_by_admin_option.value) {
         selectedTeacher.value = undefined;
-        context.emit("emit-selected-teacher", selectedTeacher.value );
+        context.emit("emit-selected-teacher", selectedTeacher.value);
         dialog.value = false;
       }
     });
     return {
+      validationRules,
       error,
       dialog,
       autoCompleteItems: seeded_professors_reactive,
@@ -351,10 +321,12 @@ export default defineComponent({
   color: white !important;
   background-color: #156ed3 !important;
 }
-.teacher-button-failure{
+
+.teacher-button-failure {
   color: white !important;
   background-color: #ff4545 !important;
 }
+
 .cant-find-teacher {
   display: flex;
   justify-content: space-between;
@@ -428,7 +400,8 @@ export default defineComponent({
   width: 11rem;
   height: 3rem;
 }
-.button-dimensions-adjustment__admin{
+
+.button-dimensions-adjustment__admin {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -451,6 +424,5 @@ export default defineComponent({
   }
 }
 
-@media (min-width: 1025px) {
-}
+@media (min-width: 1025px) {}
 </style>
