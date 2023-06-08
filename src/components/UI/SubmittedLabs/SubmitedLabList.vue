@@ -38,7 +38,6 @@
                 Μετατροπη σε PDF
               </v-btn>
             </div>
-
             <pdf-content @pdfCreated="pdfCreationCompleted" :callToGeneratePdf="callToGeneratePdf" :labs="sLabs"
               :person-affiliation="personAffiliation">
             </pdf-content>
@@ -127,48 +126,22 @@ export default defineComponent({
     };
 
     const populateSubmittedLabs = async (byInternalCall = false): Promise<void> => {
-
-      // const apiGetInfos = await useAxios(
-      //   InfoController + "get-submitted-labs-info",
-      //   {
-      //     method: 'GET'
-      //   },
-      //   setBackendInstanceAuth()
-      // );
-      //showSpinner.value = true;
       const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController, "get-submitted-labs-info", "GET");
-      showSpinner.value = false;
       if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
         showLabsIfFound.value = false;
-        // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-        // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-        // showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-        // showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-
+        showSpinner.value = false;
         return;
       }
-
-      //if (apiGetInfos.isFinished.value) {
-      //const getInfoData: ApiResult<GenericSubmittedLabsResponse> = apiGetInfos.data.value;
-      // if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
-      //   showLabsNotFound.value = true;
-      //   showEmptyResultTitle.value = "Δεν βρέθηκαν δηλωμένα εργαστήρια";
-      //   showEmptyResultDescription.value = "Δεν έχουν βρεθεί καταχωρημένα εργαστήρια/τμήματα στον λογαριασμό σας, παρακαλώ πραγματοποιήστε πρώτα την δήλωση σας";
-      //   return;
-      // }
       sLabs.value = getInfoData.Data.SubmittedLabs;
       personAffiliation.value = !getInfoData.Data.UserType ? PersonAffiliation.STUDENT : getInfoData.Data.UserType;
       showLabsIfFound.value = true;
-      // showEmptyResultTitle.value = "";
-      // showEmptyResultDescription.value = "";
+      showSpinner.value = false;
       if (byInternalCall) {
         closeAlert();
         setTypeOfAlert('success');
         openAlert("Επιτυχία διαγραφής");
         closeAlert(1500);
       }
-      //}
-      //showSpinner.value = false;
     }
     return {
       sLabs,

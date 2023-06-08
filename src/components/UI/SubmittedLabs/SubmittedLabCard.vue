@@ -1,56 +1,49 @@
 <template>
     <div class="card">
+        <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true"
+            :inner-title="confirmDeletionInnerTitle" :inner-description="confirmDeletionInnerDescription"
+            @close-modal="showConfirmDeletionModal = false"></base-dialog>
         <v-card class="card-item" :class="{ 'gray-out': IsAssistant }">
-            <!-- <v-card-title> -->
-                <div class="card-title-group">
-                    <div class="chip-group">
-                        <v-chip outlined="true" class="card-chip-semester"
-                            :class="{ 'gray-out-card-chip-semester': IsAssistant }">{{ Semester }}</v-chip>
-                        <v-chip outlined="true" :class="{ 'gray-out-card-chip-attendance': IsAssistant }"
-                            class="card-chip-attendance">{{ lab.AttendanceString }}</v-chip>
+            <div class="card-title-group">
+                <div class="chip-group">
+                    <v-chip outlined="true" class="card-chip-semester"
+                        :class="{ 'gray-out-card-chip-semester': IsAssistant }">{{ Semester }}</v-chip>
+                    <v-chip outlined="true" :class="{ 'gray-out-card-chip-attendance': IsAssistant }"
+                        class="card-chip-attendance">{{ lab.AttendanceString }}</v-chip>
+                </div>
+                <div class="media-button-group">
+                    <div>
+                        <v-tooltip :text="DeletionText" location="bottom">
+                            <template v-slot:activator="{ props }">
+                                <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="delete-button"
+                                    icon="mdi-trash-can" size="x-small" @click="CheckDelete"></v-btn>
+                            </template>
+                        </v-tooltip>
                     </div>
-                    <div class="media-button-group">
-                        <div>
-                            <v-tooltip :text="DeletionText" location="bottom">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props"
-                                        class="delete-button" icon="mdi-trash-can" size="x-small"
-                                        @click="CheckDelete"></v-btn>
-                                </template>
-                            </v-tooltip>
-                        </div>
-                        <!-- <v-icon></v-icon> -->
-                        <!-- Διαγραφη -->
-                        <div v-if="IsStaffOrAdmin">
-                            <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props"
-                                        class="edit-button" icon="mdi-pencil" size="x-small"
-                                        @click="redirectToEditComponent"></v-btn>
-                                </template>
-                            </v-tooltip>
-                        </div>
+                    <div v-if="IsStaffOrAdmin">
+                        <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
+                            <template v-slot:activator="{ props }">
+                                <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="edit-button"
+                                    icon="mdi-pencil" size="x-small" @click="redirectToEditComponent"></v-btn>
+                            </template>
+                        </v-tooltip>
                     </div>
                 </div>
-            <!-- </v-card-title> -->
-            <!-- <v-card-text> -->
-                <div class="main-content">
-                    <label class="lab-title">
-                        {{ LabTitle }}
-                    </label>
+            </div>
+            <div class="main-content">
+                <label class="lab-title">
+                    {{ LabTitle }}
+                </label>
+            </div>
+            <div class="main-details">
+                <div class="lab-code">
+                    <label>{{ LabCode }}</label>
                 </div>
-            <!-- </v-card-text> -->
-            <!-- <v-card-text> -->
-                <div class="main-details">
-                    <div class="lab-code">
-                        <label>{{ LabCode }}</label>
-                    </div>
-                    <div class="lab-details">
-                        <label>{{ LabDescription }}</label>
-                        <label>{{ LabTimes }}</label>
-                    </div>
+                <div class="lab-details">
+                    <label>{{ LabDescription }}</label>
+                    <label>{{ LabTimes }}</label>
                 </div>
-            <!-- </v-card-text> -->
+            </div>
         </v-card>
     </div>
 </template>
@@ -69,7 +62,8 @@ import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { computedEager } from '@vueuse/core';
 import { PropType, defineComponent, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { confirm } from "@/composables/dialog.composable";
+import BaseDialog from "@/components/Base/BaseDialog.vue";
 export default defineComponent({
     props: {
         title: String,
@@ -90,6 +84,9 @@ export default defineComponent({
             default: undefined
         },
     },
+    components: {
+        BaseDialog
+    },
     name: "SubmittedLabCard",
     setup(props, context) {
         const { lab, personAffiliation, course_guid } = toRefs(props);
@@ -106,7 +103,7 @@ export default defineComponent({
             return `${lab.value.CourseName.trim()}`;
         });
         const LabDescription = computedEager(() => {
-            return `${lab.value.LabName.trim()} / ${lab.value.DayString.trim().toLocaleLowerCase()}`;
+            return `${lab.value.LabName.trim()} / ${lab.value.DayString.trim().charAt(0).toUpperCase() + lab.value.DayString.trim().slice(1).toLocaleLowerCase()}`;
         });
         const LabTimes = computedEager(() => {
             return `(${lab.value.From.trim()} - ${lab.value.To.trim()})`;
@@ -266,7 +263,7 @@ export default defineComponent({
     margin: 0.5rem;
     width: min(50%, 1000px);
     min-width: 320px;
-    height:100%;
+    height: 100%;
     border-radius: 16px;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     padding: 0.6rem;
@@ -400,7 +397,7 @@ export default defineComponent({
     font-weight: 450;
 }
 
-.main-details .lab-details{
+.main-details .lab-details {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -415,7 +412,8 @@ export default defineComponent({
     width: fit-content;
     color: #908E8B;
 }
-.main-content{
+
+.main-content {
     width: 300px;
     text-align: left;
     word-wrap: break-word;
@@ -425,6 +423,8 @@ export default defineComponent({
     padding: 2rem 0 2rem 0.5rem;
     font-family: "Inter", sans-serif;
 }
+
 @media screen and (min-width: 769px) {}
 
-@media screen and (min-width: 1025px) {}</style>
+@media screen and (min-width: 1025px) {}
+</style>

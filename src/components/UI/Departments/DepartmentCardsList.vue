@@ -1,7 +1,6 @@
 <template>
+  <base-spinner :show="showSpinner"></base-spinner>
   <div class="parent-card">
-    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <base-spinner :show="showSpinner"></base-spinner>
     <div class="outer-parent-label" v-if="!showSpinner">
       <v-card elevation="10" class="parent-label">
         <div class="text-divider">
@@ -12,6 +11,7 @@
         </div>
       </v-card>
     </div>
+    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <suspense>
       <template #default>
         <div class="cards-overview">
