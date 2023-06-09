@@ -1,11 +1,11 @@
 <template>
-  <div class="parent" @click="emitMobileViewClose">
-    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+  <section class="parent" @click="emitMobileViewClose">
+    <base-alert v-if="showAlert" :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <v-card>
       <div>
-        <v-tabs v-if="isTeacher" v-model="tab" bg-color="#dae3f7">
+        <v-tabs v-if="isTeacher" v-model="tab" >
           <div class="tab-override">            
-            <v-tab v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
+            <v-tab  v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
               :stacked="true" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
               >{{ cmp.name }}</v-tab> 
           </div>
@@ -22,7 +22,7 @@
         </template>
       </suspense>
     </v-card>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -141,8 +141,9 @@ export default defineComponent({
 
 <style scoped>
 .parent {
-  margin: 1rem auto;
-  min-width: 320px;
+  width: 100%;
+  padding: 1rem 0.3rem;
+  max-width: 100rem;
 }
 
 .tab-override {
@@ -174,7 +175,9 @@ export default defineComponent({
 }
 @media (min-width: 769px) {
   .parent {
-    margin: 1rem 1rem;
+    padding: 2rem 0.5rem;
+    margin: auto;
+    width: inherit;
   }
 
   .tab-item_override {

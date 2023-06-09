@@ -614,8 +614,7 @@ export default defineComponent({
 <style scoped>
 .options-parent {
   min-width: 320px;
-  padding: 0;
-  margin: 1rem 1.5rem;
+  padding-top: 1.2rem;
   display: flex;
   flex-direction: column;
   width: inherit;
@@ -629,12 +628,12 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 2rem;
+  height: 3rem;
   min-width: 320px;
   background-color:var(--header-label-background-color);
   color: var(--header-label-text-color);
-  padding: 1.5rem 0;
-  margin-bottom: 1rem;
+  padding: 1rem 0.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .period-label>label {

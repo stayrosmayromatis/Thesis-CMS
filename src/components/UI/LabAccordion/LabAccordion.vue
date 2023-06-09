@@ -1,16 +1,16 @@
 <template>
-  <v-container class="sth-container" @click="emitMobileViewClose">
+  <section class="outer-section" @click="emitMobileViewClose">
     <v-card elevation="10" class="parent-label">Αναζήτηση Εργαστηρίων</v-card>
     <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
       density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable
-      multiple return-object v-model="selectedSemesters" no-data-text="Ολα τα διαθέσιμα εξάμηνα έχουν επιλεχθεί"
+      multiple return-object v-model="selectedSemesters" no-data-text="Όλα τα διαθέσιμα εξάμηνα έχουν επιλεγεί"
       @update:model-value="requestLabs">
     </v-select>
     <base-spinner :show="isLoading"></base-spinner>
     <base-result-empty :show="!isLoading && personalisedCourses.length === 0" :title="resultEmptyTitle"
       :description="resutlEmptyDesc"></base-result-empty>
     <!-- <v-app> -->
-    <v-expansion-panels v-if="!isLoading && personalisedCourses">
+    <v-expansion-panels v-if="!isLoading && personalisedCourses && personalisedCourses.length">
       <v-expansion-panel v-for="lab in personalisedCourses" :key="lab.CourseGUID" :readonly="isReadOnly(lab)">
         <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
           <lab-accordion-expansion-panel-title :lab="lab" :user_type="userType ?? 1" @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-title>
@@ -21,7 +21,7 @@
       </v-expansion-panel>
     </v-expansion-panels>
     <!-- </v-app> -->
-  </v-container>
+  </section>
 </template>
 
 <script lang="ts">
@@ -29,7 +29,6 @@ import { defineComponent, onMounted, ref } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
 import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { CourseController } from "@/config";
-//import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import BaseResultEmpty from "@/components/Base/BaseResultEmpty.vue";
@@ -54,9 +53,7 @@ export default defineComponent({
     const selectedSemesters = ref(new Array<DisplayedSemster>());
     const personalisedCourses = ref(new Array<PersonalisedCourseBySemester>());
     const resultEmptyTitle = ref("Κανένα Αποτέλεσμα προς εμφάνιση");
-    const resutlEmptyDesc = ref(
-      "Το φίλτρο επιλογής είναι κενό. Επιλέξτε εξάμηνο είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης"
-    );
+    const resutlEmptyDesc = ref("Το φίλτρο επιλογής είναι κενό. Επιλέξτε εξάμηνο είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων, ώστε να ξεκινήσει η διαδικασία αναζήτησης");
     const isLoading = ref(false);
     const userType = ref<PersonAffiliation>();
     //const { setBackendInstanceAuth } = useAxiosInstance();
@@ -74,8 +71,8 @@ export default defineComponent({
         !personalised_response_data.Data.PersonalisedCourses
       ) {
         personalisedCourses.value = [];
-        resultEmptyTitle.value = "Κανένα Αποτέλεσμα";
-        resutlEmptyDesc.value ="Επιλέξτε Εξάμηνο είτε Συνδυασμο εξαμήνων απο την μπάρα φίλτρων παραπάνω, ώστε να ξεκινήση η διαδικασία αναζήτησης";
+        // resultEmptyTitle.value = "Κανένα Αποτέλεσμα";
+        resutlEmptyDesc.value ="Επιλέξτε Εξάμηνο, είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων, ώστε να ξεκινήσει η διαδικασία αναζήτησης";
         return;
       }
       personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
@@ -115,33 +112,27 @@ export default defineComponent({
 </script>
 
 <style scoped>
-:deep(.v-field-label) {
+.outer-section :deep(.v-field-label) {
   color: #ffffff;
   opacity: 1;
 }
 
-:deep(.v-field-label.v-field-label--floating) {
+.outer-section :deep(.v-field-label.v-field-label--floating) {
   color: #f3f3f3;
   opacity: 1;
 }
 
-.sth-container {
+.outer-section {
   width: 100%;
-  padding: 0;
-  margin-top: 1rem;
-  min-width: 320px;
+  padding: 1rem 0.3rem;
+  max-width: 100rem;
 }
 
-:deep(.v-expansion-panel--active:not(:first-child),
+.outer-section :deep(.v-expansion-panel--active:not(:first-child),
   .v-expansion-panel--active + .v-expansion-panel) {
   margin-top: 0;
 }
-
-:deep(.v-container) {
-  min-width: 320px;
-}
-
-:deep(.v-expansion-panel-title__icon) {
+.outer-section :deep(.v-expansion-panel-title__icon) {
   display: inline-flex;
   margin-right: -1rem;
   margin-bottom: -3.5rem;
@@ -150,7 +141,7 @@ export default defineComponent({
   margin-inline-start: auto;
 }
 
-.sth-container :deep(.v-field__clearable),
+.outer-section :deep(.v-field__clearable),
 :deep(.v-field__append-inner) {
   padding-top: 0;
   height: 100%;
@@ -160,7 +151,7 @@ export default defineComponent({
   align-items: center;
 }
 
-.sth-container :deep(.v-field__input) {
+.outer-section :deep(.v-field__input) {
   padding-bottom: 6px;
 }
 
@@ -180,13 +171,9 @@ export default defineComponent({
   padding: 1.2rem;
 }
 
-:deep(.parent) {
-  margin: 0;
-}
-
 @media (min-width: 480px) {
 
-  :deep(.v-expansion-panel-title__icon) {
+  .outer-section :deep(.v-expansion-panel-title__icon) {
     display: inline-flex;
     margin-right: 0;
     margin-bottom: -4px;
@@ -198,24 +185,16 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-  .sth-container {
-    margin: 2rem 1rem;
+  .outer-section {
+    padding: 2rem 0.5rem;
+    margin: auto;
     width: inherit;
-    max-width: 100%;
-
   }
 
   .parent-label {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
     height: 3rem;
+    margin-bottom: 1.2rem;
     font-size: 1.2rem;
-  }
-}
-
-@media (min-width: 1025px) {
-  :deep(.v-container) {
-    max-width: 100%;
   }
 }
 </style>

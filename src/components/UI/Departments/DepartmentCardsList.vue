@@ -1,5 +1,6 @@
 <template>
   <base-spinner :show="showSpinner"></base-spinner>
+  <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
   <div class="parent-card">
     <div class="outer-parent-label" v-if="!showSpinner">
       <v-card elevation="10" class="parent-label">
@@ -11,7 +12,6 @@
         </div>
       </v-card>
     </div>
-    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <suspense>
       <template #default>
         <div class="cards-overview">
@@ -70,10 +70,8 @@ export default defineComponent({
     const showSpinner = ref(false);
     onMounted(async () => {
       //Make the api call to fetch all labs according to that course_guid
-      closeAlert(1500);
-      showSpinner.value = true;
+      closeAlert();
       const makeGetDepartmentsByCourseCallResponseIDT = await MakeGetDepartmentsByCourseCall(course_guid.value);
-      showSpinner.value = false;
       if (!makeGetDepartmentsByCourseCallResponseIDT.Status || !makeGetDepartmentsByCourseCallResponseIDT.Data) {
         setTypeOfAlert("error");
         openAlert("Αποτυχία συστήματος επαναλάβετε την διαδικασία");
@@ -85,28 +83,18 @@ export default defineComponent({
     async function MakeGetDepartmentsByCourseCall(course_guid: string): Promise<InternalDataTransfter<boolean>> {
       if (!course_guid)
         return { Status: false, Data: false, Error: "Guid null" };
-
-      // const getDepartmentsByCourseCallRequest = await useAxios(
-      //   CourseController + `get-departments-by-course/${course_guid}`,
-      //   {
-      //     method: "GET",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
-      const getDepartmentsByCourseCallResponse = await MakeAPICall<ApiResult<CourseDepartmentsResponse>>(CourseController,`get-departments-by-course/${course_guid}`,"GET");
-      //if (getDepartmentsByCourseCallRequest.isFinished) {
-//        const getDepartmentsByCourseCallResponse: ApiResult<CourseDepartmentsResponse> = getDepartmentsByCourseCallRequest.data.value;
-        if (!getDepartmentsByCourseCallResponse || !getDepartmentsByCourseCallResponse.Status || !getDepartmentsByCourseCallResponse.Data) {
-          return { Status: false, Data: false, Error: getDepartmentsByCourseCallResponse.Error ?? "Request didn't finish"   };
-        }
-        resultArray.value = getDepartmentsByCourseCallResponse.Data.CourseDepartments;
-        courseGuid.value = getDepartmentsByCourseCallResponse.Data.CourseId;
-        courseCode.value = getDepartmentsByCourseCallResponse.Data.CourseCode;
-        courseName.value = getDepartmentsByCourseCallResponse.Data.CourseName;
-        userType.value = getDepartmentsByCourseCallResponse.Data.UserType;
-        return { Status: true, Data: true };
-      //}
-      //return { Status: false, Data: false, Error: "Request didn't finish" };
+      showSpinner.value = true;
+      const getDepartmentsByCourseCallResponse = await MakeAPICall<ApiResult<CourseDepartmentsResponse>>(CourseController, `get-departments-by-course/${course_guid}`, "GET");
+      if (!getDepartmentsByCourseCallResponse || !getDepartmentsByCourseCallResponse.Status || !getDepartmentsByCourseCallResponse.Data) {
+        return { Status: false, Data: false, Error: getDepartmentsByCourseCallResponse.Error ?? "Request didn't finish" };
+      }
+      resultArray.value = getDepartmentsByCourseCallResponse.Data.CourseDepartments;
+      courseGuid.value = getDepartmentsByCourseCallResponse.Data.CourseId;
+      courseCode.value = getDepartmentsByCourseCallResponse.Data.CourseCode;
+      courseName.value = getDepartmentsByCourseCallResponse.Data.CourseName;
+      userType.value = getDepartmentsByCourseCallResponse.Data.UserType;
+      showSpinner.value = false;
+      return { Status: true, Data: true };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
@@ -115,12 +103,10 @@ export default defineComponent({
       if (!userType.value) {
         return "Συνέβη σφάλμα θα μεταφερθείτε στην αρχική σε πολύ λιγό.";
       }
-      if (userType.value === 2) {
+      if (userType.value === PersonAffiliation.STUDENT) {
         return "Επιλογη Τμηματος";
       }
-      else {
-        return "Παρακολούθηση δηλώσεων μαθήματος:";
-      }
+      return "Παρακολούθηση δηλώσεων μαθήματος:";
     });
     return { showSpinner, resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
   },

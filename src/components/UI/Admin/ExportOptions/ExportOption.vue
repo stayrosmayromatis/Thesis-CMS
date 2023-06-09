@@ -78,9 +78,9 @@ export default defineComponent({
       //   },
       //   setBackendInstanceAuth()
       // );
-      const getMyCoursesResponse = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>>(CourseController,"get-my-courses", "GET");
+      const getMyCoursesResponse = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>>(CourseController, "get-my-courses", "GET");
       //if (getMyCoursesCall.isFinished) {
-        //const getMyCoursesResponse: ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
+      //const getMyCoursesResponse: ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
       if (!getMyCoursesResponse || !getMyCoursesResponse.Status || !getMyCoursesResponse.Data || !getMyCoursesResponse.Data.PersonalisedCourses || !getMyCoursesResponse.Data.Count) {
         return { Status: false, Data: false, Error: "API Error" };
       }
@@ -103,9 +103,9 @@ export default defineComponent({
 
 <style scoped>
 .export-parent {
-  min-width: 320px; 
-  padding: 0;
-  margin: 1rem 1.5rem;
+  min-width: 320px;
+  padding-top: 1.2rem;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -118,12 +118,12 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: fit-content;
+  height: 3rem;
   min-width: 320px;
-  background-color:var(--header-label-background-color);
+  background-color: var(--header-label-background-color);
   color: var(--header-label-text-color);
   padding: 1rem 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .export-label>label {

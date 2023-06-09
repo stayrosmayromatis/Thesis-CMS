@@ -43,11 +43,6 @@ export default defineComponent({
 })
 </script>
 <style scoped>
-.parent {
-    margin: 1.5rem 0;
-    min-width: 320px;
-}
-
 .title {
     display: flex;
     flex-direction: column;
@@ -77,46 +72,15 @@ export default defineComponent({
     word-wrap: break-word;
 }
 @media (min-width: 769px) {
-    .parent {
-        margin: 1.5rem 0;
-    }
 
     .title {
-        display: flex;
         flex-direction: row;
-        align-items: center;
-        justify-content: center;
         flex-wrap: nowrap;
     }
 
     .text {
-        display: flex;
+        
         flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: nowrap;
-
-    }
-}
-
-@media (min-width: 1025px) {
-    .parent {
-        margin: 1.5rem 0;
-    }
-
-    .title {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: nowrap;
-    }
-
-    .text {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
         flex-wrap: nowrap;
     }
 }

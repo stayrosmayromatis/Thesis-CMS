@@ -5,22 +5,26 @@
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner">
       <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
-      <v-card elevation="5" class="single-admin_card" v-for="admin of arrayOfAdmins" :key="admin.Id">
-        <div class="single-admin_card--item">
-          <v-chip class="chip-bg" size="large">
-            <span>{{ admin.DisplayNameEl }}</span>
-          </v-chip>
-          <v-tooltip :text="'Διαγραφή διαχειριστή'" location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"
-                @click="setStateToAdminInterceptor(admin)"></v-btn>
-            </template>
-          </v-tooltip>
-        </div>
-      </v-card>
+      <!-- <div class="admin-list-outer-container"> -->
+      <div class="admin-list">
+        <v-card elevation="5" class="single-admin_card" v-for="admin of arrayOfAdmins" :key="admin.Id">
+          <div class="single-admin_card--item">
+            <v-tooltip :text="'Διαγραφή διαχειριστή'" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"
+                  @click="setStateToAdminInterceptor(admin)"></v-btn>
+              </template>
+            </v-tooltip>
+            <v-chip class="chip-bg" size="large">
+              <span>{{ admin.DisplayNameEl }}</span>
+            </v-chip>
+          </div>
+        </v-card>
+      </div>
+      <!-- </div> -->
       <div class="add-new__admin--container">
         <teacher-select :seeded_professors="SeedProfessorsArray" :by_admin_option="true"
-        :delete_selected_by_admin_option="delete_selected_by_admin_option"
+          :delete_selected_by_admin_option="delete_selected_by_admin_option"
           @emit-selected-teacher="setStateToAdmin"></teacher-select>
       </div>
     </div>
@@ -54,8 +58,8 @@ export default defineComponent({
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
     //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
-    const { openAlert, setTypeOfAlert, closeAlert,} = useAlert();
-    
+    const { openAlert, setTypeOfAlert, closeAlert, } = useAlert();
+
     const arrayOfAdmins = ref(new Array<BaseUserResponse>());
     const showLoadingSpinner = ref(false);
     const showConfirmDeletionModal = ref(false);
@@ -65,11 +69,11 @@ export default defineComponent({
     onMounted(async () => {
       emitMobileViewClose()
       closeAlert(1000);
-      
-      if( !SeedProfessorsArray|| !SeedProfessorsArray.value ||!SeedProfessorsArray.value.length){
+
+      if (!SeedProfessorsArray || !SeedProfessorsArray.value || !SeedProfessorsArray.value.length) {
         await GetSeededProfessors();
       }
-      
+
       showLoadingSpinner.value = true;
       const popAdminsIDT = await MakeApiCallToPopulateAdmins();
       showLoadingSpinner.value = false;
@@ -99,7 +103,7 @@ export default defineComponent({
         }
         showLoadingSpinner.value = true;
         const setStateIDT = await setStateToAdmin(payloadToSetAdminState as BaseUser, true);
-        if(!setStateIDT.Status){
+        if (!setStateIDT.Status) {
           showLoadingSpinner.value = false;
           closeAlert(1000);
           setTypeOfAlert('error');
@@ -115,20 +119,20 @@ export default defineComponent({
         closeAlert(1000);
       }
       showConfirmDeletionModal.value = false;
-      
+
     }
     const setStateToAdmin = async (selectedTeacher?: BaseUser, removeAdmin: boolean = false): Promise<InternalDataTransfter<string>> => {
       if (!selectedTeacher || !selectedTeacher.Guid)
-        return {Status :false,Data:"Αποτυχία",Error:"Αποτυχία"};
+        return { Status: false, Data: "Αποτυχία", Error: "Αποτυχία" };
       const changeAdminStateIDT = await MakeApiCallToChangeAdminState(selectedTeacher.Guid, removeAdmin);
       if (!changeAdminStateIDT || !changeAdminStateIDT.Status) {
-        return {Status :false,Data:"Αποτυχία αλλαγής κατάστασης διαχειριστή",Error:"Αποτυχία αλλαγής κατάστασης διαχειριστή"};
+        return { Status: false, Data: "Αποτυχία αλλαγής κατάστασης διαχειριστή", Error: "Αποτυχία αλλαγής κατάστασης διαχειριστή" };
       }
       const populateAdminsIDT = await MakeApiCallToPopulateAdmins();
       if (!populateAdminsIDT.Status) {
-        return {Status :false,Data:"Αποτυχία λήψης διαχειριστών",Error:"Αποτυχία λήψης διαχειριστών"};
+        return { Status: false, Data: "Αποτυχία λήψης διαχειριστών", Error: "Αποτυχία λήψης διαχειριστών" };
       }
-      if(!removeAdmin){
+      if (!removeAdmin) {
         delete_selected_by_admin_option.value = true;
         await delay(1000);
         delete_selected_by_admin_option.value = false;
@@ -138,7 +142,7 @@ export default defineComponent({
         await delay(1500);
         closeAlert(1000);
       }
-      return {Status :true,Data:"OK"};
+      return { Status: true, Data: "OK" };
     };
     const MakeApiCallToPopulateAdmins = async (): Promise<InternalDataTransfter<boolean>> => {
       // const get_all_admins_api_call = await useAxios(
@@ -148,9 +152,9 @@ export default defineComponent({
       //   },
       //   setBackendInstanceAuth()
       // );
-      const get_all_admins_api_call_response = await MakeAPICall< ApiResult<AllAdminsResponse>>(AdminController,"get-admins","GET");
+      const get_all_admins_api_call_response = await MakeAPICall<ApiResult<AllAdminsResponse>>(AdminController, "get-admins", "GET");
       //if (get_all_admins_api_call.isFinished) {
-        //const get_all_admins_api_call_response: ApiResult<AllAdminsResponse> = get_all_admins_api_call.data.value;
+      //const get_all_admins_api_call_response: ApiResult<AllAdminsResponse> = get_all_admins_api_call.data.value;
       if (!get_all_admins_api_call_response || !get_all_admins_api_call_response.Status || !get_all_admins_api_call_response.Data || !get_all_admins_api_call_response.Data.Admins || !get_all_admins_api_call_response.Data.Count)
         return { Status: false, Data: false, Error: "API Error" };
       arrayOfAdmins.value = get_all_admins_api_call_response.Data.Admins;
@@ -166,7 +170,7 @@ export default defineComponent({
       //   },
       //   setBackendInstanceAuth()
       // );
-      const change_admin_state_call_response = await MakeAPICall<ApiResult<boolean>,Object>(AdminController,`change-admin-state/${baseUserId}/${removeAdmin}`,"POST",{});
+      const change_admin_state_call_response = await MakeAPICall<ApiResult<boolean>, Object>(AdminController, `change-admin-state/${baseUserId}/${removeAdmin}`, "POST", {});
       // if (change_admin_state_call.isFinished) {
       //const change_admin_state_call_response: ApiResult<boolean> = change_admin_state_call.data.value;
       if (!change_admin_state_call_response || !change_admin_state_call_response.Status || !change_admin_state_call_response.Data) {
@@ -201,12 +205,31 @@ export default defineComponent({
 <style scoped>
 .parent {
   min-width: 320px;
-  padding: 0;
-  margin: 1rem 1.5rem;
+  padding-top: 1.2rem;
   display: flex;
   flex-direction: column;
   justify-content: end;
 }
+
+.admin-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.1rem;
+  width: 90%;
+}
+
+.admin-list-outer-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+}
+
+
 
 .admin-label {
   display: flex;
@@ -215,17 +238,17 @@ export default defineComponent({
   justify-content: center;
   flex: 1 0 auto;
   width: 100%;
-  height: 2rem;
+  height: 3rem;
   min-width: 320px;
   font-size: 0.95rem;
   font-weight: 450;
-  background-color:var(--header-label-background-color);
+  background-color: var(--header-label-background-color);
   color: var(--header-label-text-color);
   word-wrap: break-word;
   word-break: break-word;
   text-align: center;
   padding: 1.2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .single-admin_card {
@@ -233,7 +256,7 @@ export default defineComponent({
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   box-shadow: var(--card-box-shadow);
-  border-radius: var(--card-border-radius);
+  border-radius: 999px;
 }
 
 .single-admin_card--item {
@@ -242,6 +265,7 @@ export default defineComponent({
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap: 0.3rem;
 }
 
 .single-admin_card--item>span {
@@ -289,6 +313,28 @@ export default defineComponent({
   .admin-label {
     margin-bottom: 0.5rem;
     height: 3rem;
+  }
+
+  .admin-list {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: center;
+    max-height: 30rem;
+    flex-wrap: wrap;
+    width: auto;
+    margin: 0 auto;
+    max-height: 40rem;
+    max-width: 50rem;
+  }
+
+  .admin-list-outer-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    padding: 2rem;
   }
 }
 

@@ -1,8 +1,5 @@
 <template>
-  <div @click="emitMobileViewClose" style="max-width: 120rem;
-    max-width: 120rem;
-    min-width: 320px;
-    margin: 0 auto;">
+  <section class="outer-section" @click="emitMobileViewClose">
     <!-- <base-dialog v-if="isError">
       <template #title>
         <h1>Http Error</h1>
@@ -11,7 +8,7 @@
         <p>An error over the api has occured.Please try later</p>
       </template>
     </base-dialog> -->
-    <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle">
+    <base-alert v-if="showAlert" :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle">
     </base-alert>
     <div class="parent-card">
       <v-card elevation="10" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
@@ -45,7 +42,7 @@
         </template>
       </suspense>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -124,7 +121,7 @@ export default defineComponent({
     const invokeGeneratePdf = () => {
       callToGeneratePdf.value = true;
     };
-
+    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
     const populateSubmittedLabs = async (byInternalCall = false): Promise<void> => {
       const getInfoData = await MakeAPICall<ApiResult<GenericSubmittedLabsResponse>>(InfoController, "get-submitted-labs-info", "GET");
       if (!getInfoData || !getInfoData.Status || !getInfoData.Data || !getInfoData.Data.Count || !getInfoData.Data.SubmittedLabs) {
@@ -140,6 +137,7 @@ export default defineComponent({
         closeAlert();
         setTypeOfAlert('success');
         openAlert("Επιτυχία διαγραφής");
+        await delay(1500);
         closeAlert(1500);
       }
     }
@@ -164,10 +162,11 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.parent-card {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  margin: 1rem auto;
+
+.outer-section{
+  width: 100%;
+  padding: 1rem 0.3rem;
+  max-width: 100rem;
 }
 
 .temp-class {
@@ -177,7 +176,6 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: 100%;
-  /* flex-wrap: wrap; */
 }
 
 .parent-label {
@@ -218,13 +216,13 @@ export default defineComponent({
   color: white;
 }
 
-:deep(.v-btn.v-btn--density-default) {
+.outer-section :deep(.v-btn.v-btn--density-default) {
   border-radius: 1rem;
   font-size: 1rem;
   height: 2.5rem;
 }
 
-:deep(.v-btn--elevated:hover) {
+.outer-section :deep(.v-btn--elevated:hover) {
   box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
     0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
     0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
@@ -233,16 +231,18 @@ export default defineComponent({
 
 @media (min-width: 769px) {
 
+  .outer-section {
+    padding: 2rem 0.5rem;
+    margin: auto;
+    width: inherit;
+  }
+
   .temp-class {
 
     flex-direction: row;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-  }
-
-  .parent-card {
-    margin: 1rem 1rem;
   }
 
   .parent-label {
@@ -254,7 +254,7 @@ export default defineComponent({
     justify-content: center;
   }
 
-  :deep(.v-btn.v-btn--density-default) {
+  .outer-section :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
     font-size: 1rem;
     height: 2.5rem;
@@ -264,14 +264,13 @@ export default defineComponent({
 
 @media (min-width: 1025px) {
   .temp-class {
-
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
-  }
+  } 
 
-  :deep(.v-btn.v-btn--density-default) {
+  .outer-section :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
     font-size: 1rem;
     height: 2.5rem;
