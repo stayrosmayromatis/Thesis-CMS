@@ -3,7 +3,7 @@
     :inner-description="confirmDeletionInnerDescription"></base-dialog>
   <div class="parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
-    <div v-if="!showLoadingSpinner">
+    <div v-if="!showLoadingSpinner && arrayOfAdmins && arrayOfAdmins.length">
       <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
       <!-- <div class="admin-list-outer-container"> -->
       <div class="admin-list">
@@ -37,7 +37,6 @@ import TeacherSelect from "@/components/UI/TeacherSelect.vue";
 import { useProfessor } from "@/composables/useProfessors.composable";
 import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
 import { useAlert } from '@/composables/showAlert.composable';
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { AdminController } from "@/config";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
@@ -61,35 +60,31 @@ export default defineComponent({
     const { openAlert, setTypeOfAlert, closeAlert, } = useAlert();
 
     const arrayOfAdmins = ref(new Array<BaseUserResponse>());
-    const showLoadingSpinner = ref(false);
+    const showLoadingSpinner = ref(true);
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
     const delete_selected_by_admin_option = ref(false);
     onMounted(async () => {
       emitMobileViewClose()
-      closeAlert(1000);
-
+      closeAlert();
       if (!SeedProfessorsArray || !SeedProfessorsArray.value || !SeedProfessorsArray.value.length) {
         await GetSeededProfessors();
       }
-
-      showLoadingSpinner.value = true;
       const popAdminsIDT = await MakeApiCallToPopulateAdmins();
-      showLoadingSpinner.value = false;
       if (!popAdminsIDT.Status) {
-        closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία λήψης διαχειριστών");
         await delay(1500);
+        closeAlert(1000);
       }
     });
     const setStateToAdminInterceptor = async (selectedTeacher: BaseUserResponse) => {
       if (!selectedTeacher) {
-        closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία αλλαγής καταστάσεως διαχειριστή");
         await delay(1500);
+        closeAlert(1000);
         return;
       }
       showConfirmDeletionModal.value = true;
@@ -103,18 +98,10 @@ export default defineComponent({
         }
         showLoadingSpinner.value = true;
         const setStateIDT = await setStateToAdmin(payloadToSetAdminState as BaseUser, true);
-        if (!setStateIDT.Status) {
-          showLoadingSpinner.value = false;
-          closeAlert(1000);
-          setTypeOfAlert('error');
-          openAlert(setStateIDT.Data!);
-          await delay(1500);
-          return;
-        }
         showLoadingSpinner.value = false;
-        closeAlert(1000);
-        setTypeOfAlert('success');
-        openAlert("Επιτυχία αλλαγής κατάσταση διαχειριστή");
+        // closeAlert(1000);
+        setTypeOfAlert(!setStateIDT || !setStateIDT.Status ? 'error' : 'success');
+        openAlert( !setStateIDT || !setStateIDT.Status ? setStateIDT.Data!: "Επιτυχία αλλαγής κατάσταση διαχειριστή");
         await delay(1500);
         closeAlert(1000);
       }
@@ -145,22 +132,12 @@ export default defineComponent({
       return { Status: true, Data: "OK" };
     };
     const MakeApiCallToPopulateAdmins = async (): Promise<InternalDataTransfter<boolean>> => {
-      // const get_all_admins_api_call = await useAxios(
-      //   AdminController + "get-admins",
-      //   {
-      //     method: "GET",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const get_all_admins_api_call_response = await MakeAPICall<ApiResult<AllAdminsResponse>>(AdminController, "get-admins", "GET");
-      //if (get_all_admins_api_call.isFinished) {
-      //const get_all_admins_api_call_response: ApiResult<AllAdminsResponse> = get_all_admins_api_call.data.value;
+        showLoadingSpinner.value = false;
       if (!get_all_admins_api_call_response || !get_all_admins_api_call_response.Status || !get_all_admins_api_call_response.Data || !get_all_admins_api_call_response.Data.Admins || !get_all_admins_api_call_response.Data.Count)
         return { Status: false, Data: false, Error: "API Error" };
       arrayOfAdmins.value = get_all_admins_api_call_response.Data.Admins;
       return { Status: true, Data: true };
-      // }
-      // return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const MakeApiCallToChangeAdminState = async (baseUserId: string, removeAdmin: boolean = false): Promise<InternalDataTransfter<boolean>> => {
       // const change_admin_state_call = await useAxios(

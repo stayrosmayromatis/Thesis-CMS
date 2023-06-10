@@ -73,13 +73,13 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true, requiresIsTeacher: true },
     beforeEnter: [protectTeacherRoutes],
   },
-  {
-    path: "/poutsa",
-    name: "poutsa",
-    component: () => import("@/components/Base/BaseSpinner.vue"),
-    //meta: { requiresAuth: true },
-  },
-  {
+  // {
+  //   path: "/poutsa",
+  //   name: "poutsa",
+  //   component: () => import("@/components/Base/"),
+  //   meta: { requiresAuth: true },
+  // }
+  ,{
     // path: "/:catchAll(.*)",
     path: "/:pathMatch(.*)*",
     name: "notFound",

@@ -1,6 +1,6 @@
 <template>
   <section class="parent" @click="emitMobileViewClose">
-    <base-alert v-if="showAlert" :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
     <v-card>
       <div>
         <v-tabs v-if="isTeacher" v-model="tab" >
@@ -64,7 +64,7 @@ export default defineComponent({
     ExportOption,
     PeriodOption,
     BaseSpinner,
-    BaseAlert
+    BaseAlert,
   },
   emits: ['closeMobileView'],
   setup(_, context) {

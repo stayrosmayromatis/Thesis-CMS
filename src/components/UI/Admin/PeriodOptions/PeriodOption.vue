@@ -185,7 +185,7 @@ export default defineComponent({
   },
   emits: ['propagateCloseMobileView'],
   setup(_, context) {
-    const showLoadingSpinner = ref(false);
+    const showLoadingSpinner = ref(true);
     const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
     //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
@@ -209,12 +209,9 @@ export default defineComponent({
       emitMobileViewClose();
       fromTime.value = tomorrow;
       toTime.value = oneWeekAfterTomorrow;
-      closeAlert(1000);
-      showLoadingSpinner.value = true;
+      closeAlert();
       const currentlyActiveSsdsIDT = await FetchCurrentlyActiveSsd();
-      showLoadingSpinner.value = false;
       if (!currentlyActiveSsdsIDT.Status) {
-        closeAlert(1000);
         setTypeOfAlert('error');
         openAlert("Αποτυχία ανάκτησης περιόδου");
         scrollToTop();
@@ -245,42 +242,22 @@ export default defineComponent({
       }
     };
     const FetchCurrentlyActiveSsd = async (): Promise<InternalDataTransfter<boolean>> => {
-      // const currentlyActiveSsdCall = await useAxios(
-      //   AdminController + "fetch-currently-active-ssd",
-      //   {
-      //     method: "GET",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
+     
       const currentlyActiveSsdResponse = await MakeAPICall<ApiResult<SemesterSubmitionDateOverviewResponse>>(AdminController,"fetch-currently-active-ssd", "GET");
-      // if (currentlyActiveSsdCall.isFinished) {
-      //   const currentlyActiveSsdResponse: ApiResult<SemesterSubmitionDateOverviewResponse> = currentlyActiveSsdCall.data.value;
-        if (!currentlyActiveSsdResponse || !currentlyActiveSsdResponse.Status || !currentlyActiveSsdResponse.Data) {
+      showLoadingSpinner.value = false;
+      if (!currentlyActiveSsdResponse || !currentlyActiveSsdResponse.Status || !currentlyActiveSsdResponse.Data) {
         return { Status: false, Data: false, Error: "API Error" };
       }
       currentlyActiveSsds.value = currentlyActiveSsdResponse.Data.SemesterSubmitionDates;
       return { Status: true, Data: true };
-      //}
-      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const GenerateTheNewPeriodCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      // const generateNewPeriodContext = await useAxios(
-      //   AdminController + "generate-new-period",
-      //   {
-      //     method: "POST",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const newGeneratedPeriodContext = await MakeAPICall<ApiResult<SemesterSubmitionDateResponse>,Object>(AdminController,"generate-new-period", "POST",{});
-      //if (generateNewPeriodContext.isFinished) {
-      //const newGeneratedPeriodContext: ApiResult<SemesterSubmitionDateResponse> = generateNewPeriodContext.data.value;
       if (!newGeneratedPeriodContext || !newGeneratedPeriodContext.Status || !newGeneratedPeriodContext.Data) {
         return { Status: false, Data: false, Error: "API Call Error" };
       }
       newPeriodContext.value = newGeneratedPeriodContext.Data;
       return { Status: true, Data: true }
-      //}
-      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const CalculateThePrioritiesCall = async (): Promise<InternalDataTransfter<boolean>> => {
       if (!fromTime.value || !toTime.value)
@@ -289,41 +266,21 @@ export default defineComponent({
         From: fromTime.value,
         To: toTime.value
       }
-      // const calculateThePrioritiesCall = await useAxios(
-      //   AdminController + "calculate-new-ssd-by-date",
-      //   {
-      //     method: "POST",
-      //     data: payload
-      //   },
-      //   setBackendInstanceAuth()
-      // );
+      showLoadingSpinner.value = true;
       const calculateThePrioritiesCallResponse = await MakeAPICall<ApiResult<GeneratedPrioritiesResponse>,Object>(AdminController,"calculate-new-ssd-by-date", "POST",payload);
-      //if (calculateThePrioritiesCall.isFinished) {
-        //const calculateThePrioritiesCallResponse: ApiResult<GeneratedPrioritiesResponse> = calculateThePrioritiesCall.data.value;
+      showLoadingSpinner.value = false;
       if (!calculateThePrioritiesCallResponse.Status || !calculateThePrioritiesCallResponse.Data) {
         return { Status: false, Data: false, Error: calculateThePrioritiesCallResponse.Error };
       }
       calculatedPriorites.value = calculateThePrioritiesCallResponse.Data
       return { Status: true, Data: true };
-      //}
-      //return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const DeletePastSubmissionCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      // const deletePastSubmissionsCall = await useAxios(
-      //   AdminController + "delete-past-submission-periods",
-      //   {
-      //     method: "POST",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const deletePastSubmissionsResponse = await MakeAPICall<ApiResult<boolean>,Object>(AdminController,"delete-past-submission-periods", "POST",{});
-      // if (deletePastSubmissionsCall.isFinished) {
-       // const deletePastSubmissionsResponse: ApiResult<boolean> = deletePastSubmissionsCall.data.value;
       if (!deletePastSubmissionsResponse || !deletePastSubmissionsResponse.Status || !deletePastSubmissionsResponse.Data)
         return { Status: false, Data: false, Error: deletePastSubmissionsResponse?.Error ?? "Request not finished" };
       return { Status: true, Data: true };
-      // }
-      // return { Status: false, Data: false, Error: "Request not finished" };
+
     }
     const deletePastSubmissions = async () => {
       showBaseDialog.value = true;
@@ -341,7 +298,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           newPeriodContext.value = undefined;
           calculatedPriorites.value = undefined;
-          closeAlert(1000);
+          closeAlert();
           setTypeOfAlert('error');
           openAlert("Αποτυχία διαγραφής περιόδου");
           scrollToTop();
@@ -354,7 +311,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           newPeriodContext.value = undefined;
           calculatedPriorites.value = undefined;
-          closeAlert(1000);
+          closeAlert();
           setTypeOfAlert('error');
           openAlert("Αποτυχία ανάκτησης περιόδου");
           scrollToTop();
@@ -367,7 +324,7 @@ export default defineComponent({
         showLoadingSpinner.value = false;
         newPeriodContext.value = undefined;
         calculatedPriorites.value = undefined;
-        closeAlert(1000);
+        closeAlert();
         setTypeOfAlert('success');
         openAlert("Επιτυχία διαγραφής περιόδου");
         scrollToTop();
@@ -395,7 +352,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           newPeriodContext.value = undefined;
           calculatedPriorites.value = undefined;
-          closeAlert(1000);
+          closeAlert();
           setTypeOfAlert('error');
           openAlert("Αποτυχία δημιουργίας περιόδου");
           scrollToTop();
@@ -408,7 +365,7 @@ export default defineComponent({
           showLoadingSpinner.value = false;
           newPeriodContext.value = undefined;
           calculatedPriorites.value = undefined;
-          closeAlert(1000);
+          closeAlert();
           setTypeOfAlert('error');
           openAlert("Αποτυχία ανάκτησης περιόδου");
           scrollToTop();
@@ -417,7 +374,7 @@ export default defineComponent({
           return;
         }
         showLoadingSpinner.value = false;
-        closeAlert(1000);
+        closeAlert();
         setTypeOfAlert('success');
         openAlert("Επιτυχία δημιουργίας περιόδου");
         scrollToTop();
@@ -428,23 +385,14 @@ export default defineComponent({
       showBaseDialog.value = false;
     };
     const calculatePriorities = async () => {
-      showLoadingSpinner.value = true;
-      const calculatePrioritiesIDT = await CalculateThePrioritiesCall();
-      showLoadingSpinner.value = false;
+      const calculatePrioritiesIDT = await CalculateThePrioritiesCall(); 
       if (!calculatePrioritiesIDT.Status) {
         newPeriodContext.value = undefined;
         calculatedPriorites.value = undefined;
-        closeAlert(1000);
-        setTypeOfAlert('error');
-        openAlert("Αποτυχία υπολογισμού προτεραιοτήτων");
-        scrollToTop();
-        await delay(1500);
-        closeAlert(1000);
-        return;
       }
       closeAlert(1000);
-      setTypeOfAlert('success');
-      openAlert("Επιτυχία υπολογισμού προτεραιοτήτων");
+      setTypeOfAlert(!calculatePrioritiesIDT.Status ? 'error' : 'success');
+      openAlert(!calculatePrioritiesIDT.Status ? "Αποτυχία υπολογισμού προτεραιοτήτων" : "Επιτυχία υπολογισμού προτεραιοτήτων");
       scrollToTop();
       await delay(1500);
       closeAlert(1000);

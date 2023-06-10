@@ -25,7 +25,6 @@ import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { CourseController } from '@/config';
-// import { useAxios } from '@vueuse/integrations/useAxios';
 import { ApiResult } from '@/models/DTO/ApiResult';
 import { PersonalisedCourseBySemester, PersonalisedCoursesBySemesterResponse } from '@/models/BACKEND-MODELS/PersonalisedCoursesBySemesterResponse';
 import { useTimeObjectExtensions } from '@/composables/useTimeObjectExtensions.composable';
@@ -40,7 +39,7 @@ export default defineComponent({
   },
   emits: ['propagateCloseMobileView'],
   setup(_, context) {
-    const showLoadingSpinner = ref(false);
+    const showLoadingSpinner = ref(true);
     const personalisedCourses = ref(new Array<PersonalisedCourseBySemester>());
     const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { scrollToTop } = useTimeObjectExtensions();
@@ -49,45 +48,24 @@ export default defineComponent({
 
     onMounted(async () => {
       emitMobileViewClose();
-      closeAlert(1000);
-      showLoadingSpinner.value = true;
+      closeAlert();
       const getMyCoursesIDT = await GetMyCoursesCall();
-      showLoadingSpinner.value = false;
-      if (!getMyCoursesIDT.Status) {
-        closeAlert(1000);
-        setTypeOfAlert('error');
-        openAlert("Αποτυχία ανάκτησης μαθημάτων");
-        scrollToTop();
-        await delay(1500);
-        closeAlert(1000);
-        return;
-      }
-      closeAlert(1000);
-      setTypeOfAlert('success');
-      openAlert("Επιτυχία ανάκτησης μαθημάτων");
+      setTypeOfAlert(!getMyCoursesIDT || !getMyCoursesIDT.Status ? 'error' :'success');
+      openAlert(!getMyCoursesIDT || !getMyCoursesIDT.Status ? "Αποτυχία ανάκτησης μαθημάτων" : "Επιτυχία ανάκτησης μαθημάτων");
       scrollToTop();
-      await delay(1500);
       closeAlert(1000);
+      await delay(1000);
     });
 
     const GetMyCoursesCall = async (): Promise<InternalDataTransfter<boolean>> => {
-      // const getMyCoursesCall = await useAxios(
-      //   CourseController + "get-my-courses",
-      //   {
-      //     method: "GET",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
+
       const getMyCoursesResponse = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>>(CourseController, "get-my-courses", "GET");
-      //if (getMyCoursesCall.isFinished) {
-      //const getMyCoursesResponse: ApiResult<PersonalisedCoursesBySemesterResponse> = getMyCoursesCall.data.value;
+      showLoadingSpinner.value = false;
       if (!getMyCoursesResponse || !getMyCoursesResponse.Status || !getMyCoursesResponse.Data || !getMyCoursesResponse.Data.PersonalisedCourses || !getMyCoursesResponse.Data.Count) {
         return { Status: false, Data: false, Error: "API Error" };
       }
       personalisedCourses.value = getMyCoursesResponse.Data.PersonalisedCourses;
       return { Status: true, Data: true };
-      // }
-      // return { Status: false, Data: false, Error: "Request didn't finish" }
     }
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
@@ -143,8 +121,4 @@ export default defineComponent({
   width: 100%;
   min-width: 320px;
 }
-
-/* @media (min-width: 769px) {}
-
-@media (min-width: 1025px) {} */
 </style>

@@ -9,14 +9,14 @@
     @close-modal="somethingWentWrongModal = false"></base-dialog>
   <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
     :inner-description="confirmDeletionInnerDescription" @close-modal="showConfirmDeletionModal = false"></base-dialog>
-  <div @click="emitMobileViewClose" v-if="!showSpinner">
+  <div class="outer-section" @click="emitMobileViewClose" v-if="!showSpinner">
     <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
-    <div class="parent-card">
+    <div>
       <v-card elevation="10" class="parent-label">
-        <v-card-title> Φόρμα Εισαγωγής Εργαστηρίου </v-card-title>
+        <label> Φόρμα Εισαγωγής Εργαστηρίου </label>
       </v-card>
     </div>
-    <div class="parent-card-form">
+    <div>
       <v-card elevation="5">
         <v-form @submit.prevent="submitForm">
           <v-container>
@@ -66,7 +66,7 @@
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
                     fill-rule="nonzero" />
                 </svg> -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#000000" d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="white" d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z"/></svg>
                 <label>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
               </v-btn>
             </div>
@@ -880,6 +880,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.outer-section{
+  width: 100%;
+  padding: 1rem 0.3rem;
+  max-width: 100rem;
+}
+
 #submit-btn:disabled {
   width: 15rem;
   color: #f3f3f3;
@@ -926,10 +932,9 @@ export default defineComponent({
   color: #b00020;
 }
 
-.parent-card {
-  margin: 0.5rem auto;
-
-}
+/* .parent-card { 
+  
+}*/
 
 .parent-label {
   display: flex;
@@ -939,16 +944,12 @@ export default defineComponent({
   width: 100%;
   height: 2rem;
   min-width: 320px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   background-color: var(--header-label-background-color);
   color: var(--header-label-text-color);
   padding: 1.2rem;
-}
-
-.parent-card-form {
-  min-width: 320px;
-  max-width: 100%;
+  margin-bottom: 1.2rem;
 }
 
 .form-first {
@@ -1060,7 +1061,11 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-
+  .outer-section {
+    padding: 2rem 0.5rem;
+    margin: auto;
+    width: inherit;
+  }
   .percent49-5 {
     width: 49.5%;
   }
@@ -1087,11 +1092,6 @@ export default defineComponent({
     overflow-x: auto;
   }
 
-  .parent-card-form {
-    margin-left: 1rem;
-    margin-right: 1rem;
-
-  }
 
   .form-first {
     flex-direction: row;

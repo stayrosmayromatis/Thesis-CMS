@@ -1,6 +1,6 @@
 <template>
   <base-spinner :show="showSpinner"></base-spinner>
-  <base-alert v-if="showAlert" :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+  <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
   <div class="parent-card">
     <div class="outer-parent-label" v-if="!showSpinner">
       <v-card elevation="10" class="parent-label">
@@ -121,20 +121,6 @@ export default defineComponent({
 }
 
 .parent-label {
-  /* display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: fit-content;
-  min-width: 320px;
-  font-size: 1rem;
-  font-weight: 500;
-  background-color: var(--header-label-background-color);
-  padding: 0.5rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  text-align: center; */
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;

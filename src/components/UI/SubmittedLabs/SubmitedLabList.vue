@@ -8,8 +8,8 @@
         <p>An error over the api has occured.Please try later</p>
       </template>
     </base-dialog> -->
-   <base-alert v-if="showAlert" :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
-    <div class="parent-card">
+   <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
+   <div class="parent-card">
       <v-card elevation="10" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
       <base-result-empty :show="!showSpinner && !showLabsIfFound" :title="showEmptyResultTitle"
         :description="showEmptyResultDescription"></base-result-empty>
@@ -17,8 +17,6 @@
       <suspense>
         <template #default>
           <div v-if="!showSpinner && showLabsIfFound">
-            <!-- <submited-lab v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation" :lab="sLab"
-              :course_guid="sLab.CourseGUID" @force-refetch="populateSubmittedLabs(true)"></submited-lab> -->
             <div class="temp-class">
               <submitted-lab-card v-for="sLab in sLabs" :key="sLab.CourseGUID" :person-affiliation="personAffiliation"
                 :lab="sLab" :course_guid="sLab.CourseGUID"
@@ -84,7 +82,6 @@ export default defineComponent({
   components: {
     SubmitedLab,
     SubmittedLabCard,
-    //  BaseDialog,
     PdfContent,
     BaseAlert,
     BaseResultEmpty,
