@@ -1,13 +1,14 @@
 <template>
   <div class="outer-alert-container">
     <transition name="bounce">
-      <v-alert v-if="showAlert" :title="title" closable :type="alertType" density="compact"></v-alert>
+      <v-alert v-if="showAlert" :title="title" closable :type="alertType" density="compact" prominent position="sticky"
+        tag="div" class="alert-override" :icon="mdiIconString" :close-icon="'mdi-window-close'"></v-alert>
     </transition>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRefs } from "vue";
+import { computed, defineComponent, ref, toRefs } from "vue";
 
 export default defineComponent({
   props: {
@@ -29,13 +30,17 @@ export default defineComponent({
   },
   setup(props) {
     const { alertTypeProp, show, title } = toRefs(props);
+    const mdiIconString = ref('mdi-check')
     const alertType = computed(() => {
       switch (alertTypeProp.value) {
         case "error":
+        mdiIconString.value = 'mdi-alert-circle-outline'
           return "error";
         case "success":
+        mdiIconString.value = 'mdi-check'
           return "success";
         case "info":
+        mdiIconString.value = 'mdi-information-outline'
           return "info";
         default:
           return "success";
@@ -45,58 +50,64 @@ export default defineComponent({
       if (show.value === true) return true;
       if (show.value === false) return false;
     });
-    return { alertType, showAlert, title };
+    return { alertType, showAlert, title,mdiIconString };
   },
 });
 </script>
 <style scoped>
-.outer-alert-container {
-  width: 100%;
-  min-width: 320px;
-  margin: 1rem 0.5rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+.alert-override {
+  border-radius: 9999px;
+  width: fit-content;
+  max-width: fit-content;
+  height: fit-content;
+  max-height: 200px;
+  text-align: center;
+  white-space: break-spaces;
+  overflow-wrap: break-word;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.outer-alert-container {
+  position: fixed;
+  z-index: 9999;
+  position: fixed;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+  width: fit-content;
+  align-self: center;
+  right: 15px;
+  margin: 0 auto;
 }
 
-:deep(.v-alert) {
-  border-radius: 1rem;
-  width: fit-content;
-  padding-left: 16px;
-  padding-right: 0;
-  margin-right: 1rem;
-  text-align: center;
-  white-space: pre-line;
+.outer-alert-container :deep(.v-alert-title) {
+  align-items: center;
+  align-self: center;
   display: flex;
-
+  font-size: 1.1rem;
+  font-weight: 500;
+  hyphens: auto;
+  line-height: 1.5rem;
+  overflow-wrap: normal;
+  text-transform: none;
+  word-break: normal;
+  word-wrap: break-word;
 }
 
-/* :deep(.v-alert) {
-  border-radius: 1rem;
-  width: fit-content;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  padding-left: 16px;
-  padding-right: 0;
-  margin-right: 1rem;
-} */
-
-:deep(.v-alert__close) {
-  align-self: flex-start;
+.outer-alert-container :deep(div.v-alert__close) {
+  align-self: center;
   margin-inline-start: 0;
 }
 
-:deep(.v-alert__prepend) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  grid-area: prepend;
-  margin-inline-end: 0.5rem;
-  align-self: center;
+.outer-alert-container :deep(.v-btn) {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0.9rem !important;
+  padding: 0.7rem 0 !important;
 }
+
 
 .bounce-enter-active {
   animation: animate-in 0.3s ease-in 0s 1 normal both;
@@ -146,10 +157,18 @@ export default defineComponent({
 
 @media (min-width: 769px) {
   .outer-alert-container {
-    align-items: flex-end;
+    position: fixed;
+    z-index: 9999;
+    right: 10px;
+  }
+
+  .outer-alert-container :deep(.v-btn) {
+    padding: 0 !important;
+    font-size: 1.3rem !important;
+    margin-right: 0.3rem !important;
+    margin-left: 0.5rem !important;
   }
 }
 
-@media (min-width: 1025px) {
-}
+@media (min-width: 1025px) {}
 </style>

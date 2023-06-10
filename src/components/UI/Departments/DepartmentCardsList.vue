@@ -1,6 +1,6 @@
 <template>
   <base-spinner :show="showSpinner"></base-spinner>
-  <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+  <base-alert v-if="showAlert" :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
   <div class="parent-card">
     <div class="outer-parent-label" v-if="!showSpinner">
       <v-card elevation="10" class="parent-label">
@@ -115,12 +115,13 @@ export default defineComponent({
 
 <style scoped>
 .parent-card {
-  margin: 0.5rem auto;
-  min-width: 320px;
+  width: 100%;
+  padding: 1rem 0.3rem;
+  max-width: 100rem;
 }
 
 .parent-label {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -133,7 +134,20 @@ export default defineComponent({
   padding: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  text-align: center;
+  text-align: center; */
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+  min-width: 320px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: var(--header-label-background-color);
+  color: var(--header-label-text-color);
+  padding: 0.5rem;
 }
 
 .label__lab-title {
@@ -169,19 +183,26 @@ export default defineComponent({
   /* #555a69; */
 }
 
-div.outer-parent-label {
+/* div.outer-parent-label {
   padding: 0;
-}
+} */
 
 @media (min-width: 769px) {
+  
+  .parent-card{
+    padding: 2rem 0.5rem;
+    margin: auto;
+    width: inherit;
+  }
   .parent-label {
-    font-size: 1.1rem;
-    padding: 0.5rem;
+    height: fit-content;
+    margin-bottom: 1.2rem;
+    font-size: 1.2rem;
   }
 
-  div.outer-parent-label {
+  /* div.outer-parent-label {
     padding: 0 1rem;
-  }
+  } */
 }
 
 @media (min-width: 1025px) {
