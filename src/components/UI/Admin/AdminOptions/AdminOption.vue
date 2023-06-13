@@ -6,26 +6,28 @@
     <div v-if="!showLoadingSpinner && arrayOfAdmins && arrayOfAdmins.length">
       <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
       <!-- <div class="admin-list-outer-container"> -->
-      <div class="admin-list">
-        <v-card elevation="5" class="single-admin_card" v-for="admin of arrayOfAdmins" :key="admin.Id">
-          <div class="single-admin_card--item">
-            <v-tooltip :text="'Διαγραφή διαχειριστή'" location="bottom">
-              <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"
-                  @click="setStateToAdminInterceptor(admin)"></v-btn>
-              </template>
-            </v-tooltip>
-            <v-chip class="chip-bg" size="large">
-              <span>{{ admin.DisplayNameEl }}</span>
-            </v-chip>
-          </div>
-        </v-card>
-      </div>
-      <!-- </div> -->
-      <div class="add-new__admin--container">
-        <teacher-select :seeded_professors="SeedProfessorsArray" :by_admin_option="true"
-          :delete_selected_by_admin_option="delete_selected_by_admin_option"
-          @emit-selected-teacher="setStateToAdmin"></teacher-select>
+      <div class="overlay-container">
+        <div class="admin-list">
+          <v-card elevation="5" class="single-admin_card" v-for="admin of arrayOfAdmins" :key="admin.Id">
+            <div class="single-admin_card--item">
+              <v-tooltip :text="'Διαγραφή διαχειριστή'" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"
+                    @click="setStateToAdminInterceptor(admin)"></v-btn>
+                </template>
+              </v-tooltip>
+              <v-chip class="chip-bg" size="large">
+                <span>{{ admin.DisplayNameEl }}</span>
+              </v-chip>
+            </div>
+          </v-card>
+        </div>
+        <!-- </div> -->
+        <div class="add-new__admin--container">
+          <teacher-select :seeded_professors="SeedProfessorsArray" :by_admin_option="true"
+            :delete_selected_by_admin_option="delete_selected_by_admin_option"
+            @emit-selected-teacher="setStateToAdmin"></teacher-select>
+        </div>
       </div>
     </div>
   </div>
@@ -101,7 +103,7 @@ export default defineComponent({
         showLoadingSpinner.value = false;
         // closeAlert(1000);
         setTypeOfAlert(!setStateIDT || !setStateIDT.Status ? 'error' : 'success');
-        openAlert( !setStateIDT || !setStateIDT.Status ? setStateIDT.Data!: "Επιτυχία αλλαγής κατάσταση διαχειριστή");
+        openAlert(!setStateIDT || !setStateIDT.Status ? setStateIDT.Data! : "Επιτυχία αλλαγής κατάσταση διαχειριστή");
         await delay(1500);
         closeAlert(1000);
       }
@@ -133,7 +135,7 @@ export default defineComponent({
     };
     const MakeApiCallToPopulateAdmins = async (): Promise<InternalDataTransfter<boolean>> => {
       const get_all_admins_api_call_response = await MakeAPICall<ApiResult<AllAdminsResponse>>(AdminController, "get-admins", "GET");
-        showLoadingSpinner.value = false;
+      showLoadingSpinner.value = false;
       if (!get_all_admins_api_call_response || !get_all_admins_api_call_response.Status || !get_all_admins_api_call_response.Data || !get_all_admins_api_call_response.Data.Admins || !get_all_admins_api_call_response.Data.Count)
         return { Status: false, Data: false, Error: "API Error" };
       arrayOfAdmins.value = get_all_admins_api_call_response.Data.Admins;
@@ -286,7 +288,50 @@ export default defineComponent({
   margin: 1rem 0;
 }
 
+.overlay-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 470px) {
+  .overlay-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 80%;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .admin-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+  }
+}
+
 @media (min-width: 769px) {
+  .overlay-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-right: 5rem;
+    padding: 1rem 2rem;
+  }
+
   .admin-label {
     margin-bottom: 0.5rem;
     height: 3rem;
@@ -294,15 +339,15 @@ export default defineComponent({
 
   .admin-list {
     display: flex;
-    flex-direction: column;
-    align-items: baseline;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
-    max-height: 30rem;
+    gap: 0.2rem;
     flex-wrap: wrap;
-    width: auto;
-    margin: 0 auto;
-    max-height: 40rem;
-    max-width: 50rem;
+    height: fit-content;
+    width: 100%;
+    max-width: 100%;
+    max-height: fit-content;
   }
 
   .admin-list-outer-container {
@@ -315,5 +360,31 @@ export default defineComponent({
   }
 }
 
-@media (min-width: 1025px) {}
-</style>
+@media (min-width: 1025px) {
+  .overlay-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-right: 5rem;
+    padding: 1rem 5rem;
+  }
+
+  .admin-label {
+    margin-bottom: 0.5rem;
+    height: 3rem;
+  }
+
+  .admin-list {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    height: fit-content;
+    width: 90%;
+    max-width: fit-content;
+  }
+}</style>

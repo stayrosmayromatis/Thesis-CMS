@@ -1,88 +1,90 @@
 <template>
-  <base-spinner :show="showSpinner"></base-spinner>
+  <section>
+    <base-spinner :show="showSpinner"></base-spinner>
 
-  <base-dialog :show="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-    inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span> ,</br>θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
-    @close-modal="showRouteLeaveModal = false"></base-dialog>
-  <base-dialog :show="somethingWentWrongModal" :route-change-authorizer="false" inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
-    inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
-    @close-modal="somethingWentWrongModal = false"></base-dialog>
-  <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
-    :inner-description="confirmDeletionInnerDescription" @close-modal="showConfirmDeletionModal = false"></base-dialog>
-  <div class="outer-section" @click="emitMobileViewClose" v-if="!showSpinner">
-    <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
-    <div>
-      <v-card elevation="10" class="parent-label">
-        <label> Φόρμα Εισαγωγής Εργαστηρίου </label>
-      </v-card>
-    </div>
-    <div>
-      <v-card elevation="5">
-        <v-form @submit.prevent="submitForm">
-          <v-container>
-            <div :class="{ 'error-color': v$.semester.$error }">
-              <v-chip-group>
-                <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
-                  v-for="semester of displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
-              </v-chip-group>
-            </div>
-            <v-divider inset></v-divider>
-            <div class="label-centerer">
-              <label for="year">Βασικά Στοιχεία</label>
-            </div>
-            <div class="form-first">
-              <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
-                label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
-              <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
-                label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
-            </div>
-            <div class="form-first">
-              <v-text-field :class="{ 'error-color': v$.description.$error }" :error-messages="errorOfDescription"
-                label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
-              <div class="percent49-5">
-                <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
-                  item-title="title" :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
-                  return-object v-model="formState.attendance"
-                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
+    <base-dialog :show="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
+      inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span> ,</br>θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
+      @close-modal="showRouteLeaveModal = false"></base-dialog>
+    <base-dialog :show="somethingWentWrongModal" :route-change-authorizer="false" inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
+      inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
+      @close-modal="somethingWentWrongModal = false"></base-dialog>
+    <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
+      :inner-description="confirmDeletionInnerDescription" @close-modal="showConfirmDeletionModal = false"></base-dialog>
+    <div class="outer-section" @click="emitMobileViewClose" v-if="!showSpinner">
+      <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
+      <div>
+        <v-card elevation="10" class="parent-label">
+          <label> Φόρμα Εισαγωγής Εργαστηρίου </label>
+        </v-card>
+      </div>
+      <div>
+        <v-card elevation="5">
+          <v-form @submit.prevent="submitForm">
+            <v-container>
+              <div :class="{ 'error-color': v$.semester.$error }">
+                <v-chip-group>
+                  <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
+                    v-for="semester of displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
+                </v-chip-group>
               </div>
-            </div>
-            <v-divider inset></v-divider>
-            <div class="label-centerer">
-              <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
-            </div>
-            <!-- <div class="info-centerer" v-if="departments.length">
+              <v-divider inset></v-divider>
+              <div class="label-centerer">
+                <label for="year">Βασικά Στοιχεία</label>
+              </div>
+              <div class="form-first">
+                <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
+                  label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
+                <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
+                  label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
+              </div>
+              <div class="form-first">
+                <v-text-field :class="{ 'error-color': v$.description.$error }" :error-messages="errorOfDescription"
+                  label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
+                <div class="percent49-5">
+                  <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
+                    item-title="title" :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
+                    return-object v-model="formState.attendance"
+                    no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
+                </div>
+              </div>
+              <v-divider inset></v-divider>
+              <div class="label-centerer">
+                <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
+              </div>
+              <!-- <div class="info-centerer" v-if="departments.length">
               <base-alert :alert-type-prop="'info'" :show="true"
                 :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
             </div> -->
-            <div class="form-control-add-btn">
-              <v-btn type="button" @click="addFormGroup" 
-              
-              color="green">
-              <!-- elevation="4"  -->
-                <!-- <svg width="30" height="30"
+              <div class="form-control-add-btn">
+                <v-btn type="button" @click="addFormGroup" color="green">
+                  <!-- elevation="4"  -->
+                  <!-- <svg width="30" height="30"
                   clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
                   viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
                     fill-rule="nonzero" />
                 </svg> -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="white" d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z"/></svg>
-                <label>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
-              </v-btn>
-            </div>
-            <lab-form v-for="department in departments" :key="department.Guid" :department="department"
-              :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
-              @global-error="validateEachDepartment"></lab-form>
-            <div class="submit-button" v-if="departments.length">
-              <v-btn id="submit-btn"
-                :disabled="buttonDisablity" type="submit">{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" :
+                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
+                    <path fill="white"
+                      d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z" />
+                  </svg>
+                  <label>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
+                </v-btn>
+              </div>
+              <lab-form v-for="department in departments" :key="department.Guid" :department="department"
+                :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
+                @global-error="validateEachDepartment"></lab-form>
+              <div class="submit-button" v-if="departments.length">
+                <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" :
                   "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn>
-            </div>
-          </v-container>
-        </v-form>
-      </v-card>
+              </div>
+            </v-container>
+          </v-form>
+        </v-card>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 <script lang="ts">
 import { computed, defineComponent } from "@vue/runtime-core";
@@ -880,7 +882,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.outer-section{
+.outer-section {
   width: 100%;
   padding: 1rem 0.3rem;
   max-width: 100rem;
@@ -899,11 +901,14 @@ export default defineComponent({
   font-weight: 500;
   text-transform: inherit;
 }
-.form-control-add-btn :deep(.v-btn--elevated:hover), .submit-button :deep(.v-btn--elevated:hover){
+
+.form-control-add-btn :deep(.v-btn--elevated:hover),
+.submit-button :deep(.v-btn--elevated:hover) {
   box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
     0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
     0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
 }
+
 /* .positioner {
   width: 100% !important;
 } */
@@ -1066,6 +1071,7 @@ export default defineComponent({
     margin: auto;
     width: inherit;
   }
+
   .percent49-5 {
     width: 49.5%;
   }
@@ -1118,5 +1124,4 @@ export default defineComponent({
     /* flex-wrap: nowrap; */
     max-width: 100%;
   }
-}
-</style>
+}</style>
