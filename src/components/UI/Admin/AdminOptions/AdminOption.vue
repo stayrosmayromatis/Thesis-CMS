@@ -1,11 +1,13 @@
 <template>
   <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
     :inner-description="confirmDeletionInnerDescription"></base-dialog>
-  <div class="parent" @click="emitMobileViewClose">
+  <div class="admin-option-parent" @click="emitMobileViewClose">
+
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner && arrayOfAdmins && arrayOfAdmins.length">
       <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
       <!-- <div class="admin-list-outer-container"> -->
+      <v-card>
       <div class="overlay-container">
         <div class="admin-list">
           <v-card elevation="5" class="single-admin_card" v-for="admin of arrayOfAdmins" :key="admin.Id">
@@ -29,6 +31,7 @@
             @emit-selected-teacher="setStateToAdmin"></teacher-select>
         </div>
       </div>
+      </v-card>
     </div>
   </div>
 </template>
@@ -182,7 +185,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.parent {
+.admin-option-parent {
   min-width: 320px;
   padding-top: 1.2rem;
   display: flex;
@@ -387,4 +390,5 @@ export default defineComponent({
     width: 90%;
     max-width: fit-content;
   }
-}</style>
+}
+</style>

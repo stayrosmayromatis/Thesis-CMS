@@ -1,9 +1,10 @@
 <template>
-  <section class="parent" @click="emitMobileViewClose">
+  <section class="admin-panel-container" @click="emitMobileViewClose">
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <v-card>
+    <!-- <v-card class="card-override"> -->
+      <div class="card-override">
       <div>
-        <v-tabs v-if="isTeacher" v-model="tab" >
+        <v-tabs v-if="isTeacher" v-model="tab" :show-arrows="true">
           <div class="tab-override">            
             <v-tab  v-for="cmp of component_loader" :key="cmp.id" :value="cmp.component" :slider-color="'#0a369d'"
               :stacked="true" :color="'#0a369d'" ripple elevation="2" class="tab-item_override"
@@ -21,7 +22,8 @@
           <base-spinner :show="true"></base-spinner>
         </template>
       </suspense>
-    </v-card>
+    </div>
+    <!-- </v-card> -->
   </section>
 </template>
 
@@ -140,10 +142,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.parent {
+.admin-panel-container {
   width: 100%;
   padding: 1rem 0.3rem;
   max-width: 100rem;
+}
+
+.admin-panel-container > div.card-override{
+  box-shadow: 0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 3px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
+   background-color: transparent; 
 }
 
 .tab-override {
@@ -174,7 +181,7 @@ export default defineComponent({
  
 }
 @media (min-width: 769px) {
-  .parent {
+  .admin-panel-container {
     padding: 2rem 0.5rem;
     margin: auto;
     width: inherit;

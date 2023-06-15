@@ -73,16 +73,18 @@
     <div class="main-nav" v-if="hamburgerClose">
       <ul>
         <li v-if="isLoggedIn && IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'labList' }" exact-active-class="router-link-exact-active-mark">Εργαστήρια</router-link>
+          <router-link :to="{ name: 'labList' }"
+            exact-active-class="router-link-exact-active-mark">Εργαστήρια</router-link>
         </li>
         <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'submittedLabs' }"  exact-active-class="router-link-exact-active-mark" >Δηλωθέντα</router-link>
+          <router-link :to="{ name: 'submittedLabs' }"
+            exact-active-class="router-link-exact-active-mark">Δηλωθέντα</router-link>
         </li>
         <li v-if="isLoggedIn && IsStaff && !IsPeriodActive" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'addlab' }"  exact-active-class="router-link-exact-active-mark">Προσθήκη</router-link>
+          <router-link :to="{ name: 'addlab' }" exact-active-class="router-link-exact-active-mark">Προσθήκη</router-link>
         </li>
         <li v-if="isLoggedIn && IsStaff" @click="closeHamburgerFn()" class="nav__item">
-          <router-link :to="{ name: 'admin' }"  exact-active-class="router-link-exact-active-mark">Διαχείριση</router-link>
+          <router-link :to="{ name: 'admin' }" exact-active-class="router-link-exact-active-mark">Διαχείριση</router-link>
         </li>
         <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
           <router-link to="/">Επικοινωνία</router-link>
@@ -156,8 +158,8 @@ export default defineComponent({
     const title = ref(import.meta.env.VITE_APP_TITLE as string);
     const store = useStore(key);
     const router = useRouter();
-    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated} = useAuth();
-    const {IsPeriodActive,GetPeriodState} = usePeriod();
+    const { GetUserDataDetails, SetNotAuthenticated, IsTeacher, IsAuthenticated } = useAuth();
+    const { IsPeriodActive, GetPeriodState } = usePeriod();
     const isLoggedIn = computed((): boolean => store.getters.IsAuth);
     const userName = computed(() => {
       if (!isLoggedIn.value)
@@ -169,11 +171,11 @@ export default defineComponent({
     const IsStaff = computed(() => {
       return isLoggedIn.value === true ? IsTeacher() : false;
     });
-   
+
     //onMounted(async () => {
-      // if(await IsAuthenticated() && store.getters.IsFirstTimeLogin){
-      //   await GetPeriodState();
-      // }
+    // if(await IsAuthenticated() && store.getters.IsFirstTimeLogin){
+    //   await GetPeriodState();
+    // }
     // });
     // watch(closeInstantlyDirective, async () => {
     //   if (closeInstantlyDirective.value === true) {
@@ -181,7 +183,7 @@ export default defineComponent({
     //   }
     // });
     computedEager(async () => {
-      if(isLoggedIn.value){
+      if (isLoggedIn.value) {
         await GetPeriodState();
         return;
       }
@@ -254,19 +256,15 @@ export default defineComponent({
 }
 
 .header {
-  /* border: 1px solid #a2a2a2; */
   background-color: #dae3f7;
   -webkit-box-shadow: 0px 0px 14px 0px rgb(0 0 0 / 75%);
   -moz-box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.75);
   box-shadow: 0px 0px 14px 0px rgb(0 0 0 / 75%);
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  min-width: 320px;
   position: sticky;
   top: 0px;
   left: 0px;
-  z-index: 1000;
+  z-index: 1000 !important;
+  width: 100%;
 }
 
 ul {
@@ -369,9 +367,11 @@ a:hover {}
     transform-origin: bottom right;
     transition: transform 0.25s ease-out;
   }
-  a:active{
+
+  a:active {
     color: white;
   }
+
   .router-link-exact-active-mark {
     color: #276EF1;
   }
@@ -495,5 +495,4 @@ a:hover {}
   .button-groupper {
     margin: 0 0.5rem;
   }
-}
-</style>
+}</style>
