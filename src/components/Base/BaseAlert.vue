@@ -9,9 +9,9 @@
 
 <script lang="ts">
 import { computedEager } from '@vueuse/core';
-import { ref, toRefs } from 'vue';
+import { PropType, ref, toRefs } from 'vue';
 import { defineComponent } from 'vue';
-
+export type AlertType = 'error' | 'success' | 'info';
 export default defineComponent({
     props: {
         title: {
@@ -20,9 +20,9 @@ export default defineComponent({
             default: "Title",
         },
         alertTypeProp: {
-            type: String,
+            type: String as PropType<AlertType>,
             required: true,
-            default: 'info'
+            default: 'info',
         },
         show: {
             type: Boolean,
@@ -32,7 +32,11 @@ export default defineComponent({
     },
     setup(props) {
         const { alertTypeProp, show, title } = toRefs(props);
-
+        const alertType = computedEager(() => {
+            if(!alertTypeProp.value)
+                return 'info';
+            return alertTypeProp.value as AlertType;
+        });
         const alert = ref('success');
         const mdiIconString = computedEager(() => {
             if (alert.value === "error") {
@@ -47,7 +51,7 @@ export default defineComponent({
 
         })
 
-        return { show,title, alertTypeProp, mdiIconString };
+        return { show,title, alertTypeProp : alertType, mdiIconString };
     },
 });
 </script>

@@ -1,5 +1,6 @@
+import { AlertType } from "@/components/Base/BaseAlert.vue";
 import { ref } from "vue";
-const typeOfAlert = ref<string>("success");
+const typeOfAlert = ref<AlertType>("success");
 const alertTitle = ref<string>("");
 const showAlert = ref<boolean>(false);
 
@@ -25,9 +26,9 @@ export function useAlert() {
     }
   };
 
-  const setTypeOfAlert = (val: string) => {
+  const setTypeOfAlert = (val: AlertType) => {
     if (!val) {
-      typeOfAlert.value = "success";
+      typeOfAlert.value = "info";
       return;
     }
     if (val !== "success" && val !== "error" && val !== "info") {

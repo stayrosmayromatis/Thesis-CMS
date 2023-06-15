@@ -1,16 +1,16 @@
-<template>
+<!-- <template>
   <transition  type="animation" name="bounce">
     <div v-if="show" class="outer-alert-container">
       <v-alert :title="title" closable :type="alertTypeProp" density="compact" prominent
         tag="div" class="alert-override" :icon="mdiIconString" :close-icon="'mdi-window-close'"></v-alert>
     </div>
   </transition>
- <!-- <transition type="animation" name="bounce">
+  <transition type="animation" name="bounce">
     <h1 v-if="showAlert">hello world</h1>
-  </transition> -->
-</template>
+  </transition>
+</template> -->
 
-<script lang="ts">
+<!-- <script lang="ts">
 import { computed, defineComponent, ref, toRefs } from "vue";
 
 export default defineComponent({
@@ -50,8 +50,8 @@ export default defineComponent({
     return { alertTypeProp, show, title, mdiIconString };
   },
 });
-</script>
-<style scoped>
+</script> -->
+<!-- <style scoped>
 
 .bounce-enter-active {
   animation: animate-in 0.3s ease-in 0s 1 normal both;
@@ -168,4 +168,4 @@ export default defineComponent({
     margin-left: 0.5rem !important;
   }
 }
-</style>
+</style>  -->
