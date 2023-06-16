@@ -1,28 +1,30 @@
 <template>
-  <base-spinner :show="showSpinner"></base-spinner>
-  <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-  <div class="parent-card">
-    <div class="outer-parent-label" v-if="!showSpinner">
-      <v-card elevation="10" class="parent-label">
-        <div class="text-divider">
-          <label id="titleText"> {{ TitleText }} </label>
-        </div>
-        <div class="label__lab-title-divider">
-          <label class="label__lab-title">{{ `${courseCode} ${courseName}` }}</label>
-        </div>
-      </v-card>
+  <section>
+    <base-spinner :show="showSpinner"></base-spinner>
+    <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
+    <div class="parent-card">
+      <div class="outer-parent-label" v-if="!showSpinner">
+        <v-card elevation="10" class="parent-label">
+          <div class="text-divider">
+            <label id="titleText"> {{ TitleText }} </label>
+          </div>
+          <div class="label__lab-title-divider">
+            <label class="label__lab-title">{{ `${courseCode} ${courseName}` }}</label>
+          </div>
+        </v-card>
+      </div>
+      <suspense>
+        <template #default>
+          <div class="cards-overview">
+            <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
+              :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
+              :timestring="`${lab.FromString} - ${lab.ToString}`" :course_id="courseGuid" :ladb_id="lab.LabId"
+              :completeness_percent="lab.CompletenessPercent" :user_type="userType"></department-card>
+          </div>
+        </template>
+      </suspense>
     </div>
-    <suspense>
-      <template #default>
-        <div class="cards-overview">
-          <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
-            :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
-            :timestring="`${lab.FromString} - ${lab.ToString}`" :course_id="courseGuid" :ladb_id="lab.LabId"
-            :completeness_percent="lab.CompletenessPercent" :user_type="userType"></department-card>
-        </div>
-      </template>
-    </suspense>
-  </div>
+  </section>
 </template>
 <script lang="ts">
 import { defineComponent, toRefs, onMounted, ref, computed, defineAsyncComponent } from 'vue';
@@ -174,12 +176,13 @@ export default defineComponent({
 } */
 
 @media (min-width: 769px) {
-  
-  .parent-card{
+
+  .parent-card {
     padding: 2rem 0.5rem;
     margin: auto;
     width: inherit;
   }
+
   .parent-label {
     height: fit-content;
     margin-bottom: 1.2rem;

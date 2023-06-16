@@ -1,11 +1,13 @@
 <template>
-  <the-header :closeInstantlyDirective="closeInstantly"></the-header>
-  <router-view v-slot="{ Component }" @closeMobileView="closeMobileViewInstantly">
-    <transition enter-active-class="animate__animated animate__fadeInUp"
-      leave-active-class="animate__animated animate__fadeOutDown" mode="out-in">
-      <component :is="Component"></component>
-    </transition>
-  </router-view>
+  <main>
+    <the-header :closeInstantlyDirective="closeInstantly"></the-header>
+    <router-view v-slot="{ Component }" @closeMobileView="closeMobileViewInstantly">
+      <transition enter-active-class="animate__animated animate__fadeInUp"
+        leave-active-class="animate__animated animate__fadeOutDown" mode="out-in">
+        <component :is="Component"></component>
+      </transition>
+    </router-view>
+  </main>
 </template>
 
 <script lang="ts">

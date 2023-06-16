@@ -45,8 +45,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/submitted-labs",
     name: "submittedLabs",
-    component: () =>
-      import("@/components/UI/SubmittedLabs/SubmitedLabList.vue"),
+    component: () => import("@/components/UI/SubmittedLabs/SubmitedLabList.vue"),
     meta: { requiresAuth: true },
   },
   {
@@ -101,20 +100,25 @@ router.beforeEach(async (to:RouteLocationNormalized,from:RouteLocationNormalized
   if (store.getters.IsFirstTimeLogin && to.fullPath.trim() === "/") {
     // await IsAuthenticated(true);
     //store.dispatch("setFirstTimeLogin", false);
+    console.log("trigger 0");
     return next();
   } else {
     await IsAuthenticated(true);
     const storeIsAuth = store.getters.IsAuth;
     if (to.meta.requiresAuth === false && storeIsAuth == false) {
+      console.log("trigger 1");
       return next();
     }
     if (to.meta.requiresAuth === false && storeIsAuth == true) {
       await SetNotAuthenticated();
+      console.log("trigger 2");
       return next();
     }
     if (to.meta.requiresAuth === true && storeIsAuth === false) {
+      console.log("trigger 3");
       return next({ name: "red" });
     }
+    console.log("passed 0");
     return next();
   }
 });

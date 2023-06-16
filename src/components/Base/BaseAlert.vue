@@ -1,10 +1,12 @@
 <template>
-    <transition type="animation" name="bounce">
-        <div v-if="show" class="outer-alert-container">
-            <v-alert :title="title" closable :type="alertTypeProp" density="compact" prominent tag="div"
-                class="alert-override" :icon="mdiIconString" :close-icon="'mdi-window-close'"></v-alert>
-        </div>
-    </transition>
+    <div>
+        <transition type="animation" name="bounce">
+            <div v-if="show" class="outer-alert-container">
+                <v-alert :title="title" closable :type="alertTypeProp" density="compact" prominent tag="div"
+                    class="alert-override" :icon="mdiIconString" :close-icon="'mdi-window-close'"></v-alert>
+            </div>
+        </transition>
+    </div>
 </template>
 
 <script lang="ts">
@@ -33,7 +35,7 @@ export default defineComponent({
     setup(props) {
         const { alertTypeProp, show, title } = toRefs(props);
         const alertType = computedEager(() => {
-            if(!alertTypeProp.value)
+            if (!alertTypeProp.value)
                 return 'info';
             return alertTypeProp.value as AlertType;
         });
@@ -51,7 +53,7 @@ export default defineComponent({
 
         })
 
-        return { show,title, alertTypeProp : alertType, mdiIconString };
+        return { show, title, alertTypeProp: alertType, mdiIconString };
     },
 });
 </script>
