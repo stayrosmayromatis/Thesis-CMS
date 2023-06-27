@@ -215,12 +215,20 @@ export default defineComponent({
 
 .outer-section :deep(.v-btn.v-btn--density-default) {
   border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  -webkit-border-radius: 1rem;
   font-size: 1rem;
   height: 2.5rem;
 }
 
 .outer-section :deep(.v-btn--elevated:hover) {
   box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
+    0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+    -webkit-box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
+    0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+    -moz-box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
     0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
     0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
 }
@@ -253,6 +261,8 @@ export default defineComponent({
 
   .outer-section :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    -webkit-border-radius: 1rem;
     font-size: 1rem;
     height: 2.5rem;
     margin-right: 1rem;
@@ -269,6 +279,8 @@ export default defineComponent({
 
   .outer-section :deep(.v-btn.v-btn--density-default) {
     border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    -webkit-border-radius: 1rem;
     font-size: 1rem;
     height: 2.5rem;
     margin-right: 1rem;

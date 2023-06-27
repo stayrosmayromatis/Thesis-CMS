@@ -198,6 +198,8 @@ export default defineComponent({
 .error-border {
   border: 0.1px solid #e6415d;
   border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
 
 .form-control-add-field {
@@ -344,7 +346,8 @@ export default defineComponent({
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 3rem;
+    /* gap: 3rem; */
+     gap: 0; 
     margin: 1rem auto;
   }
 }
@@ -357,7 +360,8 @@ export default defineComponent({
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 7rem;
+    /* gap: 7rem; */
+    gap: 0; 
     margin: 1rem auto;
   }
 }

@@ -308,7 +308,11 @@ export default defineComponent({
   padding: 0;
   min-width: 320px;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  -webkit-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  -moz-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   border-radius: 12px;
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
 }
 
 .spacer {
@@ -353,6 +357,7 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   flex: 1 0;
+  -webkit-flex: 1 0;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -360,6 +365,7 @@ export default defineComponent({
 
 :deep(.v-card-text) {
   flex: 0;
+  -webkit-flex: 0;
   font-size: 0.875rem;
   font-weight: 400;
   letter-spacing: 0.0178571429em;
@@ -382,6 +388,8 @@ export default defineComponent({
   padding: 0.6em !important;
   font-size: 0.8rem !important;
   border-radius: 2rem !important;
+  -moz-border-radius: 2rem !important;
+  -webkit-border-radius: 2rem !important;
   height: 2rem !important;
 }
 
@@ -410,12 +418,15 @@ export default defineComponent({
   padding: 0.6em !important;
   font-size: 0.8rem !important;
   border-radius: 2rem !important;
+  -moz-border-radius: 2rem !important;
+  -webkit-border-radius: 2rem !important;
   height: 2rem !important;
 }
 
 :deep(.v-card-title) {
   display: block;
   flex: none;
+  -webkit-flex: none;
   font-size: 1.25rem;
   font-weight: 500;
   hyphens: auto;
@@ -429,6 +440,7 @@ export default defineComponent({
   white-space: inherit;
   word-break: break-word;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   text-align: center;
 }
 
@@ -480,6 +492,7 @@ export default defineComponent({
   word-break: break-all;
   text-align: center;
   word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 @media (min-width: 769px) {
@@ -501,11 +514,14 @@ export default defineComponent({
 
   :deep(.v-card-title) {
     flex: 1 0;
+    -webkit-flex: 1 0;
+    hyphens: auto;
     -webkit-hyphens: auto;
     letter-spacing: 0.0125em;
     text-overflow: ellipsis;
     white-space: initial;
     word-wrap: unset;
+    overflow-wrap: unset;
     width: 45%;
   }
 
@@ -518,12 +534,14 @@ export default defineComponent({
     flex-direction: row;
     justify-content: center;
     flex: 1 0;
+    -webkit-flex: 1 0;
     text-overflow: ellipsis;
     text-transform: none;
     white-space: initial;
     word-break: break-word;
     text-align: center;
     word-wrap: unset;
+    overflow-wrap: unset;
   }
 
   .card-chip {
@@ -549,6 +567,7 @@ export default defineComponent({
     white-space: nowrap;
     word-break: normal;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     text-align: inherit;
   }
 

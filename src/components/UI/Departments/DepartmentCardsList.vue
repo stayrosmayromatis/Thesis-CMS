@@ -19,7 +19,7 @@
             <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
               :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
               :timestring="`${lab.FromString} - ${lab.ToString}`" :course_id="courseGuid" :ladb_id="lab.LabId"
-              :completeness_percent="lab.CompletenessPercent" :user_type="userType"></department-card>
+              :completeness_percent="lab.CompletenessPercent" :user_type="userType" :is_assistant="isCourseAssistant"></department-card>
           </div>
         </template>
       </suspense>
@@ -70,6 +70,7 @@ export default defineComponent({
     const router = useRouter();
     const resultArray = ref(new Array<CourseDepartment>());
     const showSpinner = ref(false);
+    const isCourseAssistant = ref(false);
     onMounted(async () => {
       //Make the api call to fetch all labs according to that course_guid
       closeAlert();
@@ -88,9 +89,11 @@ export default defineComponent({
       showSpinner.value = true;
       const getDepartmentsByCourseCallResponse = await MakeAPICall<ApiResult<CourseDepartmentsResponse>>(CourseController, `get-departments-by-course/${course_guid}`, "GET");
       if (!getDepartmentsByCourseCallResponse || !getDepartmentsByCourseCallResponse.Status || !getDepartmentsByCourseCallResponse.Data) {
+        showSpinner.value = false;
         return { Status: false, Data: false, Error: getDepartmentsByCourseCallResponse.Error ?? "Request didn't finish" };
       }
       resultArray.value = getDepartmentsByCourseCallResponse.Data.CourseDepartments;
+      isCourseAssistant.value = getDepartmentsByCourseCallResponse.Data.IsAssistant;
       courseGuid.value = getDepartmentsByCourseCallResponse.Data.CourseId;
       courseCode.value = getDepartmentsByCourseCallResponse.Data.CourseCode;
       courseName.value = getDepartmentsByCourseCallResponse.Data.CourseName;
@@ -110,7 +113,7 @@ export default defineComponent({
       }
       return "Παρακολούθηση δηλώσεων μαθήματος:";
     });
-    return { showSpinner, resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText };
+    return { showSpinner, resultArray, courseGuid, courseCode, courseName, alertTitle, showAlert, typeOfAlert, userType, TitleText,isCourseAssistant };
   },
 });
 </script>

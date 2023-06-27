@@ -382,6 +382,7 @@ export default defineComponent({
   font-size: 1.25rem;
   font-weight: 500;
   hyphens: auto;
+  -webkit-hyphens : auto;
   letter-spacing: 0.0125em;
   min-width: 0;
   overflow-wrap: normal;
@@ -392,6 +393,7 @@ export default defineComponent({
   white-space: pre-line;
   word-break: normal;
   word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .button-dimensions-adjustment {
@@ -409,6 +411,7 @@ export default defineComponent({
   padding: 0 1rem;
   text-transform: uppercase;
   hyphens: auto;
+  -webkit-hyphens: auto;
   letter-spacing: 1px;
   gap: 0.5rem;
 

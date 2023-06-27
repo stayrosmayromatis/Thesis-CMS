@@ -56,6 +56,7 @@ export default defineComponent({
     white-space: normal;
     word-break: break-word;
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .text {
@@ -70,6 +71,7 @@ export default defineComponent({
     white-space: normal;
     word-break: break-word;
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 @media (min-width: 769px) {
 

@@ -2594,6 +2594,8 @@ a {
   background: var(--thumb-color);
   border: var(--thumb-border-width) solid var(--thumb-border-color);
   box-shadow: var(--thumb-shadow);
+  -moz-box-shadow: var(--thumb-shadow);
+  -webkit-box-shadow: var(--thumb-shadow);
   margin-top: -6px;
 }
 .u-form-number input[type="range"]::-webkit-slider-thumb:hover {
@@ -2604,6 +2606,8 @@ a {
   border: none;
   border-radius: 0;
   box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
 }
 .u-form-number input[type="range"]::-webkit-slider-runnable-track {
   background: linear-gradient(var(--track-active-color), var(--track-active-color)) 0/var(--progress) 100% no-repeat, var(--track-color);
@@ -14502,6 +14506,8 @@ div.u-video,
 }
 .u-nav-container-collapse .u-nav-popup .u-nav {
   box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
 }
 .u-nav-container-collapse .u-nav-popup.animating {
   transition: max-height 200ms ease;
@@ -18136,6 +18142,8 @@ blockquote .small:before {
   opacity: 0.75;
   transition: opacity 0.2s;
   box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
 }
 .pswp__button:focus,
 .pswp__button:hover {
@@ -18278,6 +18286,8 @@ blockquote .small:before {
   width: auto;
   right: 44px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
   transform: translateY(6px);
   transition: transform 0.25s;
   -webkit-backface-visibility: hidden;
@@ -21014,6 +21024,8 @@ section.u-dialog-block:not(.u-dialog-open) {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 1.25em 1.25em -0.9375em rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 1.25em 1.25em -0.9375em rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 1.25em 1.25em -0.9375em rgba(0, 0, 0, 0.3);
 }
 .qs-datepicker-container * {
   box-sizing: border-box;

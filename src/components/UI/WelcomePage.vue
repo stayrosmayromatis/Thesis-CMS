@@ -119,6 +119,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     width: 100%;
+    -moz-box-shadow:0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     border: 0px none #f3f3f3;
@@ -133,6 +134,7 @@ export default defineComponent({
     align-items: center;
     width: 100%;
     -webkit-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
+    -moz-box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     box-shadow: 0px 0px 6px 11px rgba(0, 0, 0, 0.06);
     border: 0px none #f3f3f3;
     padding: 1rem;
@@ -177,11 +179,15 @@ a {
         padding: 1rem auto;
         width: 32rem;
         border-radius: 21px 21px 21px 21px;
+        -moz-border-radius: 21px 21px 21px 21px;
+        -webkit-border-radius: 21px 21px 21px 21px;
     }
 
     .main {
         width: fit-content;
         border-radius: 21px 21px 21px 21px;
+        -moz-border-radius: 21px 21px 21px 21px;
+        -webkit-border-radius: 21px 21px 21px 21px;
     }
 }
 

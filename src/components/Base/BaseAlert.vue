@@ -61,15 +61,20 @@ export default defineComponent({
 <style scoped>
 .bounce-enter-active {
     animation: animate-in 0.3s ease-in 0s 1 normal both;
+    -webkit-animation: animate-in 0.3s ease-in 0s 1 normal both;
+    -moz-animation: animate-in 0.3s ease-in 0s 1 normal both;
 }
 
 .bounce-leave-active {
     animation: animate-out 0.3s ease-out 0s 1 normal none;
+    -webkit-animation: animate-out 0.3s ease-out 0s 1 normal none;
+    -moz-animation: animate-out 0.3s ease-out 0s 1 normal none;
 }
 
 @keyframes animate-in {
     0% {
         transform: translateX(-50px);
+        -webkit-transform: translateX(-50px);
         opacity: 0;
         scale: 1;
     }
@@ -81,6 +86,7 @@ export default defineComponent({
 
     100% {
         transform: translateX(0px);
+        -webkit-transform: translateX(0px);
         opacity: 1;
         scale: 1;
     }
@@ -89,6 +95,7 @@ export default defineComponent({
 @keyframes animate-out {
     0% {
         transform: translateX(0px);
+        -webkit-transform: translateX(0px);
         opacity: 1;
         scale: 1;
     }
@@ -100,6 +107,7 @@ export default defineComponent({
 
     100% {
         transform: translateX(-50px);
+        -webkit-transform: translateX(-50px);
         opacity: 0;
         scale: 1;
     }
@@ -107,6 +115,8 @@ export default defineComponent({
 
 .alert-override {
     border-radius: 9999px;
+    -moz-border-radius: 9999px;
+    -webkit-border-radius: 9999px;
     width: fit-content;
     max-width: fit-content;
     height: fit-content;
@@ -140,11 +150,13 @@ export default defineComponent({
     font-size: 1.1rem;
     font-weight: 500;
     hyphens: auto;
+    -webkit-hyphens: auto;
     line-height: 1.5rem;
     overflow-wrap: normal;
     text-transform: none;
     word-break: normal;
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .outer-alert-container :deep(div.v-alert__close) {

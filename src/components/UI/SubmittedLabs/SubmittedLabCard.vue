@@ -265,8 +265,13 @@ export default defineComponent({
     min-width: 320px;
     height: 100%;
     border-radius: 16px;
+    -moz-border-radius: 16px;
+    -webkit-border-radius: 16px;
+    -moz-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    -webkit-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     padding: 0.6rem;
+    outline: 2px solid #d2cece;
 }
 
 .card-title-group {
@@ -280,6 +285,7 @@ export default defineComponent({
 .chip-group {
     display: flex;
     flex: 1;
+    -webkit-flex: 1;
     justify-content: flex-start;
     align-items: center;
     gap: 0.5rem;
@@ -288,6 +294,7 @@ export default defineComponent({
 .media-button-group {
     display: flex;
     flex: 1;
+    -webkit-flex: 1;
     justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
@@ -346,6 +353,8 @@ export default defineComponent({
     padding: 0.6em !important;
     font-size: 0.8rem !important;
     border-radius: 2rem !important;
+    -moz-border-radius: 2rem !important;
+    -webkit-border-radius: 2rem !important;
     height: 2rem !important;
 }
 
@@ -374,6 +383,8 @@ export default defineComponent({
     padding: 0.6em !important;
     font-size: 0.8rem !important;
     border-radius: 2rem !important;
+    -moz-border-radius: 2rem !important;
+    -webkit-border-radius: 2rem !important;
     height: 2rem !important;
 }
 
@@ -417,6 +428,7 @@ export default defineComponent({
     width: 300px;
     text-align: left;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     white-space: break-spaces;
     font-weight: 600;
     line-height: 19px;

@@ -183,6 +183,7 @@ export default defineComponent({
 .lab-details_if_submitted {
     display: flex;
     flex: 1 0;
+    -webkit-flex: 1 0;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -222,6 +223,7 @@ export default defineComponent({
 .view-aligner label {
     word-break: break-word;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     text-align: center;
 }
 

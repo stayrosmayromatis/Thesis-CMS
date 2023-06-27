@@ -427,6 +427,8 @@ export default defineComponent({
 
 .export-button__container :deep(.v-btn--elevated:hover),
 .file-input__container :deep(.v-btn--elevated:hover) {
+    -webkit-box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)), 0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+    -moz-box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)), 0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
     box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)), 0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
 }
 
@@ -434,6 +436,8 @@ export default defineComponent({
     width: 1rem;
     height: 3.5rem;
     border-radius: 28px !important;
+    -moz-border-radius: 28px !important;
+    -webkit-border-radius: 28px !important;
     /* background-color: #1867C0; */
     border: 1px solid #1867C0;
     color: #1867C0;
@@ -491,6 +495,8 @@ export default defineComponent({
     border: 1px solid #8bb3e1;
     opacity: 0.8;
     box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
 }
 
 .upload-button--enabled {

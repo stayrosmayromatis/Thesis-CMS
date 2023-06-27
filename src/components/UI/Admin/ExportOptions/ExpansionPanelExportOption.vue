@@ -132,6 +132,7 @@ export default defineComponent({
 .left_chip--bg>label#courseName {
     font-size: 1rem;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     text-align: center;
     white-space: pre-line;
     padding: 0.5rem 0;
@@ -146,6 +147,7 @@ export default defineComponent({
     border: 1px solid #00c900;
     color: #00c900;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     width: fit-content;
     display: flex;
     flex-direction: row;
@@ -160,6 +162,7 @@ export default defineComponent({
     border: 1px solid #0136e6;
     color: #0136e6;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     width: fit-content;
     display: flex;
     flex-direction: row;

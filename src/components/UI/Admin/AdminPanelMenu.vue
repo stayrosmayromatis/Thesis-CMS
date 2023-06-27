@@ -150,16 +150,20 @@ export default defineComponent({
 
 .admin-panel-container > div.card-override{
   box-shadow: 0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 3px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
+  -webkit-box-shadow: 0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 3px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
+  -moz-box-shadow: 0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 3px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
    background-color: transparent; 
 }
 
 .tab-override {
   word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   display: flex;
   justify-content: center;
   align-items: center;
   flex: 1 0 auto;
+  -webkit-flex: 1 0 auto;
 }
 
 .tab-item_override {
@@ -168,6 +172,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   flex: 1 2 80px;
+  -webkit-flex: 1 2 80px;
   font-size: 0.8rem;
   padding: 0;
   min-width: 80px !important;
@@ -193,6 +198,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     flex: 1 0 auto;
+    -webkit-flex: 1 0 auto;
     font-size: 1rem;
     padding: 0;
     min-width: fit-content;

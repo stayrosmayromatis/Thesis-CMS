@@ -157,6 +157,7 @@ export default defineComponent({
 :deep(.v-card-text) {
   font-weight: 500;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   white-space: pre-line;
   text-align: center;
   font-size: 1.1rem !important;
@@ -168,6 +169,8 @@ export default defineComponent({
 
 :deep(.v-card.v-theme--light.v-card--density-default.v-card--variant-elevated) {
   border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
   margin: 0 1rem;
 }
 
@@ -203,6 +206,8 @@ export default defineComponent({
       .v-card.v-theme--light.v-card--density-default.v-card--variant-elevated
     ) {
     border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
     margin: 0 1rem;
   }
 }

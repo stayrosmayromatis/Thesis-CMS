@@ -586,6 +586,7 @@ export default defineComponent({
 
 .period-label>label {
   word-wrap: break-word;
+  overflow-wrap: break-word;
   text-align: center;
   font-size: 0.95rem;
   font-weight: 450;
@@ -602,7 +603,11 @@ export default defineComponent({
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   box-shadow: var(--card-box-shadow);
+  -webkit-box-shadow: var(--card-box-shadow);
+  -moz-box-shadow: var(--card-box-shadow);
   border-radius: var(--card-border-radius);
+  -moz-border-radius: var(--card-border-radius);
+  -webkit-border-radius: var(--card-border-radius);
 }
 
 .single-option_card--item {
@@ -617,10 +622,12 @@ export default defineComponent({
 .single-option_card--item>span {
   color: black;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   text-align: center;
   font-size: 1.3rem;
   hyphens: auto;
+  -webkit-hyphens: auto;
   font-weight: 400;
   padding: 0.5rem 0.5rem;
 }
@@ -638,6 +645,8 @@ export default defineComponent({
   align-items: center;
   max-width: 8rem;
   border-radius: 16px;
+  -moz-border-radius: 16px;
+  -webkit-border-radius: 16px;
 }
 
 .add-new__period-container--button_container {
@@ -818,6 +827,7 @@ export default defineComponent({
   border: 1px solid #1c4397;
   color: #1c4397;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   gap: 0.5rem;
   height: 2rem;
   padding: 0.3rem 1.2rem;
@@ -838,6 +848,8 @@ export default defineComponent({
 .error-border {
   border: 1px solid #ff4545;
   border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
 }
 
 @media (min-width: 769px) {

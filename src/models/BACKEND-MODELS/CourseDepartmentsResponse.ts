@@ -12,6 +12,7 @@ export interface CourseDepartmentsResponse {
   Attendance?: AttendanceEnum;
   AttendanceString: string;
   CourseDepartments: Array<CourseDepartment>;
+  IsAssistant : boolean;
   Count: number;
 }
 

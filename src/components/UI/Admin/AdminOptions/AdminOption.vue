@@ -219,6 +219,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   flex: 1 0 auto;
+  -webkit-flex: 1 0 auto;
   width: 100%;
   height: 3rem;
   min-width: 320px;
@@ -227,6 +228,7 @@ export default defineComponent({
   background-color: var(--header-label-background-color);
   color: var(--header-label-text-color);
   word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   text-align: center;
   padding: 1.2rem;
@@ -238,7 +240,11 @@ export default defineComponent({
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   box-shadow: var(--card-box-shadow);
+  -moz-box-shadow: var(--card-box-shadow);
+  -webkit-box-shadow: var(--card-box-shadow);
   border-radius: 999px;
+  -moz-border-radius: 999px;
+  -webkit-border-radius: 999px;
 }
 
 .single-admin_card--item {
@@ -253,10 +259,12 @@ export default defineComponent({
 .single-admin_card--item>span {
   color: #1c4397;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   text-align: center;
   font-size: 1.1rem;
   hyphens: auto;
+  -webkit-hyphens: auto;
   font-weight: 400;
   white-space: break-spaces;
 }
@@ -279,6 +287,8 @@ export default defineComponent({
   padding: 0.6em !important;
   font-size: 0.8rem !important;
   border-radius: 2rem !important;
+  -moz-border-radius: 2rem !important;
+  -webkit-border-radius: 2rem !important;
   height: 2rem !important;
 }
 

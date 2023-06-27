@@ -106,6 +106,7 @@ export default defineComponent({
 
 .export-label>label {
   word-wrap: break-word;
+  overflow-wrap: break-word;
   text-align: center;
   font-size: 0.95rem;
   font-weight: 450;

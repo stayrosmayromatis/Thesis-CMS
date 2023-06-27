@@ -157,6 +157,7 @@ export default defineComponent({
     border: 1px solid #1c4397;
     color: #1c4397;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     height: fit-content;
 }
 
@@ -191,6 +192,7 @@ export default defineComponent({
     white-space: pre-line;
     word-break: break-word;
     word-wrap: normal;
+    overflow-wrap: normal;
     font-size: 1rem;
     -webkit-hyphens: auto;
     hyphens: auto;
@@ -208,6 +210,7 @@ export default defineComponent({
     border: 1px solid #00c900;
     color: #00c900;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     width: inherit;
     display: flex;
     flex-direction: row;
@@ -226,6 +229,7 @@ export default defineComponent({
     border: 1px solid #0136e6;
     color: #0136e6;
     word-wrap: break-word;
+    overflow-wrap: break-word;
     width: inherit;
     display: flex;
     flex-direction: row;
@@ -257,16 +261,19 @@ export default defineComponent({
         margin: 0.5rem 0.5rem;
         width: fit-content;
         flex: 1 0;
+        -webkit-flex: 1 0;
     }
 
     .chip-separator__left-chip {
         flex: 1 0;
+        -webkit-flex: 1 0;
     }
 
     .chip-separator__right-chip {
         width: 5rem;
         justify-content: flex-end;
         flex: 1 0;
+        -webkit-flex: 1 0;
     }
 
     .lab-chip__details {
@@ -280,7 +287,7 @@ export default defineComponent({
 
     .aligner {
         word-wrap: break-word;
-        overflow-wrap: anywhere;
+        overflow-wrap: break-word;
         overflow: visible;
         min-width: 8rem;
         max-width: 8rem;
@@ -289,6 +296,7 @@ export default defineComponent({
     @media (min-width: 769px) {
         .chip-separator__right-chip {
             flex: 2 0;
+            -webkit-flex: 2 0;
         }
 
         .aligner {
@@ -301,6 +309,7 @@ export default defineComponent({
     @media (min-width: 1025px) {
         .chip-separator__right-chip {
             flex: 2 0;
+            -webkit-flex: 2 0;
         }
     }
 }

@@ -49,7 +49,7 @@
           <div class="enroll-button">
             <v-tooltip :text="ToolTipText" location="bottom">
               <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" @click="handActionByUserType()" variant="outlined"
+                <v-btn v-bind="props" @click="handActionByUserType()" variant="outlined" :disabled="is_assistant"
                   :class="{ 'button__border-color': completeness_percent < 100, 'button__border-color__full': completeness_percent === 100 }"
                   :rounded="true">
                   <div class="enroll-button__inside">
@@ -127,10 +127,15 @@ export default defineComponent({
       type: Number,
       required: true,
       default: 2
+    },
+    is_assistant:{
+      type: Boolean,
+      required:true,
+      default:false
     }
   },
   setup(props) {
-    const { available_seats, duration, max_seats, department_name, timestring, ladb_id, course_id, completeness_percent, user_type } = toRefs(props);
+    const { available_seats, duration, max_seats, department_name, timestring, ladb_id, course_id, completeness_percent, user_type,is_assistant } = toRefs(props);
     //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
     const { setTypeOfAlert, openAlert, closeAlert } = useAlert();
@@ -140,7 +145,7 @@ export default defineComponent({
         return "ΠΛΗΡΕΣ";
       }
       if (!completeness_percent.value || completeness_percent.value < 100) {
-        if (user_type.value === 2) {
+        if (user_type.value === 2) { //STUDENT
           return "ΕΓΓΡΑΦΗ";
         }
         else {
@@ -252,6 +257,8 @@ export default defineComponent({
 
 .parent-card-container__border-radius {
   border-radius: 32px;
+  -moz-border-radius: 32px;
+  -webkit-border-radius: 32px;
   min-width: 320px;
 }
 
@@ -294,6 +301,7 @@ div.parent-card__main-info__labels {
 .label__available-seats label,
 .label__available-seats label {
   flex: 1;
+  -webkit-flex: 1;
   text-align: right;
   font-weight: 500;
 }
@@ -306,6 +314,7 @@ div.parent-card__main-info__labels {
   width: 100%;
   margin-top: 0.5rem;
   flex: 1 0;
+  -webkit-flex: 1 0;
   /* gap: 0.5rem;*/
 }
 
@@ -316,6 +325,7 @@ div.parent-card__main-info__labels {
   align-items: center;
   width: 100%;
   flex: 1 0;
+  -webkit-flex: 1 0;
   /* gap: 1.5rem; */
 }
 
@@ -326,6 +336,7 @@ div.parent-card__main-info__labels {
   align-items: center;
   width: 100%;
   flex: 1 0;
+  -webkit-flex: 1 0;
   /* gap: 1.5rem;*/
 }
 
@@ -336,6 +347,7 @@ div.parent-card__main-info__labels {
   align-items: center;
   width: 100%;
   flex: 1 0;
+  -webkit-flex: 1 0;
   /* gap: 1.5rem; */
 }
 
@@ -347,6 +359,7 @@ div.parent-card__main-info__labels {
   width: 100%;
   /* gap: 1.5rem; */
   flex: 1 0;
+  -webkit-flex: 1 0;
 }
 
 .parent-card__main-info>.v-card-text {
