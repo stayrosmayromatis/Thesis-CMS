@@ -173,6 +173,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: 100%;
+  column-gap: 0;
 }
 
 .parent-label {
@@ -243,7 +244,7 @@ export default defineComponent({
   }
 
   .temp-class {
-
+    column-gap: 0;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -272,9 +273,10 @@ export default defineComponent({
 @media (min-width: 1025px) {
   .temp-class {
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    column-gap: 1.5rem;
   }
 
   .outer-section :deep(.v-btn.v-btn--density-default) {

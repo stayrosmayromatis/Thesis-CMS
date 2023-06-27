@@ -29,7 +29,7 @@
               </div>
               <v-divider inset></v-divider>
               <div class="label-centerer">
-                <label for="year">Βασικά Στοιχεία</label>
+                <label>Βασικά Στοιχεία</label>
               </div>
               <div class="form-first">
                 <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
@@ -49,7 +49,7 @@
               </div>
               <v-divider inset></v-divider>
               <div class="label-centerer">
-                <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
+                <label>Τμήματα / Ώρες / Διαθεσιμότητα</label>
               </div>
               <!-- <div class="info-centerer" v-if="departments.length">
               <base-alert :alert-type-prop="'info'" :show="true"
@@ -69,15 +69,16 @@
                     <path fill="white"
                       d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z" />
                   </svg>
-                  <label>ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
+                  <label style="cursor: pointer;">ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
                 </v-btn>
               </div>
               <lab-form v-for="department in departments" :key="department.Guid" :department="department"
                 :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
                 @global-error="validateEachDepartment"></lab-form>
-              <div class="submit-button" v-if="departments.length">
-                <v-btn id="submit-btn" :disabled="buttonDisablity" type="submit">{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" :
-                  "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn>
+              <div class="submit-button" v-if="departments && departments.length && !buttonDisablity">
+                <v-btn id="submit-btn" type="submit">
+                    {{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" : "ΚΑΤΑΧΩΡΗΣΗ" }}
+                </v-btn>
               </div>
             </v-container>
           </v-form>
@@ -129,6 +130,7 @@ import {
 } from "@/models/BACKEND-MODELS/UpdateCourseRequest";
 import BaseSpinner from "@/components/Base/BaseSpinner.vue";
 import { computedEager } from "@vueuse/core";
+import { onErrorCaptured } from "vue";
 export default defineComponent({
   components: {
     LabForm,
@@ -208,6 +210,9 @@ export default defineComponent({
       await GetSeededProfessors();
       seededProfessors.value = SeedProfessorsArray.value;
 
+    });
+    onErrorCaptured((err) => {
+      console.log('----------------',err);
     });
     //SeedProfessorsSegment
     const emitMobileViewClose = (): void => {
@@ -475,6 +480,8 @@ export default defineComponent({
     };
 
     const submitForm = async () => {
+      console.log("GAMW THN MPANAGIA THN PORNH TOSOUS MHNES");
+      
       v$.value.$validate();
       let allDeptsAreCorrect: boolean | undefined = true;
       if (v$.value.$error) {
@@ -937,6 +944,7 @@ export default defineComponent({
   align-items: center;
   flex-grow: 1;
   margin: 1rem 0rem;
+  cursor: pointer;
 }
 
 .error-color {
@@ -995,6 +1003,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: 100%;
+  margin: 0.5rem auto;
 }
 
 :deep(.v-chip.v-chip--density-default) {

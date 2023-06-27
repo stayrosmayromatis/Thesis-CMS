@@ -3,7 +3,7 @@
     <div class="mobile-form-control">
       <div class="div-input-placeholder">
         <input :class="{ 'error-border': department.errorOnDeptId }" @input="isInputEmpty" class="input-placeholder"
-          type="text" placeholder="(π.χ. Τ1)" v-model="department.deptId" />
+          type="text" name="input-placeholder" placeholder="(π.χ. Τ1)" v-model="department.deptId" />
       </div>
       <div class="slider-grow">
         <suspense>
@@ -198,8 +198,8 @@ export default defineComponent({
 .error-border {
   border: 0.1px solid #e6415d;
   border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+  /* -moz-border-radius: 5px;
+  -webkit-border-radius: 5px; */
 }
 
 .form-control-add-field {
