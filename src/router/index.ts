@@ -70,7 +70,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/components/UI/Admin/AdminPanelMenu.vue"),
     props: true,
     meta: { requiresAuth: true, requiresIsTeacher: true },
-    beforeEnter: [protectTeacherRoutes,reloadPage],
+    beforeEnter: [protectTeacherRoutes],
   },
   // {
   //   path: "/poutsa",
@@ -142,21 +142,11 @@ async function protectPeriodInitializedRoutes(
     GetPeriodState,
     IsPeriodActive,
   } = usePeriod();
-  if(!IsPeriodActive.value){
-    await GetPeriodState();
-  } 
+  await GetPeriodState();
   if (!IsPeriodActive.value && !to.meta.requiredPeriodInitialized) return next();
   if (to.meta.requiredPeriodInitialized === true && IsPeriodActive.value) return next();
-  return next({name: "sign-in"});
+  return next({name: "submittedLabs"});
   
 }
 
-function reloadPage(to:RouteLocationNormalized,from:RouteLocationNormalized,next:NavigationGuardNext){
-  console.log("mpika");
-  if(from.name === to.name){
-    location.reload();
-    return;
-  }
-  return next();
-}
 export default router;
