@@ -3,27 +3,35 @@
         <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true"
             :inner-title="confirmDeletionInnerTitle" :inner-description="confirmDeletionInnerDescription"
             @close-modal="showConfirmDeletionModal = false"></base-dialog>
-        <v-card class="card-item" :class="{ 'gray-out': IsAssistant }">
+        <v-card class="card-item" 
+        >
+        <!-- :class="{ 'gray-out': IsAssistant }" -->
             <div class="card-title-group">
                 <div class="chip-group">
+                    <!-- :class="{ 'gray-out-card-chip-semester': IsAssistant }" -->
                     <v-chip outlined="true" class="card-chip-semester"
-                        :class="{ 'gray-out-card-chip-semester': IsAssistant }">{{ Semester }}</v-chip>
-                    <v-chip outlined="true" :class="{ 'gray-out-card-chip-attendance': IsAssistant }"
+                        >{{ Semester }}</v-chip>
+                        <!-- :class="{ 'gray-out-card-chip-attendance': IsAssistant }" -->
+                    <v-chip outlined="true" 
                         class="card-chip-attendance">{{ lab.AttendanceString }}</v-chip>
                 </div>
                 <div class="media-button-group">
-                    <div>
+                    <div v-if="IsStaffOrAdmin && !IsAssistant || (!IsStaffOrAdmin && IsPeriodActive) ">
                         <v-tooltip :text="DeletionText" location="bottom">
                             <template v-slot:activator="{ props }">
-                                <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="delete-button"
+                                <!-- :class="{ 'not-visible-buttons': IsAssistant }"  -->
+                                <v-btn 
+                                v-bind="props" class="delete-button"
                                     icon="mdi-trash-can" size="x-small" @click="CheckDelete"></v-btn>
                             </template>
                         </v-tooltip>
                     </div>
-                    <div v-if="IsStaffOrAdmin">
+                    <div v-if="IsStaffOrAdmin && !IsAssistant">
                         <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
                             <template v-slot:activator="{ props }">
-                                <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="edit-button"
+                                <!-- :class="{ 'not-visible-buttons': IsAssistant }" -->
+                                <v-btn 
+                                 v-bind="props" class="edit-button"
                                     icon="mdi-pencil" size="x-small" @click="redirectToEditComponent"></v-btn>
                             </template>
                         </v-tooltip>
@@ -64,6 +72,7 @@ import { PropType, defineComponent, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { confirm } from "@/composables/dialog.composable";
 import BaseDialog from "@/components/Base/BaseDialog.vue";
+import { usePeriod } from '@/composables/usePeriod.composable';
 export default defineComponent({
     props: {
         title: String,
@@ -96,6 +105,7 @@ export default defineComponent({
         const { MakeAPICall } = useAxiosInstance();
         const router = useRouter();
         const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
+        const {IsPeriodActive} = usePeriod();
         const LabCode = computedEager(() => {
             return `( ${lab.value.CourseCode.trim()} )`;
         });
@@ -134,18 +144,11 @@ export default defineComponent({
         });
         const IsStaffOrAdmin = computedEager(() => {
             if (!personAffiliation.value) return false;
-            if (
-                personAffiliation.value === PersonAffiliation.STAFF ||
-                personAffiliation.value === PersonAffiliation.ADMIN
-            )
-                return true;
-            return false;
+            return personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN;
         });
         const DeletionText = computedEager(() => {
             if (!personAffiliation.value) return "Διαγραφή δηλωτέου ";
-            if (personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN)
-                return "Διαγραφή εργαστηρίου";
-            return "Διαγραφή δηλωτέου";
+            return (personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN) ? "Διαγραφή εργαστηρίου":"Διαγραφή δηλωτέου";
         });
         const IsAssistant = computedEager(() => !lab.value || !lab.value.IsAssistantProfessor ? false : true);
         const CheckDelete = async (): Promise<void> => {
@@ -248,6 +251,7 @@ export default defineComponent({
             LabTitle,
             LabTimes,
             showConfirmDeletionModal,
+            IsPeriodActive,
             CheckDelete,
             redirectToEditComponent
         }

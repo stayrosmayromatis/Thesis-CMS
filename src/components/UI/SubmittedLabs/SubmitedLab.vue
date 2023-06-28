@@ -27,7 +27,7 @@
           <v-chip outlined="true" :class="{ 'gray-out-card-chip-attendance': IsAssistant }" class="card-chip">{{
             lab.AttendanceString }}</v-chip>
           <div class="media-button-group">
-            <div>
+            <div v-if="IsPeriodActive">
               <v-tooltip :text="DeletionText" location="bottom">
                 <template v-slot:activator="{ props }">
                   <v-btn :class="{ 'not-visible-buttons': IsAssistant }" v-bind="props" class="delete-button"
@@ -35,8 +35,7 @@
                 </template>
               </v-tooltip>
             </div>
-            <!-- <v-icon></v-icon> -->
-            <!-- Διαγραφη -->
+
             <div v-if="IsStaffOrAdmin">
               <v-tooltip text="Τροποποίηση Εργαστηρίου" location="bottom">
                 <template v-slot:activator="{ props }">
@@ -69,6 +68,7 @@ import { useAlert } from "@/composables/showAlert.composable";
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { useRouter } from "vue-router";
 import { computedEager } from "@vueuse/core";
+import { usePeriod } from "@/composables/usePeriod.composable";
 export default defineComponent({
   props: {
     title: String,
@@ -114,6 +114,7 @@ export default defineComponent({
       // alertTitle,
       // typeOfAlert,
     } = useAlert();
+    const {IsPeriodActive} = usePeriod();
     const LabCode = computedEager(() => {
       return `(${lab.value.CourseCode.trim()})`;
     });
@@ -169,13 +170,7 @@ export default defineComponent({
       return "Διαγραφή δηλωτέου";
     });
     const IsAssistant = computedEager(() => {
-      if (
-        !lab.value ||
-        lab.value.IsAssistantProfessor === false ||
-        !lab.value.IsAssistantProfessor
-      )
-        return false;
-      return true;
+      return (!lab.value || !lab.value.IsAssistantProfessor) ? false : true;
     });
     const CheckDelete = async (): Promise<void> => {
       closeAlert();
@@ -285,8 +280,9 @@ export default defineComponent({
       IsAssistant,
       LabTitle,
       LabTimes,
-      CheckDelete,
       showConfirmDeletionModal,
+      IsPeriodActive,
+      CheckDelete,
       redirectToEditComponent
     };
   },
