@@ -314,9 +314,12 @@ a:hover {}
 }
 
 .mobile-logo a {
-  font-size: large;
-  text-transform: uppercase;
   font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  white-space: break-spaces;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .nav__item--cta {
@@ -334,9 +337,9 @@ a:hover {}
   color: white;
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
     0 8px 10px -6px rgb(0 0 0 / 0.1);
-    -webkit-box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+  -webkit-box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
     0 8px 10px -6px rgb(0 0 0 / 0.1);
-    -moz-box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+  -moz-box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
     0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
@@ -396,7 +399,7 @@ a:hover {}
     max-width: 1025px;
     font-weight: 600;
     font-size: x-large;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
   }
 
   .main-nav {
@@ -472,7 +475,7 @@ a:hover {}
   }
 
   .logo {
-    width: 40%;
+    width: 70%;
     justify-content: flex-start;
     max-width: 1160px;
     font-size: 1.3965rem;
@@ -499,4 +502,5 @@ a:hover {}
   .button-groupper {
     margin: 0 0.5rem;
   }
-}</style>
+}
+</style>

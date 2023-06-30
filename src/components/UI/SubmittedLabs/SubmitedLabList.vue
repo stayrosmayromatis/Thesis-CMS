@@ -11,7 +11,7 @@
     </base-dialog> -->
       <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
       <div class="parent-card">
-        <v-card elevation="10" class="parent-label">Δηλωθεντα Εργαστήρια</v-card>
+        <v-card elevation="10" class="parent-label">{{isTeacher}}</v-card>
         <base-result-empty :show="!showSpinner && !showLabsIfFound" :title="showEmptyResultTitle"
           :description="showEmptyResultDescription"></base-result-empty>
         <base-spinner :show="showSpinner"></base-spinner>
@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, defineAsyncComponent } from "vue";
+import { defineComponent, ref, onMounted, defineAsyncComponent, computed } from "vue";
 //import BaseDialog from "@/components/Base/BaseDialog.vue";
 
 import { useAlert } from "@/composables/showAlert.composable";
@@ -128,7 +128,10 @@ export default defineComponent({
     const pdfCreationCompleted = (val: boolean) => {
       callToGeneratePdf.value = val;
     };
-
+    const isTeacher = computed(():string => {
+      if(!personAffiliation.value) return "Δηλωθέντα Εργαστήρια";
+      return personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN ? "Τα εργαστηριά μου" : "Δηλωθέντα Εργαστήρια";
+    });
     const invokeGeneratePdf = () => {
       callToGeneratePdf.value = true;
     };
@@ -167,6 +170,7 @@ export default defineComponent({
       showSpinner,
       showEmptyResultTitle,
       showEmptyResultDescription,
+      isTeacher,
       populateSubmittedLabs
     };
   },
