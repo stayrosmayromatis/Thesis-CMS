@@ -129,8 +129,8 @@ export default defineComponent({
       callToGeneratePdf.value = val;
     };
     const isTeacher = computed(():string => {
-      if(!personAffiliation.value) return "Δηλωθέντα Εργαστήρια";
-      return personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN ? "Τα εργαστηριά μου" : "Δηλωθέντα Εργαστήρια";
+      if(!personAffiliation.value) return "Δηλωθέντα Εργαστήριακά Τμήματα";
+      return personAffiliation.value === PersonAffiliation.STAFF || personAffiliation.value === PersonAffiliation.ADMIN ? "Τα εργαστηριά μου" : "Δηλωθέντα Εργαστήριακά Τμήματα";
     });
     const invokeGeneratePdf = () => {
       callToGeneratePdf.value = true;

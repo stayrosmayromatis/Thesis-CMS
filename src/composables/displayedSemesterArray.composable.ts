@@ -42,7 +42,7 @@ const DisplayedLabs = ref([
     isActive: false,
   },
   {
-    title: "Η ΧΕΙΜΕΡΙΝΟ",
+    title: "Η ΕΑΡΙΝΟ",
     value: LabSemesterEnum.H_EAR,
     isActive: false,
   },
@@ -97,7 +97,7 @@ export function useDisplayedLabs() {
           isActive: false,
         },
         {
-          title: "Η ΧΕΙΜΕΡΙΝΟ",
+          title: "Η ΘΕΡΙΝΟ",
           value: LabSemesterEnum.H_EAR,
           isActive: false,
         },

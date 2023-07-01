@@ -1,6 +1,8 @@
 <template>
   <div class="parent-card-container">
-    <v-card elevation="10" class="parent-card-container__border-radius" :disabled="completeness_percent === 100">
+    <v-card elevation="10" class="parent-card-container__border-radius" 
+    :disabled="completeness_percent === 100 && user_type === 2"
+    >
       <div class="parent-card__department-title">
         <v-card-title> {{ department_name }} </v-card-title>
       </div>
