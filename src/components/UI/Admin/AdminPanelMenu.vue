@@ -82,7 +82,7 @@ export default defineComponent({
     }> >= ref([
       {
         id: uuidv4().toString(),
-        name: "Εξαγωγη Δηλωσεων",
+        name: "Εξαγωγή Δηλώσεων",
         component: "ExportOption",
       },
     ]);
@@ -122,11 +122,11 @@ export default defineComponent({
       if(isAdmin.value == true){
         component_loader.value = [...component_loader.value,{
           id: uuidv4().toString(),
-          name: "Διαχειριση Περιοδου",
+          name: "Διαχείριση Περιόδου",
           component: "PeriodOption",  
         },{
         id: uuidv4().toString(),
-        name: "Διαχειριστες",
+        name: "Διαχειριστές",
         component: "AdminOption",
       }];
       }
