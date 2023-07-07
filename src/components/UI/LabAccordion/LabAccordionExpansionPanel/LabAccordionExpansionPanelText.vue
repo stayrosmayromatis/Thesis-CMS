@@ -20,7 +20,7 @@
                                 :location="'bottom'">
                                 <template v-slot:activator="{ props }">
                                     <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                                        <svg width="35" height="35" viewBox="0 0 24 24">
                                             <path fill="#00c900"
                                                 d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z" />
                                         </svg>
@@ -40,7 +40,7 @@
                             <v-tooltip :text="`Απαγορεύεται η δήλωση`" :location="'bottom'">
                                 <template v-slot:activator="{ props }">
                                     <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+                                        <svg width="35" height="35" viewBox="0 0 24 24">
                                             <path fill="#ff4646"
                                                 d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z" />
                                         </svg>

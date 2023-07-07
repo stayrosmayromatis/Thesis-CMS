@@ -19,7 +19,7 @@
                                 'upload-button--disabled': fileInputError,
                                 'upload-button--enabled': !fileInputError
                             }" :disabled="fileInputError" @click="uploadTheFile">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
+                                <svg width="25" height="25" viewBox="0 0 24 24">
                                     <path fill="white"
                                         d="M11 20H6.5q-2.28 0-3.89-1.57Q1 16.85 1 14.58q0-1.95 1.17-3.48q1.18-1.53 3.08-1.95q.63-2.3 2.5-3.72Q9.63 4 12 4q2.93 0 4.96 2.04Q19 8.07 19 11q1.73.2 2.86 1.5q1.14 1.28 1.14 3q0 1.88-1.31 3.19T18.5 20H13v-7.15l1.6 1.55L16 13l-4-4l-4 4l1.4 1.4l1.6-1.55Z" />
                                 </svg>
@@ -52,7 +52,7 @@
                     <v-btn v-bind="props" type="button" class="export--button__override" density="default" rounded
                         @click.left="serveTheFileRaw">
                         <div class="export--button" style="cursor: pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24">
+                            <svg width="27" height="27" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="m14 2l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8m4 18V9h-5V4H6v16h12m-6-1l-4-4h2.5v-3h3v3H16l-4 4Z" />
                             </svg>
