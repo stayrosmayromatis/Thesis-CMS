@@ -79,7 +79,7 @@ export default defineComponent({
       const makeInfoCallResponse = await MakeInfoCall();
       if (!makeInfoCallResponse || !makeInfoCallResponse.Status || makeInfoCallResponse.Error || !makeInfoCallResponse.Data) {
         await setErrorPushToHome(
-          makeInfoCallResponse.Error,
+          makeInfoCallResponse.Error as string,
           makeInfoCallResponse.Description
         );
         return;
@@ -87,7 +87,7 @@ export default defineComponent({
       const determineIfAuthResponse = await DetermineIfAuth(makeInfoCallResponse.Data);
       if (!determineIfAuthResponse || !determineIfAuthResponse.Status || determineIfAuthResponse.Error || !determineIfAuthResponse.Data) {
         await setErrorPushToHome(
-          determineIfAuthResponse.Error,
+          determineIfAuthResponse.Error as string,
           determineIfAuthResponse.Description
         );
         return;
