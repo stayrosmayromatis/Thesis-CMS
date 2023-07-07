@@ -9,7 +9,6 @@
     <base-spinner :show="isLoading"></base-spinner>
     <base-result-empty :show="!isLoading && personalisedCourses.length === 0" :title="resultEmptyTitle"
       :description="resutlEmptyDesc"></base-result-empty>
-    <!-- <v-app> -->
     <v-expansion-panels v-if="!isLoading && personalisedCourses && personalisedCourses.length">
       <v-expansion-panel v-for="lab in personalisedCourses" :key="lab.CourseGUID" :readonly="isReadOnly(lab)">
         <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
@@ -20,7 +19,6 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-    <!-- </v-app> -->
   </section>
 </template>
 
@@ -56,7 +54,6 @@ export default defineComponent({
     const resutlEmptyDesc = ref("Το φίλτρο επιλογής είναι κενό. Επιλέξτε εξάμηνο είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων, ώστε να ξεκινήσει η διαδικασία αναζήτησης");
     const isLoading = ref(false);
     const userType = ref<PersonAffiliation>();
-    //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
     const RequestLabs = async () => {
       const requestArray = selectedSemesters.value.map((item) => item.value);
@@ -71,7 +68,6 @@ export default defineComponent({
         !personalised_response_data.Data.PersonalisedCourses
       ) {
         personalisedCourses.value = [];
-        // resultEmptyTitle.value = "Κανένα Αποτέλεσμα";
         resutlEmptyDesc.value ="Επιλέξτε Εξάμηνο, είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων, ώστε να ξεκινήσει η διαδικασία αναζήτησης";
         return;
       }
@@ -128,8 +124,7 @@ export default defineComponent({
   max-width: 100rem;
 }
 
-.outer-section :deep(.v-expansion-panel--active:not(:first-child),
-  .v-expansion-panel--active + .v-expansion-panel) {
+.outer-section :deep(.v-expansion-panel--active:not(:first-child),.v-expansion-panel--active + .v-expansion-panel) {
   margin-top: 0;
 }
 .outer-section :deep(.v-expansion-panel-title__icon) {

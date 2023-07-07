@@ -1,8 +1,6 @@
 <template>
     <div class="lab-accordion-expansion-panel-text-parent" @click="emitToParentCloseMobile">
         <label>{{ lab.ShortDescription }}</label>
-        <!-- <label>Αυτή ειναι πραγματικά μια πάρα πολύ μεγάλη περιγραφή,θα πρέπει να ανταποκριθέι αναλόγως όπως και να έχει με
-            πατάτες</label> -->
         <div class="lab-details_if_submitted">
             <div v-if="user_type === 2">
                 <div v-if="(
@@ -32,18 +30,11 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="(
-                    lab.CanSubmit === false &&
-                    lab.HasAlreadySubmitted === false &&
-                    lab.DeniedReason
-                )
-                    ">
+                <div v-if="(lab.CanSubmit === false && lab.HasAlreadySubmitted === false && lab.DeniedReason)">
                     <div class="lab-details_if_submitted__chose">
                         <div class="view-aligner">
                             <label>{{ deniedReasonHandler }}</label>
                             <label>{{ deniedReasonTextWithDates }}</label>
-                            <!-- <label>Θυρίδα προτεραιότητας κλειστή.</label>
-                      <label>{{ `Δήλώσεις ανοικτές απο 17-05-2023, εως 17-05-2023` }}</label> -->
                         </div>
                         <div>
                             <v-tooltip :text="`Απαγορεύεται η δήλωση`" :location="'bottom'">
@@ -60,14 +51,10 @@
                     </div>
                 </div>
             </div>
-            <!-- <div v-if="userType === 1"></div> -->
             <v-btn v-if="user_type && (user_type === 2 &&
                 lab.CanSubmit === true &&
                 lab.HasAlreadySubmitted === false) || (user_type === 1)
-                " @click="pushToHandle" color="#a3cef1" elevation="4">
-
-                {{ pushToHandleButtonText
-                }}</v-btn>
+                " @click="pushToHandle" color="#a3cef1" elevation="4">{{ pushToHandleButtonText}}</v-btn>
         </div>
     </div>
 </template>

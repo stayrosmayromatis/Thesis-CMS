@@ -99,11 +99,6 @@
         </div>
 
         <div class="nav__item--cta" v-if="isLoggedIn">
-          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path
-                d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm7.753 18.305c-.261-.586-.789-.991-1.871-1.241-2.293-.529-4.428-.993-3.393-2.945 3.145-5.942.833-9.119-2.489-9.119-3.388 0-5.644 3.299-2.489 9.119 1.066 1.964-1.148 2.427-3.393 2.945-1.084.25-1.608.658-1.867 1.246-1.405-1.723-2.251-3.919-2.251-6.31 0-5.514 4.486-10 10-10s10 4.486 10 10c0 2.389-.845 4.583-2.247 6.305z" />
-            </svg> -->
-          <!-- <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><circle cx="12" cy="8" r="2.1" fill="currentColor" opacity=".3"/><path fill="currentColor" d="M12 14.9c-2.97 0-6.1 1.46-6.1 2.1v1.1h12.2V17c0-.64-3.13-2.1-6.1-2.1z" opacity=".3"/><path fill="currentColor" d="M12 13c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4zm6.1 5.1H5.9V17c0-.64 3.13-2.1 6.1-2.1s6.1 1.46 6.1 2.1v1.1zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4zm0-6.1a2.1 2.1 0 1 1 0 4.2a2.1 2.1 0 0 1 0-4.2z"/></svg> -->
           <!-- LOGGED IN USER ICON SVG -->
           <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
             <path fill="currentColor"
@@ -136,7 +131,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted, defineComponent, ref, computed, toRefs } from "vue";
+import { defineComponent, ref, computed, toRefs } from "vue";
 import { computedEager, useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth.composable";

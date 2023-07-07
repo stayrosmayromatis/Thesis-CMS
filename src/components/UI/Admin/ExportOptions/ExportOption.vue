@@ -43,7 +43,6 @@ export default defineComponent({
     const personalisedCourses = ref(new Array<PersonalisedCourseBySemester>());
     const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
     const { scrollToTop } = useTimeObjectExtensions();
-    //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
 
     onMounted(async () => {

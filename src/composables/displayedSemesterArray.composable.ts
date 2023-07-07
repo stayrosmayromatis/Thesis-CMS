@@ -97,7 +97,7 @@ export function useDisplayedLabs() {
           isActive: false,
         },
         {
-          title: "Η ΘΕΡΙΝΟ",
+          title: "Η ΕΑΡΙΝΟ",
           value: LabSemesterEnum.H_EAR,
           isActive: false,
         },

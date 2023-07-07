@@ -10,7 +10,7 @@
             </span>
         </div>
         <transition name="file-input">
-            <div class="sth" v-if="theoryPrecedesFlag">
+            <div class="file-input" v-if="theoryPrecedesFlag">
                 <div class="file-input__container">
                     <v-tooltip location="bottom" :text="'Μεταφόρτωση αρχείου'">
                         <template v-slot:activator="{ props }">
@@ -32,12 +32,8 @@
                         :counter-size-string="counterSizeString" :accept="acceptableFileTypes" show-size
                         :persistent-hint="true" :prepend-icon="''" density="comfortable" :variant="'underlined'"
                         :hint="fileInputHint" :rules="validationRules" :error="errorOnFileInput"
-                        :error-messages="errorOnFileInputMessage" validate-on="input" chips
-                        
+                        :error-messages="errorOnFileInputMessage" validate-on="input" chips    
                         >
-                        <!-- @click:clear="clearErrorIfExists"
-                        @update:model-value="logIt"
-                        @change="logIt"  -->
                         <template v-slot:selection="{ fileNames }">
                             <template v-for="fileName in fileNames" :key="fileName">
                                 <v-chip size="small" label color="primary" class="me-2">
@@ -55,7 +51,6 @@
                 <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" type="button" class="export--button__override" density="default" rounded
                         @click.left="serveTheFileRaw">
-                        <!-- @click.left="doSth" -->
                         <div class="export--button" style="cursor: pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24">
                                 <path fill="currentColor"
@@ -81,7 +76,6 @@ import { toRefs } from 'vue';
 import { computed, defineComponent, ref } from 'vue';
 import { InfoController } from '@/config';
 import * as XLSX from 'xlsx';
-// import Papa from 'papaparse';
 import Papa from 'papaparse';
 import { AcceptableFileTypes } from "@/config";
 import { CourseController } from '@/config';
@@ -106,7 +100,7 @@ export default defineComponent({
     },
     setup(props) {
         const files = ref(new Array<globalThis.File>());
-        const { course_guid, course_code } = toRefs(props);
+        const { course_guid} = toRefs(props);
         const { closeAlert, setTypeOfAlert, openAlert } = useAlert();
         const theoryPrecedesFlag = ref(false);
         const errorOnFileInput = ref(false);
@@ -163,7 +157,7 @@ export default defineComponent({
             const downloadExportIDT = await DownloadExportFileRequest();
             if (!downloadExportIDT.Status) {
                 setTypeOfAlert('error');
-                openAlert(downloadExportIDT.Error!);
+                openAlert(downloadExportIDT.Error! as string);
                 closeAlert(2000);
                 return;
             }
@@ -179,8 +173,6 @@ export default defineComponent({
                 },
                 setBackendInstanceAuth()
             );
-            //const downloadExportFileRequest = await MakeAPICall(InfoController,`serve-item-csv/${course_guid.value}`,);
-
             if (downloadExportFileRequest.isFinished.value) {
                 if (downloadExportFileRequest.error.value && downloadExportFileRequest.error.value.response?.status === 404)
                     return { Status: false, Data: false, Error: "Δεν βρέθηκε ο πόρος" };
@@ -259,7 +251,7 @@ export default defineComponent({
                 closeAlert();
                 if (!uploadFileIDT || !uploadFileIDT.Status) {
                     setTypeOfAlert('error');
-                    openAlert(uploadFileIDT.Error!);
+                    openAlert(uploadFileIDT.Error! as string);
                     closeAlert(2000);
                     return;
                 }
@@ -273,22 +265,11 @@ export default defineComponent({
         const UploadTheFileApiCall = async (file: File): Promise<InternalDataTransfter<boolean>> => {
             const formData = new FormData();
             formData.append("file", file);
-            // const uploadFileCall = await useAxios(
-            //     CourseController + `student-sub-authorization/${course_guid.value}`,
-            //     {
-            //         method: "POST",
-            //         data: formData
-            //     },
-            //     setBackendInstanceAuth()
-            // );
+
             const uploadFileCallData = await MakeAPICall<ApiResult<string>,FormData>(CourseController,`student-sub-authorization/${course_guid.value}`,"POST",formData);
-            // if (uploadFileCall.isFinished.value) {
-            //const uploadFileCallData: ApiResult<string> = uploadFileCall.data.value;
             if (!uploadFileCallData || !uploadFileCallData.Status)
                 return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
             return { Status: true, Data: true };
-            // }
-            // return { Status: false, Data: false, Error: "Αποτυχία μεταφόρτωσης αρχείου" };
         };
         const clearFileInputErrorsIfSwitchedOff = () => {
             if(theoryPrecedesFlag.value === false){
@@ -302,27 +283,6 @@ export default defineComponent({
         //     a_tag.href = `${import.meta.env.VITE_BACK_END_URI}${InfoController}serve-item-csv/${course_guid.value}`;
         //     a_tag.click(); 
         // }
-        // const doSth = async () => {
-        //     const downloadExportFileRequest = await useAxios(
-        //         InfoController + `serve-item/${course_guid.value}`,
-        //         {
-        //             method: "GET"
-        //         },
-        //         setBackendInstanceAuth()
-        //     );
-        //     if(downloadExportFileRequest.isFinished){
-        //         //const workBook = XLSX.utils.book_new();
-        //         const parser = downloadExportFileRequest.data.value.pipe(csvParser());
-        //         console.log(parser);
-        //         // XLSX.utils.book_append_sheet(workBook, XLSX.utils.sheet_add_json({}, parser), "Hello.txt");
-        //         // const data = await generateExcelFile(workBook);
-        //         // if(data)
-        //         // {
-        //         //     const blob = new Blob([data as BlobPart], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        //         //     fs.saveAs(blob, `hellomotherfucker.xlsx`);
-        //         // }
-        //     }
-
         // }
         // function generateExcelFile(workbook:XLSX.WorkBook) {
         //     return new Promise((resolve, reject) => {
@@ -378,15 +338,6 @@ export default defineComponent({
     word-break: break-word;
 }
 
-.divider {
-    margin: 0 0.3rem;
-    opacity: 0.2;
-    border: 0.1px solid rgb(0, 0, 0);
-    width: 100%;
-    height: 1px;
-    margin: 0.5rem 0;
-}
-
 .export-button__container {
     display: flex;
     flex-direction: column;
@@ -417,7 +368,7 @@ export default defineComponent({
     border: 3px solid #245d8b;
 }
 
-.sth {
+.file-input {
     border-left: dashed 3px #ccc;
     border-right: dashed 3px #ccc;
     width: 100%;
@@ -438,7 +389,6 @@ export default defineComponent({
     border-radius: 28px !important;
     -moz-border-radius: 28px !important;
     -webkit-border-radius: 28px !important;
-    /* background-color: #1867C0; */
     border: 1px solid #1867C0;
     color: #1867C0;
 }
@@ -508,18 +458,12 @@ export default defineComponent({
 
 @media(min-width: 769px) {
     .export-panel-export-option-text__parent {
-        /* flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        gap: 0; */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         width: 100%;
         gap: 0;
-        /* padding: 0 0.5rem */
     }
 
     .file-input__container {

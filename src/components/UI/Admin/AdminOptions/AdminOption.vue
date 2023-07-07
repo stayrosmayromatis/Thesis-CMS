@@ -6,7 +6,6 @@
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner && arrayOfAdmins && arrayOfAdmins.length">
       <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
-      <!-- <div class="admin-list-outer-container"> -->
       <v-card>
       <div class="overlay-container">
         <div class="admin-list">
@@ -44,7 +43,7 @@ import { BaseUser } from '@/models/BACKEND-MODELS/BaseUser';
 import { useAlert } from '@/composables/showAlert.composable';
 import { AdminController } from "@/config";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
-import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
+import { InternalDataTransfter, InternalErrorObject, ProjectErrorCodes } from "@/models/DTO/InternalDataTransfer";
 import { AllAdminsResponse } from "@/models/BACKEND-MODELS/AllAdminsResponse";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { BaseUserResponse } from "@/models/BACKEND-MODELS/BaseUserResponse";
@@ -87,7 +86,7 @@ export default defineComponent({
     const setStateToAdminInterceptor = async (selectedTeacher: BaseUserResponse) => {
       if (!selectedTeacher) {
         setTypeOfAlert('error');
-        openAlert("Αποτυχία αλλαγής καταστάσεως διαχειριστή");
+        openAlert("Αποτυχία αλλαγής καταστάσης διαχειριστή");
         await delay(1500);
         closeAlert(1000);
         return;
@@ -104,7 +103,6 @@ export default defineComponent({
         showLoadingSpinner.value = true;
         const setStateIDT = await setStateToAdmin(payloadToSetAdminState as BaseUser, true);
         showLoadingSpinner.value = false;
-        // closeAlert(1000);
         setTypeOfAlert(!setStateIDT || !setStateIDT.Status ? 'error' : 'success');
         openAlert(!setStateIDT || !setStateIDT.Status ? setStateIDT.Data! : "Επιτυχία αλλαγής κατάσταση διαχειριστή");
         await delay(1500);
@@ -118,6 +116,16 @@ export default defineComponent({
         return { Status: false, Data: "Αποτυχία", Error: "Αποτυχία" };
       const changeAdminStateIDT = await MakeApiCallToChangeAdminState(selectedTeacher.Guid, removeAdmin);
       if (!changeAdminStateIDT || !changeAdminStateIDT.Status) {
+        const error = changeAdminStateIDT?.Error as InternalErrorObject;
+        if(error.ErrorCode === ProjectErrorCodes.AlreadyExists){
+          delete_selected_by_admin_option.value = true;
+          closeAlert();
+          setTypeOfAlert('error');
+          openAlert("Αποτυχία είναι ήδη διαχειριστής");
+          await delay(1500);
+          closeAlert(1000);
+          delete_selected_by_admin_option.value = false;
+        }
         return { Status: false, Data: "Αποτυχία αλλαγής κατάστασης διαχειριστή", Error: "Αποτυχία αλλαγής κατάστασης διαχειριστή" };
       }
       const populateAdminsIDT = await MakeApiCallToPopulateAdmins();
@@ -145,22 +153,11 @@ export default defineComponent({
       return { Status: true, Data: true };
     };
     const MakeApiCallToChangeAdminState = async (baseUserId: string, removeAdmin: boolean = false): Promise<InternalDataTransfter<boolean>> => {
-      // const change_admin_state_call = await useAxios(
-      //   AdminController + `change-admin-state/${baseUserId}/${removeAdmin}`,
-      //   {
-      //     method: "POST",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const change_admin_state_call_response = await MakeAPICall<ApiResult<boolean>, Object>(AdminController, `change-admin-state/${baseUserId}/${removeAdmin}`, "POST", {});
-      // if (change_admin_state_call.isFinished) {
-      //const change_admin_state_call_response: ApiResult<boolean> = change_admin_state_call.data.value;
       if (!change_admin_state_call_response || !change_admin_state_call_response.Status || !change_admin_state_call_response.Data) {
-        return { Status: false, Data: false, Error: "Couldn't Add Admin" };
+        return { Status: false, Data: false, Error: change_admin_state_call_response?.Error };
       }
       return { Status: true, Data: true };
-      // }
-      // return { Status: false, Data: false, Error: "Request didn't finish" };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
@@ -202,16 +199,6 @@ export default defineComponent({
   gap: 0.1rem;
   width: 90%;
 }
-
-.admin-list-outer-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  justify-content: center;
-}
-
-
 
 .admin-label {
   display: flex;
@@ -361,15 +348,6 @@ export default defineComponent({
     width: 100%;
     max-width: 100%;
     max-height: fit-content;
-  }
-
-  .admin-list-outer-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    justify-content: center;
-    padding: 2rem;
   }
 }
 

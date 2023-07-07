@@ -49,8 +49,6 @@
 <script lang="ts">
 import { defineAsyncComponent, defineComponent, onMounted, ref } from 'vue'
 import { useErrorFunctions } from '@/composables/throwError.composable';
-//import BaseDialog from '@/components/Base/BaseDialog.vue';
-//import BaseAlert from '@/components/Base/BaseAlert.vue';
 const BaseDialog = defineAsyncComponent({
     loader: () => import('@/components/Base/BaseDialog.vue'),
     delay: 500,

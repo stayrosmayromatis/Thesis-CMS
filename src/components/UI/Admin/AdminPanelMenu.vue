@@ -1,7 +1,6 @@
 <template>
   <section class="admin-panel-container" @click="emitMobileViewClose">
     <base-alert :show="showAlert" :alert-type-prop="typeOfAlert" :title="alertTitle"></base-alert>
-    <!-- <v-card class="card-override"> -->
       <div class="card-override">
       <div>
         <v-tabs v-if="isTeacher" v-model="tab" :show-arrows="true">
@@ -23,7 +22,6 @@
         </template>
       </suspense>
     </div>
-    <!-- </v-card> -->
   </section>
 </template>
 

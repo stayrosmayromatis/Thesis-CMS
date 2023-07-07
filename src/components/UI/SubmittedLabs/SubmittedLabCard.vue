@@ -195,7 +195,7 @@ export default defineComponent({
                         confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
               Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
               Αυτο συνεπάγεται και στην <span style="color:#ff4545;">διαγραφή όλων των υπάρχοντων δηλώσεων των φοιτητών μέχρι αυτή τη στιγμή</span>.
-              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
                         return { Data: true, Status: true };
                     }
                     else if ((api_response_dta.Data.FoundRegistration === true && !api_response_dta.Data.CountOfStudentsSubmited) || api_response_dta.Data.CountOfStudentsSubmited === 0) {
@@ -221,7 +221,6 @@ export default defineComponent({
                     return { Data: true, Status: true };
                 }
             }
-            //}
             showConfirmDeletionModal.value = false;
             return { Data: null, Status: false, Error: "Error" };
         };
@@ -364,13 +363,11 @@ export default defineComponent({
 
 .delete-button:hover {
     color: #f7f7f7;
-    /* background: #f44336; */
     background: #f44336;
 }
 
 .edit-button:hover {
     color: #f7f7f7;
-    /* background: #f44336; */
     background: #1c4397;
 }
 
@@ -439,8 +436,7 @@ export default defineComponent({
     padding: 2rem 0 2rem 0.5rem;
     font-family: "Inter", sans-serif;
 }
+/* @media screen and (min-width: 769px) {}
 
-@media screen and (min-width: 769px) {}
-
-@media screen and (min-width: 1025px) {}
+@media screen and (min-width: 1025px) {} */
 </style>

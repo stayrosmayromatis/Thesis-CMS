@@ -76,11 +76,10 @@
 <script lang="ts">
 import { useAlert } from "@/composables/showAlert.composable";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
-import { CourseController, StudentsController } from "@/config";
+import { StudentsController } from "@/config";
 import { CreateSubResponse } from "@/models/BACKEND-MODELS/CreateSubResponse";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
-//import { useAxios } from "@vueuse/integrations/useAxios";
 import { defineComponent, computed, toRefs } from "vue";
 import { useRouter } from 'vue-router';
 export default defineComponent({
@@ -137,8 +136,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { available_seats, duration, max_seats, department_name, timestring, ladb_id, course_id, completeness_percent, user_type,is_assistant } = toRefs(props);
-    //const { setBackendInstanceAuth } = useAxiosInstance();
+    const { available_seats, duration, max_seats, department_name, timestring, ladb_id, course_id, completeness_percent, user_type } = toRefs(props);
     const { MakeAPICall } = useAxiosInstance();
     const { setTypeOfAlert, openAlert, closeAlert } = useAlert();
     const router = useRouter();
@@ -186,7 +184,7 @@ export default defineComponent({
         const finalRegisterIDT = await MakeTheFinalRegisterCall();
         if (!finalRegisterIDT.Status) {
           setTypeOfAlert("error");
-          openAlert("Αποτυχία δήλωσης, προσπαθήστε ξανά");
+          openAlert("Αποτυχία δήλωσης προσπαθήστε ξανά");
           closeAlert(1000);
           await delay(1000);
           return;
@@ -215,24 +213,10 @@ export default defineComponent({
     async function MakeTheFinalRegisterCall(): Promise<InternalDataTransfter<boolean>> {
       if (!course_id.value || !course_id.value)
         return { Status: false, Data: false, Error: "The parameters are null" };
-      // const finalRegisterCallApiRequest = await useAxios(
-      //   StudentsController + "create-student-submition",
-      //   {
-      //     method: "POST",
-      //     data: {
-      //       CourseId: course_id.value,
-      //       LabId: ladb_id.value
-      //     }
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const registrationResult = await MakeAPICall<ApiResult<CreateSubResponse>,{CourseId:string,LabId:string}>(StudentsController,"create-student-submition","POST",{
             CourseId: course_id.value,
             LabId: ladb_id.value
           });
-      // if (!finalRegisterCallApiRequest.isFinished.value)
-      //   return { Status: false, Data: false, Error: "API Call didn't finish" };
-      // const registrationResult: ApiResult<CreateSubResponse> = finalRegisterCallApiRequest.data.value;
       if (!registrationResult || !registrationResult.Status)
         return { Status: false, Data: false, Error: registrationResult.Error ?? "API Call didn't finish" };
       return { Status: true, Data: true };

@@ -6,7 +6,6 @@
         <v-card-title>
           <slot name="title">
             <p v-html="innerTitle"></p>
-            <!-- {{ innerTitle }} -->
           </slot>
         </v-card-title>
 

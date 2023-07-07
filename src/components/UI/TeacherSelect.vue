@@ -425,5 +425,5 @@ export default defineComponent({
   }
 }
 
-@media (min-width: 1025px) {}
+/* @media (min-width: 1025px) {} */
 </style>

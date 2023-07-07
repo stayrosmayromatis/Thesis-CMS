@@ -1,7 +1,6 @@
 <template>
   <section>
     <base-spinner :show="showSpinner"></base-spinner>
-
     <base-dialog :show="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
       inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span> ,</br>θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
       @close-modal="showRouteLeaveModal = false"></base-dialog>
@@ -57,14 +56,6 @@
             </div> -->
               <div class="form-control-add-btn">
                 <v-btn type="button" @click="addFormGroup" color="green">
-                  <!-- elevation="4"  -->
-                  <!-- <svg width="30" height="30"
-                  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                    fill-rule="nonzero" />
-                </svg> -->
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
                     <path fill="white"
                       d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z" />
@@ -93,7 +84,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
 import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { reactive, Ref, ref, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
 import LabForm from "@/components/UI/LabForm.vue";
 import { Department } from "@/models/department.type";
@@ -112,14 +103,12 @@ import {
   CreateCourseRequest,
   LaboratoryRequest,
 } from "@/models/BACKEND-MODELS/CreateCourseRequest";
-//import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
 import { CourseController, InfoController } from "@/config";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { InfoUpdateCourseResponse } from "@/models/BACKEND-MODELS/InfoUpdateCourseResponse";
-import { TimeObject } from "@/models/BACKEND-MODELS/TimeObject";
 import { useTimeObjectExtensions } from "@/composables/useTimeObjectExtensions.composable";
 import { InfoAggregateObjectResponse } from "@/models/BACKEND-MODELS/InfoAggregateObjectResponse";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
@@ -148,7 +137,6 @@ export default defineComponent({
       showAlert,
       closeAlert,
     } = useAlert();
-    //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
@@ -228,7 +216,6 @@ export default defineComponent({
       if (selectedLab) {
         selectedLab.isActive = !selectedLab.isActive;
         formState.semester = selectedLab.isActive ? selectedLab.value : null;
-        // lab.semester = selectedLab.value;
         const allRestLabs = displayedSemester.value.filter(
           (restLab) => restLab.value != selectedLab.value
         );
@@ -326,10 +313,6 @@ export default defineComponent({
     };
     const mustBeANumberOrDash = (value: string) => {
       const pattern = /^[0-9]{4}\-[0-9]{4}$/;
-      // if (value.match(pattern)) {
-      //   return true;
-      // }
-      // return false;
       return value.match(pattern) ? true : false;
     };
     const rules = computed(() => {
@@ -407,34 +390,12 @@ export default defineComponent({
     const v$ = useVuelidate(rules, formState);
 
     const errorOfLabId = computed(() => v$.value.labId.$error ? v$.value.labId.$errors[0].$message.toString() : ""
-      // if (v$.value.labId.$error) {
-      //   return v$.value.labId.$errors[0].$message.toString();
-      // }
-      // return v$.value.labId.$error ? v$.value.labId.$errors[0].$message.toString() : "";
     );
     const errorOfLabTitle = computed(() => v$.value.labTitle.$error ? v$.value.labTitle.$errors[0].$message.toString() : ""
-      //{
-      //   if (v$.value.labTitle.$error) {
-      //     return v$.value.labTitle.$errors[0].$message.toString();
-      //   }
-      //   return "";
-      // }
     );
     const errorOfDescription = computed(() => v$.value.description.$error ? v$.value.description.$errors[0].$message.toString() : ""
-      // {
-      //   if (v$.value.description.$error) {
-      //     return v$.value.description.$errors[0].$message.toString();
-      //   }
-      //   return "";
-      // }
     );
     const errorOfAttendance = computed(() => v$.value.attendance.$error ? v$.value.attendance.$errors[0].$message.toString() : ""
-      // {
-      //   if (v$.value.attendance.$error) {
-      //     return v$.value.attendance.$errors[0].$message.toString();
-      //   }
-      //   return "";
-      // }
     );
     const buttonDisablity = computed(() => {
       if (
@@ -443,7 +404,6 @@ export default defineComponent({
         !formState.semester ||
         !formState.description ||
         (!departments || !departments.value || !departments.value.length)
-        //departments.value.length <= 0
       )
         return true;
       return false;
@@ -615,14 +575,6 @@ export default defineComponent({
     const MakeCreateCourseRequest = async (createCourseRequest: CreateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
       if (!createCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      // const createCourseApiRequest = await useAxios(
-      //   CourseController + "create-course",
-      //   {
-      //     method: "POST",
-      //     data: createCourseRequest,
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const createCourseApiRequest = await MakeAPICall<ApiResult<CreateCourseResponse>, CreateCourseRequest>(CourseController, "create-course", "POST", createCourseRequest);
       if (!createCourseApiRequest || !createCourseApiRequest.Status || !createCourseApiRequest.Data) {
         return {
@@ -632,40 +584,10 @@ export default defineComponent({
         };
       }
       return { Status: true, Data: true };
-
-      //if (createCourseApiRequest.isFinished) {
-      // const createCourseApiResponse: ApiResult<CreateCourseResponse> =
-      //   createCourseApiRequest.data.value;
-      // if (
-      //   createCourseApiResponse.Status === false ||
-      //   !createCourseApiResponse.Status ||
-      //   !createCourseApiResponse.Data
-      // ) {
-      //   return {
-      //     Status: false,
-      //     Data: false,
-      //     Error: "Request call returned false",
-      //   };
-      // }
-      // return { Status: true, Data: true };
-
-      // return {
-      //   Status: false,
-      //   Data: false,
-      //   Error: "Request call never finished",
-      // };
     };
     const MakeUpdateCourseRequest = async (updateCourseRequest: UpdateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
       if (!updateCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      // const updateCourseApiRequest = await useAxios(
-      //   CourseController + "update-course",
-      //   {
-      //     method: "POST",
-      //     data: updateCourseRequest,
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const updateCourseApiRequest = await MakeAPICall<ApiResult<CreateCourseResponse>, UpdateCourseRequest>(CourseController, "update-course", "POST", updateCourseRequest);
       if (!updateCourseApiRequest || !updateCourseApiRequest.Status || !updateCourseApiRequest.Data) {
         return {
@@ -675,38 +597,10 @@ export default defineComponent({
         };
       }
       return { Status: true, Data: true };
-      //   if (updateCourseApiRequest.isFinished) {
-      //   const updateCourseApiResponse: ApiResult<CreateCourseResponse> =
-      //     updateCourseApiRequest.data.value;
-      //   if (
-      //     updateCourseApiResponse.Status === false ||
-      //     !updateCourseApiResponse.Status ||
-      //     !updateCourseApiResponse.Data
-      //   ) {
-      //     return {
-      //       Status: false,
-      //       Data: false,
-      //       Error: "Request call returned false",
-      //     };
-      //   }
-      //   return { Status: true, Data: true };
-      // }
-      // return {
-      //   Status: false,
-      //   Data: false,
-      //   Error: "Request call never finished",
-      // };
     };
     const MakeGetCourseInfoForEditCall = async (courseGuid: string): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
       if (!courseGuid)
         return { Status: false, Data: null, Error: "Request object null" };
-      // const getCourseInfoForEditApiRequest = await useAxios(
-      //   CourseController + "get-course-info-for-edit/" + courseGuid,
-      //   {
-      //     method: "GET",
-      //   },
-      //   setBackendInstanceAuth()
-      // );
       const getCourseInfoForEditApiRequest = await MakeAPICall<ApiResult<InfoUpdateCourseResponse>>(CourseController, `get-course-info-for-edit/${courseGuid}`, "GET");
       if (!getCourseInfoForEditApiRequest || !getCourseInfoForEditApiRequest.Status || !getCourseInfoForEditApiRequest.Data) {
         return {
@@ -716,27 +610,6 @@ export default defineComponent({
         };
       }
       return { Status: true, Data: getCourseInfoForEditApiRequest.Data };
-      //   if (getCourseInfoForEditApiRequest.isFinished) {
-      //   const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> =
-      //     getCourseInfoForEditApiRequest.data.value;
-      //   if (
-      //     getCourseInfoForEditApiResponse.Status === false ||
-      //     !getCourseInfoForEditApiResponse.Status ||
-      //     !getCourseInfoForEditApiResponse.Data
-      //   ) {
-      //     return {
-      //       Status: false,
-      //       Data: null,
-      //       Error: "Request call returned false",
-      //     };
-      //   }
-      //   return { Status: true, Data: getCourseInfoForEditApiResponse.Data };
-      // }
-      // return {
-      //   Status: false,
-      //   Data: null,
-      //   Error: "Request call never finished",
-      // };
     };
     const PopulateTheFormObjectInEditMode = (data: InfoUpdateCourseResponse) => {
       if (!data) return;
@@ -760,15 +633,7 @@ export default defineComponent({
       formState.departments = data.Labs;
     };
     const MakeTheDeleteInformationCall = async (labGuid: string, courseGuid: string): Promise<InternalDataTransfter<boolean>> => {
-      // const api_response = await useAxios(
-      //   InfoController + `deletion-informant/${courseGuid}/${labGuid}`,
-      //   { method: "GET" },
-      //   setBackendInstanceAuth()
-      // );
       const api_response_dta = await MakeAPICall<ApiResult<InfoAggregateObjectResponse>>(InfoController, `deletion-informant/${courseGuid}/${labGuid}`, "GET");
-      //if (api_response.isFinished) {
-      // const api_response_dta: ApiResult<InfoAggregateObjectResponse> =
-      //   api_response.data.value;
       if (api_response_dta.Status && api_response_dta.Data) {
         if (
           api_response_dta.Data.PersonAffiliation &&
@@ -786,7 +651,7 @@ export default defineComponent({
                 του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""}</span>.
                 Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
                 Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; 
-                Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+                Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
             return { Data: true, Status: true };
           } else if (
             api_response_dta.Data.FoundRegistration === true &&
@@ -797,7 +662,7 @@ export default defineComponent({
             confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
               Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
               Αυτο συνεπάγεται και στην <span style="color:#ff4545;">διαγραφή όλων των υπάρχοντων δηλώσεων των φοιτητών μέχρι αυτή τη στιγμή</span>.
-              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
             return { Data: true, Status: true };
           } else if (
             (api_response_dta.Data.FoundRegistration === true &&
@@ -810,7 +675,7 @@ export default defineComponent({
               }</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""
               }</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
-                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
             return { Data: true, Status: true };
           } else {
             showConfirmDeletionModal.value = false;
@@ -820,69 +685,48 @@ export default defineComponent({
           return { Data: null, Status: false, Error: "FatalError" };
         }
       }
-      //}
       showConfirmDeletionModal.value = false;
       return { Data: null, Status: false, Error: "Error" };
     };
     const MakeTheDeleteApiCall = async (labGuid: string, courseGuid: string): Promise<InternalDataTransfter<boolean>> => {
-      // const api_response = await useAxios(
-      //   CourseController +
-      //   `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
-      //   { method: "POST" },
-      //   setBackendInstanceAuth()
-      // );
       const api_response = await MakeAPICall<ApiResult<boolean>, Object>(CourseController, `confirm-delete-submitted-course/${labGuid}/${courseGuid}`, "POST", {});
-      // if(api_response){
-      //   return {
-      //     Data: api_response.Data,
-      //     Status: api_response.Status,
-      //   };
-      // }
       return api_response ? { Data: api_response.Data, Status: api_response.Status, }
         :
         { Data: null, Status: false, Error: "Error" };
-      // if (api_response.isFinished) {
-      //   const api_data_response: ApiResult<boolean> = api_response.data.value;
-      //   return {
-      //     Data: api_data_response.Data,
-      //     Status: api_data_response.Status,
-      //   };
-      // }
-      //return { Data: null, Status: false, Error: "Error" };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
 
     return {
-      emitMobileViewClose,
       buttonDisablity,
       displayedSemester,
-      clickOnChip,
       departments,
-      addFormGroup,
-      removeFormGroup,
       formState,
       v$,
-      submitForm,
       errorOfLabId,
       errorOfLabTitle,
       errorOfDescription,
       errorOfAttendance,
-      validateEachDepartment,
       displayedAttendaceValues,
       seededProfessors,
       showAlert,
       typeOfAlert,
       alertTitle,
       showRouteLeaveModal,
-      toTimeString,
       somethingWentWrongModal,
       isCallByEdit,
       showConfirmDeletionModal,
       confirmDeletionInnerTitle,
       confirmDeletionInnerDescription,
-      showSpinner
+      showSpinner,
+      validateEachDepartment,
+      submitForm,
+      emitMobileViewClose,
+      clickOnChip,
+      addFormGroup,
+      removeFormGroup,
+      toTimeString,
     };
   },
 });
@@ -921,11 +765,6 @@ export default defineComponent({
     0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
     0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
 }
-
-/* .positioner {
-  width: 100% !important;
-} */
-
 #submit-btn {
   color: white;
   width: 15rem;
@@ -950,11 +789,6 @@ export default defineComponent({
 .error-color {
   color: #b00020;
 }
-
-/* .parent-card { 
-  
-}*/
-
 .parent-label {
   display: flex;
   flex-direction: row;
@@ -1097,10 +931,6 @@ export default defineComponent({
     background-color: #156ed3;
   }
 
-  .parent-card {
-    margin: 1rem 1rem;
-  }
-
   .parent-label {
     height: 3rem;
     font-size: 1.2rem;
@@ -1136,7 +966,6 @@ export default defineComponent({
   :deep(.v-chip-group) {
     align-items: center;
     column-gap: 1rem;
-    /* flex-wrap: nowrap; */
     max-width: 100%;
   }
 }</style>

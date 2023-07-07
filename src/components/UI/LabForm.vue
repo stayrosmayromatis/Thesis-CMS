@@ -50,11 +50,6 @@ import { defineAsyncComponent, defineComponent, onMounted, PropType, ref, toRefs
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
-
-//import TeacherSelect from "@/components/UI/TeacherSelect.vue";
-//import DatePicker  from '@vuepic/vue-datepicker';
-//import BaseSlider from "@/components/Base/BaseSlider.vue";
-
 const TeacherSelect = defineAsyncComponent({
   loader: () => import("@/components/UI/TeacherSelect.vue"),
   delay: 500,
@@ -153,18 +148,18 @@ export default defineComponent({
       }
     };
     return {
-      clearErrors,
       days,
+      seeded_professors_reactive: seeded_professors,
+      minValue,
+      maxValue,
+      startingValue,
+      clearErrors,
+      populateFormWithSelectedTeacher,
       deleteByDeptId,
       isInputEmpty,
       isFromTimeEmpty,
       isToTimeEmpty,
       changeNumberOfStudents,
-      seeded_professors_reactive: seeded_professors,
-      populateFormWithSelectedTeacher,
-      minValue,
-      maxValue,
-      startingValue
     };
   },
 });
@@ -198,8 +193,8 @@ export default defineComponent({
 .error-border {
   border: 0.1px solid #e6415d;
   border-radius: 5px;
-  /* -moz-border-radius: 5px;
-  -webkit-border-radius: 5px; */
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px; 
 }
 
 .form-control-add-field {
@@ -346,8 +341,7 @@ export default defineComponent({
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    /* gap: 3rem; */
-     gap: 0; 
+    gap: 0; 
     margin: 1rem auto;
   }
 }
@@ -360,7 +354,6 @@ export default defineComponent({
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    /* gap: 7rem; */
     gap: 0; 
     margin: 1rem auto;
   }

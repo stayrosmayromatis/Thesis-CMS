@@ -27,16 +27,13 @@
   </section>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs, onMounted, ref, computed, defineAsyncComponent } from 'vue';
-//import DepartmentCard from "@/components/UI/Departments/DepartmentCard.vue";
 const DepartmentCard = defineAsyncComponent({
   loader: () => import("@/components/UI/Departments/DepartmentCard.vue"),
   delay: 2000,
   suspensible: false
 });
-
+import { defineComponent, toRefs, onMounted, ref, computed, defineAsyncComponent } from 'vue';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
-//import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CourseController } from "@/config";
@@ -60,7 +57,6 @@ export default defineComponent({
   },
   setup(props) {
     const { course_guid } = toRefs(props);
-    //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
     const { openAlert, closeAlert, setTypeOfAlert, typeOfAlert, alertTitle, showAlert } = useAlert();
     const courseGuid = ref<string>();
@@ -174,10 +170,6 @@ export default defineComponent({
   /* #555a69; */
 }
 
-/* div.outer-parent-label {
-  padding: 0;
-} */
-
 @media (min-width: 769px) {
 
   .parent-card {
@@ -191,10 +183,6 @@ export default defineComponent({
     margin-bottom: 1.2rem;
     font-size: 1.2rem;
   }
-
-  /* div.outer-parent-label {
-    padding: 0 1rem;
-  } */
 }
 
 @media (min-width: 1025px) {

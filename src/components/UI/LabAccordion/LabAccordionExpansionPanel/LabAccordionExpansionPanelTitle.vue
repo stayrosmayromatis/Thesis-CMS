@@ -70,7 +70,6 @@ export default defineComponent({
             type: Number as PropType<PersonAffiliation>,
             required: true,
             default: undefined
-            // default: 2 
         }
     },
     emits: ['close-mobile'],
@@ -199,9 +198,6 @@ export default defineComponent({
     letter-spacing: 0.0125em;
     font-weight: 500;
     width: fit-content;
-    /* padding-bottom: 0.5rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem; */
     padding: 0.5rem 0.5rem;
 }
 

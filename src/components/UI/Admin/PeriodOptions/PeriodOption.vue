@@ -15,7 +15,6 @@
           <div class="single-option_card--item">
             <div class="chip-separator__left-chip">
               <v-chip class="chip-bg">
-                <!-- size="large" -->
                 <span>{{ semesterStringConverter(active) }}</span>
               </v-chip>
             </div>
@@ -25,14 +24,12 @@
                 'chip-is-active': active.Active === 2,
                 'chip-is-up-to-activation': active.Active === 3
               }">
-                <!-- size="large" -->
                 <label>
                   {{ semesterChipLabelConverter(active) }}
                 </label>
               </v-chip>
               <v-tooltip :text="'Διαγραφή περιόδου'" location="bottom">
                 <template v-slot:activator="{ props }">
-                  <!-- <v-btn v-bind="props" class="delete-button" icon="mdi-trash-can" size="x-small"></v-btn> -->
                   <v-btn v-bind="props" color="error" variant="elevated" class="delete-button"
                     @click="deletePastSubmissions">
                     Καταργηση
@@ -161,12 +158,10 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import BaseSpinner from '@/components/Base/BaseSpinner.vue';
 import BaseDialog from '@/components/Base/BaseDialog.vue';
-// import BaseAlert from '@/components/Base/BaseAlert.vue';
 import BaseResultEmpty from '@/components/Base/BaseResultEmpty.vue';
 import { useAlert } from '@/composables/showAlert.composable';
 import { useAxiosInstance } from '@/composables/useInstance.composable';
 import { AdminController } from '@/config';
-// import { useAxios } from '@vueuse/integrations/useAxios';
 import { InternalDataTransfter } from '@/models/DTO/InternalDataTransfer';
 import { ApiResult } from '@/models/DTO/ApiResult';
 import DatePicker from '@vuepic/vue-datepicker';
@@ -191,7 +186,6 @@ export default defineComponent({
   setup(_, context) {
     const showLoadingSpinner = ref(true);
     const { closeAlert, openAlert, setTypeOfAlert } = useAlert();
-    //const { setBackendInstanceAuth } = useAxiosInstance();
     const { MakeAPICall } = useAxiosInstance();
     const { scrollToTop } = useTimeObjectExtensions();
     const {GetPeriodState} = usePeriod();
@@ -441,7 +435,7 @@ export default defineComponent({
         calculatedPriorites.value = undefined;
         closeAlert(1000);
         setTypeOfAlert('success');
-        openAlert("Επιτυχία, αυτοποιημένη έναρξη");
+        openAlert("Επιτυχία αυτοποιημένη έναρξη");
         scrollToTop();
         await delay(1500);
         closeAlert(1000);

@@ -61,7 +61,7 @@ export function useAuth() {
       store.dispatch("clearSeededProfessors");
       store.dispatch("setFirstTimeLogin", true); 
       setTypeOfAlert("success");
-      openAlert("Επιτυχής Αποσύνδεση");
+      openAlert("Επιτυχία Αποσύνδεσης");
       closeAlert(1500);
     }
   };
@@ -150,8 +150,8 @@ export function useAuth() {
         store.dispatch("setFirstTimeLogin", false); 
         // store.dispatch("setPeriodInfo",response.PeriodInfo);
         if (!byInternalUse) {
-          openAlert("Επιτυχής Σύνδεση");
           setTypeOfAlert("success");
+          openAlert("Επιτυχία Σύνδεσης");
         }
         return { Status: true, Data: true };
       }
@@ -161,8 +161,8 @@ export function useAuth() {
         store.dispatch("setFirstTimeLogin", false); 
         // store.dispatch("setPeriodInfo",response.PeriodInfo);
         if (byInternalUse === false) {
-          openAlert("Επιτυχής Σύνδεση");
           setTypeOfAlert("success");
+          openAlert("Επιτυχία Σύνδεσης");
         }
         return { Status: true, Data: true };
       }
@@ -172,8 +172,8 @@ export function useAuth() {
         store.dispatch("setFirstTimeLogin", false); 
         // store.dispatch("setPeriodInfo",response.PeriodInfo);
         if (byInternalUse === false) {
-          openAlert("Επιτυχής Σύνδεση");
           setTypeOfAlert("success");
+          openAlert("Επιτυχία Σύνδεσης");
         }
         return { Status: true, Data: true };
       }
