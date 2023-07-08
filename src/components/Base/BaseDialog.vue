@@ -1,12 +1,11 @@
 <template>
   <teleport to="body">
     <div @click="closeDialog(false)">
-    <v-dialog v-model="modal" attach="body" width="100%" max-width="50rem" @click="closeDialog(false)">
+    <v-dialog v-model="show" attach="body" width="100%" max-width="50rem" @click="closeDialog(false)">
       <v-card>
         <v-card-title>
           <slot name="title">
             <p v-html="innerTitle"></p>
-            <!-- {{ innerTitle }} -->
           </slot>
         </v-card-title>
 
@@ -30,13 +29,14 @@
               variant="text"
               color="blue-darken-1"
               text
+              :disabled="okButtonDisabled"
               @click="closeDialog"
-              >ΟΚ</v-btn
+              >{{timerDisplayView}}</v-btn
             >
           </div>
           <div v-else>
             <v-btn variant="flat" color="red darken-1" text @click="closeModal"
-              >ΟΚ</v-btn
+              >{{timerDisplayView}}</v-btn
             >
           </div>
         </v-card-actions>
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { onUpdated, computed, defineComponent, onMounted, onUnmounted, ref, toRefs } from "vue";
 import { closeDialog } from "vue3-promise-dialog";
 export default defineComponent({
   props: {
@@ -66,18 +66,73 @@ export default defineComponent({
       required: false,
       default: false,
     },
+    show:{
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    useTimer:{
+      type:Boolean,
+      required:false,
+      default:false
+    }
   },
   emits: ["close-modal"],
-  setup(_, context) {
-    const modal = ref(true);
+  setup(props, context) {
+    //const modal = ref(true);
+    const {show,useTimer} = toRefs(props);
+    const okButtonDisabled = ref(false);
+    const timerCounter = ref(5);//5 seconds
+    let timerInteval:NodeJS.Timer;
+    let timerTimeout:NodeJS.Timeout;
     const closeModal = (): void => {
-      modal.value = false;
+      // modal.value = false;
       context.emit("close-modal");
     };
     function returnValue() {
       return true;
     }
-    return { modal, closeModal, closeDialog, returnValue };
+    onMounted(() => {
+      clearTimers();
+      registerTheTimer();
+    });
+    onUpdated(() => {
+      clearTimers();
+      registerTheTimer();
+    })
+    onUnmounted(() => {
+      clearTimers();
+    })
+    const registerTheTimer = () => {
+      if(!useTimer.value)
+        return;
+      okButtonDisabled.value = true;
+      timerInteval = setInterval(() => {
+        if(timerCounter.value > 0)
+          timerCounter.value--;
+      },1000);
+      timerTimeout = setTimeout(() => {
+        okButtonDisabled.value = false;
+      },5000);
+    }
+    
+    const timerDisplayView = computed(() => {
+      if(!useTimer.value)
+        return "OK";
+      return timerCounter.value > 0 ? `OK (${timerCounter.value})` : "OK";
+    })
+    const clearTimers = () => {
+      if(!useTimer.value)
+        return;
+      if(timerInteval){
+       clearInterval(timerInteval);
+      }
+      if(timerTimeout){
+       clearTimeout(timerTimeout);
+      }
+      timerCounter.value = 5;
+    }
+    return { show, closeModal, closeDialog, returnValue,okButtonDisabled,timerCounter,timerDisplayView };
   },
 });
 </script>
@@ -90,7 +145,7 @@ export default defineComponent({
   background-color: #aacaf3;
   padding: 1rem;
   text-transform: capitalize;
-  font-size: 1rem;
+  font-size: 1.2rem !important;
   width: 100%;
   word-break: break-word;
   white-space: pre-line;
@@ -101,8 +156,10 @@ export default defineComponent({
 :deep(.v-card-text) {
   font-weight: 500;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   white-space: pre-line;
   text-align: center;
+  font-size: 1.1rem !important;
 }
 
 :deep(.v-dialog.v-overlay__content) {
@@ -111,6 +168,8 @@ export default defineComponent({
 
 :deep(.v-card.v-theme--light.v-card--density-default.v-card--variant-elevated) {
   border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
   margin: 0 1rem;
 }
 
@@ -146,6 +205,8 @@ export default defineComponent({
       .v-card.v-theme--light.v-card--density-default.v-card--variant-elevated
     ) {
     border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
     margin: 0 1rem;
   }
 }

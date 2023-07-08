@@ -13,27 +13,19 @@
       <div
         class="u-expanded-width-md u-expanded-width-sm u-expanded-width-xl u-expanded-width-xs u-layout-grid u-list u-list-1">
         <div class="u-repeater u-repeater-1">
-          <!-- <div class="u-container-style u-custom-item u-list-item u-repeater-item">
-            <div class="u-container-layout u-similar-container u-container-layout-1">
-              <p
-                class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-1">
-                {{ 'Όνομα: ' + firstName }}
-              </p>
-            </div>
-          </div> -->
           <div class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-2">
               <p
                 class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-2">
-                {{ 'Ονοματεπώνυμο: ' + `${firstName} ${lastName}`}}
+                {{ 'Ονοματεπώνυμο: ' + `${firstName} ${lastName}` }}
               </p>
             </div>
           </div>
-          <div class="u-container-style u-custom-item u-list-item u-repeater-item">
+          <div v-if="SubmissionPeriodString" class="u-container-style u-custom-item u-list-item u-repeater-item">
             <div class="u-container-layout u-similar-container u-container-layout-3">
               <p
-              class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
-                {{ 'Περίοδος Δηλώσεων: [[SEMESTER]]' }}
+                class="u-align-center-lg u-align-center-md u-align-center-sm u-align-center-xs u-align-left-xl u-custom-item u-text u-text-3">
+                {{ `Περίοδος Δηλώσεων: ${SubmissionPeriodString}` }}
               </p>
             </div>
           </div>
@@ -66,10 +58,12 @@
               <td class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Ώρα
               </td>
-              <td v-if="!IsStaffOrAdmin" class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
+              <td v-if="!IsStaffOrAdmin"
+                class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Παρακολούθηση
               </td>
-              <td v-if="IsStaffOrAdmin" class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
+              <td v-if="IsStaffOrAdmin"
+                class="u-border-1 u-border-grey-75 u-border-no-left u-border-no-right u-table-cell">
                 Συνεργάτης
               </td>
             </tr>
@@ -79,7 +73,7 @@
               <td class="u-table-cell">{{ lab.LabName }}</td>
               <td class="u-table-cell">{{ lab.DayString }}</td>
               <td class="u-table-cell">{{ `${lab.From} - ${lab.To}` }}</td>
-              <td  v-if="!IsStaffOrAdmin" class="u-table-cell">{{ AttendaceReformer(lab.Attendance) }}</td>
+              <td v-if="!IsStaffOrAdmin" class="u-table-cell">{{ AttendaceReformer(lab.Attendance) }}</td>
               <td v-if="IsStaffOrAdmin" class="u-table-cell">{{ IsAssistant(lab.IsAssistantProfessor) }}</td>
             </tr>
           </tbody>
@@ -97,6 +91,7 @@ import jsPDF, { ImageOptions } from "jspdf";
 import { useAuth } from '@/composables/useAuth.composable';
 import { AttendanceEnum } from '@/enums/AttendanceEnums';
 import { PersonAffiliation } from '@/enums/PersonAffiliationEnum';
+import { usePeriod } from '@/composables/usePeriod.composable';
 export default defineComponent({
   props: {
     labs: {
@@ -110,39 +105,41 @@ export default defineComponent({
       default: false
     },
     personAffiliation: {
-      type: Object as PropType<PersonAffiliation>,
+      type: Number as PropType<PersonAffiliation>,
       required: true,
-      default: null,
+      default: undefined
     }
   },
   emits: ["pdfCreated"],
   setup(props, context) {
     const pdfContent = ref<HTMLElement>();
     const { GetUserDataDetails } = useAuth();
-    const { labs, callToGeneratePdf ,personAffiliation} = toRefs(props);
+    const { labs, callToGeneratePdf, personAffiliation } = toRefs(props);
     const firstName = ref<string>("");
     const lastName = ref<string>("");
-    onMounted(() => {
+    const { SubmissionPeriodString, GetPeriodState } = usePeriod();
+    onMounted(async () => {
+      if (!SubmissionPeriodString.value) {
+        await GetPeriodState();
+      }
       const userDetails = GetUserDataDetails();
       if (!userDetails) {
         firstName.value = "";
         lastName.value = "";
+        return;
+      }
+      let splitted = userDetails.DisplayNameEl.replaceAll('-', ' ').split(' ');
+      if (!splitted || !splitted.length) {
+        firstName.value = "";
+        lastName.value = "";
+        return;
+      }
+      lastName.value = splitted[splitted.length - 1];
+      if (splitted.length >= 3) {
+        firstName.value = splitted[0] + " - " + splitted[1];
       }
       else {
-        let splitted = userDetails.DisplayNameEl.replaceAll('-', ' ').split(' ');
-        if (!splitted || splitted.length === 0) {
-          firstName.value = "";
-          lastName.value = "";
-        }
-        else {
-          lastName.value = splitted[splitted.length - 1];
-          if (splitted.length >= 3) {
-            firstName.value = splitted[0] + " - " + splitted[1];
-          }
-          else {
-            firstName.value = splitted[0];
-          }
-        }
+        firstName.value = splitted[0];
       }
     });
     const generatePdf = async () => {
@@ -184,7 +181,7 @@ export default defineComponent({
         generatePdf();
       }
     });
-    function AttendaceReformer(attendace: AttendanceEnum):string{
+    function AttendaceReformer(attendace: AttendanceEnum): string {
       if (!attendace) {
         return "ΥΠΟΧΡΕΩΤΙΚΗ";
       }
@@ -199,12 +196,8 @@ export default defineComponent({
           return "ΥΠΟΧΡΕΩΤΙΚΗ";
       }
     }
-
-    function IsAssistant(isAssistant?:boolean){
-      if(isAssistant === false || !isAssistant )
-        return "-";
-      if(isAssistant === true)
-        return "ΣΥΝΕΡΓΑΤΗΣ";
+    function IsAssistant(isAssistant?: boolean) {
+      return !isAssistant ? "-" : "ΣΥΝΕΡΓΑΤΗΣ";
     }
     const IsStaffOrAdmin = computed(() => {
       if (!personAffiliation.value)
@@ -213,7 +206,7 @@ export default defineComponent({
         return true;
       return false;
     });
-    return { labs, pdfContent, generatePdf, firstName, lastName, AttendaceReformer,IsStaffOrAdmin,IsAssistant };
+    return { labs, pdfContent, SubmissionPeriodString, generatePdf, firstName, lastName, AttendaceReformer, IsStaffOrAdmin, IsAssistant };
   },
 });
 </script>

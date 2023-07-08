@@ -13,14 +13,12 @@ import { createApp } from 'vue'
 
 // Plugins
 import { registerPlugins } from '@/plugins'
-import router from "./router";
+import router from "@/router";
 import {store,key} from '@/store/index';
-import  DatePicker  from '@vuepic/vue-datepicker';
-import BaseSlider from '@/components/Base/BaseSlider.vue'
 import '@vuepic/vue-datepicker/dist/main.css'
+import "./global-styles/global-styles.css"
 const app = createApp(App)
-app.component('date-picker',DatePicker);
-app.component('base-slider',BaseSlider);
+//app.config.globalProperties.$http = 
 registerPlugins(app)
 app.use(store,key);
 app.use(router);

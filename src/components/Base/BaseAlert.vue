@@ -1,161 +1,190 @@
 <template>
-  <div class="positioner">
-    <transition name="bounce">
-      <v-alert
-        v-if="showAlert"
-        :title="title"
-        closable
-        :type="alertType"
-        density="compact"
-      ></v-alert>
-    </transition>
-  </div>
+    <div>
+        <transition type="animation" name="bounce">
+            <div v-if="show" class="outer-alert-container">
+                <v-alert :title="title" closable :type="alertTypeProp" density="compact" prominent tag="div"
+                    class="alert-override" :icon="mdiIconString" :close-icon="'mdi-window-close'"></v-alert>
+            </div>
+        </transition>
+    </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRefs } from "vue";
-
+import { computedEager } from '@vueuse/core';
+import { PropType, ref, toRefs } from 'vue';
+import { defineComponent } from 'vue';
+export type AlertType = 'error' | 'success' | 'info';
 export default defineComponent({
-  props: {
-    title: {
-      type: String,
-      required: false,
-      default: "Title",
+    props: {
+        title: {
+            type: String,
+            required: true,
+            default: "Title",
+        },
+        alertTypeProp: {
+            type: String as PropType<AlertType>,
+            required: true,
+            default: 'info',
+        },
+        show: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
     },
-    alertTypeProp: {
-      type: String,
-      required: false,
-      default: false,
+    setup(props) {
+        const { alertTypeProp, show, title } = toRefs(props);
+        const alertType = computedEager(() => {
+            if (!alertTypeProp.value)
+                return 'info';
+            return alertTypeProp.value as AlertType;
+        });
+        const alert = ref('success');
+        const mdiIconString = computedEager(() => {
+            if (alert.value === "error") {
+                return 'mdi-alert-circle-outline'
+            }
+            if (alert.value === "success") {
+                return 'mdi-check';
+            }
+            if (alert.value === "info") {
+                return 'mdi-information-outline'
+            }
+
+        })
+
+        return { show, title, alertTypeProp: alertType, mdiIconString };
     },
-    show: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
-  setup(props) {
-    const { alertTypeProp, show, title } = toRefs(props);
-    const alertType = computed(() => {
-      switch (alertTypeProp.value) {
-        case "error":
-          return "error";
-        case "success":
-          return "success";
-        case "info":
-          return "info";
-        default:
-          return "success";
-      }
-    });
-    const showAlert = computed(() => {
-      if (show.value === true) return true;
-      if (show.value === false) return false;
-    });
-    return { alertType, showAlert, title };
-  },
 });
 </script>
+
 <style scoped>
-.positioner {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.5rem;
-  min-width: 320px;
-}
-
-:deep(.v-alert) {
-  border-radius: 1rem;
-  width: fit-content;
-  padding-bottom: 2px;
-  padding-top: 2px;
-  padding-left: 16px;
-  padding-right: 0;
-  margin-right: 1rem;
-}
-
-:deep(.v-alert__close) {
-  align-self: flex-start;
-  margin-inline-start: 0;
-}
-:deep(.v-alert__prepend) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  grid-area: prepend;
-  margin-inline-end: 0.5rem;
-  align-self: center;
-}
-
 .bounce-enter-active {
-  animation: animate-in 0.3s ease-in 0s 1 normal both;
+    animation: animate-in 0.3s ease-in 0s 1 normal both;
+    -webkit-animation: animate-in 0.3s ease-in 0s 1 normal both;
+    -moz-animation: animate-in 0.3s ease-in 0s 1 normal both;
 }
 
 .bounce-leave-active {
-  animation: animate-out 0.3s ease-out 0s 1 normal none;
+    animation: animate-out 0.3s ease-out 0s 1 normal none;
+    -webkit-animation: animate-out 0.3s ease-out 0s 1 normal none;
+    -moz-animation: animate-out 0.3s ease-out 0s 1 normal none;
 }
 
 @keyframes animate-in {
-  0% {
-    transform: translateX(-50px);
-    opacity: 0;
-    scale: 1;
-  }
+    0% {
+        transform: translateX(-50px);
+        -webkit-transform: translateX(-50px);
+        opacity: 0;
+        scale: 1;
+    }
 
-  50% {
-    opacity: 0.7;
-    scale: 1;
-  }
+    50% {
+        opacity: 0.7;
+        scale: 1;
+    }
 
-  100% {
-    transform: translateX(0px);
-    opacity: 1;
-    scale: 1;
-  }
+    100% {
+        transform: translateX(0px);
+        -webkit-transform: translateX(0px);
+        opacity: 1;
+        scale: 1;
+    }
 }
 
 @keyframes animate-out {
-  0% {
-    transform: translateX(0px);
-    opacity: 1;
-    scale: 1;
-  }
+    0% {
+        transform: translateX(0px);
+        -webkit-transform: translateX(0px);
+        opacity: 1;
+        scale: 1;
+    }
 
-  50% {
-    opacity: 0.7;
-    scale: 1;
-  }
+    50% {
+        opacity: 0.7;
+        scale: 1;
+    }
 
-  100% {
-    transform: translateX(-50px);
-    opacity: 0;
-    scale: 1;
-  }
+    100% {
+        transform: translateX(-50px);
+        -webkit-transform: translateX(-50px);
+        opacity: 0;
+        scale: 1;
+    }
 }
+
+.alert-override {
+    border-radius: 9999px;
+    -moz-border-radius: 9999px;
+    -webkit-border-radius: 9999px;
+    width: fit-content;
+    max-width: fit-content;
+    height: fit-content;
+    max-height: 200px;
+    text-align: center;
+    white-space: break-spaces;
+    overflow-wrap: break-word;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.2rem;
+}
+
+.outer-alert-container {
+    position: fixed;
+    position: relative;
+    z-index: 9999;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    align-self: center;
+    right: 15px;
+    margin: 0 auto;
+}
+
+.outer-alert-container :deep(.v-alert-title) {
+    align-items: center;
+    align-self: center;
+    display: flex;
+    font-size: 1.1rem;
+    font-weight: 500;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    line-height: 1.5rem;
+    overflow-wrap: normal;
+    text-transform: none;
+    word-break: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.outer-alert-container :deep(div.v-alert__close) {
+    align-self: center;
+    margin-inline-start: 0;
+}
+
+.outer-alert-container :deep(.v-btn) {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 0.9rem !important;
+    padding: 0.4rem 0 !important;
+}
+
+
 
 @media (min-width: 769px) {
-  .positioner {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
-  }
-}
+    .outer-alert-container {
+        position: fixed;
+        z-index: 9999;
+        right: 10px;
+    }
 
-@media (min-width: 1025px) {
-  .positioner {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
-  }
+    .outer-alert-container :deep(.v-btn) {
+        padding: 0 !important;
+        font-size: 1.3rem !important;
+        margin-right: 0.3rem !important;
+        margin-left: 0.5rem !important;
+    }
 }
 </style>

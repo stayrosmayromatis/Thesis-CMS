@@ -18,4 +18,5 @@ export interface UserDataDetails {
   PersonalTitle: string;
   EduPersonalEntitlementEn: string;
   EduPersonalEntitlementEl: string;
+  Admin?:boolean;
 }

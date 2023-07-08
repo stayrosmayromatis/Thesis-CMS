@@ -1,143 +1,82 @@
 <template>
-  <div @click="emitMobileViewClose">
-    <div class="parent-card">
-      <v-card elevation="5" class="parent-label">
-        <v-card-title> ΦΟΡΜΑ ΕΙΣΑΓΩΓΗΣ ΕΡΓΑΣΤΗΡΙΟΥ </v-card-title>
-      </v-card>
-    </div>
-    <base-alert
-      :alert-type-prop="typeOfAlert"
-      :show="showAlert"
-      :title="alertTitle"
-    ></base-alert>
-    <base-dialog
-      v-if="showRouteLeaveModal"
-      :route-change-authorizer="true"
-      inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
-      inner-description="Οι αλλαγές σας δεν καταχωρήθηκαν και δεν θα αποθηκευτούν, θα θέλατε να συνεχίσετε;"
-    ></base-dialog>
-    <base-dialog
-      v-if="somethingWentWrongModal"
-      :route-change-authorizer="false"
-      inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
+  <section>
+    <base-spinner :show="showSpinner"></base-spinner>
+    <base-dialog :show="showRouteLeaveModal" :route-change-authorizer="true" inner-title="ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
+      inner-description="Οι αλλαγές σας <span style='color:red;'>δεν καταχωρήθηκαν</span> και <span style='color:red;'>δεν θα αποθηκευτούν</span> ,</br>θα θέλατε να <span style='color:1E88E5;'>συνεχίσετε</span>;"
+      @close-modal="showRouteLeaveModal = false"></base-dialog>
+    <base-dialog :show="somethingWentWrongModal" :route-change-authorizer="false" inner-title="ΠΡΟΕΚΥΨΕ ΣΦΑΛΜΑ"
       inner-description="Η καταχώρηση ήταν μη-επιτυχής, κάντε ανανέωση και προσπαθείστε να ξανακάνετε καταχώρηση"
-    ></base-dialog>
-    <base-dialog
-      v-if="showConfirmDeletionModal"
-      :route-change-authorizer="true"
-      :inner-title="confirmDeletionInnerTitle"
-      :inner-description="confirmDeletionInnerDescription"
-    ></base-dialog>
-
-    <div class="parent-card-form">
-      <v-card elevation="5">
-        <v-form @submit.prevent="submitForm">
-          <v-container>
-            <div :class="{ 'error-color': v$.semester.$error }">
-              <v-chip-group>
-                <v-chip
-                  :class="{ 'active-chip': semester.isActive }"
-                  @click="clickOnChip(semester.value)"
-                  v-for="semester of displayedSemester"
-                  :key="semester.title"
-                  >{{ semester.title }}</v-chip
-                >
-              </v-chip-group>
-            </div>
-            <v-divider inset></v-divider>
-            <div class="label-centerer">
-              <label for="year">Βασικά Στοιχεία</label>
-            </div>
-            <div class="form-first">
-              <v-text-field
-                :class="{ 'error-color': v$.labId.$error }"
-                :error-messages="errorOfLabId"
-                label="Κωδικός Εργαστηρίου"
-                v-model.trim="formState.labId"
-              ></v-text-field>
-              <v-text-field
-                :class="{ 'error-color': v$.labTitle.$error }"
-                :error-messages="errorOfLabTitle"
-                label="Τίτλος Εργαστηρίου"
-                v-model.trim="formState.labTitle"
-              ></v-text-field>
-            </div>
-            <div class="form-first">
-              <v-text-field
-                :class="{ 'error-color': v$.description.$error }"
-                :error-messages="errorOfDescription"
-                label="Περιγραφή Εργαστηρίου"
-                v-model.trim="formState.description"
-              ></v-text-field>
-              <div class="percent49-5">
-                <v-select
-                  :class="{ 'error-color': v$.labTitle.$error }"
-                  :items="displayedAttendaceValues"
-                  :error-messages="errorOfAttendance"
-                  label="Παρακολούθηση"
-                  density="default"
-                  v-model="formState.attendance"
-                  no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"
-                ></v-select>
+      @close-modal="somethingWentWrongModal = false"></base-dialog>
+    <base-dialog :show="showConfirmDeletionModal" :route-change-authorizer="true" :inner-title="confirmDeletionInnerTitle"
+      :inner-description="confirmDeletionInnerDescription" @close-modal="showConfirmDeletionModal = false"></base-dialog>
+    <div class="outer-section" @click="emitMobileViewClose" v-if="!showSpinner">
+      <base-alert :alert-type-prop="typeOfAlert" :show="showAlert" :title="alertTitle"></base-alert>
+      <div>
+        <v-card elevation="10" class="parent-label">
+          <label> Φόρμα Εισαγωγής Εργαστηρίου </label>
+        </v-card>
+      </div>
+      <div>
+        <v-card elevation="5">
+          <v-form @submit.prevent="submitForm">
+            <v-container>
+              <div :class="{ 'error-color': v$.semester.$error }">
+                <v-chip-group>
+                  <v-chip :class="{ 'active-chip': semester.isActive }" @click="clickOnChip(semester.value)"
+                    v-for="semester of displayedSemester" :key="semester.title">{{ semester.title }}</v-chip>
+                </v-chip-group>
               </div>
-            </div>
-            <v-divider inset></v-divider>
-            <div class="label-centerer">
-              <label for="year">Τμήματα / Ώρες / Διαθεσιμότητα</label>
-            </div>
-            <div class="info-centerer" v-if="departments.length">
-              <base-alert
-                :alert-type-prop="'info'"
-                :show="true"
-                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"
-              ></base-alert>
-            </div>
-            <div class="form-control-add-btn">
-              <v-btn
-                type="button"
-                @click="addFormGroup"
-                elevation="4"
-                color="green"
-                ><svg
-                  width="30"
-                  height="30"
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
-                  stroke-linejoin="round"
-                  stroke-miterlimit="2"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-                    fill-rule="nonzero"
-                  />
-                </svg>
-                ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ
-              </v-btn>
-            </div>
-            <lab-form
-              v-for="department in departments"
-              :key="department.Guid"
-              :department="department"
-              :seeded_professors="seededProfessors"
-              @deleteByDeptId="removeFormGroup"
-              :is_by_edit="isCallByEdit"
-              @global-error="validateEachDepartment"
-            ></lab-form>
-            <div class="submit-button" v-if="departments.length">
-              <v-btn
-                id="submit-btn"
-                :disabled="buttonDisablity"
-                type="submit"
-                >{{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" : "ΚΑΤΑΧΩΡΗΣΗ" }}</v-btn
-              >
-            </div>
-          </v-container>
-        </v-form>
-      </v-card>
+              <v-divider inset></v-divider>
+              <div class="label-centerer">
+                <label>Βασικά Στοιχεία</label>
+              </div>
+              <div class="form-first">
+                <v-text-field :class="{ 'error-color': v$.labId.$error }" :error-messages="errorOfLabId"
+                  label="Κωδικός Εργαστηρίου" v-model.trim="formState.labId"></v-text-field>
+                <v-text-field :class="{ 'error-color': v$.labTitle.$error }" :error-messages="errorOfLabTitle"
+                  label="Τίτλος Εργαστηρίου" v-model.trim="formState.labTitle"></v-text-field>
+              </div>
+              <div class="form-first">
+                <v-text-field :class="{ 'error-color': v$.description.$error }" :error-messages="errorOfDescription"
+                  label="Περιγραφή Εργαστηρίου" v-model.trim="formState.description"></v-text-field>
+                <div class="percent49-5">
+                  <v-select :class="{ 'error-color': v$.labTitle.$error }" :items="displayedAttendaceValues"
+                    item-title="title" :error-messages="errorOfAttendance" label="Παρακολούθηση" density="default"
+                    return-object v-model="formState.attendance"
+                    no-data-text="Δεν βρέθηκαν διαθέσιμες τιμές παρακολούθησης"></v-select>
+                </div>
+              </div>
+              <v-divider inset></v-divider>
+              <div class="label-centerer">
+                <label>Τμήματα / Ώρες / Διαθεσιμότητα</label>
+              </div>
+              <!-- <div class="info-centerer" v-if="departments.length">
+              <base-alert :alert-type-prop="'info'" :show="true"
+                :title="'Εαν επιθυμείτε να δηλώσετε το ίδιο τμήμα σε διαφορετική ήμερα/ώρα κρατήστε ίδιο το Αναγνωριστικό (π.χ. Τ1) και προσθέστε νέο τμήμα.'"></base-alert>
+            </div> -->
+              <div class="form-control-add-btn">
+                <v-btn type="button" @click="addFormGroup" color="green">
+                  <svg width="25" height="25" viewBox="0 0 24 24">
+                    <path fill="white"
+                      d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4v4Zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20Zm0-8Z" />
+                  </svg>
+                  <label style="cursor: pointer;">ΠΡΟΣΘΗΚΗ ΤΜΗΜΑΤΟΣ</label>
+                </v-btn>
+              </div>
+              <lab-form v-for="department in departments" :key="department.Guid" :department="department"
+                :seeded_professors="seededProfessors" @deleteByDeptId="removeFormGroup" :is_by_edit="isCallByEdit"
+                @global-error="validateEachDepartment"></lab-form>
+              <div class="submit-button" v-if="departments && departments.length && !buttonDisablity">
+                <v-btn id="submit-btn" type="submit">
+                    {{ isCallByEdit === true ? "ΕΝΗΜΕΡΩΣΗ" : "ΚΑΤΑΧΩΡΗΣΗ" }}
+                </v-btn>
+              </div>
+            </v-container>
+          </v-form>
+        </v-card>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 <script lang="ts">
 import { computed, defineComponent } from "@vue/runtime-core";
@@ -145,7 +84,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
 import { useDisplayedLabs } from "@/composables/displayedSemesterArray.composable";
 import { LabSemesterEnum } from "@/enums/LabSemesterEnum";
-import { reactive, Ref, ref, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { DisplayedSemster } from "@/models/displayedsemester.type";
 import LabForm from "@/components/UI/LabForm.vue";
 import { Department } from "@/models/department.type";
@@ -164,14 +103,12 @@ import {
   CreateCourseRequest,
   LaboratoryRequest,
 } from "@/models/BACKEND-MODELS/CreateCourseRequest";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useAxiosInstance } from "@/composables/useInstance.composable";
 import { ApiResult } from "@/models/DTO/ApiResult";
 import { CreateCourseResponse } from "@/models/BACKEND-MODELS/CreateCourseResponse";
 import { CourseController, InfoController } from "@/config";
 import { InternalDataTransfter } from "@/models/DTO/InternalDataTransfer";
 import { InfoUpdateCourseResponse } from "@/models/BACKEND-MODELS/InfoUpdateCourseResponse";
-import { TimeObject } from "@/models/BACKEND-MODELS/TimeObject";
 import { useTimeObjectExtensions } from "@/composables/useTimeObjectExtensions.composable";
 import { InfoAggregateObjectResponse } from "@/models/BACKEND-MODELS/InfoAggregateObjectResponse";
 import { TypeStaff } from "@/enums/StaffTypeEnum";
@@ -180,11 +117,15 @@ import {
   UpdateCourseRequest,
   UpdateLaboratories,
 } from "@/models/BACKEND-MODELS/UpdateCourseRequest";
+import BaseSpinner from "@/components/Base/BaseSpinner.vue";
+import { computedEager } from "@vueuse/core";
+import { onErrorCaptured } from "vue";
 export default defineComponent({
   components: {
     LabForm,
     BaseAlert,
     BaseDialog,
+    BaseSpinner
   },
   emits: ["closeMobileView"],
   setup(_, context) {
@@ -196,10 +137,10 @@ export default defineComponent({
       showAlert,
       closeAlert,
     } = useAlert();
-    const { setBackendInstanceAuth } = useAxiosInstance();
+    const { MakeAPICall } = useAxiosInstance();
     const { GetDisplayedLabs, DisplayedLabs } = useDisplayedLabs();
     const { GetSeededProfessors, SeedProfessorsArray } = useProfessor();
-    const { toTimeString,scrollToTop } = useTimeObjectExtensions();
+    const { toTimeString, scrollToTop } = useTimeObjectExtensions();
     const router = useRouter();
     const route = useRoute();
     const seededProfessors = ref(new Array<BaseUser>());
@@ -210,6 +151,7 @@ export default defineComponent({
     const showConfirmDeletionModal = ref(false);
     const confirmDeletionInnerTitle = ref("ΠΡΟΕΙΔΟΠΟΙΗΣΗ");
     const confirmDeletionInnerDescription = ref("");
+    const showSpinner = ref(false);
     onBeforeRouteLeave(async () => {
       closeAlert();
       if (successFullSubmision.value === true) return true;
@@ -227,10 +169,11 @@ export default defineComponent({
       }
     });
     onMounted(async () => {
+      emitMobileViewClose();
       const hasQueryParams = Object.keys(route.query);
       const queryParamsLength = hasQueryParams.length;
       //DisplayedSemester
-      GetDisplayedLabs();
+      await GetDisplayedLabs(true);
       displayedSemester.value = DisplayedLabs.value;
       //DisplayedSemester
       if (
@@ -238,30 +181,30 @@ export default defineComponent({
         hasQueryParams.includes("editId") &&
         queryParamsLength == 1
       ) {
-        //make the call to the api
+        showSpinner.value = true;
         const courseInfoEditIDT = await MakeGetCourseInfoForEditCall(
           Object.values(route.query)[0]!.toString()
         );
-        if (!courseInfoEditIDT.Status || !courseInfoEditIDT.Data) {
-          router.replace({ name: "submittedLabs" });
+        if (!courseInfoEditIDT || !courseInfoEditIDT.Status || !courseInfoEditIDT.Data) {
+          await router.replace({ name: "submittedLabs" });
           return;
         }
         PopulateTheFormObjectInEditMode(courseInfoEditIDT.Data);
         isCallByEdit.value = true;
+        showSpinner.value = false;
       }
-
       closeAlert(1000);
-
       //SeedProfessorsSegment
       await GetSeededProfessors();
       seededProfessors.value = SeedProfessorsArray.value;
-      context.emit("closeMobileView", true);
-      return;
+
+    });
+    onErrorCaptured((err) => {
+      console.log('----------------',err);
     });
     //SeedProfessorsSegment
     const emitMobileViewClose = (): void => {
       context.emit("closeMobileView", true);
-      return;
     };
     let deptIncremental = 1;
     const departments = ref(new Array<Department>());
@@ -273,16 +216,10 @@ export default defineComponent({
       if (selectedLab) {
         selectedLab.isActive = !selectedLab.isActive;
         formState.semester = selectedLab.isActive ? selectedLab.value : null;
-        // lab.semester = selectedLab.value;
         const allRestLabs = displayedSemester.value.filter(
           (restLab) => restLab.value != selectedLab.value
         );
-        if (
-          allRestLabs &&
-          allRestLabs != null &&
-          allRestLabs != undefined &&
-          allRestLabs.length > 1
-        ) {
+        if (allRestLabs && allRestLabs.length) {
           allRestLabs.forEach((lab) => {
             if (lab.isActive) lab.isActive = false;
           });
@@ -290,7 +227,7 @@ export default defineComponent({
       }
     };
     const addFormGroup = () => {
-      if (departments.value.length === 0) {
+      if (!departments.value.length) {
         deptIncremental = 1;
       }
       departments.value.push({
@@ -313,7 +250,7 @@ export default defineComponent({
           labGuid,
           courseGuid
         );
-        if (!makeTheDeleteInfoCallIDT.Status) {
+        if (!makeTheDeleteInfoCallIDT || !makeTheDeleteInfoCallIDT.Status) {
           setTypeOfAlert("error");
           openAlert("Αποτυχία διαγραφής προσπαθήστε ξανά");
           closeAlert(1500);
@@ -327,7 +264,8 @@ export default defineComponent({
             courseGuid
           );
           showConfirmDeletionModal.value = false;
-        } else {
+        }
+        else {
           showConfirmDeletionModal.value = false;
           return;
         }
@@ -359,23 +297,23 @@ export default defineComponent({
       description: "",
       semester: null,
       departments,
-      attendance: {
-        value: AttendanceEnum.ΥΠ,
-        title: "ΥΠ",
-      },
+      attendance: displayedAttendaceValues.find(w => w.value === AttendanceEnum.ΥΠ)
+      //  {
+      //   value: AttendanceEnum.ΥΠ,
+      //   title: "ΥΠ",
+      // }
+      ,
     });
     const atLeaseOneDepartment = () => {
-      return departments.value.length >= 1 ? true : false;
+      return departments.value.length >= 1;
     };
     const atLeastOneAttendanceSelected = (value: number) => {
-      return !value ? false : true;
+      return !!value;
+      //return !value ? false : true;
     };
     const mustBeANumberOrDash = (value: string) => {
       const pattern = /^[0-9]{4}\-[0-9]{4}$/;
-      if (value.match(pattern)) {
-        return true;
-      }
-      return false;
+      return value.match(pattern) ? true : false;
     };
     const rules = computed(() => {
       return {
@@ -448,39 +386,24 @@ export default defineComponent({
         },
       };
     });
+    // @ts-ignore
     const v$ = useVuelidate(rules, formState);
 
-    const errorOfLabId = computed(() => {
-      if (v$.value.labId.$error) {
-        return v$.value.labId.$errors[0].$message.toString();
-      }
-      return "";
-    });
-    const errorOfLabTitle = computed(() => {
-      if (v$.value.labTitle.$error) {
-        return v$.value.labTitle.$errors[0].$message.toString();
-      }
-      return "";
-    });
-    const errorOfDescription = computed(() => {
-      if (v$.value.description.$error) {
-        return v$.value.description.$errors[0].$message.toString();
-      }
-      return "";
-    });
-    const errorOfAttendance = computed(() => {
-      if (v$.value.attendance.$error) {
-        return v$.value.attendance.$errors[0].$message.toString();
-      }
-      return "";
-    });
+    const errorOfLabId = computed(() => v$.value.labId.$error ? v$.value.labId.$errors[0].$message.toString() : ""
+    );
+    const errorOfLabTitle = computed(() => v$.value.labTitle.$error ? v$.value.labTitle.$errors[0].$message.toString() : ""
+    );
+    const errorOfDescription = computed(() => v$.value.description.$error ? v$.value.description.$errors[0].$message.toString() : ""
+    );
+    const errorOfAttendance = computed(() => v$.value.attendance.$error ? v$.value.attendance.$errors[0].$message.toString() : ""
+    );
     const buttonDisablity = computed(() => {
       if (
         !formState.labId ||
         !formState.labTitle ||
-        formState.semester === null ||
+        !formState.semester ||
         !formState.description ||
-        departments.value.length <= 0
+        (!departments || !departments.value || !departments.value.length)
       )
         return true;
       return false;
@@ -501,10 +424,7 @@ export default defineComponent({
         return false;
       }
       // @ts-ignore
-      if (
-        dept.fromTime.hours > dept.toTime.hours ||
-        (dept.fromTime.hours == dept.toTime.hours &&
-          dept.fromTime.minutes >= dept.toTime.minutes)
+      if (dept.fromTime.hours > dept.toTime.hours || (dept.fromTime.hours == dept.toTime.hours && dept.fromTime.minutes >= dept.toTime.minutes)
       ) {
         dept.errorOnToTime = true;
         dept.errorOnFromTime = true;
@@ -520,6 +440,8 @@ export default defineComponent({
     };
 
     const submitForm = async () => {
+      console.log("GAMW THN MPANAGIA THN PORNH TOSOUS MHNES");
+      
       v$.value.$validate();
       let allDeptsAreCorrect: boolean | undefined = true;
       if (v$.value.$error) {
@@ -530,7 +452,7 @@ export default defineComponent({
         closeAlert(1500);
         return;
       }
-      if (!formState.departments || formState.departments.length == 0) {
+      if (!formState.departments || !formState.departments.length) {
         console.log("There are errors");
         setTypeOfAlert("error");
         openAlert("Υπάρχουν λάθοι στην φόρμα παρακαλώ διορθώστε τα");
@@ -539,8 +461,8 @@ export default defineComponent({
         return;
       }
 
-      for (let dept of departments.value) {
-        if (validateEachDepartment(dept) === false) {
+      for (const dept of departments.value) {
+        if (!validateEachDepartment(dept)) {
           allDeptsAreCorrect = false;
         }
         if (!isNumber(dept.numberOfStudents)) {
@@ -558,8 +480,7 @@ export default defineComponent({
 
       let requestToBeMade:
         | CreateCourseRequest
-        | UpdateCourseRequest
-        | undefined = undefined;
+        | UpdateCourseRequest;
       if (isCallByEdit.value === true) {
         requestToBeMade = {
           CourseId: Object.values(route.query)[0]!.toString(),
@@ -589,7 +510,7 @@ export default defineComponent({
           CourseName: formState.labTitle,
           Semester: formState.semester!,
           ShortDescription: formState.description!,
-          CourseAttentance: formState.attendance!.value!,
+          CourseAttentance: formState.attendance.value,
           Labs: new Array<LaboratoryRequest>(),
         };
         for (const department of formState.departments) {
@@ -611,21 +532,21 @@ export default defineComponent({
         return;
       }
 
-      let makeCreateCourseApiResponse = !isCallByEdit.value
+      const makeCreateCourseApiResponse = !isCallByEdit.value
         ? await MakeCreateCourseRequest(requestToBeMade as CreateCourseRequest)
         : await MakeUpdateCourseRequest(requestToBeMade as UpdateCourseRequest);
       closeAlert();
       if (
+        !makeCreateCourseApiResponse ||
         !makeCreateCourseApiResponse.Status ||
         !makeCreateCourseApiResponse.Data
       ) {
         somethingWentWrongModal.value = true;
         setTypeOfAlert("error");
         openAlert(
-          `Αποτυχία ${
-            isCallByEdit.value === true ? "ενημέρωσης" : "καταχώρησης"
+          `Αποτυχία ${isCallByEdit.value === true ? "ενημέρωσης" : "καταχώρησης"
           } εργαστηρίου`
-          );
+        );
 
         scrollToTop();
         closeAlert(1500);
@@ -635,144 +556,72 @@ export default defineComponent({
       }
       setTypeOfAlert("success");
       openAlert(
-        `Επιτυχής  ${
-          isCallByEdit.value === true ? "ενημέρωση" : "καταχώρηση"
+        `Επιτυχής  ${isCallByEdit.value === true ? "ενημέρωση" : "καταχώρηση"
         } εργαστηρίου`
-        );
+      );
       scrollToTop();
       closeAlert(1500);
       await delay(1500);
       somethingWentWrongModal.value = false;
       successFullSubmision.value = true;
-      router.replace({ name: 'labList' })
-      return;
+      await router.replace({ name: 'submittedLabs' });
     };
-    const anythingIsPopulated = computed(() => {
-      if (
-        formState.labId ||
-        formState.labTitle ||
-        formState.description ||
-        formState.semester ||
-        (departments.value && departments.value.length > 0)
-      )
-        return true;
-      return false;
-    });
+    const anythingIsPopulated = computedEager(() => (formState.labId ||
+      formState.labTitle ||
+      formState.description ||
+      formState.semester ||
+      (departments.value && departments.value.length)) ? true : false);
 
-    const MakeCreateCourseRequest = async (
-      createCourseRequest: CreateCourseRequest
-    ): Promise<InternalDataTransfter<boolean>> => {
+    const MakeCreateCourseRequest = async (createCourseRequest: CreateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
       if (!createCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      const createCourseApiRequest = await useAxios(
-        CourseController + "create-course",
-        {
-          method: "POST",
-          data: createCourseRequest,
-        },
-        setBackendInstanceAuth()
-      );
-      if (createCourseApiRequest.isFinished) {
-        const createCourseApiResponse: ApiResult<CreateCourseResponse> =
-          createCourseApiRequest.data.value;
-        if (
-          createCourseApiResponse.Status === false ||
-          !createCourseApiResponse.Status ||
-          !createCourseApiResponse.Data
-        ) {
-          return {
-            Status: false,
-            Data: false,
-            Error: "Request call returned false",
-          };
-        }
-        return { Status: true, Data: true };
+      const createCourseApiRequest = await MakeAPICall<ApiResult<CreateCourseResponse>, CreateCourseRequest>(CourseController, "create-course", "POST", createCourseRequest);
+      if (!createCourseApiRequest || !createCourseApiRequest.Status || !createCourseApiRequest.Data) {
+        return {
+          Status: false,
+          Data: false,
+          Error: "Request call returned false",
+        };
       }
-      return {
-        Status: false,
-        Data: false,
-        Error: "Request call never finished",
-      };
+      return { Status: true, Data: true };
     };
-    const MakeUpdateCourseRequest = async (
-      updateCourseRequest: UpdateCourseRequest
-    ): Promise<InternalDataTransfter<boolean>> => {
+    const MakeUpdateCourseRequest = async (updateCourseRequest: UpdateCourseRequest): Promise<InternalDataTransfter<boolean>> => {
       if (!updateCourseRequest)
         return { Status: false, Data: false, Error: "Request object null" };
-      const updateCourseApiRequest = await useAxios(
-        CourseController + "update-course",
-        {
-          method: "POST",
-          data: updateCourseRequest,
-        },
-        setBackendInstanceAuth()
-      );
-      if (updateCourseApiRequest.isFinished) {
-        const updateCourseApiResponse: ApiResult<CreateCourseResponse> =
-          updateCourseApiRequest.data.value;
-        if (
-          updateCourseApiResponse.Status === false ||
-          !updateCourseApiResponse.Status ||
-          !updateCourseApiResponse.Data
-        ) {
-          return {
-            Status: false,
-            Data: false,
-            Error: "Request call returned false",
-          };
-        }
-        return { Status: true, Data: true };
+      const updateCourseApiRequest = await MakeAPICall<ApiResult<CreateCourseResponse>, UpdateCourseRequest>(CourseController, "update-course", "POST", updateCourseRequest);
+      if (!updateCourseApiRequest || !updateCourseApiRequest.Status || !updateCourseApiRequest.Data) {
+        return {
+          Status: false,
+          Data: false,
+          Error: "Request call returned false",
+        };
       }
-      return {
-        Status: false,
-        Data: false,
-        Error: "Request call never finished",
-      };
+      return { Status: true, Data: true };
     };
-    const MakeGetCourseInfoForEditCall = async (
-      courseGuid: string
-    ): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
+    const MakeGetCourseInfoForEditCall = async (courseGuid: string): Promise<InternalDataTransfter<InfoUpdateCourseResponse>> => {
       if (!courseGuid)
         return { Status: false, Data: null, Error: "Request object null" };
-      const getCourseInfoForEditApiRequest = await useAxios(
-        CourseController + "get-course-info-for-edit/" + courseGuid,
-        {
-          method: "GET",
-        },
-        setBackendInstanceAuth()
-      );
-      if (getCourseInfoForEditApiRequest.isFinished) {
-        const getCourseInfoForEditApiResponse: ApiResult<InfoUpdateCourseResponse> =
-          getCourseInfoForEditApiRequest.data.value;
-        if (
-          getCourseInfoForEditApiResponse.Status === false ||
-          !getCourseInfoForEditApiResponse.Status ||
-          !getCourseInfoForEditApiResponse.Data
-        ) {
-          return {
-            Status: false,
-            Data: null,
-            Error: "Request call returned false",
-          };
-        }
-        return { Status: true, Data: getCourseInfoForEditApiResponse.Data };
+      const getCourseInfoForEditApiRequest = await MakeAPICall<ApiResult<InfoUpdateCourseResponse>>(CourseController, `get-course-info-for-edit/${courseGuid}`, "GET");
+      if (!getCourseInfoForEditApiRequest || !getCourseInfoForEditApiRequest.Status || !getCourseInfoForEditApiRequest.Data) {
+        return {
+          Status: false,
+          Data: null,
+          Error: "Request call returned false",
+        };
       }
-      return {
-        Status: false,
-        Data: null,
-        Error: "Request call never finished",
-      };
+      return { Status: true, Data: getCourseInfoForEditApiRequest.Data };
     };
-    const PopulateTheFormObjectInEditMode = (
-      data: InfoUpdateCourseResponse
-    ) => {
+    const PopulateTheFormObjectInEditMode = (data: InfoUpdateCourseResponse) => {
       if (!data) return;
-      (formState.labId = data.CourseCode),
-        (formState.labTitle = data.CourseName),
-        (formState.attendance = {
-          title: data.CourseAttendanceString,
-          value: data.CourseAttendance,
-        });
+      formState.labId = data.CourseCode;
+      formState.labTitle = data.CourseName;
+      formState.attendance = displayedAttendaceValues.find(w => w.value === data.CourseAttendance) ?? {
+        title: data.CourseAttendanceString,
+        value: data.CourseAttendance,
+      };
+
+
+
       displayedSemester.value.find((val) => {
         if (val.value === data.Semester) {
           val.isActive = true;
@@ -783,136 +632,116 @@ export default defineComponent({
       formState.semester = data.Semester;
       formState.departments = data.Labs;
     };
-    const MakeTheDeleteInformationCall = async (
-      labGuid: string,
-      courseGuid: string
-    ): Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(
-        InfoController + `deletion-informant/${courseGuid}/${labGuid}`,
-        { method: "GET" },
-        setBackendInstanceAuth()
-      );
-      if (api_response.isFinished) {
-        const api_response_dta: ApiResult<InfoAggregateObjectResponse> =
-          api_response.data.value;
-        if (api_response_dta.Status === true && api_response_dta.Data) {
+    const MakeTheDeleteInformationCall = async (labGuid: string, courseGuid: string): Promise<InternalDataTransfter<boolean>> => {
+      const api_response_dta = await MakeAPICall<ApiResult<InfoAggregateObjectResponse>>(InfoController, `deletion-informant/${courseGuid}/${labGuid}`, "GET");
+      if (api_response_dta.Status && api_response_dta.Data) {
+        if (
+          api_response_dta.Data.PersonAffiliation &&
+          (api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF ||
+            api_response_dta.Data.PersonAffiliation === TypeStaff.ADMIN)
+        ) {
           if (
-            api_response_dta.Data.PersonAffiliation &&
-            (api_response_dta.Data.PersonAffiliation === TypeStaff.STAFF ||
-              api_response_dta.Data.PersonAffiliation === TypeStaff.ADMIN)
+            (api_response_dta.Data.FoundRegistration === false ||
+              !api_response_dta.Data.FoundRegistration) &&
+            (api_response_dta.Data.CountOfStudentsSubmited === 0 ||
+              !api_response_dta.Data.CountOfStudentsSubmited)
           ) {
-            if (
-              (api_response_dta.Data.FoundRegistration === false ||
-                !api_response_dta.Data.FoundRegistration) &&
-              (api_response_dta.Data.CountOfStudentsSubmited === 0 ||
-                !api_response_dta.Data.CountOfStudentsSubmited)
-            ) {
-              showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${
-                api_response_dta.Data.LabName ?? ""
-              }</span> του μαθήματος <span style="color:green;">${
-                api_response_dta.Data.CourseName ?? ""
-              }</span>.
-                                                      Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
-                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return { Data: true, Status: true };
-            } else if (
-              api_response_dta.Data.FoundRegistration === true &&
-              api_response_dta.Data.CountOfStudentsSubmited > 0
-            ) {
-              //Found dilwseis what do you want to do?
-              showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
+            showConfirmDeletionModal.value = true;
+            confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName ?? ""}</span> 
+                του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""}</span>.
+                Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
+                Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; 
+                Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+            return { Data: true, Status: true };
+          } else if (
+            api_response_dta.Data.FoundRegistration === true &&
+            api_response_dta.Data.CountOfStudentsSubmited > 0
+          ) {
+            //Found dilwseis what do you want to do?
+            showConfirmDeletionModal.value = true;
+            confirmDeletionInnerDescription.value = `Βρέθηκε(αν) <span style="color:green;">${api_response_dta.Data.CountOfStudentsSubmited}</span> δήλωση(εις) στo εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName}</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName}</span>.
               Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
               Αυτο συνεπάγεται και στην <span style="color:#ff4545;">διαγραφή όλων των υπάρχοντων δηλώσεων των φοιτητών μέχρι αυτή τη στιγμή</span>.
-              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return { Data: true, Status: true };
-            } else if (
-              (api_response_dta.Data.FoundRegistration === true &&
-                !api_response_dta.Data.CountOfStudentsSubmited) ||
-              api_response_dta.Data.CountOfStudentsSubmited === 0
-            ) {
-              //Dilwseis not found though do you wanna continue?
-              showConfirmDeletionModal.value = true;
-              confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${
-                api_response_dta.Data.LabName ?? ""
-              }</span> του μαθήματος <span style="color:green;">${
-                api_response_dta.Data.CourseName ?? ""
+              Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+            return { Data: true, Status: true };
+          } else if (
+            (api_response_dta.Data.FoundRegistration === true &&
+              !api_response_dta.Data.CountOfStudentsSubmited) ||
+            api_response_dta.Data.CountOfStudentsSubmited === 0
+          ) {
+            //Dilwseis not found though do you wanna continue?
+            showConfirmDeletionModal.value = true;
+            confirmDeletionInnerDescription.value = `Δεν βρέθηκαν δηλώσεις στο εργαστηριακό τμήμα <span style="color:green;">${api_response_dta.Data.LabName ?? ""
+              }</span> του μαθήματος <span style="color:green;">${api_response_dta.Data.CourseName ?? ""
               }</span>.
                                                       Θα πραγματοποιηθεί <span style="color:#ff4545;">διαγραφή</span> του τμήματος.
-                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενεργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
-              return { Data: true, Status: true };
-            } else {
-              showConfirmDeletionModal.value = false;
-              return { Data: null, Status: false, Error: "Error" };
-            }
+                                                      Θέλετε να προχωρήσετε σε <span style="color:#ff4545;">διαγραφή</span>; Η ενέργεια είναι <span style="color:#ff4545;">μη αναστρέψιμη.</span> `;
+            return { Data: true, Status: true };
           } else {
-            return { Data: null, Status: false, Error: "FatalError" };
+            showConfirmDeletionModal.value = false;
+            return { Data: null, Status: false, Error: "Error" };
           }
+        } else {
+          return { Data: null, Status: false, Error: "FatalError" };
         }
       }
       showConfirmDeletionModal.value = false;
       return { Data: null, Status: false, Error: "Error" };
     };
-    const MakeTheDeleteApiCall = async (
-      labGuid: string,
-      courseGuid: string
-    ): Promise<InternalDataTransfter<boolean>> => {
-      const api_response = await useAxios(
-        CourseController +
-          `confirm-delete-submitted-course/${labGuid}/${courseGuid}`,
-        { method: "POST" },
-        setBackendInstanceAuth()
-      );
-      if (api_response.isFinished) {
-        const api_data_response: ApiResult<boolean> = api_response.data.value;
-        return {
-          Data: api_data_response.Data,
-          Status: api_data_response.Status,
-        };
-      }
-      return { Data: null, Status: false, Error: "Error" };
+    const MakeTheDeleteApiCall = async (labGuid: string, courseGuid: string): Promise<InternalDataTransfter<boolean>> => {
+      const api_response = await MakeAPICall<ApiResult<boolean>, Object>(CourseController, `confirm-delete-submitted-course/${labGuid}/${courseGuid}`, "POST", {});
+      return api_response ? { Data: api_response.Data, Status: api_response.Status, }
+        :
+        { Data: null, Status: false, Error: "Error" };
     };
     const delay = async (time: number) => {
       return new Promise((resolve) => setTimeout(resolve, time));
     };
 
     return {
-      emitMobileViewClose,
       buttonDisablity,
       displayedSemester,
-      clickOnChip,
       departments,
-      addFormGroup,
-      removeFormGroup,
       formState,
       v$,
-      submitForm,
       errorOfLabId,
       errorOfLabTitle,
       errorOfDescription,
       errorOfAttendance,
-      validateEachDepartment,
       displayedAttendaceValues,
       seededProfessors,
       showAlert,
       typeOfAlert,
       alertTitle,
       showRouteLeaveModal,
-      toTimeString,
       somethingWentWrongModal,
       isCallByEdit,
       showConfirmDeletionModal,
       confirmDeletionInnerTitle,
       confirmDeletionInnerDescription,
+      showSpinner,
+      validateEachDepartment,
+      submitForm,
+      emitMobileViewClose,
+      clickOnChip,
+      addFormGroup,
+      removeFormGroup,
+      toTimeString,
     };
   },
 });
 </script>
 
 <style scoped>
+.outer-section {
+  width: 100%;
+  padding: 1rem 0.3rem;
+  max-width: 100rem;
+}
+
 #submit-btn:disabled {
   width: 15rem;
+  color: #f3f3f3;
 }
 
 :deep(.v-alert-title) {
@@ -924,10 +753,18 @@ export default defineComponent({
   text-transform: inherit;
 }
 
-.positioner {
-  width: 100% !important;
+.form-control-add-btn :deep(.v-btn--elevated:hover),
+.submit-button :deep(.v-btn--elevated:hover) {
+  box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
+    0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+    -webkit-box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
+    0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
+    -moz-box-shadow: 0px 2px 4px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.9)),
+    0px 4px 5px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2)),
+    0px 1px 10px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.2));
 }
-
 #submit-btn {
   color: white;
   width: 15rem;
@@ -946,17 +783,12 @@ export default defineComponent({
   align-items: center;
   flex-grow: 1;
   margin: 1rem 0rem;
+  cursor: pointer;
 }
 
 .error-color {
   color: #b00020;
 }
-
-.parent-card {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
 .parent-label {
   display: flex;
   flex-direction: row;
@@ -964,18 +796,13 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   height: 2rem;
-  text-transform: uppercase;
   min-width: 320px;
   font-size: 0.95rem;
   font-weight: 500;
-  background-color: #aacaf3;
+  background-color: var(--header-label-background-color);
+  color: var(--header-label-text-color);
   padding: 1.2rem;
-}
-
-.parent-card-form {
-  /* height: 66vh; */
-  min-width: 320px;
-  max-width: 100%;
+  margin-bottom: 1.2rem;
 }
 
 .form-first {
@@ -1010,6 +837,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: 100%;
+  margin: 0.5rem auto;
 }
 
 :deep(.v-chip.v-chip--density-default) {
@@ -1032,7 +860,7 @@ export default defineComponent({
   padding: 0;
   max-width: 768px;
   min-width: 320px;
-  margin-bottom: 1rem;
+  margin: 1rem auto;
 }
 
 :deep(.v-container) {
@@ -1065,7 +893,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   width: fit-content;
-  gap: 0.2rem;
+  gap: 0.3rem;
 }
 
 :deep(.positioner) {
@@ -1087,9 +915,10 @@ export default defineComponent({
 }
 
 @media (min-width: 769px) {
-  #submit-btn:disabled {
-    color: #f3f3f3;
-    width: 15rem;
+  .outer-section {
+    padding: 2rem 0.5rem;
+    margin: auto;
+    width: inherit;
   }
 
   .percent49-5 {
@@ -1102,132 +931,41 @@ export default defineComponent({
     background-color: #156ed3;
   }
 
-  .parent-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-
   .parent-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
     height: 3rem;
-    justify-content: center;
     font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
   }
 
   :deep(.v-chip-group) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
     align-content: flex-start;
-    margin-bottom: 1rem;
-    margin-top: 1rem;
     max-width: 1024px;
     min-width: 769px;
     overflow-x: auto;
   }
 
-  .parent-card-form {
-    margin-left: 1rem;
-    margin-right: 1rem;
-    height: 66vh;
-    min-width: 320px;
-    max-width: 100%;
-  }
-
-  .parent-card {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
 
   .form-first {
-    width: 100%;
-    display: flex;
     flex-direction: row;
     gap: 1rem;
-  }
-
-  .label-centerer {
-    background-color: #f3f3f3;
-    margin: 1rem auto;
-    text-align: center;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
   }
 }
 
 @media (min-width: 1025px) {
   #submit-btn:disabled {
-    color: #f3f3f3;
     min-width: 5rem;
     max-width: 10rem;
     width: 100%;
-  }
-
-  .percent49-5 {
-    width: 49.5%;
   }
 
   #submit-btn {
-    color: white;
     min-width: 5rem;
     max-width: 10rem;
-    background-color: #156ed3;
     width: 100%;
-  }
-
-  .parent-card {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-
-  .parent-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 3rem;
-    justify-content: center;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 500;
-    background-color: #aacaf3;
-    min-width: 769px;
-  }
-
-  .label-centerer {
-    background-color: #f3f3f3;
-    margin: 1rem auto;
-    text-align: center;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
   }
 
   :deep(.v-chip-group) {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 1rem;
     column-gap: 1rem;
-    margin-top: 1rem;
-    overflow-x: auto;
-    flex-wrap: nowrap;
     max-width: 100%;
   }
-}
-</style>
+}</style>

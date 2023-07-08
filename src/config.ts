@@ -4,4 +4,16 @@ export const AuthClientController = '/AuthClient/';
 export const CourseController = '/Course/';
 export const CreateProfessorController = '/CreateProfessor/';
 export const StudentsController = '/Students/'
-export const GAPIKEY = '.....';
+export const AdminController = '/Admin/'
+export const AcceptableFileTypes = [
+    "application/vnd.ms-excel",
+    "application/msexcel",
+    "application/x-msexcel",
+    "application/x-ms-excel",
+    "application/x-excel",
+    "application/x-dos_ms_excel",
+    "application/xls",
+    "application/x-xls",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv"
+]

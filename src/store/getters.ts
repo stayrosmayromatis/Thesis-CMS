@@ -11,16 +11,17 @@ const IsStudent=(state: State) => {
 const IsTeacher=(state: State) => {
         return state.IsStudent;
     }
-const getStaffType=(state:State):TypeStaff | null=>{
+const getStaffType=(state:State):TypeStaff | undefined=>{
     return state.IsStaffType;
 }
-const getUserDataDetails = (state:State):UserDataDetails | null => {
-  return state.UserDataDetails ?? null
+const getUserDataDetails = (state:State): UserDataDetails | undefined => {
+  return state.UserDataDetails;
 }
 const getSeededProfessors = (state:State):Array<Partial<BaseUser>> => {
   return state.SeededProfessors ?? Array<BaseUser>();
 }
+const IsFirstTimeLogin = (state:State) => state.FirstTimeLogIn;
 export default {
   getSeededProfessors,
   IsAuth,
-  IsStudent,IsTeacher,getStaffType,getUserDataDetails};
+  IsStudent,IsTeacher,getStaffType,getUserDataDetails,IsFirstTimeLogin};

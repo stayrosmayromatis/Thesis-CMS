@@ -1,95 +1,32 @@
 <template>
-  <the-header :closeInstantlyDirective="closeInstantly">
-  </the-header>
-  <router-view @closeMobileView="closeMobileViewInstantly"> </router-view>
+  <main>
+    <the-header :closeInstantlyDirective="closeInstantly"></the-header>
+    <router-view v-slot="{ Component }" @closeMobileView="closeMobileViewInstantly">
+      <transition enter-active-class="animate__animated animate__fadeInUp"
+        leave-active-class="animate__animated animate__fadeOutDown" mode="out-in">
+        <component :is="Component"></component>
+      </transition>
+    </router-view>
+  </main>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import TheHeader from "@/components/UI/TheHeader.vue";
-import { useAxiosInstance } from '@/composables/useInstance.composable';
-import { useAxios } from '@vueuse/integrations/useAxios';
 export default defineComponent({
   name: "App",
   components: {
     TheHeader,
   },
   setup() {
-    const cooardinators: Array<{
-      id: string;
-      displayNameEl: string;
-      titleEl: string;
-      eduPersonalEntitlementEl: string;
-      personalTitle: string;
-      eduPersonAffiliation: string;
-      isStaff: boolean;
-      displayNameEn?: string;
-      titleEn?: string;
-      eduPersonalEntitlementEn?: string;
-    }> = Array();
-    const {setCustomInstance,setBackendInstanceAuth} = useAxiosInstance();
-    onMounted(async () => {
-      //Seeding Db Part uncomment if all goes wrong and need to seed again
-    //   const { data, isFinished } = await useAxios('/user',
-    //     {
-    //       method: "GET",
-    //       withCredentials: false,
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "*/*",
-    //       },
-    //     }
-    //     ,setCustomInstance('https://api.iee.ihu.gr')
-    //   );
-    //   console.log(data);
-    //   if (data.value.length === 0 || !data.value.length) {
-    //     console.log("error");
-    //     return;
-    //   }
-    //   for (const record of data.value) {
-    //     if (
-    //       !record.id ||
-    //       record.id === null ||
-    //       record.id === undefined ||
-    //       record.id === "" ||
-    //       record.id === "9123" ||
-    //       record.id === "5737" ||
-    //       record.id === "5738"
-    //     ) {
-    //       continue;
-    //     }
-    //     if (record.title === "Dummy") continue;
-    //     if (!record.displayName || !record["displayName;lang-el"]) continue;
-    //     cooardinators.push({
-    //       id: !record.id ? "-" : record.id,
-    //       displayNameEl: !record["displayName;lang-el"]
-    //         ? "-"
-    //         : record["displayName;lang-el"],
-    //       titleEl: !record["title;lang-el"] ? "-" : record["title;lang-el"],
-    //       personalTitle: !record.personalTitle ? "-" : record.personalTitle,
-    //       eduPersonalEntitlementEl: !record["eduPersonEntitlement;lang-el"]
-    //         ? "-"
-    //         : record["eduPersonEntitlement;lang-el"],
-    //       isStaff: record.eduPersonAffiliation ? true : false,
-    //       eduPersonAffiliation: !record.eduPersonAffiliation ? "-"
-    //         : record.eduPersonAffiliation,
-    //       displayNameEn : !record.displayName ? "-" : record.displayName,
-    //       titleEn : !record.title ? "-" : record.title,
-    //       eduPersonalEntitlementEn :!record.eduPersonEntitlement ? "-" : record.eduPersonEntitlement,
-    //     });
-    //   }
-    //   console.dir(cooardinators);
+    // const { IsAuthenticated } = useAuth();
+    // const {GetPeriodState} = usePeriod();
+    // onMounted( async () => {
 
-    //   const seeding_response = await useAxios("/dev/seed",
-    //   {
-    //     method:"POST",
-    //     data:cooardinators
-    //   },
-    // setBackendInstanceAuth());
-    });
+    // });
     const closeInstantly = ref(false);
 
-    const closeMobileViewInstantly = async () => {
+    const closeMobileViewInstantly = async (val: boolean) => {
       closeInstantly.value = true;
       await delay(1);
       closeInstantly.value = false;
@@ -107,10 +44,85 @@ export default defineComponent({
 body {
   box-sizing: border-box;
   background-color: #f4f4ff;
-
+  margin: 0 auto;
+  min-width: 320px;
+  max-width: 120rem;
 }
-html{
+
+html {
   overflow-y: auto !important;
   overflow-x: auto !important;
+}
+
+/* basic-animation actually */
+/* .fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+} */
+
+/* .router-animation-enter-from,
+.router-animation-leave-to{
+  opacity: 0;
+}
+.router-animation-enter-active,
+.router-animation-leave-active{
+  transition: opacity 0.5s ease-out;
+} */
+
+
+/* .router-animation-enter-active
+{
+  animation : animate-in 0.3s ease-in 0s 1 ease-in normal both;
+}
+
+.router-animation-leave-active{
+  animation: animate-out 0.5s ease-in 0s 1 ease-in normal none;
+}  */
+
+/* @keyframes animate-in {
+    0% {
+     filter:blur(12px);
+			opacity:0; 
+      letter-spacing:0.5rem; 
+		}
+    50%{
+      filter:blur(6px);
+      opacity:0.5;
+    }
+		100% {
+      filter:blur(0px); 
+      opacity:1;
+		}
+
+} */
+/* @keyframes animate-out {
+  0% {
+ filter:blur(0px);
+    opacity:1;
+		}
+    50%{
+     filter:blur(6px);
+      opacity:0.5;
+    }
+		100% {
+			 filter:blur(12px); 
+			opacity:0;
+      letter-spacing:0.5rem; 
+		}
+} */
+
+.animate__animated.animate__fadeInUp {
+  --animate-duration: 0.5s;
+  --animate-delay: 0s;
+}
+
+.animate__animated.animate__fadeOutDown {
+  --animate-duration: 0.5s;
+  --animate-delay: 0;
 }
 </style>

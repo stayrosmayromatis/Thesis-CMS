@@ -37,6 +37,7 @@ export default defineComponent({
     white-space: normal;
     word-break: break-word;
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .loading-container {

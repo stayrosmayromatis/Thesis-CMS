@@ -54,10 +54,10 @@ export default defineComponent({
             default:false
         }
     },
-    setup(props) {
-        const {show} = toRefs(props);
-        return {show}
-    },
+    // setup(props) {
+    //     const {show} = toRefs(props);
+    //     return {show}
+    // },
 })
 </script>
 <style scoped>
@@ -87,6 +87,8 @@ export default defineComponent({
     width: 20.099999999999998px;
     height: 20.099999999999998px;
     border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
     background: #91bcc6;
     animation: ldio-dff8hy135sd 1.1111111111111112s linear infinite;
 }

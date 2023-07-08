@@ -1,6 +1,8 @@
 import { DaysOfWeekEnum } from "@/enums/DaysOfWeekEnum";
-import { DaysOfWeek } from "@/types/daysOfWeek.type";
-
+export interface DaysOfWeek{
+  title:string,
+  value:DaysOfWeekEnum
+}
 export const daysOfWeek : Array<DaysOfWeek> = [
   {
     title:'Δευτέρα',
