@@ -1,9 +1,10 @@
 <template>
   <section class="outer-section" @click="emitMobileViewClose">
     <v-card elevation="10" class="parent-label">Αναζήτηση Εργαστηρίων</v-card>
-    <v-select :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips persistent-hint
-      density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false" clearable
-      multiple return-object v-model="selectedSemesters" no-data-text="Όλα τα διαθέσιμα εξάμηνα έχουν επιλεγεί"
+    <v-select
+      :items="availableSemesters" label="Επιλέξτε ενα ή παραπάνω εξάμηνo" hide-selected chips
+      persistent-hint density="comfortable" validate-on="blur" bg-color="#92B4F4" closable-chips :open-on-clear="false"
+      clearable multiple return-object v-model="selectedSemesters" no-data-text="Όλα τα διαθέσιμα εξάμηνα έχουν επιλεγεί"
       @update:model-value="requestLabs">
     </v-select>
     <base-spinner :show="isLoading"></base-spinner>
@@ -12,10 +13,12 @@
     <v-expansion-panels v-if="!isLoading && personalisedCourses && personalisedCourses.length">
       <v-expansion-panel v-for="lab in personalisedCourses" :key="lab.CourseGUID" :readonly="isReadOnly(lab)">
         <v-expansion-panel-title expand-icon="mdi-plus" collapse-icon="mdi-minus">
-          <lab-accordion-expansion-panel-title :lab="lab" :user_type="userType ?? 1" @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-title>
+          <lab-accordion-expansion-panel-title :lab="lab" :user_type="userType ?? 1"
+            @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-title>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
-          <lab-accordion-expansion-panel-text :lab="lab" :user_type="userType" @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-text>
+          <lab-accordion-expansion-panel-text :lab="lab" :user_type="userType"
+            @close-mobile="emitMobileViewClose"></lab-accordion-expansion-panel-text>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -58,17 +61,17 @@ export default defineComponent({
     const RequestLabs = async () => {
       const requestArray = selectedSemesters.value.map((item) => item.value);
       isLoading.value = true;
-      const personalised_response_data = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>,Array<LabSemesterEnum>>(CourseController,"courses-by-semester","POST",requestArray);
+      const personalised_response_data = await MakeAPICall<ApiResult<PersonalisedCoursesBySemesterResponse>, Array<LabSemesterEnum>>(CourseController, "courses-by-semester", "POST", requestArray);
       isLoading.value = false;
       if (
         !personalised_response_data ||
         !personalised_response_data.Status ||
-        !personalised_response_data.Data || 
+        !personalised_response_data.Data ||
         !personalised_response_data.Data.Count ||
         !personalised_response_data.Data.PersonalisedCourses
       ) {
         personalisedCourses.value = [];
-        resutlEmptyDesc.value ="Επιλέξτε Εξάμηνο, είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων, ώστε να ξεκινήσει η διαδικασία αναζήτησης";
+        resutlEmptyDesc.value = "Επιλέξτε Εξάμηνο, είτε συνδυασμο εξαμήνων απο την μπάρα φίλτρων, ώστε να ξεκινήσει η διαδικασία αναζήτησης";
         return;
       }
       personalisedCourses.value = personalised_response_data.Data.PersonalisedCourses;
@@ -124,9 +127,10 @@ export default defineComponent({
   max-width: 100rem;
 }
 
-.outer-section :deep(.v-expansion-panel--active:not(:first-child),.v-expansion-panel--active + .v-expansion-panel) {
+.outer-section :deep(.v-expansion-panel--active:not(:first-child), .v-expansion-panel--active + .v-expansion-panel) {
   margin-top: 0;
 }
+
 .outer-section :deep(.v-expansion-panel-title__icon) {
   display: inline-flex;
   margin-right: -1rem;
@@ -161,8 +165,8 @@ export default defineComponent({
   min-width: 320px;
   font-size: 0.95rem;
   font-weight: 500;
-  background-color: var( --header-label-background-color);
-  color: var( --header-label-text-color);
+  background-color: var(--header-label-background-color);
+  color: var(--header-label-text-color);
   padding: 1.2rem;
 }
 
@@ -191,5 +195,4 @@ export default defineComponent({
     margin-bottom: 1.2rem;
     font-size: 1.2rem;
   }
-}
-</style>
+}</style>
