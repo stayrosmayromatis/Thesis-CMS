@@ -25,4 +25,5 @@ export interface SubmittedLab {
   Semester: LabSemesterEnum,
   SemesterString:string,
   IsAssistantProfessor?:boolean
+  CountOfSubmissions? : number;
 }

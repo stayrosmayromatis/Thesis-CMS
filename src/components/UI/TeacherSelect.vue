@@ -2,14 +2,16 @@
   <v-dialog v-model="dialog" :scrollable="false" :close-on-back="false" :contained="false" persistent width="100%"
     max-width="40rem" min-width="320px" attach="body">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="!by_admin_option" class="button-dimensions-adjustment" :class="{
+      <v-btn style="font-weight: 550 !important;"  v-if="!by_admin_option" class="button-dimensions-adjustment" :class="{
         'teacher-button-success': error_on_selected_teacher === false,
         'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
         'teacher-button-failure': error_on_selected_teacher === true,
       }" v-bind="props">
-        {{ lastNameProp }}
+      <div>
+        <label for="">{{ lastNameProp }}</label>
+      </div>
       </v-btn>
-      <v-btn v-else class="button-dimensions-adjustment__admin" :class="{
+      <v-btn style="font-weight: 550 !important;" v-else class="button-dimensions-adjustment__admin" :class="{
         'teacher-button-success': error_on_selected_teacher === false,
         'teacher-button-idle': !error_on_selected_teacher && !selectedTeacher,
         'teacher-button-failure': error_on_selected_teacher === true,

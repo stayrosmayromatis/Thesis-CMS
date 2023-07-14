@@ -39,9 +39,16 @@
                 </div>
             </div>
             <div class="main-content">
-                <label class="lab-title">
+                <span id="labTitle">
+                <label >
                     {{ LabTitle }}
                 </label>
+            </span>
+            <span id="labSubmissions" v-if="lab.CountOfSubmissions">
+                <label >
+                    {{ CountOfSubmissions}}
+                </label>
+            </span>
             </div>
             <div class="main-details">
                 <div class="lab-code">
@@ -117,6 +124,12 @@ export default defineComponent({
         });
         const LabTimes = computedEager(() => {
             return `(${lab.value.From.trim()} - ${lab.value.To.trim()})`;
+        });
+        const CountOfSubmissions = computedEager(() => {
+            if (!lab.value.CountOfSubmissions) {
+                return "Δεν έχουν γίνει υποβολές";
+            }
+            return lab.value.CountOfSubmissions > 1 ? `${lab.value.CountOfSubmissions} Υποβολές` : `${lab.value.CountOfSubmissions} Υποβολη`;
         });
         const Semester = computedEager(() => {
             switch (lab.value.Semester) {
@@ -251,6 +264,7 @@ export default defineComponent({
             LabTimes,
             showConfirmDeletionModal,
             IsPeriodActive,
+            CountOfSubmissions,
             CheckDelete,
             redirectToEditComponent
         }
@@ -435,6 +449,32 @@ export default defineComponent({
     line-height: 19px;
     padding: 2rem 0 2rem 0.5rem;
     font-family: "Inter", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.main-content > span#labTitle{
+    overflow: auto;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: initial;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    display: flex;
+    flex: 2;
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+}
+.main-content > span#labSubmissions{    
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    flex-direction: row;
+    text-align: right;
+    
 }
 /* @media screen and (min-width: 769px) {}
 
