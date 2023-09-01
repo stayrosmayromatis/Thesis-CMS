@@ -121,10 +121,10 @@ router.beforeEach(async (to:RouteLocationNormalized,from:RouteLocationNormalized
       return next();
     }
     if (to.meta.requiresAuth === true && storeIsAuth === false) {
-      // console.log("trigger 3");
+      //console.log("trigger 3");
       return next({ name: "red" });
     }
-    // console.log("passed 0");
+    //console.log("passed 0");
     return next();
   }
 });

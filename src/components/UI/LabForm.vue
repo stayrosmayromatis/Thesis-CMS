@@ -8,8 +8,8 @@
       <div class="slider-grow">
         <suspense>
           <template #default>
-            <base-slider @update:model-value="changeNumberOfStudents" :min-value="minValue" :max-value="maxValue"
-              :starting-value="startingValue"></base-slider>
+            <base-slider :min-value="minValue" :max-value="maxValue"
+              v-model:starting-value="startingValue"></base-slider>
           </template>
         </suspense>
       </div>
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, onMounted, PropType, ref, toRefs } from "vue";
+import { defineAsyncComponent, defineComponent, onMounted, PropType, ref, toRefs, watch } from "vue";
 import { daysOfWeek } from "@/composables/daysOfWeekArray.composable";
 import { Department } from "@/models/department.type";
 import { BaseUser } from "@/models/BACKEND-MODELS/BaseUser";
@@ -97,8 +97,8 @@ export default defineComponent({
     const maxValue = ref<number>(50);
     const startingValue = ref<number>(30);
     onMounted(() => {
-      startingValue.value = is_by_edit.value === true && department ? department.value.numberOfStudents : 30;
-      minValue.value = is_by_edit.value === true && department ? department.value.numberOfStudents : 10;
+      startingValue.value = is_by_edit.value && department ? department.value.numberOfStudents : 30;
+      minValue.value = is_by_edit.value && department ? department.value.numberOfStudents : 10;
     })
     const populateFormWithSelectedTeacher = (teacher: BaseUser | undefined) => {
       if (!teacher) {
@@ -108,7 +108,6 @@ export default defineComponent({
       }
       department.value.selectedTeacher = teacher;
       department.value.errorOnSelectedTeacher = false;
-      console.log(department.value);
       return;
     };
     //SeededProfessors for autocomplete
@@ -136,9 +135,11 @@ export default defineComponent({
         ? (department.value.errorOnToTime = true)
         : (department.value.errorOnToTime = false);
     };
-    const changeNumberOfStudents = (value: number) => {
-      department.value.numberOfStudents = value ? value : 30;
-    };
+    // const changeNumberOfStudents = (value: number) => {
+    //   if(value > 0){
+    //     department.value.numberOfStudents = value;
+    //   }
+    // };
     const clearErrors = () => {
       if (department.value.errorOnFromTime === true) {
         department.value.errorOnFromTime = false;
@@ -147,6 +148,11 @@ export default defineComponent({
         department.value.errorOnToTime = false
       }
     };
+
+    watch(startingValue,(value) => {
+      department.value.numberOfStudents = value;
+    });
+
     return {
       days,
       seeded_professors_reactive: seeded_professors,
@@ -159,7 +165,7 @@ export default defineComponent({
       isInputEmpty,
       isFromTimeEmpty,
       isToTimeEmpty,
-      changeNumberOfStudents,
+      //changeNumberOfStudents,
     };
   },
 });

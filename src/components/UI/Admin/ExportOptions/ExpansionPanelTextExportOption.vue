@@ -126,12 +126,12 @@ export default defineComponent({
                     errorOnFileInputMessage.value = "Δεν έχετε εισάγει αρχείο";
                     return false;
                 }
-                if (!value[0].name.includes('xls')) {
-                    errorOnFileInput.value = true;
-                    errorOnFileInputMessage.value = "Μη αποδεκτό format αρχείου";
-                    counterSizeString.value = "Επιλέχθηκε λάθος αρχείο";
-                    return false;
-                }
+                // if (!value[0].name.includes('xls')) {
+                //     errorOnFileInput.value = true;
+                //     errorOnFileInputMessage.value = "Μη αποδεκτό format αρχείου";
+                //     counterSizeString.value = "Επιλέχθηκε λάθος αρχείο";
+                //     return false;
+                // }
                 if (!acceptableFileTypes.includes(value[0].type)) {
                     errorOnFileInput.value = true;
                     errorOnFileInputMessage.value = "Μη αποδεκτό format αρχείου";
