@@ -91,7 +91,7 @@
           <router-link :to="{ name: 'admin' }" exact-active-class="router-link-exact-active-mark">Διαχείριση</router-link>
         </li>
         <li v-if="isLoggedIn" @click="closeHamburgerFn()" class="nav__item">
-          <router-link to="/">Επικοινωνία</router-link>
+          <router-link :to="{name:'contact'}" exact-active-class="router-link-exact-active-mark">Επικοινωνία</router-link>
         </li>
       </ul>
       <div class="menu-divider"></div>

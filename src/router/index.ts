@@ -36,6 +36,12 @@ const routes: Array<RouteRecordRaw> = [
     redirect: (to) => (window.location.href = login_redirect_url),
   },
   {
+    path: "/contact",
+    name: "contact",
+    component: () => import("@/components/UI/ContactUs/ContactUs.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/lab-list",
     name: "labList",
     component: () => import("@/components/UI/LabAccordion/LabAccordion.vue"),
@@ -106,19 +112,19 @@ router.beforeEach(async (to:RouteLocationNormalized,from:RouteLocationNormalized
     await IsAuthenticated(true);
     const storeIsAuth = store.getters.IsAuth;
     if (to.meta.requiresAuth === false && storeIsAuth == false) {
-      console.log("trigger 1");
+      // console.log("trigger 1");
       return next();
     }
     if (to.meta.requiresAuth === false && storeIsAuth == true) {
       await SetNotAuthenticated();
-      console.log("trigger 2");
+      // console.log("trigger 2");
       return next();
     }
     if (to.meta.requiresAuth === true && storeIsAuth === false) {
-      console.log("trigger 3");
+      //console.log("trigger 3");
       return next({ name: "red" });
     }
-    console.log("passed 0");
+    //console.log("passed 0");
     return next();
   }
 });

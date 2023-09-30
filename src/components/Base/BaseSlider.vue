@@ -1,9 +1,7 @@
 <template>
     <v-app>
-        <v-slider @update:model-value="changeNumberValue" direction="horizontal" 
-        :model-value="numberValue" 
-        :min="minValue" :max="maxValue"
-            :show-ticks="showTicks" hide-details :step="1" thumb-label="always">
+        <v-slider v-model="startingValueComp" direction="horizontal" :min="minValue"
+            :max="maxValue" :show-ticks="showTicks" hide-details :step="1" thumb-label="always">
             <template v-slot:thumb-label="{ modelValue }">
                 {{ `${modelValue} άτομα` }}
             </template>
@@ -11,7 +9,8 @@
     </v-app>
 </template>
 <script lang="ts">
-import { defineComponent,ref } from 'vue'
+import { computed } from 'vue';
+import { defineComponent} from 'vue'
 
 export default defineComponent({
     props: {
@@ -31,29 +30,49 @@ export default defineComponent({
             default: false
         },
         startingValue: {
-            type:Number,
-            required: true,
-            default: 30
+            type: Number,
+            required: false,
+            default: 0
         }
 
     },
-    emits:['update:model-value'],
-    setup(props,context) {
-        const numberValue = ref(props.startingValue);
+    emits: ['update:starting-value'],
+    setup(props, context) {
+        //const numberValue = ref<number>();
+        //const { startingValue } = toRefs(props);
 
-        const changeNumberValue = (value:number) => {
-            if(value && value > 0){
-                numberValue.value=value;
-                context.emit('update:model-value',numberValue.value)
+        const startingValueComp = computed({
+            set: (value) => {
+                context.emit('update:starting-value', value)
+            },
+            get: ()=> {
+                return props.startingValue;
             }
+        })
+
+        // onMounted(() => {
+        //     numberValue.value = startingValue.value;
+        // });
+        // onUpdated(() => {
+        //     numberValue.value = startingValue.value;
+        // });
+        // const changeNumberValue = (value: number) => {
+        //     if (value && value > 0) {
+        //         numberValue.value = value;
+        //         context.emit('update:model-value', numberValue.value)
+        //     }
+        // }
+        return {
+            //numberValue,
+            //changeNumberValue,
+            startingValueComp
         }
-        return {numberValue,changeNumberValue}
     },
 })
 </script>
 
 <style scoped>
-:deep(.v-slider-thumb__label){
+:deep(.v-slider-thumb__label) {
     font-size: 0.8rem;
     min-width: 35px;
     height: 30px;
