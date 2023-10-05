@@ -11,4 +11,6 @@ export interface BaseUser {
   dm?:string;
   admin?:boolean;
   am?:string;
+  cnEn?:string;
+  cnEl?:string;
 }

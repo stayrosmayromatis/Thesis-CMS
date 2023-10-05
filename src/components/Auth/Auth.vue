@@ -184,6 +184,8 @@ export default defineComponent({
           dm: undefined,
           admin: undefined,
           am: undefined,
+          cnEl : profileObject.data.value["cn;lang-el"],
+          cnEn : profileObject.data.value["cn"],
         };
       } else if (
         profileObject.data.value["eduPersonAffiliation"] === "student"
@@ -203,6 +205,8 @@ export default defineComponent({
           semester: profileObject.data.value.sem,
           dm: undefined,
           admin: undefined,
+          cnEl : profileObject.data.value["cn;lang-el"],
+          cnEn : profileObject.data.value["cn"],
         };
       } else {
         await setErrorPushToHome("Μη Εξουσιοδοτημένη Κλήση", "Προσπαθήστε ξανά");
