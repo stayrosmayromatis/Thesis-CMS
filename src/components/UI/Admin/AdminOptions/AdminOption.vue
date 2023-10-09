@@ -5,7 +5,7 @@
 
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner && arrayOfAdmins && arrayOfAdmins.length">
-      <v-card elevation="5" class="admin-label">Διαχειριστες εφαρμογης</v-card>
+      <v-card elevation="5" class="admin-label">Διαχειριστές εφαρμογής</v-card>
       <v-card>
       <div class="overlay-container">
         <div class="admin-list">
@@ -86,13 +86,13 @@ export default defineComponent({
     const setStateToAdminInterceptor = async (selectedTeacher: BaseUserResponse) => {
       if (!selectedTeacher) {
         setTypeOfAlert('error');
-        openAlert("Αποτυχία αλλαγής καταστάσης διαχειριστή");
+        openAlert("Αποτυχία αλλαγής κατάστασης διαχειριστή");
         await delay(1500);
         closeAlert(1000);
         return;
       }
       showConfirmDeletionModal.value = true;
-      confirmDeletionInnerDescription.value = `Είστε σίγουρος οτι θέλετε να <span style="color:#ff4545;">διαγράψετε</span> τις διαχειριστικές ιδιότητες
+      confirmDeletionInnerDescription.value = `Είστε σίγουρος ότι θέλετε να <span style="color:#ff4545;">διαγράψετε</span> τις διαχειριστικές ιδιότητες
                                               του χρήστη <span style="color:#1867C0;">${selectedTeacher.DisplayNameEl}</span>;
                                               Σε περίπτωση <span style="color:#ff4545;">λάθους</span> μπορεί να <span style="color: green;">ξαναπροστεθεί</span> ως <span style="color:#1867C0;">διαχειριστής</span>.`;
       if (await confirm()) {

@@ -4,11 +4,11 @@
     <base-dialog :show="showBaseDialog" :inner-description="baseDialogDescription" :inner-title="baseDialogTitle"
       :routeChangeAuthorizer="true" :use-timer="true" @close-modal="showBaseDialog = false"></base-dialog>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="5" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περιοδος προς προσθήκη' :
-        `Περιοδος` }}</label></v-card>
+      <v-card elevation="5" class="period-label "><label>{{ currentlyActiveSsds.length ? 'Περίοδος προς προσθήκη' :
+        `Περίοδος` }}</label></v-card>
       <div v-if="!currentlyActiveSsds.length">
         <base-result-empty :show="!currentlyActiveSsds.length" :title="'Δεν βρέθηκε περίοδος'"
-          :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περιόδο πατώντας το παρακάτω κουμπί και ακολουθήστε τα βήματα.'"></base-result-empty>
+          :description="'Δεν βρέθηκε καταχωρημένη κάποια περίοδος. Προσθέστε μια καινούργια περίοδο πατώντας το παρακάτω κουμπί και ακολουθήστε τα βήματα.'"></base-result-empty>
       </div>
       <div v-if="currentlyActiveSsds.length">
         <v-card elevation="5" class="single-option_card" v-for="active of currentlyActiveSsds" :key="active.SsdId">

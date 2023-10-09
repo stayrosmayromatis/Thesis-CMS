@@ -2,7 +2,7 @@
   <div class="export-parent" @click="emitMobileViewClose">
     <base-spinner :show="showLoadingSpinner"></base-spinner>
     <div v-if="!showLoadingSpinner">
-      <v-card elevation="5" class="export-label"><label>{{ 'Εξαγωγη πορειας / καταστασης δηλωσεων' }}</label></v-card>
+      <v-card elevation="5" class="export-label"><label>{{ 'Εξαγωγή πορείας / κατάστασης δηλωσεων' }}</label></v-card>
       <div class="just-for-show">
         <v-expansion-panels>
           <div class="expansion-panel-export-option__container">
