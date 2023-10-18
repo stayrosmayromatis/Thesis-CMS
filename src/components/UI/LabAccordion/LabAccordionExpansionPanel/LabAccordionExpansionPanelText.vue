@@ -16,7 +16,7 @@
                             <label>{{ `(${lab.LabInfo?.FromTimeString} - ${lab.LabInfo?.ToTimeString})` }}</label>
                         </div>
                         <div>
-                            <v-tooltip :text="`Κατέχετε ηδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
+                            <v-tooltip :text="`Κατέχετε ήδη μια θέση στο εργαστήριο ${lab.LabInfo?.LabName}`"
                                 :location="'bottom'">
                                 <template v-slot:activator="{ props }">
                                     <v-chip variant="text" density="default" style="width: fit-content" v-bind="props">

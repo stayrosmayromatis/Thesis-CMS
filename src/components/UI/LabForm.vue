@@ -95,9 +95,9 @@ export default defineComponent({
     const { department, seeded_professors, is_by_edit } = toRefs(props);
     const minValue = ref<number>(10);
     const maxValue = ref<number>(50);
-    const startingValue = ref<number>(30);
+    const startingValue = ref<number>(12);
     onMounted(() => {
-      startingValue.value = is_by_edit.value && department ? department.value.numberOfStudents : 30;
+      startingValue.value = is_by_edit.value && department ? department.value.numberOfStudents : 12;
       minValue.value = is_by_edit.value && department ? department.value.numberOfStudents : 10;
     })
     const populateFormWithSelectedTeacher = (teacher: BaseUser | undefined) => {
