@@ -19,7 +19,8 @@
             <department-card v-for="lab of resultArray" :key="lab.LabId" :department_name="lab.LabName"
               :available_seats="lab.AvailableSeats" :duration="lab.Duration" :max_seats="lab.MaxSeats"
               :timestring="`${lab.FromString} - ${lab.ToString}`" :course_id="courseGuid" :ladb_id="lab.LabId"
-              :completeness_percent="lab.CompletenessPercent" :user_type="userType" :is_assistant="isCourseAssistant"></department-card>
+              :completeness_percent="lab.CompletenessPercent" :user_type="userType" :is_assistant="isCourseAssistant"
+              :course-day-sting="lab.CourseDayString"></department-card>
           </div>
         </template>
       </suspense>

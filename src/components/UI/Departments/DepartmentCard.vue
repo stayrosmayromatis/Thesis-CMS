@@ -10,6 +10,11 @@
       <div class="parent-card__main-info">
         <v-card-text>
           <div class="parent-card__main-info__labels">
+            <div class="label__courseday">
+              <label style="font-weight: 500; color: #696969;">Ημέρα</label>
+              <!-- <label>{{ `${courseDaySting.trim().charAt(0).toUpperCase()}${courseDaySting.trim().slice(1).toLocaleLowerCase()}`}}</label> -->
+              <label>{{ `${courseDaySting.trim().toUpperCase()}`}}</label>
+            </div>
             <div class="label__hours">
               <label style="font-weight: 500; color: #696969;">Ώρες Εργαστηρίου</label>
               <label>{{ timestring }}</label>
@@ -133,6 +138,11 @@ export default defineComponent({
       type: Boolean,
       required:true,
       default:false
+    },
+    courseDaySting:{
+      type:String,
+      required:true,
+      default:"Δευτέρα"
     }
   },
   setup(props) {
@@ -280,7 +290,7 @@ div.parent-card__main-info__labels {
   gap: 0.5rem;
   min-width: 320px;
 }
-
+.label__courseday label,
 .label__hours label,
 .label__duration label,
 .label__max-seats label,
@@ -338,6 +348,17 @@ div.parent-card__main-info__labels {
 }
 
 .parent-card__main-info__labels>.label__hours {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* gap: 1.5rem; */
+  flex: 1 0;
+  -webkit-flex: 1 0;
+}
+
+.parent-card__main-info__labels>.label__courseday {
   display: flex;
   flex-direction: row;
   justify-content: center;

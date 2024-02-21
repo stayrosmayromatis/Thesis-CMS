@@ -26,4 +26,5 @@ export interface CourseDepartment {
   AvailableSeats: number;
   OccupiedSeats: number;
   CompletenessPercent: number;
+  CourseDayString: string;
 }
